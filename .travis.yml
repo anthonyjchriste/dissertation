@@ -1,0 +1,8 @@
+before_install:
+        - sudo apt-get update
+        - sudo apt-get install -y hunspell
+language: python
+python:
+        - "3.6"
+script:
+        - python ci.py
