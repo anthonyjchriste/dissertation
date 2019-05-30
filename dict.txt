@@ -165,3 +165,10 @@ deserialization
 MakaiTrigger
 topologies
 OPQ's
+uint32
+PayloadType
+Enum
+RMS
+sqrt
+thd
+rms
