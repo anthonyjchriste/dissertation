@@ -298,10 +298,11 @@ The second broker, the Mauka Pub Sub broker facilitates message passing between 
 The messages that are passed over ZeroMQ are serialized using the type safe protocol buffers (v3) format. Protocol buffers provide efficient binary serialization/deserialization routines for structured data and can be used from a multitude of programming languages.
 
 Mauka provides a single message type, ``MaukaMessage", that includes many subtypes. All messages passed within Mauka are of the instance MaukaMessage and may include different subtypes. The MaukaMessage protocol is described in detail in the following tables.
+
 \begin{table}
 	\centering
 	\caption{MaukaMessage}
-	\begin{tabular}{|c|c|c|}
+	\begin{tabular}{|c|p{6cm}|c|}
 		\hline 
 		Field & Type & Description  \\ 
 		\hline 
@@ -310,6 +311,27 @@ Mauka provides a single message type, ``MaukaMessage", that includes many subtyp
 		source & string & Name of plugin that produced this message. \\ 
 		\hline 
 		message & oneof (Payload, Heartbeat, MakaiEvent, Measurement, MakaiTrigger, Laha) & A union of subtypes. \\ 
+		\hline 
+	\end{tabular} 
+\end{table}
+
+\begin{table}
+	\centering
+	\caption{Payload}
+	\begin{tabular}{|c|c| p{8cm} |}
+		\hline 
+		Field & Type & Description  \\ 
+		\hline 
+		event\_id & uint32 & Event that this payload originated from.  \\ 
+		\hline 
+		box\_id & string & Box that this payload originated from. \\ 
+		\hline 
+		data & [f64] & An array of data cast to double precision floats. \\ 
+		\hline
+		payload\_type & PayloadType & Enumeration providing payload type information. \\
+		start\_timestamp\_ms & uint64 & Start timestamp of first payload element \\
+		\hline
+		end\_timestamp\_ms & uint64 & End timestamp of last payload element\\
 		\hline 
 	\end{tabular} 
 \end{table}
