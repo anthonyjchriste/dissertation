@@ -336,6 +336,86 @@ Mauka provides a single message type, ``MaukaMessage", that includes many subtyp
 	\end{tabular} 
 \end{table}
 
+\begin{table}
+	\centering
+	\caption{PayloadType}
+	\begin{tabular}{|c|c| p{8cm} |}
+		\hline 
+		Field & Enum Value & Description  \\ 
+		\hline 
+		ADC\_SAMPLES & 0 & ADC waveform samples from the box.  \\ 
+		\hline 
+		VOLTAGE\_RAW & 1 & Raw waveform voltage obtained by dividing ADC values by a calibration constant. \\ 
+		\hline
+		VOLTAGE\_RMS & 2 & RMS waveform obtained by dividing raw voltage by sqrt(2). \\
+		\hline 
+		VOLTAGE\_RMS\_WINDOWED & 3 & RMS extracted feature array. \\ 
+		\hline
+		FREQUENCY\_WINDOWED & 4 & Frequency extracted feature array. \\
+		\hline 
+	\end{tabular} 
+\end{table}
+
+\begin{table}
+	\centering
+	\caption{Heartbeat}
+	\begin{tabular}{|c|c|p{8cm}|}
+		\hline 
+		Field & Type & Description  \\ 
+		\hline 
+		last\_received\_timestamp\_ms & uint64 & Last time a plugin on\_message was fired.  \\ 
+		\hline 
+		on\_message\_count & uint32 & The amount of times on\_message has been fired. \\ 
+		\hline 
+		status & string & Custom status message that plugin can override. \\ 
+		\hline 
+	\end{tabular} 
+\end{table}
+
+\begin{table}
+	\centering
+	\caption{MakaiEvent}
+	\begin{tabular}{|c|c|p{8cm}|}
+		\hline 
+		Field & Type & Description  \\ 
+		\hline 
+		event\_id & uint32 & The event number that Makai has recorded.  \\ 
+		\hline 
+	\end{tabular} 
+\end{table}
+
+\begin{table}
+	\centering
+	\caption{Measurement}
+	\begin{tabular}{|c|c|p{8cm}|}
+		\hline 
+		Field & Type & Description  \\ 
+		\hline 
+		box\_id & string  & Box that this measurement came from. \\ 
+		\hline
+		timestamp\_ms & uint64 & Timestamp that this measurement was recorded. \\
+		\hline
+		frequency & double & The instantaneous frequency of this measurement. \\
+		\hline
+		voltage\_rms & double & The instantaneous RMS voltage of this measurement. \\
+		\hline
+		thd & double & The instantaneous THD of this measurement. \\
+		\hline 
+	\end{tabular} 
+\end{table}
+
+%\begin{table}
+%	\centering
+%	\caption{}
+%	\begin{tabular}{|c|c|p{8cm}|}
+%		\hline 
+%		Field & Type & Description  \\ 
+%		\hline 
+%		 &  &  \\ 
+%		\hline 
+%	\end{tabular} 
+%\end{table}
+
 \subsubsection{Plugin Manager}
 
 \subsubsection{PQ Plugins}
