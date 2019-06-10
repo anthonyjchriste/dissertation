@@ -185,3 +185,4 @@ GcDomain
 gc
 cnt
 enum
+MakaiEventPlugin
