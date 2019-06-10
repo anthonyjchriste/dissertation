@@ -1,3 +1,6 @@
 #!/bin/bash
 
-echo ${1} >> dict.txt
+for word in "$@"
+do
+  echo "$word" >> dict.txt
+done
