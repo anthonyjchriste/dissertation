@@ -1,0 +1,19 @@
+graph MaukaMessages {
+  MaukaMessage -- Payload
+  MaukaMessage -- Heartbeat
+  MaukaMessage -- MakaiEvent
+  MaukaMessage -- Measurement
+  MaukaMessage -- MakaiTrigger
+  MaukaMessage -- Laha
+
+  Payload -- PayloadType
+
+  Laha -- Ttl
+  Laha -- GcTrigger
+  Laha -- GcUpdate
+  Laha -- GcStat
+
+  GcTrigger -- GcDomain
+  GcUpdate -- GcDomain
+  GcStat -- GcDomain
+}
