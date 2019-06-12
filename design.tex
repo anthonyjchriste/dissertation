@@ -267,6 +267,9 @@ The OPQMakai system design is provided in figure %\ref{fig:makai-main}.
 %	\caption{OPQ Makai Design}\label{fig:makai-main}
 %\end{figure}
 
+\subsubsection{Dynamic Triggering}
+
+TODO
 
 \subsection{OPQ: Mauka}
 OPQ Mauka (or just Mauka) is a middleware component of the OPQ system that provides higher level analytics on PQ data as well as a platform for managing data volume, providing actionable insights into the network, optimizing the network, and providing PQ based Phenomena. Most importantly, Mauka provides most of the functionality that makes OPQ a Laha-compliant DSN.
@@ -570,15 +573,116 @@ Figure \ref{fig:mauka_messages} displays all types used and their variants for t
 \end{figure}
 
 \subsubsection{Plugin Manager}
-Plugins within Mauka are managed using a ``Plugin Manager". The Plugin Manager is responsible for starting, unloading, reloading, and loading of Mauka plugins at runtime. The Plugin Manager provides a ZeroMQ endpoint which is utilized for sending commands and receiving responses to and from the Plugin Manager from any networked device.
+Plugins within Mauka are managed using a ``Plugin Manager". The Plugin Manager is responsible for starting, loading, unloading, reloading, terminating, and general management of Mauka plugins at runtime. 
 
+The Plugin Manager provides a networked command line interface (CLI) which communicates with the Plugin Manager's ZeroMQ endpoint which is utilized for sending commands and receiving responses to and from the Plugin Manager from any networked device. The CLI uses synchronous request/reply semantics where the client requests a message to the Plugin Manager and the Plugin Manager responds with a response. 
 
+The plugin manager can also be used as a library from within Mauka itself accessing the same functionality that is provided by the networked CLI. This functionality is used to initialize the set of plugins that are set to start when Mauka first starts.
+
+Table \ref{table:PluginManager} commands can be issued from a networked CLI client to interact with the Plugin Manager. 
+
+It's important to note some distinctions between the commands. Loading a plugin means loading a plugin from disk into memory where unloading means removing the plugin from memory. Enabling a plugins means that the plugin is loaded and enabled for running. Disabling a plugin means that the plugin is still loaded, but not enabled for running. Starting a plugin means to start a new process for a loaded and enabled plugin where stopping a plugin means to stop a current process and return it to an enabled and loaded state. Killing a plugin uses the OS to send a SIGKILL signal to the process for when its misbehaving and not stopping cleanly on its own.
+
+\begin{table}
+	\centering
+	\caption{Plugin Manager CLI Reference}
+	\begin{tabular}{|c|c|p{8cm}|}
+		\hline 
+		Command & Arguments & Description \\ 
+		\hline
+		completions & & Returns a list of completions for auto-complete. \\
+		\hline
+		disable-plugin & Plugin name & Disables the named plugin. \\
+		\hline
+		enable-plugin & Plugin name & Enables the named plugin. \\
+		\hline
+		help & & Displays the help text. \\
+		\hline
+		kill-plugin & Plugin name & Kills the named plugin. \\
+		\hline
+		load-config & Configuration path & Reloads the configuration from file. \\
+		\hline 
+		load-plugin & Plugin name & Loads (or reloads) a plugin from disk. \\
+		\hline 
+		list-plugins & & Lists all loaded plugins. \\
+		\hline
+		start-plugin & Plugin name & Starts the named plugin. \\
+		\hline 
+		stop-plugin & Plugin name & Stops the named plugin. \\
+		\hline
+		stop-all-plugins & & Stops all running plugins. \\
+		\hline
+		restart-plugin & & Restarts the named plugin. \\
+		\hline
+		unload-plugin & Plugin name & Unloads the named plugin. \\
+		\hline
+	\end{tabular} 
+	\label{table:PluginManager}
+\end{table}
 
 \subsubsection{PQ Plugins}
 
-\subsubsection{Managing TTL}
+\subsubsection{Managing TTL and Garbage Collection}
+Mauka provides custom garbage collection (GC) for identifying and removing ``uninteresting" data. This fulfills one of Laha's claims that it is able to manage data storage pressure while increasing the signal-to-noise ratio within the data set.
 
-\subsubsection{Garbage Collection}
+In order for Mauka to know when items should be GCed, all elements stored in the database are assigned a TTL. A default TTL is assigned when the element is first created, but can be updated later by Mauka plugins depending on if that data is deemed ``interesting".
+
+Data within Laha is continually refined with context and by importance in Laha and by extension, OPQ does the same. As data is deemed interesting by Mauka, it is moved upward through the Laha hierarchy by Laha Actors. In the case of Mauka, this means moving raw data and features from OPQ Boxes into Mauka. When Mauka identifies interesting features of this data, it is moved into events. Interesting enough events are moved into Incidents, and collections of Incidents are moved into Phenomena. Whenever data is moved upwards, that data receives the TTL of its parent, and thus, will live for as long as its parent does.  
+
+Originally, Mauka relied on MongoDB's Time-to-Live (TTL) semantics for expiring and deleting uninteresting data. This worked trivially, but did not provide the flexibility needed for Mauka's refined garbage collection needs. For example, MongoDB's TTL could only be applied to entire collections and not dynamically to individual elements in the collection. MongoDB's TTL was also difficult to update dynamically based on the state of the system. Because we want to assign TTLs dynamically (as interesting data is moved upwards) we required a more robust solution to TTL and GC management.
+
+Default TTLs are dynamically stored in the Mongo database under the ``laha\_config" collection and the ``ttls" key. Since the TTLs are stored in the database, they can be updated and tuned by Mauka's Phenomena.
+
+Table \ref{table:DefaultTtls} displays the default TTL in seconds for each OPQ collection.
+
+\begin{table}
+	\centering
+	\caption{Default TTLs for OPQ Collections}
+	\begin{tabular}{|c|c|}
+		\hline 
+		Collection & Default TTL (seconds) \\ 
+		\hline
+		box\_samples & 900 \\
+		\hline
+		measurements & 86400 \\
+		\hline
+		trends & 604800 \\
+		\hline
+		events & 2592000 \\
+		\hline
+		incidents & 31536000 \\
+		\hline 
+		phenomena & Does not expire \\
+		\hline
+	\end{tabular} 
+	\label{table:DefaultTtls}
+\end{table}
+
+As each item is saved to the database, it is assigned with a default TTL as described in table \ref{table:DefaultTtls}. If the item that was assigned to the database is later deemed important by Mauka and is referenced by a parent item, it receives the TTL of the parent item allowing that data to live as long as the parent does. If the parent item is a Phenomena, then all data relating to that Phenomena (from all levels are the hierarchy) will live forever. The process of updating
+
+The Mauka plugin ``LahaGcPlugin" is responsible for GC and TTL management. Each plugin in Mauka produces a heartbeat at a predefined interval. GC within the LahaGcPlugin takes place every time the plugin produces a heartbeat.
+
+Other than heartbeats, it's also possible to trigger the GC by sending a message to the GC plugin with a list of collections that should be GC.
+
+When the LahaGcPlugin receives a ``GcTrigger" message, it extracts from the message the list of collections that should be GCed. Heartbeats will trigger all collections to be GCed.
+
+The measurements and trends collections perform GC by simply removing from the database all measurements and trends that have a TTL that is older than the current date and time.
+
+Events in OPQ are spread out over three collections: events, box\_events, and gridfs files. Events contain metadata about an event which includes information about all Boxes that sent data in response to that event. Each box that sent data for an event will spawn a box\_event document which includes information relating to a box for a specific event. Further, each box\_event document points to where the raw data is stored in MongoDB using the gridfs data layer provided by the database.
+
+In order to GC events, first all events with a TTL less than the current date and time are identified. From the events, we look up the corresponding box\_events. From each box\_event, we look up corresponding raw data in gridfs. First the gridfs data is removed, then the box\_events are removed, and finally the events themselves are removed. 
+
+To GC incidents, a similar algorithm is provided. First, incidents with a TTL less than the current date and time are identified. From these identified incidents, Mauka looks up and removes the corresponding data in gridfs. Finally, the incidents are removed.
+
+Phenomena, being the top of the hierarchy is never GCed.
+
+Metrics for GC (i.e. the number of items removed per collection) are stored providing insights to data management and effectiveness. 
+
+The Mauka GC plugin does not manage raw data on OPQ Boxes. Instead, OPQ Boxes manage their own internal data buffer with a TTL that can be configured on the Box.
+
+Dynamically updating TTLs is also performed by the LahaGcPlugin. The LahaGcPlugin listens for specific ``Ttl" messages that contain the source item that the TTL is being updated for. Then all child elements of the source element also have their TTLs updated. TTLs are updated in the following manner.
+
+When new events are created, the TTL of measurements and trends that coincide with that event receive the TTL of the event. When incidents are created, the events, trends, and measurements associated with that incident receive the TTL of the incident. When Phenomena are created, the TTLs of incidents, events, trends, and measurements are assigned the TTL of the Phenomena (which is infinite).
 
 \subsubsection{Health}
 
