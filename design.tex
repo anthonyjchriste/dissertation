@@ -569,8 +569,10 @@ Figure \ref{fig:mauka_messages} displays all types used and their variants for t
 	\label{fig:mauka_messages}
 \end{figure}
 
-
 \subsubsection{Plugin Manager}
+Plugins within Mauka are managed using a ``Plugin Manager". The Plugin Manager is responsible for starting, unloading, reloading, and loading of Mauka plugins at runtime. The Plugin Manager provides a ZeroMQ endpoint which is utilized for sending commands and receiving responses to and from the Plugin Manager from any networked device.
+
+
 
 \subsubsection{PQ Plugins}
 
