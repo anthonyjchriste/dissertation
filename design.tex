@@ -273,7 +273,7 @@ OPQ Mauka (or just Mauka) is a middleware component of the OPQ system that provi
 
 Mauka sits between Makai and OPQ's database. It receives messages from Makai when Makai has triggered OPQBoxes due to something interesting in the low-fidelity data stream. Mauka then retrieves the raw waveforms stored in the database by Makai, performs feature extraction, and then forwards the features and/or raw waveform to various plugins to perform classification and other high level analytics. These results are then stored in our database and presented to users in OPQView.
 
-Mauka is written entirely in Python 3.7 and relies on various scientific libraries for analytics. These include SciPy, numpy, matplotlib, and scikit-learn. Communication between processes are accomplished with the ZeroMQ library. Messages are serialized using Protocol Buffers.
+Mauka is written entirely in Python 3.7z\cite{python:2019} and relies on various scientific libraries for analytics. These include SciPy \cite{scipy:2019}, numpy\cite{numpy}, matplotlib\cite{matplotlib}, and scikit-learn\cite{scikitlearn}. Communication between processes are accomplished with the ZeroMQ\cite{zmq} library. Messages are serialized using Protocol Buffers\cite{protobuf}.
 
 Mauka is designed as a distributed set of processes that communicate via type-safe message passing. Most functionality in Mauka is implemented as plugins where each plugin runs in its own process, providing horizontal scalability. The direction of communication between plugins can be modeled by a directed acyclic graph (DAG). The DAG property of Mauka plugins ensures easy horizontal scalability by making it possible to trivially create many distributed instances of plugins to meet the computational load. 
 
@@ -288,11 +288,20 @@ The push/pull model on the other hand provides unidirectional message flow from 
 
 To facility communication between Mauka and Makai and between Mauka plugins, two communications brokers are provided. 
 
-The first broker, the Makai Event Bridge broker, is responsible for subscribing to a ZeroMQ endpoint provided by Makai. This bridge is used to pass event ids created by Makai into Mauka, alerting Mauka to the presence of new data in the database to analyze. When the message is received by the broker, it is transformed into Mauka Message and published to the second broker, the Mauka Pub Sub Broker, and then broadcast to any subscribing plugins. Mauka then uses the event id to look up the associated raw waveforms in the database. 
+The first broker, the Makai Event Bridge broker, is responsible for subscribing to a ZeroMQ endpoint provided by Makai. This bridge is used to pass event ids created by Makai into Mauka, alerting Mauka to the presence of new data in the database to analyze. When the message is received by the broker, it is transformed into a Mauka Message and published to the second broker, the Mauka Pub Sub Broker, and then broadcast to any subscribing plugins. Mauka plugins that subscribe to event ids then use the event id to look up the associated raw waveforms in the database to perfrom analysis.
 
 The second broker, the Mauka Pub Sub broker facilitates message passing between all other parts of the Mauka ecosystem. All messages in this system are published to this broker, and all plugins subscribe to topics provided by this broker. In essence, this broker is used to route type safe messages between distributed components of this system. By using pub/sub and a broker, the plugins only need to worry about one communication endpoint instead of knowing exactly where each plugin lives in the network and how to address it individually.
 
-% TODO diagram
+Figure \ref{fig:mauka_brokers} provides a high level view of how the brokers facilitate communication between Makai and Mauka as well as between Mauka plugins.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/mauka_brokers_communication.png}
+	\caption{OPQ Mauka Brokers Communication Diagram}
+	\label{fig:mauka_brokers}
+\end{figure}
+
+One down side to this approach is that the brokers become single points of failure. I believe that this issue is minimized by using the production proven ZMQ backend for communications. I have also never exerienced failures in the broker during data collection or normal system usage.
 
 \subsubsection{Mauka Communication Protocol}
 The messages that are passed over ZeroMQ are serialized using the type safe protocol buffers (v3) format. Protocol buffers provide efficient binary serialization/deserialization routines for structured data and can be used from a multitude of programming languages.
@@ -556,7 +565,8 @@ Figure \ref{fig:mauka_messages} displays all types used and their variants for t
 \begin{figure}
 	\centering
 	\includegraphics[width=\linewidth]{figures/mauka_messages.png}
-	\caption{OPQ Mauka Communications Protocol Summary}\label{fig:mauka_messages}
+	\caption{OPQ Mauka Communications Protocol Summary}
+	\label{fig:mauka_messages}
 \end{figure}
 
 
