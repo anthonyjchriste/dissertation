@@ -1,0 +1,23 @@
+digraph mauka_brokers_communication {
+
+	Makai [shape=box];
+	MongoDB [shape=cylinder];
+
+	subgraph cluster_mauka {
+			label = "OPQ Mauka";
+			MakaiEventBridge [label="Makai Event Bridge"];
+			MaukaPubSubBroker [label="Mauka Pub/Sub Broker"];
+			MaukaPlugins [label="Mauka Plugins"];
+
+			MakaiEventBridge -> MaukaPubSubBroker [label="Event IDs"];
+			MaukaPubSubBroker -> MaukaPlugins [label="Mauka Messages"];
+			MaukaPlugins -> MaukaPubSubBroker [label="Mauka Messages"];
+	}
+
+	Makai -> MakaiEventBridge [label="Event IDs"];
+
+	MaukaPlugins -> MongoDB [label="Results"];
+	MongoDB -> MaukaPlugins [label="Event Data"];
+
+	MaukaPlugins -> Makai [label="Request Event Message"];
+}
