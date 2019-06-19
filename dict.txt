@@ -198,3 +198,8 @@ Mauka's
 ttls
 LahaGcPlugin
 gridfs
+StatusPlugin
+HealthProtocol
+ok
+bool
+subcomponents
