@@ -203,3 +203,7 @@ HealthProtocol
 ok
 bool
 subcomponents
+SystemStatsPlugin
+PluginStat
+SystemStat
+LahaStat

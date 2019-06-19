@@ -685,11 +685,11 @@ Dynamically updating TTLs is also performed by the LahaGcPlugin. The LahaGcPlugi
 When new events are created, the TTL of measurements and trends that coincide with that event receive the TTL of the event. When incidents are created, the events, trends, and measurements associated with that incident receive the TTL of the incident. When Phenomena are created, the TTLs of incidents, events, trends, and measurements are assigned the TTL of the Phenomena (which is infinite).
 
 \subsubsection{Health}
-Mauka provides a health endpoint that can be queried by OPQ Health to determine the health status of Mauka. The health status is saved to a database by health and show in OPQ View.
+Mauka provides a health endpoint that can be queried by OPQ Health to determine the health status of Mauka. The health status is saved to a database by Health and shown in OPQ View.
 
-The Mauka plugin ``StatusPlugin" is responsible for obtaining and providing the status of the OPQ Mauka service. The plugin subscribes to heartbeats from all other plugins including itself. When the plugin receives a heartbeat, it updates its internal state which includes a mapping of all plugins, their state, and the last time that plugin sent a heartbeat. 
+The Mauka plugin ``StatusPlugin" is responsible for obtaining and providing the status of the OPQ Mauka service. The plugin subscribes to heartbeats sent at configurable intervals from all other plugins including itself. When the plugin receives a heartbeat, it updates its internal state which includes a mapping of all plugins, their state, and the last time that plugin sent a heartbeat. 
 
-The plugin provides an HTTP endpoint which is queried by OPQ Health. The plugin serializes the status as JSON using the protocol described in table \ref{table:HealthProtocol}.
+The plugin provides a configurable HTTP endpoint which is queried by OPQ Health. The plugin extracts the internal health state and serializes the state as JSON using the protocol described in table \ref{table:HealthProtocol}. This protocol is standardized for health collection across all OPQ services.
 
 \begin{table}
 	\centering
@@ -711,24 +711,120 @@ The plugin provides an HTTP endpoint which is queried by OPQ Health. The plugin 
 \end{table}
 
 \subsubsection{Metrics Collection} 
+Mauka collects and stores many different types of performance metrics in order to demonstrate the efficacy of Laha as implemented in Mauka. The metrics are collected by the ``SystemStatsPlugin" Mauka plugin and are stored in the MongoDB collection `laha\_metrics`. 
 
+The metrics are conditioned and displayed in OPQ View for easy analysis. It's possible to select a start and end date/time to configure the time window of metrics displayed in view. Examples of Mauka's metrics displayed in OPQ View are shown in figures \ref{fig:Metrics1}, \ref{fig:Metrics2}, and \ref{fig:Metrics3}.
 
-\subsection{OPQ: Health}
-OPQHealth is a service that continuously monitors both the hardware sensors and the software services that make up the OPQ framework.
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/metrics_1.png}
+	\caption{OPQ Mauka Metrics I}
+	\label{fig:Metrics1}
+\end{figure}
 
-OPQHealth detects health issues in the following ways. 
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/metrics_2.png}
+	\caption{OPQ Mauka Metrics II}
+	\label{fig:Metrics2}
+\end{figure}
 
-OPQHealth determines if an OPQBox is active or inactive by querying the Mongo database for the most recent aggregate measurement. If there is a record of an aggregate measurement within 5 minutes, the Box is considered up, otherwise it is considered down.
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/metrics_3.png}
+	\caption{OPQ Mauka Metrics III}
+	\label{fig:Metrics3}
+\end{figure}
 
-The status of OPQMakai is determined by Makai inserting special health events into the Mongo database. Health queries for the presence of these events and if events are not observed within 1 minute, the OPQMakai service is considered down.
+The types of metrics collected include plugin statistics, system statistics, and Laha statistics which provide metrics on data usage and TTL for data stored within each Laha level as well as garbage collection statistics for each level of the hierarchy.
 
-OPQMauka provides a special HTTP endpoint that is only accessible within the OPQ back end network that when accessed with a \textit{GET} request will return with a status of \textit{200 OK} if the service is up and available. Any other response of the absence of the response is considered a failure more for OPQMauka.
+Metrics are collected at a configurable interval. System statistics such as CPU usage, memory usage, and disk usage are sampled once every 10 seconds. Once every 5 minutes, all metrics are saved to disk. The system statistic metrics which are sampled more frequency are rolled into a 5 minute metric only storing min, max, mean, variance, count, and start and end timestamp.
 
-MongoDB is monitored by querying for a sentinel value that was previously placed in the database.
+Detailed type information for metrics are included in tables \ref{table:Metrics}, \ref{table:MetricsPluginStat}, \ref{table:MetricsSystemStat}, and \ref{table:MetricsLaha}.
 
-OPQView is monitored by sending a \textit{GET} request to the landing page. A response of \textit{200 OK} means that the health service is up. Any other response or the lack of response is an indication of failure for OPQView.
+\begin{table}
+	\centering
+	\caption{Mauka Metrics}
+	\begin{tabular}{|c|c|c|}
+		\hline 
+		Metric & Type & Description \\ 
+		plugin\_stats & [PluginStat] & List of metrics for each plugin. \\
+		\hline
+		system\_stats & [SystemStat] & System statistics for CPU, memory, and disk usage. \\
+		\hline
+		laha\_stats & [LahaStat] & Statistics on count, size, and TTL for each collection. \\
+		\hline
+		ground\_truth\_count & int & Count of ground truth documents. \\
+		\hline
+		ground\_truth\_size\_bytes & int & Size of ground truth in bytes. \\
+		\hline 
+	\end{tabular} 
+	\label{table:Metrics}
+\end{table}
 
-OPQHealth stores its findings in both the Mongo database as well as in a traditional log file.
+\begin{table}
+	\centering
+	\caption{PluginStat}
+	\begin{tabular}{|c|c|c|}
+		\hline 
+		Metric & Type & Description \\ 
+		\hline
+		messages\_received & int & The number of messages the plugin has received. \\
+		\hline
+		messages\_published & int & The number of messages the plugin has published. \\
+		\hline
+		bytes\_received & int & The number of bytes the plugin has received. \\
+		\hline
+		bytes\_published & int & The number of bytes the plugin has published. \\
+		\hline
+	\end{tabular} 
+	\label{table:MetricsPluginStat}
+\end{table}
+
+\begin{table}
+	\centering
+	\caption{SystemStat}
+	\begin{tabular}{|c|c|c|}
+		\hline 
+		Metric & Type & Description \\ 
+		\hline
+		min & float & Minimum value over time window. \\
+		\hline
+		max & float & Maximum value over time window. \\
+		\hline
+		mean & float & Mean value over time window. \\
+		\hline
+		var & float & Variance of values over time window. \\
+		\hline
+		cnt & int & The number of items sampled over time window. \\
+		\hline
+		start\_timestamp\_s & int & Start timestamp of time window. \\
+		\hline
+		end\_timestamp\_s & int & End timestamp of time window. \\
+		\hline
+	\end{tabular} 
+	\label{table:MetricsSystemStat}
+\end{table}
+
+\begin{table}
+	\centering
+	\caption{LahaStat}
+	\begin{tabular}{|c|c|c|}
+		\hline 
+		Metric & Type & Description \\ 
+		\hline
+		ttl & int & Default TTL for a Laha level. \\
+		\hline
+		count & int & Number of items in a Laha level. \\
+		\hline
+		size\_bytes & int & Size of a Laha level in bytes. \\
+		\hline
+	\end{tabular} 
+	\label{table:MetricsLaha}
+\end{table}
+
+\subsubsection{Debugging OPQMauka}
+TODO
 
 \subsection{OPQ: View}
 OPQView is a web application that provides visualization, notification, and user management services for data, sensors, and user accounts with the OPQ framework. OPQView is built using Meteor.js and provides a Reactive view of the underlying data stored in the OPQ database.
