@@ -685,6 +685,30 @@ Dynamically updating TTLs is also performed by the LahaGcPlugin. The LahaGcPlugi
 When new events are created, the TTL of measurements and trends that coincide with that event receive the TTL of the event. When incidents are created, the events, trends, and measurements associated with that incident receive the TTL of the incident. When Phenomena are created, the TTLs of incidents, events, trends, and measurements are assigned the TTL of the Phenomena (which is infinite).
 
 \subsubsection{Health}
+Mauka provides a health endpoint that can be queried by OPQ Health to determine the health status of Mauka. The health status is saved to a database by health and show in OPQ View.
+
+The Mauka plugin ``StatusPlugin" is responsible for obtaining and providing the status of the OPQ Mauka service. The plugin subscribes to heartbeats from all other plugins including itself. When the plugin receives a heartbeat, it updates its internal state which includes a mapping of all plugins, their state, and the last time that plugin sent a heartbeat. 
+
+The plugin provides an HTTP endpoint which is queried by OPQ Health. The plugin serializes the status as JSON using the protocol described in table \ref{table:HealthProtocol}.
+
+\begin{table}
+	\centering
+	\caption{Mauka HealthProtocol}
+	\begin{tabular}{|c|c|c|}
+		\hline 
+		Field & Type & Description \\ 
+		\hline
+		name & string & Name of the service \\
+		\hline
+		ok & bool & Whether the entire service is ok or not \\
+		\hline
+		timestamp & int & The timestamp of when the health request was received \\
+		\hline
+		subcomponents & [HealthProtocol] & Health protocol for each plugin \\
+		\hline
+	\end{tabular} 
+	\label{table:HealthProtocol}
+\end{table}
 
 \subsubsection{Metrics Collection} 
 
