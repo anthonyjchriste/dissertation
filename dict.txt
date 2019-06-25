@@ -229,3 +229,4 @@ PrintPlugin
 SemiF47Plugin
 ThdPlugin
 TransientPlugin
+FrequencyVariationPlugin
