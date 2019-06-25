@@ -219,3 +219,13 @@ SIGINT
 PluginManager
 MakaiEventMessage
 RmsWindowedVoltage
+plugin's
+IEEE1159VoltagePlugin
+ITICPlugin
+LagaConfigPlugin
+MockPlugin
+OutagePlugin
+PrintPlugin
+SemiF47Plugin
+ThdPlugin
+TransientPlugin
