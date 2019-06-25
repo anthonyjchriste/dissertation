@@ -621,6 +621,38 @@ It's important to note some distinctions between the commands. Loading a plugin 
 \end{table}
 
 \subsubsection{PQ Plugins}
+Mauka's functionality is provided by plugins that perform analysis, data management, health, and system tuning. Communication within Mauka is performed using type safe message passing. This section describes in detail how each plugin functions and also documents each plugins inputs and outputs.
+
+\paragraph{BasePlugin}
+All plugins derive from a single ``BasePlugin". The BasePlugin provides primitives for running plugins as separate processes, serialization and deserialization of type safe messages, communication over ZeroMQ, metrics collection, MongoDB communication, debugging, and plugin health.
+
+To support running plugins as separate processes, the BasePlugin provides a ``run\_plugin" method that instantiates the new plugin inside of a new process. The BasePlugin provides signal handlers to catch SIGKILL and SIGINT signals from the system and cleanly exit the plugin process. The BasePlugin also contains an ``exit\_event" which can be set from other processes to inform the plugin to exit cleanly. This is used when Mauka is cleanly shutdown or when a plugin is stopped from the PluginManager.
+
+When a BasePlugin process is started, the plugin creates a timer that runs at a configurable interval. When the timer fires, a heartbeat for the subclassing plugin is produced. This provides health information for each plugin within Mauka.
+
+The BasePlugin provides automatic serialization and deserialization of protobuf Mauka messages produced and received for each plugin.
+
+The BasePlugin provides ZMQ endpoints for producing and consuming messages to and from topics for each plugin. The BasePlugin ensures that all accesses to brokers are handled atomically with multiprocessing locks.
+
+The BasePlugin keeps track of the number of messages sent and received for each plugin as well as the number of bytes sent and received for each plugin. This information is included in each plugin's heartbeat and later uses for calculating and storing metrics for each plugin.
+
+The BasePlugin uses the configurable debugging interface to selective display debug messages for a plugin. Debug messages are only displayed for plugins that are configured to display debug messages in Mauka's configuration.
+
+The BasePlugin provides a MongoDB client for each plugin for reading and writing to the database.
+
+\paragraph{MakaiEventPlugin} The ``MakaiEventPlugin" is responsible for reading events newly created by Makai into Mauka. It performs feature extraction on the raw event data streams and forwards those features (or the raw data) to subscribing plugins. This allows Mauka to perform the important feature extraction once, and reuse those features in multiple plugins.
+
+The MakaiEventPlugin subscribes to messages from the topic ``MakaiEventMessage". These messages are described in table \ref{table:MakaiEvent}. When a message is received, the plugin waits a configurable amount of time to ensure that Makai has finished writing data to the database. Once the data is in the database, the plugin loads the raw data and performs feature extraction.
+
+The raw waveform from the OPQBox is serialized into a Payload (table \ref{table:Payload}) with PayloadType (table \ref{table:PayloadType}) ``ADC\_SAMPLES" and produced to the topic ``AdcSamples".
+
+The raw Voltage is calculated by dividing each sample of the raw waveform by the calibration constant loaded from the database that is set for each device. The raw Voltage  is serialized into a Payload (table \ref{table:Payload}) with PayloadType (table \ref{table:PayloadType}) ``VOLTAGE\_RAW" and produced to the topic ``RawVoltage".
+
+$V_{rms}$ is the peak-to-peak voltage over a configurable time window. By default, Mauka uses a time window of one electrical cycle at 60$Hz$ which works out to be $1/60$ seconds. $V_{rms}$ is calculated by moving a running window over the raw voltage waveform. The computation of $V_{rms}$ for each window with $n$ samples is given by $\sqrt{\frac{\sum_{i=0}^{n} n_{i}^2}{n}}$. The RMS Voltage  is serialized into a Payload (table \ref{table:Payload}) with PayloadType (table \ref{table:PayloadType}) ``VOLTAGE\_RMS\_WINDOWED" and produced to the topic ``RmsWindowedVoltage".
+
+Windowed frequency is the frequency calculated for a configurable time window. By default, Mauka uses a time window of one electrical cycle at 60$Hz$ which works out to be $1/60$ seconds. The frequency is calculated by first smoothing the raw Voltage waveform by applying a $4^{th}$ order Butterworth filter to the waveform with a cutoff frequency of 500$Hz$ and a down sampling rate of 2. Then, a window is moved across the smoothed signal and the frequency is calculated for each window by performing a least squares regression and fitting a sinusoide. The windowed frequency is serialized into a Payload (table \ref{table:Payload}) with PayloadType (table \ref{table:PayloadType}) ``FREQUENCY\_WINDOWED" and produced to the topic ``WindowedFrequency".
+
+When new events are received by the MakaiEventPlugin, a GcUpdate (table \ref{table:GcUpdate}) message is produced informing the LahaGcPlugin that all ``measurements" and ``trends" stored by Makai should receive a TTL of the newly created event.
 
 \subsubsection{Managing TTL and Garbage Collection}
 Mauka provides custom garbage collection (GC) for identifying and removing ``uninteresting" data. This fulfills one of Laha's claims that it is able to manage data storage pressure while increasing the signal-to-noise ratio within the data set.
