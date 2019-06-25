@@ -1,5 +1,5 @@
 \chapter{System Design}
-Laha, which means, to spread or distribute in Hawaiian, is an abstract framework for distributed sensor networks that provides a means for turning primitive data into actionable insights, tiered management of voluminous amounts of sensor data. This major goals are in part accomplished by augmenting a DSN with the ability to adaptively optimize its bandwidth, detection, classification, and sensor device power requirements.
+Laha, which means, to spread or distribute in Hawaiian, is an abstract framework for distributed sensor networks that provides a means for turning primitive data into actionable insights, tiered management of voluminous amounts of sensor data. Major goals are in part accomplished by augmenting a DSN with the ability to adaptively optimize its bandwidth, detection, classification, and sensor device power requirements.
 
 The Laha framework is made up of five levels that can be viewed conceptually as a pyramid (see \ref{laha-figure}). Primitive data entering the Laha framework is located at the bottom the bottom of the pyramid. As data moves upward through the levels, noise is discarded, less interesting events are discarded or aggregated into upper levels, events are given more meaning and context, and associations and predictions are made. 
 
@@ -52,7 +52,7 @@ The Laha framework is made up of five levels that can be viewed conceptually as 
 %The aim is that if Laha can accurately provide a model of the underlying sensing field topology, this information can be used to optimize lower levels of the Laha hierarchy. For example, Laha can prime sensors for receiving or ignoring signals of interest by determining that a signal is supposed to arrive at a sensor before it does, i.e. Predictive Phenomena.
 
 \section{Big Data Management in Laha} \label{big-data-management}
-The Laha framework acts as an adaptive sieve for filtering noise and uninteresting data collected from a DSN. In this way, each level only passes what it considers interesting to the level above it. All data at a particular level is garbage collected at specific intervals relating to its important to the DSN.
+The Laha framework acts as an adaptive sieve for filtering noise and uninteresting data collected from a DSN. In this way, each level only passes what it considers interesting to the level above it. In practice, ``higher" levels determine what is interesting and pull data from ``lower" levels. All data at a particular level is garbage collected at specific intervals relating to its important to the DSN.
 
 Each level only keeps data for a specified amount of time before it is garbage collected. As data moves up the pyramid, it is generally considered more useful and therefore has a longer Time to Live (TTL), the amount of the time the data lives before it is garbage collected.  When a higher level detects ``something interesting", the data contained in the time window of ``something interesting" is copied into the levels above it and will still persist even though the original data is garbage collected. In this way, Laha preserves data from all levels if they are associated with interesting data. This also provides graceful degradation of services. The TTL is managed by the overall memory management of the system. Laha Actors are designed to work within the constraints of the TTL at different levels. If a constraint is broken, the Actor logs this issue. TTL can be optimized by Phenomena at each level to either tune for system performance or tune for decreasing of false positives and false negatives at different levels within the Laha hierarchy.
 
@@ -79,7 +79,7 @@ A summary of how data management in Laha is provided in table \ref{data-managame
 \end{table}
 
 \subsection{Instantaneous Measurements Level}
-The Instantaneous Measurements Level (IML) receives raw, sampled data from the DSN. The amount of data received is determined by the sample rate of each device multiplied by the number of fields per sample. Most of the time samples, from devices in the network are mainly sampling noise. A large percentage of the data in this level is destined for garbage collection and data is assigned a Time to Live (TTL) of one hour. 
+The Instantaneous Measurements Level (IML) receives raw, sampled data from the DSN. The amount of data received is determined by the sample rate of each device multiplied by the number of fields per sample. Most of the time devices in the network are mainly sampling noise. A large percentage of the data in this level is destined for garbage collection and data is assigned a Time to Live (TTL) of one hour. 
 
 \subsection{Aggregate Measurements Level}
 The Aggregate Measurements Level (AML) is responsible for rolling up IMs from the IML. In general, this level only works with feature extracted data, rather than working with the raw samples. Each measurement in the AML provides summary statistics over a configurable time window. For example, these can include min, max, mean, median, mode, and variance statistics. 
@@ -91,13 +91,13 @@ Similar to IMs, AMs can be saved and copied to the levels above it when interest
 At this point in the hierarchy, we are still not providing any context to the data that we are receiving. Context is provided by levels above the AML.
 
 \subsection{Detections Level}
-The Detections Level (DL) is the first level that provides some context to the data that the sink is receiving. This level is responsible watching the feature extracted data streams, and requesting IMs from the IM level. In general, the detection level is meant to be trigger happy\footnote{Pun intended.} and be overly aggressive when determining if a feature extracted data stream looks interesting. 
+The Detections Level (DL) is the first level that provides some context to the data that the database is receiving. This level is responsible watching the feature extracted data streams, and requesting IMs from the IM level. In general, the detection level is meant to be trigger happy\footnote{Pun intended.} and be overly aggressive when determining if a feature extracted data stream looks interesting. 
 
 When a data stream looks interesting, the DL marks a timestamp $N$ seconds before the interesting features and $M$ seconds after the interesting features, where both $N$ and $M$ are configurable within the framework. The goal is to use a time window that catches signals of interest within it. Since these data ranges will be further processed and refined higher in the hierarchy, there is no issue with collecting larges amounts of data in this level. 
 
 The actual methods of detection is dependent on the characteristics of every individual sensor network. This framework assumes that the detection algorithms are provided by the implementing frameworks.
 
-Similar to other levels, the DL level will have its IMs and AMs copied into levels above it when upper levels observe something interesting in the DL. The detections level is set to have a TTL of a week.
+Similar to other levels, the DL level will have its IMs and AMs copied into levels above it when upper levels observe something interesting in the DL. The Detections level is set to have a TTL of a week.
 
 \subsection{Incidents Level}
 Incidents represent classified signals. Incidents are individual classifications for signals of interest and are created by analyzing waveforms from Events. Waveforms from Events may contain multiple incidents. Individual signals may be classified as multiple incidents (for example a transient being classified as both a transient and frequency incidents). 
@@ -289,7 +289,7 @@ In publish/subscribe, any producer can produce messages where each message conta
 
 The push/pull model on the other hand provides unidirectional message flow from a single pushed to a single puller. Using these two types of communications models in conjunction provides the entire communications backbone for Mauka.
 
-To facility communication between Mauka and Makai and between Mauka plugins, two communications brokers are provided. 
+To facilitate communication between Mauka and Makai and between Mauka plugins, two communications brokers are provided. 
 
 The first broker, the Makai Event Bridge broker, is responsible for subscribing to a ZeroMQ endpoint provided by Makai. This bridge is used to pass event ids created by Makai into Mauka, alerting Mauka to the presence of new data in the database to analyze. When the message is received by the broker, it is transformed into a Mauka Message and published to the second broker, the Mauka Pub Sub Broker, and then broadcast to any subscribing plugins. Mauka plugins that subscribe to event ids then use the event id to look up the associated raw waveforms in the database to perform analysis.
 
@@ -311,9 +311,9 @@ The messages that are passed over ZeroMQ are serialized using the type safe prot
 
 Mauka provides a single message type, ``MaukaMessage", that includes many subtypes. All messages passed within Mauka are of the instance MaukaMessage and may include different subtypes. The MaukaMessage protocol is described in detail in the following tables.
 
-The ``MaukaMessage" \ref{table:MaukaMessage} type contains a timestamp, source, and a union type which can contain multiple types of type safe messages. Every plugin within Mauka sends and receives MaukaMessages and the plugin is responsible for checking the type of the ``message" field and acting on it.
+The ``MaukaMessage" (table \ref{table:MaukaMessage}) type contains a timestamp, source, and a union type which can contain multiple types of type safe messages. Every plugin within Mauka sends and receives MaukaMessages and the plugin is responsible for checking the type of the ``message" field and acting on it.
 
-\begin{table}
+\begin{table}[H]
 	\centering
 	\caption{MaukaMessage}
 	\begin{tabular}{|c|p{6cm}|c|}
@@ -330,9 +330,9 @@ The ``MaukaMessage" \ref{table:MaukaMessage} type contains a timestamp, source, 
 	\label{table:MaukaMessage}
 \end{table}
 
-The ``Payload" \ref{table:Payload} variant of message contains data payloads cast to 64-bit precision floating point numbers. This allows us to work with data of multiple type by assuming all data payloads can be cast to 64-bit floats. This message also contains metadata relating to where the data came from, timing information, and a type safe enumeration describing the type of data stored in the payload.
+The ``Payload" (table \ref{table:Payload}) variant of message contains data payloads cast to 64-bit precision floating point numbers. This allows us to work with data of multiple type by assuming all data payloads can be cast to 64-bit floats. This message also contains metadata relating to where the data came from, timing information, and a type safe enumeration describing the type of data stored in the payload.
 
-\begin{table}
+\begin{table}[H]
 	\centering
 	\caption{Payload}
 	\begin{tabular}{|c|c| p{8cm} |}
@@ -354,9 +354,9 @@ The ``Payload" \ref{table:Payload} variant of message contains data payloads cas
 	\label{table:Payload}
 \end{table}
 
-The ``PayloadType" \ref{table:PayloadType} variant is an enumeration that describes the type of data stored in any provided payload.
+The ``PayloadType" (table \ref{table:PayloadType}) variant is an enumeration that describes the type of data stored in any provided payload.
 
-\begin{table}
+\begin{table}[H]
 	\centering
 	\caption{PayloadType}
 	\begin{tabular}{|c|c| p{8cm} |}
@@ -377,9 +377,9 @@ The ``PayloadType" \ref{table:PayloadType} variant is an enumeration that descri
 	\label{table:PayloadType}
 \end{table}
 
-The ``Heartbeat" \ref{table:Heartbeat} variant is a message that is periodically sent from each plugin providing statistics about plugin health. 
+The ``Heartbeat" (table \ref{table:Heartbeat}) variant is a message that is periodically sent from each plugin providing statistics about plugin health. 
 
-\begin{table}
+\begin{table}[H]
 	\centering
 	\caption{Heartbeat}
 	\begin{tabular}{|c|c|p{8cm}|}
@@ -396,9 +396,9 @@ The ``Heartbeat" \ref{table:Heartbeat} variant is a message that is periodically
 	\label{table:Heartbeat}
 \end{table}
 
-The ``MakaiEvent" \ref{table:MakaiEvent} variant is a message which includes the ``event\_id" of a newly created event from Makai. This message is received by the ``MakaiEventPlugin" and is used to begin processing new events within Mauka generated by Makai.
+The ``MakaiEvent" (table \ref{table:MakaiEvent}) variant is a message which includes the ``event\_id" of a newly created event from Makai. This message is received by the ``MakaiEventPlugin" and is used to begin processing new events within Mauka generated by Makai.
 
-\begin{table}
+\begin{table}[H]
 	\centering
 	\caption{MakaiEvent}
 	\begin{tabular}{|c|c|p{8cm}|}
@@ -411,9 +411,9 @@ The ``MakaiEvent" \ref{table:MakaiEvent} variant is a message which includes the
 	\label{table:MakaiEvent}
 \end{table}
 
-The ``Measurement" \ref{table:Measurement} variant is a message that contains an instantaneous measurement which includes a timestamp, Voltage, Frequency, and THD metrics.
+The ``Measurement" (table \ref{table:Measurement}) variant is a message that contains an instantaneous measurement which includes a timestamp, Voltage, Frequency, and THD metrics.
 
-\begin{table}
+\begin{table}[H]
 	\centering
 	\caption{Measurement}
 	\begin{tabular}{|c|c|p{8cm}|}
@@ -434,9 +434,9 @@ The ``Measurement" \ref{table:Measurement} variant is a message that contains an
 	\label{table:Measurement}
 \end{table}
 
-The ``MakaiTrigger" \ref{table:MakaiTrigger} variant is a message type that is used to send to Makai in order for Mauka to trigger boxes for raw data. This is used when Mauka sees something interesting and wishes to request more data than what was originally provided by Makai.
+The ``MakaiTrigger" (table \ref{table:MakaiTrigger}) variant is a message type that is used to send to Makai in order for Mauka to trigger boxes for raw data. This is used when Mauka sees something interesting and wishes to request more data than what was originally provided by Makai.
 
-\begin{table}
+\begin{table}[H]
 	\centering
 	\caption{MakaiTrigger}
 	\begin{tabular}{|c|c|p{8cm}|}
@@ -457,9 +457,9 @@ The ``MakaiTrigger" \ref{table:MakaiTrigger} variant is a message type that is u
 	\label{table:MakaiTrigger}
 \end{table}
 
-The ``Laha" \ref{table:Laha} message variant contains multiple types of messages all relating to Laha. These include messages for managing TTL, garbage collection, and Laha based statistics.
+The ``Laha" (table \ref{table:Laha}) message variant contains multiple types of messages all relating to Laha. These include messages for managing TTL, garbage collection, and Laha based statistics.
 
-\begin{table}
+\begin{table}[H]
 	\centering
 	\caption{Laha}
 	\begin{tabular}{|c|c|p{8cm}|}
@@ -472,9 +472,9 @@ The ``Laha" \ref{table:Laha} message variant contains multiple types of messages
 	\label{table:Laha}
 \end{table}
 
-The ``Ttl" \ref{table:Ttl} Laha message variant is used to dynamically specify TTLs for the provided collection. 
+The ``Ttl" (table \ref{table:Ttl}) Laha message variant is used to dynamically specify TTLs for the provided collection. 
 
-\begin{table}
+\begin{table}[H]
 	\centering
 	\caption{Ttl}
 	\begin{tabular}{|c|c|p{8cm}|}
@@ -489,9 +489,9 @@ The ``Ttl" \ref{table:Ttl} Laha message variant is used to dynamically specify T
 	\label{table:Ttl} 
 \end{table}
 
-The ``GcTrigger" \ref{table:GcTrigger} variant is a message that is sent to the GC plugin to notify it that GC should be performed on the domains specified in the message.
+The ``GcTrigger" (table \ref{table:GcTrigger}) variant is a message that is sent to the GC plugin to notify it that GC should be performed on the domains specified in the message.
 
-\begin{table}
+\begin{table}[H]
 	\centering
 	\caption{GcTrigger}
 	\begin{tabular}{|c|c|p{8cm}|}
@@ -504,9 +504,9 @@ The ``GcTrigger" \ref{table:GcTrigger} variant is a message that is sent to the 
 	\label{table:GcTrigger}
 \end{table}
 
-The ``GcDomain" \ref{table:GcDomain} enum is used to specify a garbage collection domain within Laha.
+The ``GcDomain" (table \ref{table:GcDomain}) enum is used to specify a garbage collection domain within Laha.
 
-\begin{table}
+\begin{table}[H]
 	\centering
 	\caption{GcDomain}
 	\begin{tabular}{|c|c| p{8cm} |}
@@ -529,9 +529,9 @@ The ``GcDomain" \ref{table:GcDomain} enum is used to specify a garbage collectio
 	\label{table:GcDomain}
 \end{table}
 
-A ``GcUpdate" \ref{table:GcUpdate} variant is a message that informs the GC plugin to update the TTL for a particular document and all documents living under it. 
+A ``GcUpdate" (table \ref{table:GcUpdate}) variant is a message that informs the GC plugin to update the TTL for a particular document and all documents living under it. 
 
-\begin{table}
+\begin{table}[H]
 	\centering
 	\caption{GcUpdate}
 	\begin{tabular}{|c|c|p{8cm}|}
@@ -546,9 +546,9 @@ A ``GcUpdate" \ref{table:GcUpdate} variant is a message that informs the GC plug
 	\label{table:GcUpdate}
 \end{table}
 
-A ``GcStat" \ref{table:GcStat} variant message is a message that contains statistics on the number of items garbage collected from a particular GcDomain.
+A ``GcStat" (table \ref{table:GcStat}) variant message is a message that contains statistics on the number of items garbage collected from a particular GcDomain.
 
-\begin{table}
+\begin{table}[H]
 	\centering
 	\caption{GcStat}
 	\begin{tabular}{|c|c|p{8cm}|}
@@ -583,7 +583,7 @@ Table \ref{table:PluginManager} commands can be issued from a networked CLI clie
 
 It's important to note some distinctions between the commands. Loading a plugin means loading a plugin from disk into memory where unloading means removing the plugin from memory. Enabling a plugins means that the plugin is loaded and enabled for running. Disabling a plugin means that the plugin is still loaded, but not enabled for running. Starting a plugin means to start a new process for a loaded and enabled plugin where stopping a plugin means to stop a current process and return it to an enabled and loaded state. Killing a plugin uses the OS to send a SIGKILL signal to the process for when its misbehaving and not stopping cleanly on its own.
 
-\begin{table}
+\begin{table}[H]
 	\centering
 	\caption{Plugin Manager CLI Reference}
 	\begin{tabular}{|c|c|p{8cm}|}
@@ -635,7 +635,7 @@ Default TTLs are dynamically stored in the Mongo database under the ``laha\_conf
 
 Table \ref{table:DefaultTtls} displays the default TTL in seconds for each OPQ collection.
 
-\begin{table}
+\begin{table}[H]
 	\centering
 	\caption{Default TTLs for OPQ Collections}
 	\begin{tabular}{|c|c|}
@@ -691,7 +691,7 @@ The Mauka plugin ``StatusPlugin" is responsible for obtaining and providing the 
 
 The plugin provides a configurable HTTP endpoint which is queried by OPQ Health. The plugin extracts the internal health state and serializes the state as JSON using the protocol described in table \ref{table:HealthProtocol}. This protocol is standardized for health collection across all OPQ services.
 
-\begin{table}
+\begin{table}[H]
 	\centering
 	\caption{Mauka HealthProtocol}
 	\begin{tabular}{|c|c|c|}
@@ -740,9 +740,11 @@ The types of metrics collected include plugin statistics, system statistics, and
 
 Metrics are collected at a configurable interval. System statistics such as CPU usage, memory usage, and disk usage are sampled once every 10 seconds. Once every 5 minutes, all metrics are saved to disk. The system statistic metrics which are sampled more frequency are rolled into a 5 minute metric only storing min, max, mean, variance, count, and start and end timestamp.
 
-Detailed type information for metrics are included in tables \ref{table:Metrics}, \ref{table:MetricsPluginStat}, \ref{table:MetricsSystemStat}, and \ref{table:MetricsLaha}.
+Mauka metrics consist of nested documents. The following table swill describe each of the documents stored in the metrics collection.
 
-\begin{table}
+The base document shown in table \ref{table:Metrics} contains links to all of the high level metrics that Mauka collects. This includes metrics for plugins, system statistics, Laha metrics, and ground truth.
+
+\begin{table}[H]
 	\centering
 	\caption{Mauka Metrics}
 	\begin{tabular}{|c|c|c|}
@@ -762,7 +764,9 @@ Detailed type information for metrics are included in tables \ref{table:Metrics}
 	\label{table:Metrics}
 \end{table}
 
-\begin{table}
+Plugin metrics are described in table \ref{table:MetricsPluginStat} and mainly record the plugin name and the number and size of messages received and produced for each plugin.
+
+\begin{table}[H]
 	\centering
 	\caption{PluginStat}
 	\begin{tabular}{|c|c|c|}
@@ -781,7 +785,9 @@ Detailed type information for metrics are included in tables \ref{table:Metrics}
 	\label{table:MetricsPluginStat}
 \end{table}
 
-\begin{table}
+System metrics as shown in table \ref{table:MetricsSystemStat} use descriptive statistics over a time window to collect the minimum, maximum, mean, variance, and count of memory, disk, and CPU usage.
+
+\begin{table}[H]
 	\centering
 	\caption{SystemStat}
 	\begin{tabular}{|c|c|c|}
@@ -806,7 +812,9 @@ Detailed type information for metrics are included in tables \ref{table:Metrics}
 	\label{table:MetricsSystemStat}
 \end{table}
 
-\begin{table}
+The Laha metrics described in table \ref{table:MetricsLaha} store metrics relating to the TTL, size, and count of Laha collections.
+
+\begin{table}[H]
 	\centering
 	\caption{LahaStat}
 	\begin{tabular}{|c|c|c|}
