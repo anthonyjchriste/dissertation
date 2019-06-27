@@ -236,3 +236,7 @@ SemiF47
 IticPlugin
 STDOUT
 durations
+IEEE1159
+120V
+60Hz
+Foo
