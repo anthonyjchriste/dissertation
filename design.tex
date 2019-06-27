@@ -624,7 +624,154 @@ It's important to note some distinctions between the commands. Loading a plugin 
 Mauka is highly configurable and it loads various static and dynamic configurations. Static configurations, or configurations that are loaded when Mauka starts are provided by a JSON file (appendix \ref{appendix:MaukaConfig}). Dynamic configurations related to TTL and garbage collection are stored in the MongoDB and are discussed in detail in section \ref{sec:TTL}.
 
 \subsubsection{Mauka Data Models}
-TODO
+Mauka works directly with the following data models: Measurements, Trends, Events, BoxEvents, Incidents, and Phenomena. The data models for these collections are described in this sections. 
+
+The measurements collection contains instantaneous measurements produced by Makai. The data model for measurements is described in table \ref{table:Measurement}.
+
+\begin{table}[H]
+	\centering
+	\caption{Measurement Data Model}
+	\begin{tabular}{|c|c|p{8cm}|}
+		\hline 
+		Field & Type & Description \\ 
+		\hline
+		box\_id & str & OPQBox id \\
+		\hline
+		timestamp\_ms & int & Timestamp of the measurement in milliseconds \\
+		\hline
+		expire\_at & int & The timestamp in seconds that this document should be garbage collected \\
+		\hline
+		frequency & float & The instantaneous frequency measurement in Hz \\
+		\hline
+		voltage & float & The instantaneous voltage measurement \\
+		\hline
+		thd & float & The instantaneous THD measurement as a percentage \\
+		\hline
+	\end{tabular} 
+	\label{table:Measurements}
+\end{table}
+
+The trends collection provides summary statistics of frequency, voltage, and THD over a configurable time window. The data model for the trends collection is given in table \ref{table:Trends}.
+
+\begin{table}[H]
+	\centering
+	\caption{Trend Data Model}
+	\begin{tabular}{|c|c|p{8cm}|}
+		\hline 
+		Field & Type & Description \\ 
+		\hline
+		min\_(thd, frequency, voltage) & float & Minimum values for THD, frequency, and voltage \\
+		\hline
+		max\_(thd, frequency, voltage) & float & Maximum values for THD, frequency, and voltage \\
+		\hline
+		average\_(thd, frequency, voltage) & float & Mean values for THD, frequency, and voltage \\
+		\hline
+		box\_id & str & OPQBox id \\
+		\hline
+		timestamp\_ms & int & Timestamp of end of trend in milliseconds \\
+		\hline
+		location & str & Location slug from the location that this trend originated from \\
+		\hline
+		expire\_at & int & Timestamp in seconds that this document should expire after \\
+		\hline
+	\end{tabular} 
+	\label{table:Trends}
+\end{table}
+
+The events collection contains metadata that map a Makai triggered event to a list of box\_events which points to raw data for each box that was requested raw data for that event. The event data model is described in table \ref{table:Events}.
+
+\begin{table}[H]
+	\centering
+	\caption{Event Data Model}
+	\begin{tabular}{|c|c|p{8cm}|}
+		\hline 
+		Field & Type & Description \\ 
+		\hline
+		event\_id & int & Id of the event generated \\
+		\hline
+		description & str & Description of the event \\
+		\hline
+		boxes\_triggered & [str] & A list of box\_ids that were triggered from this event \\
+		\hline
+		boxes\_received & [str] & A list of box\_ids that data was received from \\
+		\hline
+		target\_event\_start\_timestamp\_ms & int & Start of event \\
+		\hline
+		target\_event\_end\_timestamp\_ms & int & End of the event \\
+		\hline
+		expire\_at & int & Timestamp that this document should expire after \\
+		\hline
+	\end{tabular} 
+	\label{table:Events}
+\end{table}
+
+The box\_events data model is described in table \ref{table:BoxEvents}.
+
+\begin{table}[H]
+	\centering
+	\caption{BoxEvent Data Model}
+	\begin{tabular}{|c|c|p{8cm}|}
+		\hline 
+		Field & Type & Description \\ 
+		\hline
+		event\_id & int & ID of the event this box\_event refers to \\
+		\hline
+		box\_id & str & ID of the OPQBox that sent data for this event \\
+		\hline
+		event\_start\_timestamp\_ms & int & Timestamp of the start of the event for this box \\
+		\hline
+		event\_end\_timestamp\_ms & int & Timestamp of the end of the event for this box \\
+		\hline
+		data\_fs\_filename & str & Reference to the waveform stored in gridfs \\
+		\hline
+		location & str & Location slug of where this box sent data from \\
+		\hline
+	\end{tabular} 
+	\label{table:BoxEvents}
+\end{table}
+
+The Incidents collection keeps track of Incidents as defined by Laha. This collections includes metadata for classification and other contextual information relating to power incident. The Incident collection data model is described in table \ref{table:Incidents}.
+
+\begin{table}[H]
+	\centering
+	\caption{Incident Data Model}
+	\begin{tabular}{|c|c|p{8cm}|}
+		\hline 
+		Field & Type & Description \\ 
+		\hline
+		incident\_id & int & ID of the incident \\
+		\hline
+		event\_id & int & ID of the event this incident references \\
+		\hline
+		box\_id & str & ID of the OPQBox that this incident references \\
+		\hline
+		start\_timestamp\_ms & int & Start of this incident \\
+		\hline
+		end\_timestamp\_ms & int & End of this incident \\
+		\hline
+		location & str & Location slug of where this incident originated from \\
+		\hline
+		measurement\_type & str & A description of the measurements used in this incident \\
+		\hline
+		deviation\_from\_nominal & float & The maximum deviation from nominal for the provided measurement\_type \\
+		\hline
+		measurements & [Measurement] & List of measurements stored in this incident \\
+		\hline
+		gridfs\_filename & str & Location in gridfs that the waveform for this incident is stored \\
+		\hline
+		ieee\_duration & str & An IEEE1159 duration \\
+		\hline
+		annotations & [str] & A list of annotations added to this incident \\
+		\hline
+		metadata & object & Metadata associated with this incident \\
+		\hline
+		expire\_at & int & This incident should expire after this timestamp \\
+		\hline
+	\end{tabular} 
+	\label{table:Incidents}
+\end{table}
+
+Other collections which are used by various Mauka plugins will described in their respective sections. 
 
 \subsubsection{PQ Plugins}
 Mauka's functionality is provided by plugins that perform analysis, data management, health, and system tuning. Communication within Mauka is performed using type safe message passing. This section describes in detail how each plugin functions and also documents each plugins inputs and outputs.
@@ -637,6 +784,8 @@ To support running plugins as separate processes, the BasePlugin provides a ``ru
 When a BasePlugin process is started, the plugin creates a timer that runs at a configurable interval. When the timer fires, a heartbeat for the subclassing plugin is produced. This provides health information for each plugin within Mauka.
 
 The BasePlugin provides automatic serialization and deserialization of protobuf Mauka messages produced and received for each plugin.
+
+The BasePlugin provides functionality for automatically serializing and deserializing waveform from MongoDB's gridfs. 
 
 The BasePlugin provides ZMQ endpoints for producing and consuming messages to and from topics for each plugin. The BasePlugin ensures that all accesses to brokers are handled atomically with multiprocessing locks.
 

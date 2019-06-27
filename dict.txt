@@ -240,3 +240,10 @@ IEEE1159
 120V
 60Hz
 Foo
+str
+BoxEvent
+filename
+ieee
+BoxEvents
+fs
+deserializing
