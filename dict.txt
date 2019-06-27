@@ -230,3 +230,9 @@ SemiF47Plugin
 ThdPlugin
 TransientPlugin
 FrequencyVariationPlugin
+ITIC
+matplotlib's
+SemiF47
+IticPlugin
+STDOUT
+durations

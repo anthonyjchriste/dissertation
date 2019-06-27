@@ -654,17 +654,26 @@ The raw waveform from the OPQBox is serialized into a Payload (table \ref{table:
 
 The raw Voltage is calculated by dividing each sample of the raw waveform by the calibration constant loaded from the database that is set for each device. The raw Voltage  is serialized into a Payload (table \ref{table:Payload}) with PayloadType (table \ref{table:PayloadType}) ``VOLTAGE\_RAW" and produced to the topic ``RawVoltage".
 
-$V_{rms}$ is the peak-to-peak voltage over a configurable time window. By default, Mauka uses a time window of one electrical cycle at 60$Hz$ which works out to be $1/60$ seconds. $V_{rms}$ is calculated by moving a running window over the raw voltage waveform. The computation of $V_{rms}$ for each window with $n$ samples is given by $\sqrt{\frac{\sum_{i=0}^{n} n_{i}^2}{n}}$. The RMS Voltage  is serialized into a Payload (table \ref{table:Payload}) with PayloadType (table \ref{table:PayloadType}) ``VOLTAGE\_RMS\_WINDOWED" and produced to the topic ``RmsWindowedVoltage".
+$V_{rms}$ is the peak-to-peak voltage over a configurable time window. By default, Mauka uses a time window of one electrical cycle at 60$Hz$ which works out to be $1/60$ seconds. $V_{rms}$ is calculated by moving a running window over the raw voltage waveform. The computation of $V_{rms}$ for each window with $n$ samples is given by equation \ref{equation:Vrms}. The RMS Voltage  is serialized into a Payload (table \ref{table:Payload}) with PayloadType (table \ref{table:PayloadType}) ``VOLTAGE\_RMS\_WINDOWED" and produced to the topic ``RmsWindowedVoltage".
+
+\begin{equation}
+\label{equation:Vrms}
+	V_{RMS} = \sqrt{\frac{\sum_{i=0}^{n} n_{i}^2}{n}}
+\end{equation}
 
 Windowed frequency is the frequency calculated for a configurable time window. By default, Mauka uses a time window of one electrical cycle at 60$Hz$ which works out to be $1/60$ seconds. The frequency is calculated by first smoothing the raw Voltage waveform by applying a $4^{th}$ order Butterworth filter to the waveform with a cutoff frequency of 500$Hz$ and a down sampling rate of 2. Then, a window is moved across the smoothed signal and the frequency is calculated for each window by performing a least squares regression and fitting a sinusoide. The windowed frequency is serialized into a Payload (table \ref{table:Payload}) with PayloadType (table \ref{table:PayloadType}) ``FREQUENCY\_WINDOWED" and produced to the topic ``WindowedFrequency".
 
 When new events are received by the MakaiEventPlugin, a GcUpdate (table \ref{table:GcUpdate}) message is produced informing the LahaGcPlugin that all ``measurements" and ``trends" stored by Makai should receive a TTL of the newly created event.
 
 \paragraph{FrequencyVariationPlugin}
-TODO
+The ``FrequencyVariationPlugin" is used to classify generic frequency sags, swells, and interruptions as defined by the IEEE1159 standard\cite{IEEE:2018:1159D3}. The plugin subscribes to messages from the ``WindowedFrequency" topic which includes a payload of frequency features over one electrical cycle.
+
+When a message is received, the plugin uses configurable thresholds to find frequency fluctuations within the windowed frequency streams. The plugin is able to classify frequency swells, frequency interruptions, and frequency sags. When a new frequency variation is detected, a frequency incident is created and a GC\_UPDATE message is sent to the LahaGcPlugin to update the TTL of all measurements, trends, and events that belong to this new incident.
 
 \paragraph{IEEE1159VoltagePlugin}
-TODO
+The ``IEEE1159VoltagePlugin" is a plugin that is able to classify voltage incidents in accordance to the IEEE1159 standard\cite{IEEE:2018:1159D3}. The plugin subscribes to messages from the ``RmsWindowedVoltage" topic which includes payloads of $V_{RMS}$ features over a window of one electrical cycle.
+
+This plugin is capable of classifying voltage sags, swells, and interruptions as defined by the standard. The plugin works by identifying sags, swells, and interruptions and determining the duration of those events. If the duration or delta is large enough, a voltage incident is created and a GC\_UPDATE message is sent to the LahaGcPlugin asking it to update the TTL for all measurements, trends, and events that belong to this new incident.
 
 \paragraph{ITICPlugin}
 The ``ITICPlugin" analyzes $V_{rms}$ to determine where it falls within the ITIC curve\cite{thallam2000power}. The ITIC curve is a power acceptability curve that plots time on the x-axis and $V_rms$ on the y-axis. The ITIC curve is displayed in figure \ref{fig:IticCurve}.
@@ -676,7 +685,7 @@ The ``ITICPlugin" analyzes $V_{rms}$ to determine where it falls within the ITIC
 	\label{fig:IticCurve}
 \end{figure}
 
-The purpose of the curve is to provide a tolerance envelope for single-phase 120V equipment. Meaning it defines the sustained Voltage tolerance at different time durations. The curve defines three regions. The first region is ``No Interruption" and generally includes all voltages with very short sustained durations. All power events within this region have no noticable effect on power equipment. The second region, the ``No Damage Region", occurs during voltage sags for extended periods of time. Power events in this region may cause equipment interruptions, but it won't damage the equipment. The final region, the``Prohibited Region", is caused by sustained voltage swells and may cause damage to power equipment. 
+The purpose of the curve is to provide a tolerance envelope for single-phase 120V equipment. Meaning it defines the sustained Voltage tolerance at different time durations. The curve defines three regions. The first region is ``No Interruption" and generally includes all voltages with very short sustained durations. All power events within this region have no noticeable effect on power equipment. The second region, the ``No Damage Region", occurs during voltage sags for extended periods of time. Power events in this region may cause equipment interruptions, but it won't damage the equipment. The final region, the``Prohibited Region", is caused by sustained voltage swells and may cause damage to power equipment. 
 
 The ITICPlugin subscribes to the ``RmsWindowedVoltage" topic. When it receives a message, it extracts the windowed voltage features and uses a segmentation algorithm to split the features into segments of sustained voltage. The segmentation algorithm is rather naive and described below.
 
@@ -766,7 +775,26 @@ When outage incidents are created, TTL update messages are not sent because ther
 The ``PrintPlugin" is a special plugin that is mainly used for debugging. It subscribes to all topics and simply prints the contents of the message to STDOUT. This is useful in development or when bringing up a new Mauka system to ensure that the communications infrastructure is in place. It can also be enabled at runtime from the Mauka CLI to debug all communication channels for all plugins.
 
 \paragraph{SemiF47Plugin}
-TODO
+The ``SemiF47" plugin is another plugin like the IticPlugin that plots voltage and duration against a power acceptability curve. In this case, the standard used is the SemiF47 standard\cite{semif47}. Rather than using a point-in-polygon approach, this plugin reads the $V_{RMS}$ features sequentially and uses a state machine to keep track of the current classification. This plugin only classifies values as a ``violation" or as ``nominal".
+
+The SemiF47 curve is displayed in figure \ref{fig:SemiF47Curve}.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.6\linewidth]{figures/semif47.jpg}
+	\caption{SemiF47 Curve}
+	\label{fig:SemiF47Curve}
+\end{figure}
+
+SemiF47 described in table form is presented in table \ref{fig:SemiF47Table}.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.6\linewidth]{figures/semif47_table.jpg}
+	\caption{SemiF47 Table}
+	\label{fig:SemiF47Table}
+\end{figure}
+
 
 \paragraph{StatusPlugin}
 Mauka provides a health endpoint that can be queried by OPQ Health to determine the health status of Mauka. The health status is saved to a database by Health and shown in OPQ View.
@@ -916,12 +944,22 @@ The Laha metrics described in table \ref{table:MetricsLaha} store metrics relati
 \end{table}
 
 \paragraph{ThdPlugin}
-The ``ThdPlugin" classifies abnormal ammounts of total harmonic distortion (THD) in a power waveform. THD is a measure of amount of noise in the frequency at multiples of 60Hz. The ThdPlugin subscribes to messages from the ``AdcSamples" topic which include payloads consisting of raw samples from the OPQBoxes. THD is calculated using a rolling window of one electrical cycle over the waveform. For each window THD is given by $THD = $
+The ``ThdPlugin" classifies abnormal amounts of total harmonic distortion (THD) in a power waveform. THD is a measure of amount of noise in the frequency at multiples of 60Hz. The ThdPlugin subscribes to messages from the ``AdcSamples" topic which include payloads consisting of raw samples from the OPQBoxes. THD is calculated using a rolling window of one electrical cycle over the waveform. For each window, THD is calculated by equation \ref{equation:Thd}.
+
+\begin{equation}
+\label{equation:Thd}
+	THD_F = \frac{\sqrt{V_2^2 + V_3^2 + V_4^2 + ...}}{V_1}
+\end{equation}
+
+For each continuous set of windows that has THD higher than the configured threshold, a THD Incident is created. If an Incident is created, this plugin sends a GC\_UPDATE message to the LahaGcPlugin informing it that it should update all measurements, trends, and events that belong to the new incident to match the incident's TTL.
+
 
 \paragraph{TransientPlugin}
-TODO
+The ``TransientPlugin" is responsible for classifying frequency transients in power waveforms. The plugin subscribes to messages from the ``RawVoltage" topic which contains a calibrated power waveform payload. The TransientPlugin is capable of classifying impulsive, arcing, oscillatory, and periodic notching transients. A decision tree is utilized to select the most likely transient type and then further analysis is used to perform the actual classification of transients.
 
+The full details of our transient classification system are published in the Proceedings of the Ninth International Conference on Smart Grids, Green Communications and IT Energy-aware Technologies\cite{csdl2-19-02}.
 
+When a transient is classified a new transient Incident is created. If an incident is created, this plugin sends a GC\_UPDATE message to the LahaGcPlugin informing it to update the TTLs for all measurements, trends, and events that belong to this new incident.
 
 \subsubsection{Debugging OPQMauka}
 The Mauka system can be configured so that only specified plugins print debug messages. This is accomplished by specifying the names of the plugins which should print debug output in Mauka's configuration file. Without this functionality, parsing through the entirety of Mauka's log output would be a daunting task.
