@@ -620,6 +620,12 @@ It's important to note some distinctions between the commands. Loading a plugin 
 	\label{table:PluginManager}
 \end{table}
 
+\subsubsection{Mauka Configuration}
+Mauka is highly configurable and it loads various static and dynamic configurations. Static configurations, or configurations that are loaded when Mauka starts are provided by a JSON file (appendix \ref{appendix:MaukaConfig}). Dynamic configurations related to TTL and garbage collection are stored in the MongoDB and are discussed in detail in section \ref{sec:TTL}.
+
+\subsubsection{Mauka Data Models}
+TODO
+
 \subsubsection{PQ Plugins}
 Mauka's functionality is provided by plugins that perform analysis, data management, health, and system tuning. Communication within Mauka is performed using type safe message passing. This section describes in detail how each plugin functions and also documents each plugins inputs and outputs.
 
@@ -661,39 +667,32 @@ TODO
 TODO
 
 \paragraph{ITICPlugin}
-TODO
+The ``ITICPlugin" analyzes $V_{rms}$ to determine where it falls within the ITIC curve\cite{thallam2000power}. The ITIC curve is a power acceptability curve that plots time on the x-axis and $V_rms$ on the y-axis. The ITIC curve is displayed in figure \ref{fig:IticCurve}.
 
-\paragraph{LagaConfigPlugin}
-TODO
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/itic.png}
+	\caption{ITIC Curve}
+	\label{fig:IticCurve}
+\end{figure}
+
+The purpose of the curve is to provide a tolerance envelope for single-phase 120V equipment. Meaning it defines the sustained Voltage tolerance at different time durations. The curve defines three regions. The first region is ``No Interruption" and generally includes all voltages with very short sustained durations. All power events within this region have no noticable effect on power equipment. The second region, the ``No Damage Region", occurs during voltage sags for extended periods of time. Power events in this region may cause equipment interruptions, but it won't damage the equipment. The final region, the``Prohibited Region", is caused by sustained voltage swells and may cause damage to power equipment. 
+
+The ITICPlugin subscribes to the ``RmsWindowedVoltage" topic. When it receives a message, it extracts the windowed voltage features and uses a segmentation algorithm to split the features into segments of sustained voltage. The segmentation algorithm is rather naive and described below.
+
+Given an array of values $A$, the length of the array $len(A)$, and a segmentation threshold $t$:
+\begin{enumerate}
+	\item Find all $i$ where $A_i - A_{i-1} > t$
+	\item Segments over $A$, ($SA$), are then defined as [$SA_{0..i_0}, SA_{i_0..i_1}, ..., SA_{i_n..len(A)}$]
+\end{enumerate}
+
+Once the segments are defined, we calculate the duration of each segment. We know that each sample in the $V_{rms}$ features represents one electrical cycle at 60$Hz$. Thus, to find the duration of a segment in milliseconds we can simply divide the number of cycles by the number of cycles in milliseconds. Thus, $duration\_ms = \frac{cycles}{0.06}$. The plugin also calculates the mean $V_{rms}$ for each segment. Once we have a duration and mean $V_{rms}$ for each segment, we can plot it on the ITIC curve and get a region classification.
+
+In order to plot the value on the curve, the curve is first constructed as a set of polygons representing each ITIC region. Each polygon is represented by an array of points (see appendix \ref{appendix:Itic}). Once the polygons are constructed, matplotlib's point-in-polygon algorithm is used to determine which ITIC region a point of $(duration\_ms, V_{rms})$ falls within. If a region of ``No Interruption" or "Prohibited" is returned, then a new ITIC incident is created and stored to the database. 
+
+If a new incident is created, a message is sent to the LahaGcPlugin informing the plugin to update the TTL of all measurements, trends, and events that belong to the incident. 
 
 \paragraph{LahaGcPlugin}
-TODO
-
-\paragraph{MockPlugin}
-TODO
-
-\paragraph{OutagePlugin}
-TODO
-
-\paragraph{PrintPlugin}
-TODO
-
-\paragraph{SemiF47Plugin}
-TODO
-
-\paragraph{StatusPlugin}
-TODO
-
-\paragraph{SystemStatsPlugin}
-TODO
-
-\paragraph{ThdPlugin}
-TODO
-
-\paragraph{TransientPlugin}
-TODO
-
-\subsubsection{Managing TTL and Garbage Collection}
 Mauka provides custom garbage collection (GC) for identifying and removing ``uninteresting" data. This fulfills one of Laha's claims that it is able to manage data storage pressure while increasing the signal-to-noise ratio within the data set.
 
 In order for Mauka to know when items should be GCed, all elements stored in the database are assigned a TTL. A default TTL is assigned when the element is first created, but can be updated later by Mauka plugins depending on if that data is deemed ``interesting".
@@ -755,7 +754,21 @@ Dynamically updating TTLs is also performed by the LahaGcPlugin. The LahaGcPlugi
 
 When new events are created, the TTL of measurements and trends that coincide with that event receive the TTL of the event. When incidents are created, the events, trends, and measurements associated with that incident receive the TTL of the incident. When Phenomena are created, the TTLs of incidents, events, trends, and measurements are assigned the TTL of the Phenomena (which is infinite).
 
-\subsubsection{Health}
+\paragraph{MockPlugin}
+The ``MockPlugin" is a special plugin that can be instantiated at run time and sends and receives messages to configurable topics. This plugin is useful for debugging and rerunning (or running new) analysis over old data. As an example, let's say a new plugin Foo is designed. We want to run historical data through Foo. To do that, the MockPlugin can be configured to read the database for all old events, and then construct a message to Foo so that Foo runs its analysis over those events.
+
+\paragraph{OutagePlugin}
+The ``OutagePlugin" classifies power outages. Since no real power data is produced during an outage, this plugin only subscribes to its own heartbeats. When a heartbeat is received, the outage plugin looks up in the database all OPQBoxes that are marked ``down" by OPQHealth and not marked as ``unplugged" in the database. This plugin keeps track of current outages so that if an OPQBox is already in an outage state a new outage Incident is not created on each subsequent heartbeat.
+
+When outage incidents are created, TTL update messages are not sent because there is no data during the time period of an outage to adjust the TTL for.
+
+\paragraph{PrintPlugin}
+The ``PrintPlugin" is a special plugin that is mainly used for debugging. It subscribes to all topics and simply prints the contents of the message to STDOUT. This is useful in development or when bringing up a new Mauka system to ensure that the communications infrastructure is in place. It can also be enabled at runtime from the Mauka CLI to debug all communication channels for all plugins.
+
+\paragraph{SemiF47Plugin}
+TODO
+
+\paragraph{StatusPlugin}
 Mauka provides a health endpoint that can be queried by OPQ Health to determine the health status of Mauka. The health status is saved to a database by Health and shown in OPQ View.
 
 The Mauka plugin ``StatusPlugin" is responsible for obtaining and providing the status of the OPQ Mauka service. The plugin subscribes to heartbeats sent at configurable intervals from all other plugins including itself. When the plugin receives a heartbeat, it updates its internal state which includes a mapping of all plugins, their state, and the last time that plugin sent a heartbeat. 
@@ -781,7 +794,7 @@ The plugin provides a configurable HTTP endpoint which is queried by OPQ Health.
 	\label{table:HealthProtocol}
 \end{table}
 
-\subsubsection{Metrics Collection} 
+\paragraph{SystemStatsPlugin}
 Mauka collects and stores many different types of performance metrics in order to demonstrate the efficacy of Laha as implemented in Mauka. The metrics are collected by the ``SystemStatsPlugin" Mauka plugin and are stored in the MongoDB collection `laha\_metrics`. 
 
 The metrics are conditioned and displayed in OPQ View for easy analysis. It's possible to select a start and end date/time to configure the time window of metrics displayed in view. Examples of Mauka's metrics displayed in OPQ View are shown in figures \ref{fig:Metrics1}, \ref{fig:Metrics2}, and \ref{fig:Metrics3}.
@@ -901,6 +914,14 @@ The Laha metrics described in table \ref{table:MetricsLaha} store metrics relati
 	\end{tabular} 
 	\label{table:MetricsLaha}
 \end{table}
+
+\paragraph{ThdPlugin}
+The ``ThdPlugin" classifies abnormal ammounts of total harmonic distortion (THD) in a power waveform. THD is a measure of amount of noise in the frequency at multiples of 60Hz. The ThdPlugin subscribes to messages from the ``AdcSamples" topic which include payloads consisting of raw samples from the OPQBoxes. THD is calculated using a rolling window of one electrical cycle over the waveform. For each window THD is given by $THD = $
+
+\paragraph{TransientPlugin}
+TODO
+
+
 
 \subsubsection{Debugging OPQMauka}
 The Mauka system can be configured so that only specified plugins print debug messages. This is accomplished by specifying the names of the plugins which should print debug output in Mauka's configuration file. Without this functionality, parsing through the entirety of Mauka's log output would be a daunting task.
