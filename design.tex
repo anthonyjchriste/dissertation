@@ -324,7 +324,7 @@ The ``MaukaMessage" (table \ref{table:MaukaMessage}) type contains a timestamp, 
 		\hline 
 		source & string & Name of plugin that produced this message. \\ 
 		\hline 
-		message & oneof (Payload, Heartbeat, MakaiEvent, Measurement, MakaiTrigger, Laha) & A union of subtypes. \\ 
+		message & oneof (Payload, Heartbeat, MakaiEvent, Measurement, MakaiTrigger, Laha, TriggerRequest, TriggeredEvent) & A union of subtypes. \\ 
 		\hline 
 	\end{tabular} 
 	\label{table:MaukaMessage}
@@ -563,7 +563,51 @@ A ``GcStat" (table \ref{table:GcStat}) variant message is a message that contain
 	\label{table:GcStat}
 \end{table}
 
-Figure \ref{fig:mauka_messages} displays all types used and their variants for the Mauka communications protocol.
+A ``TriggerRequest" (table \ref{table:TriggerRequest}) variant message is a message that is instantiated by Phenomena and sent to the ``TriggerPlugin" enabling Mauka to directly trigger OPQ Boxes for raw data. 
+
+\begin{table}[H]
+	\centering
+	\caption{TriggerRequest}
+	\begin{tabular}{|c|c|p{8cm}|}
+		\hline 
+		Field & Type & Description  \\ 
+		\hline
+		start\_timestamp\_ms & uint64 & Start time of data request. \\
+		\hline
+		end\_timestamp\_ms & uint64 & End time of data request. \\
+		\hline
+		box\_ids & [string] & An array of Boxes to request data from. \\
+		\hline
+		incident\_id & uint64 & The original Incident leading to this trigger request. \\
+		\hline
+	\end{tabular} 
+	\label{table:TriggerRequest}
+\end{table}
+
+A ``TriggeredEvent" (table \ref{table:TriggeredEvent}) message is constructed by the ``TriggerPlugin" when Mauka receives raw data from Boxes and forwards that data to the  ``MakaiEventPlugin" to perform cycle level feature extraction where the features are eventually forwarded  to relevant plugins for PQ analysis.
+
+\begin{table}[H]
+	\centering
+	\caption{TriggerRequest}
+	\begin{tabular}{|c|c|p{8cm}|}
+		\hline 
+		Field & Type & Description  \\ 
+		\hline
+		start\_timestamp\_ms & uint64 & Start time of data request. \\
+		\hline
+		end\_timestamp\_ms & uint64 & End time of data request. \\
+		\hline
+		box\_id & string & The Box that the data is from. \\
+		\hline
+		incident\_id & uint64 & The original Incident leading to this new Event. \\
+		\hline
+		data & [i32] & The raw data casted from i16 to i32 since protobuf does not have a 16-bit type. \\
+		\hline
+	\end{tabular} 
+	\label{table:TriggeredEvent}
+\end{table}
+
+Figure \ref{fig:mauka_messages} displays all types used and their variants for the Mauka communications protocol. 
 
 \begin{figure}
 	\centering
@@ -1109,6 +1153,15 @@ The ``TransientPlugin" is responsible for classifying frequency transients in po
 The full details of our transient classification system are published in the Proceedings of the Ninth International Conference on Smart Grids, Green Communications and IT Energy-aware Technologies\cite{csdl2-19-02}.
 
 When a transient is classified a new transient Incident is created. If an incident is created, this plugin sends a GC\_UPDATE message to the LahaGcPlugin informing it to update the TTLs for all measurements, trends, and events that belong to this new incident.
+
+\paragraph{TriggerPlugin}
+The ``TriggerPlugin" provides Mauka with the functionality to trigger OPQ Boxes itself instead of relying on Makai for triggering. Generally, Mauka is only provided with event\_ids when Makai triggers Boxes based off of their low-fidelity data streams. Mauka then loads the associated event data from the database, performs cycle level feature extraction, and then forwards those features to analysis plugins for PQ analysis. 
+
+This plugin takes advantage of Phenomena in order to find incidents that may not have passed Makai's triggering thresholds. As an example, the Phenomena for Topology Optimization uses two different techniques for optmizing the framework. 
+
+First, when an incident is identified, a breadth first search (BFS) is used to recursively trigger (using this plugin) all nearest neighbors of the triggering device that were not triggered. Then, data from these new boxes are analyzed for incidents from the same signal that may have missed Makai's triggering threshold. If incidents were missed, then the Phenomena will lower the triggering thresholds for those Boxes in the hopes of catching more signals that may have been missed. 
+
+The second approach uses community detection algorithms to group sets of related Boxes (Boxes that generally see the same signal together). When a subset of a group triggers, the rest of that group will be triggered by Mauka (with this plugin) in hopes of finding signals that may not have crossed Makai's triggering thresholds. 
 
 \subsubsection{Debugging OPQMauka}
 The Mauka system can be configured so that only specified plugins print debug messages. This is accomplished by specifying the names of the plugins which should print debug output in Mauka's configuration file. Without this functionality, parsing through the entirety of Mauka's log output would be a daunting task.
