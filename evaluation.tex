@@ -9,7 +9,7 @@ Both the OPQ and Lokahi reference implementations were deployed to test sites wh
 \subsection{OPQ Reference Deployment}
 Fifteen Laha-compliant OPQ Boxes were deployed over the UH Manoa microgrid during the Summer of 2019. 
 
-The placement strategy I utilized aimed to maximize collecting distributed PQ events by placing sensors on the same electrical lines. We also considered placing Boxes in locations co-located with senitive or demanding electrical equipment in the hopes of seeing PQ events generated from this equipment. Finally, we considered data access in terms of network availability and ground truth availability. Working with my collegues and the Office of Energy Management, I selected the locations for the campus wide deployment. Table \ref{table:OpqDeployment} displays the details of the UH Manoa campus deployment. 
+The placement strategy I utilized aimed to maximize collecting distributed PQ events by placing sensors on the same electrical lines. We also considered placing Boxes in locations co-located with senitive or demanding electrical equipment in the hopes of seeing PQ events generated from this equipment. Finally, we considered data access in terms of network availability and ground truth availability. Working with my collegues and the Office of Energy Management, I selected the locations for the campus wide deployment. Table \ref{table:OpqDeployment} displays the details of the UH Manoa campus deployment and justifications for choosing those locations.
 
 \begin{table}[H]
 	\centering
@@ -54,7 +54,25 @@ The placement strategy I utilized aimed to maximize collecting distributed PQ ev
 	\label{table:OpqDeployment}
 \end{table}
 
+Determination of electrial lines was aided by the UH Manoa electrical blueprint as displayed in figure \ref{fig:UhGridTopo}.
 
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/uh_thesis_depoyment_v1.png}
+	\caption{UH Deployment Grid Topology}
+	\label{fig:UhGridTopo}
+\end{figure}
+
+A graphical representation showing the complete coverage of Boxes on the UH Manoa microgrid is displayed in figure \ref{fig:UhDeploy}.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/deploy.jpg}
+	\caption{UH Deployment}
+	\label{fig:UhDeploy}
+\end{figure}
+
+All devices were placed in a location that had access to UH Manoa's wireless network. As soon as they were installed, they started transmitting PQ data for that location.
 
 \subsection{Lokahi Reference Deployment}
 %In Q2 and Q3 2019, 15 Laha-compliant OPQBoxes were deployed on the University of Hawaii at Manoa's power microgrid. Using a provided blueprint of the microgrid as a guide and collaborating with the Office of Energy Management, these sensors were placed strategically with the hopes of observing PQ signals on the same line, PQ signals generated from intermittent renewables, local PQ signals, global PQ signals, and PQ signals near sensitive lab electronics. Many of these sensors are co-located with industry standard PQ monitoring systems. The industry standard sensors provide both ground truth and a means of comparison between a Laha designed network and a non-Laha designed network.. 
