@@ -1163,6 +1163,14 @@ First, when an incident is identified, a breadth first search (BFS) is used to r
 
 The second approach uses community detection algorithms to group sets of related Boxes (Boxes that generally see the same signal together). When a subset of a group triggers, the rest of that group will be triggered by Mauka (with this plugin) in hopes of finding signals that may not have crossed Makai's triggering thresholds. 
 
+This plugin listens for ``TriggerRequest" messages from other plugins. When it receives a ``TriggerRequest", it constructs data commands that Makai can consume. Each data command is for a single box and includes start and end timestamps. The data commands are serialized and sent over a ZMQ PUSH/PULL socket to Makai's acquisition broker. Makai's acquisition broker then goes out to the requested Boxes (if they are available) and requests raw data for the requested time window.
+
+In order to receive data requested from the Boxes, this plugin starts a separate listener thread when this plugin starts. The listener thread connects to a Makai acquisition broker endpoint over ZMQ using pub/sub and it subscribes to all data results that originated from this plugin. 
+
+When data is received from the Boxes, the data is passed to the ``MakaiEventPlugin" where cycle level feature extraction is performed and the features are then forwarded to the other analysis plugins for PQ analysis. 
+
+Data triggered from Mauka is fundamentally different than data triggered from Makai. That's because Boxes triggered from Mauka are always triggered from an associated Incident or Phenomena. If new Incidents are found from this data and they are similar to the original Incident that caused Mauka to trigger, then we've found a global event and possible Phenomena that would not have been observed using Makai's triggering alone. This requires extra schemantic information to be passed to the ``MakaiTriggerPlugin" and other analysis plugins. Data received from Mauka triggers are always forwarded with the associated Incident or Phenomena id so that the relationships can be tracked and maintained. 
+
 \subsubsection{Debugging OPQMauka}
 The Mauka system can be configured so that only specified plugins print debug messages. This is accomplished by specifying the names of the plugins which should print debug output in Mauka's configuration file. Without this functionality, parsing through the entirety of Mauka's log output would be a daunting task.
 
