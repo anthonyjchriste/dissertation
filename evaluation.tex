@@ -4,9 +4,62 @@ Evaluation of the Laha framework involves deploying reference Laha-compliant DSN
 The following sections describe my plans for deployment of reference implementations, data validation, evaluating the main goals of the Laha framework, and evaluating the tertiary goals of the Laha framework.
 
 \section{Deploy Laha reference implementations on test sites}
-In Q2 and Q3 2019, 15 Laha-compliant OPQBoxes were deployed on the University of Hawaii at Manoa's power microgrid. Using a provided blueprint of the microgrid as a guide and collaborating with the Office of Energy Management, these sensors were placed strategically with the hopes of observing PQ signals on the same line, PQ signals generated from intermittent renewables, local PQ signals, global PQ signals, and PQ signals near sensitive lab electronics. Many of these sensors are co-located with industry standard PQ monitoring systems. The industry standard sensors provide both ground truth and a means of comparison between a Laha designed network and a non-Laha designed network.. 
+Both the OPQ and Lokahi reference implementations were deployed to test sites where validated data collection took place. The following sections describe the reference implementation deployments in detail.
 
-In Q3 2019,  20 to 30 Laha-compliant Lokahi sensors were deployed near and around the Infrasound Laboratory in Kailua-Kona on the Big Island of Hawaii. These sensors were be placed strategically around a calibrated infrasound source. The sensors were placed with the assistance of Dr. Milton Garces to ensure that I can target sensors at different distances by tuning the amplitude and frequencies of the infrasound signal. In this way, I know which devices should or should not have received the signal.
+\subsection{OPQ Reference Deployment}
+Fifteen Laha-compliant OPQ Boxes were deployed over the UH Manoa microgrid during the Summer of 2019. 
+
+The placement strategy I utilized aimed to maximize collecting distributed PQ events by placing sensors on the same electrical lines. We also considered placing Boxes in locations co-located with senitive or demanding electrical equipment in the hopes of seeing PQ events generated from this equipment. Finally, we considered data access in terms of network availability and ground truth availability. Working with my collegues and the Office of Energy Management, I selected the locations for the campus wide deployment. Table \ref{table:OpqDeployment} displays the details of the UH Manoa campus deployment. 
+
+\begin{table}[H]
+	\centering
+	\caption{OPQ Deployment}
+	\begin{tabular}{|c|c|c|p{7cm}||}
+		\hline 
+		Box & Location & Coordinates & Description \\ 
+		\hline
+		1000 & POST (CSDL) & -157.816237,21.297438 & Same line as 1002, 1009, 1010, 1013. Sensitive computer equipment. \\
+		\hline
+		1001 & Hamilton (Basement 3F) & -157.816173,21.300332 & Same line as 1008. Ease of access. \\
+		\hline
+		1002 & POST (ICSpace) & -157.826327,21.30046 & Same line as 1000, 1009, 1010, 1013. Sensitive computer equipment.   \\
+		\hline
+		1003 & IT Building & -157.826327,21.30046 & Same line as 1004. Sensitive computer equiment. \\
+		\hline
+		1004 & Building 37 & -157.817821,21.298732 & Same line as 1003. LAVA Lab. \\
+		\hline
+		1005 & Parking Structure (Ph II) & -157.819234, 21.296042 & Same line as 1011, 1012. Proximity to PV. \\
+		\hline
+		1006 & Frog I & -157.823122,21.298050 & Same line as 1007, 1014. Proximity to PV. PV ground truth access. \\
+		\hline
+		1007 & Frog II & -157.822819,21.298046 & Same line as 1006, 1014. Proximity to PV. PV ground truth access.  \\
+		\hline
+		1008 & Ag. Engineering & -157.816107,21.301564 & Same line as 1001. Known PQ issues. \\
+		\hline
+		1009 & Watanabe & -157.815817,21.298351 & Same line as 1000, 1002, 1010, 1013. Sensitive physics intruments. \\
+		\hline
+		1010 & Holmes & -157.816104,21.297011 & Same line as 1000, 1002, 1009, 1013. Machining shops and electroic equipment. \\
+		\hline
+		1011 & Parking Structure (Ph I) & -157.817430,21.295338 & Same line as 1005, 1012. Proximity to PV. \\
+		\hline
+		1012 & Law Library & -157.817361,21.296328 & Same line as 1005, 1011. \\
+		\hline
+		1013  & Kenedy Theater & -157.815225,21.299282 & Same line as 1000, 1002, 1009, 1010. Demanding electronic equipment. \\
+		\hline
+		1014 & Sinclair Library & -157.820499,21.298475 & Same line as 1006, 1007. \\
+		\hline
+		1015 & Architecture Portables & -157.813644,21.301092 & Edge of campus. Portable buildings. \\
+		\hline
+	\end{tabular} 
+	\label{table:OpqDeployment}
+\end{table}
+
+
+
+\subsection{Lokahi Reference Deployment}
+%In Q2 and Q3 2019, 15 Laha-compliant OPQBoxes were deployed on the University of Hawaii at Manoa's power microgrid. Using a provided blueprint of the microgrid as a guide and collaborating with the Office of Energy Management, these sensors were placed strategically with the hopes of observing PQ signals on the same line, PQ signals generated from intermittent renewables, local PQ signals, global PQ signals, and PQ signals near sensitive lab electronics. Many of these sensors are co-located with industry standard PQ monitoring systems. The industry standard sensors provide both ground truth and a means of comparison between a Laha designed network and a non-Laha designed network.. 
+
+%In Q3 2019,  20 to 30 Laha-compliant Lokahi sensors were deployed near and around the Infrasound Laboratory in Kailua-Kona on the Big Island of Hawaii. These sensors were be placed strategically around a calibrated infrasound source. The sensors were placed with the assistance of Dr. Milton Garces to ensure that I can target sensors at different distances by tuning the amplitude and frequencies of the infrasound signal. In this way, I know which devices should or should not have received the signal.
 
 \section{Validate data collected by Laha deployment}
 Beginning in Q1 2019, I  began validated data collection from both the OPQ network and the Lokahi network. 
