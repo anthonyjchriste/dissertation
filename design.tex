@@ -1387,21 +1387,86 @@ Each device is provided its own partition within Kafka to publish data to. Since
 \subsubsection{Relay Actor}
 The acquisition service can act as a relay to other acquisition services that speak the same protocol. If this actor is enabled, any packets it receives are relayed to the configured acquisition server. This is useful for load balancing and for timing accuracy. In load balancing, this server can be configured to filter subsets of devices to other acquisition servers by configuring a relay actor for each server that data is being forwarded to. For timing accuracy, this service can be deployed on a Raspberry Pi at the edge of a network near the sensors, reducing the latency between sensor and server. Then, when a packet arrives at the server, it is updated with a low latency server timestamp which improvies timing accuracy. The low powered Raspberry Pi can then relay the packet to the cloud where it will be handled, but already have the improved timing accuracy built into the packet. 
 
+\subsection{Lokahi Communication Protocols}
+TODO
+
 \subsection{Lokahi Data Storage and Data Models}
+TODO
 
 \subsubsection{Lokahi Metadata Storage}
+TODO
 
 \subsubsection{Lokahi Sensor Data Storage}
+TODO
 
 \subsection{Lokahi Time Synchronization}
+Much of Lokahi's sensor analysis requires that sensors be synchronized in time. In order to calculate direction and distance to a signal source, sensors should have clocks that are synchronized within milliseconds of each other. We initially tried to use NTP, but it did not provide the timing accuracy we desired, and thus, implemented a custom time synchronization protocol.
 
-\subsection{Lokahi Security}
+The protocol used in Lokahi is an implementation described by Tian et al in their Tri-Message Exchange paper\cite{tian2009tri}. This algorithm was developed specfically for providing accurate time synchronization in high latency networks. 
+
+This service is written in Rust and utilizes encrypted WebSockets for communication with sensors. While a sensor is recording data, a separate thread on that sensor continuously performs message exchanges with this service. The best exchange out of a group of exchanges (the one with the lowest latency) is then used to correct timing for packets. 
+
+The protocol used for communicating message exchanges is a simple binary protocol designed to reduce bandwidth. The protocol is described in detail in table \ref{table:syncproto}. 
+
+\begin{table}[H]
+	\centering
+	\caption{Time Synchronization Binary Protocol}
+	\begin{tabular}{|c|c|c|}
+		\hline 
+		Byte Offset & Size & Description \\ 
+		\hline
+		0 & 1 & Sequence Number (0 or 1) \\
+		\hline
+		1 &  8 & Int timestamp A $\mu\sec$  \\
+		\hline
+		9 & 8 & Int timestamp B $\mu\sec$ \\
+		\hline
+	\end{tabular} 
+	\label{table:syncproto}
+\end{table}
 
 \subsection{Lokahi Health}
+System health is provided by three open source components Prometheus, Grafana, and node\_exporter. Prometheus is a time series database for metric collection and Grafana is a visualization solution for time series databases. ``node\_exporter" is installed on each system for collecting system statistics and sending them to a Prometheus endpoint. With these three systems, we are able to provide coverage for all performance metrics required by Lokahi.
+
+\subsubsection{Up/Down Metrics}
+node\_exporter, other than collecting system statistics, provides a simple metric for whether or not a system or service is up or down. This provides a base line of performance metrics. When a system goes down, an e-mail alert is sent to all interested parties. An example of our Up/Down interface is provided in figure \ref{fig:updown}.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/updown.png}
+	\caption{System and Service Status}
+	\label{fig:updown}
+\end{figure}
+
+It's also possible to display a historic view up Up/Down metrics as shown in figure \ref{fig:updownhist}.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/updownhist.png}
+	\caption{System and Service Status History Past Day}
+	\label{fig:updownhist}
+\end{figure}
+
+\subsubsection{System Metrics}
+
+``node\_exporter" provides Prometheus with a large selection of system metrics. We colletion these metrics for each virtual server that we are running. We colect metrics on file system usage, memory usage, cpu usage, and network usage. An example of this from one of our services is displayed in figure \ref{fig:systemstats}.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/systemstats.png}
+	\caption{System Metrics}
+	\label{fig:systemstats}
+\end{figure}
+
+\subsubsection{Sensor Metrics}
+
+Lokahi also collects metrics from devices grouped by device and also grouped by device owner. We collect metrics on number of packets received and number of bytes received. We also collection metrics on sensor metadata such as device make/model, operating system, and app version. Due to the sensitive nature of this data, I will not provide a screenshot of these metrics. However, they are line graphs similar the system metrics. 
 
 \subsection{Lokahi Analysis}
+Analysis of sensor data is provided by a custom Python framework. 
 
 \subsection{Lokahi Web}
+TODO
 
 \subsubsection{Lokahi Geofenced Alerts}
 Lokahi utilizes Google's Firebase Cloud Messaging (FCM) to send geofenced alerts to mobile devices. Since we know the location of each device through its metadata, it's possible to define a bounding box in which only devices within that bounding box will receive an alert. 
