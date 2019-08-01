@@ -5,6 +5,8 @@ graph MaukaMessages {
   MaukaMessage -- Measurement
   MaukaMessage -- MakaiTrigger
   MaukaMessage -- Laha
+  MaukaMessage -- TriggerRequest
+  MaukaMessage -- TriggeredEvent
 
   Payload -- PayloadType
 

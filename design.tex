@@ -1015,7 +1015,7 @@ The plugin provides a configurable HTTP endpoint which is queried by OPQ Health.
 	\label{table:HealthProtocol}
 \end{table}
 
-\paragraph{SystemStatsPlugin}
+\paragraph{SystemStatsPlugin}\label{lbl:SystemStatsPlugin}
 Mauka collects and stores many different types of performance metrics in order to demonstrate the efficacy of Laha as implemented in Mauka. The metrics are collected by the ``SystemStatsPlugin" Mauka plugin and are stored in the MongoDB collection `laha\_metrics`. 
 
 The metrics are conditioned and displayed in OPQ View for easy analysis. It's possible to select a start and end date/time to configure the time window of metrics displayed in view. Examples of Mauka's metrics displayed in OPQ View are shown in figures \ref{fig:Metrics1}, \ref{fig:Metrics2}, and \ref{fig:Metrics3}.
@@ -1185,10 +1185,17 @@ A screenshot of OPQView in action is provided in figure \ref{fig:opq-view}.
 	\caption{OPQ View Screenshot}\label{fig:opq-view}
 \end{figure}
 
+For the most part, OPQ View serves as a client for displaying PQ information collected and analyzed by the rest of the framework. However, OPQ View provides two components that are directly related to this dissertation. 
 
+OPQ View provides the ability to manually define minimum and maximum triggering thresholds for Voltage, Frequency, and THD used by Makai. Figure \ref{fig:view_thresholds} shows what this functionality looks like as implemented in View.
 
-\subsection{OPQ: Data Model}
-TODO
+\begin{figure}
+	\centering
+	\includegraphics[width=1\linewidth]{figures/view_thresholds.png}
+	\caption{OPQ View Screenshot}\label{fig:view_thresholds}
+\end{figure}
+
+OPQ View also provides a display for Laha metrics that were collected by Mauka. This is described and shown in section \ref{lbl:SystemStatsPlugin}.
 
 \subsection{OPQ: Dockerfication}
 TODO
@@ -1255,30 +1262,4 @@ A diagram of the Lokahi framework is provided in figure \ref{fig:lokahi}.
 	\caption{Lokahi Design}\label{fig:lokahi}
 \end{figure}
 
-%\subsubsection{Lokahi: Ingestion}
-%Unlike OPQ, Lokahi takes an approach of send and store everything from every sensor, all the time. This approach is vastly different than what we're used to in triggering based acquisition systems. Data between sensors and our Ingestion servers is encrypted using standard SSL encryption algorithms. Authentication and authorization for each sensor is accomplished using Json Web Tokens (JWTs) with signatures generated using elliptic curve cryptography (ECC). Data at the sensor level is serialized using protocol buffers and then compressed using LZ4. 
-%
-%To enable the smooth retrieval of large amounts of sensor data, Lokahi uses a distributed actor system (Akka) to automatically scale horizontally based on the current volume of data being received. 
-%
-%\subsubsection{Lokahi: Persistence}
-%Metadata is stripped from the sensor data at data ingestion and immediate stored to a distributed Mongo database. Metadata is indexed using a combination of device id and timestamps. 
-%
-%Metadata drives the rest of the Lokahi framework and provides pointers to the raw data.
-%
-%Raw sensor data is stored in a distributed key-value store. Lokahi uses Amazon's Simple Storage Service (S3) which provides automatic data redundancy and essentially limitless storage. Raw sensor data is stored by key and the key is stored in the metadata.
-%
-%Raw sensor data is also persisted in an Apache Kafka queue. Kafka not only provides the framework with a message queue to pass data between distributed services, but it also acts as a ring buffer. Each sensor stores 1 hours worth of data in Kafka that can be looked up by any of the distributed clients and retrieved very quickly. For those reasons, Kafka powers IPC and data buffering roles for our real time analysis of Lokahi sensor data streams.  
-%
-%\subsubsection{Lokahi: Analysis}
-%Analysis in Lokahi is provided by a set of distributed processes that were developed in Python using SciPy, NumPy, and matplotlib. Recent developments in the framework are now also including the basis for machine learning (ML) using Tensor Flow.
-%
-%We provide real time plotting and analysis by subscribing to real time data feeds provided by the Apache Kafka real time queue and buffer. We also provide more robust batch analysis of historical data that can be initiated from Lokahi Web.
-%
-%
-%\subsubsection{Lokahi: Web}
-%Lokahi web is a web application for querying and performing analysis of real time sensor data or over historical sensor data. Lokahi also has built in system of health displays for providing a real-time and historic overview of the health of the distributed services within the framework. 
-%
-%% TODO, provide screenshot
-
-%\subsubsection{Lokahi as a Laha-compliant DSN}
-%TODO
+ 
