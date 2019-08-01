@@ -1325,17 +1325,17 @@ Lokahi is made up of several distributed services, each of which will be discuss
 \subsection{Lokahi Data Acquisition Service}
 The data acquisition service is responsible for acquiring, authenticating, storing, and moving real-time sensor data from Lokahi sensors. 
 
-The data acqisition service is written in Rust and makes use of Actix Actors for scalability and distributed communication. Originally, the data acquisition server was written in Java using Akka Actors. We've recently moved the acquisition server to Rust so that it can be ran on enbedded hardware such as Raspberry Pis in resource restricted environments or on the edge of networks. Rust also provides performances improvements in terms of CPU utlization and memory utilization.
+The data acquisition service is written in Rust and makes use of Actix Actors for scalability and distributed communication. Originally, the data acquisition server was written in Java using Akka Actors. We've recently moved the acquisition server to Rust so that it can be ran on embedded hardware such as Raspberry Pis in resource restricted environments or on the edge of networks. Rust also provides performances improvements in terms of CPU utilization and memory utilization.
 
-Type safe data is passed betweem actors where each actor fulfills a single purpose. When an actor succesfully completes a unit of work, it responds with an empty success message to the calling actor. If an actor fails to complete a unit of work, it responds with a type safe error message to the calling actor. Errors messages are passed up the chain until they get to the original caller. 
+Type safe data is passed between actors where each actor fulfills a single purpose. When an actor successfully completes a unit of work, it responds with an empty success message to the calling actor. If an actor fails to complete a unit of work, it responds with a type safe error message to the calling actor. Errors messages are passed up the chain until they get to the original caller. 
 
-All actors in this service are optional and configurable. For instance, this service can be brought up with the sole purpose of writing the data to a file system and nothing else, or acting  soley as a data relay, or only storing data to AWS S3, or it can do it all. 
+All actors in this service are optional and configurable. For instance, this service can be brought up with the sole purpose of writing the data to a file system and nothing else, or acting  solely as a data relay, or only storing data to AWS S3, or it can do it all. 
 
 Further, multiple Actors can be ran concurrently with different configurations. For instance, its possible to define multiple Kafka actors, each with their own encryption and endpoint configurations, or you could write data to multiple file systems by configuring multiple Fs Actors, etc.
 
 It's also possible to configure each actor with whitelists and blacklists where items can be added by sensor id or sensor owner. In this way, the configuration for each actor can be fine tuned to only allow certain sensors or sets of sensors or disallow sets of sensors. This is utilized when we require that only a subset of data received be forwarded to a particular actor. For instance, when we share real time data with our collaborators, they are only interested in a certain subset of data that we are receiving. Therefore, we create a whilelist with their information so that they only receive the data they are interested in. On the other hand, that data may be sensitive, so we black list it on other actors so that data is not forwarded to those actors. 
 
-Finally, configuration of all actors is performed declaritively in a type safe configuration file.
+Finally, configuration of all actors is performed declaratively in a type safe configuration file.
 
 Figure \ref{fig:LokahiAcquisition} provides an overview of the workflow and communication between Actors with the acquisition service.
 
@@ -1348,7 +1348,7 @@ Figure \ref{fig:LokahiAcquisition} provides an overview of the workflow and comm
 
 \subsubsection{Acquisition Service Configuration}
 
-Configuration for this service is stored in a .toml file. This file is parsed from the environment on service startup and deserialized into a typesafe Rust struct. The configuration is completely declaritive and all actor configurations are optional. Also, it's possible to add new actors to this system by simply declaring a new actor in the configuration and restarting the service. This approach scales much more nicely than our previous approach which required editing the source code directly to modify or add actors. 
+Configuration for this service is stored in a .toml file. This file is parsed from the environment on service startup and deserialized into a typesafe Rust struct. The configuration is completely declarative and all actor configurations are optional. Also, it's possible to add new actors to this system by simply declaring a new actor in the configuration and restarting the service. This approach scales much more nicely than our previous approach which required editing the source code directly to modify or add actors. 
 
 An example configuration file with one of each actor type is provided in the appendix in section \ref{lokahi_acquisition_config}.
 
@@ -1364,16 +1364,16 @@ Once the packet is decompressed, it is then deserialized using Protocol Buffers 
 
 Each packet contains a Json Web Token (JWT) which is a cryptographically signed token generated by Lokahi Web. This token provides user authentication and authorization. The acquisition service extracts the token and either accepts or rejects the packet depending on if authentication is successful or not. 
 
-The acquisition service ``Packet Actor" performs several small updates to the packet when it arrives. First, it adds a server receive timestamp which marks the time that the packet was received at the server. This, along with the packet sensor time stamps allows us to keep a running record of latency values from sensors to acquisition service. Next, the authentication token and Firebase token are redacted since their values are only used within the acquisition service. This prevents others from accessing this data and masqueradaing as someone else. Finally, the packet is marked as either ``real-time" or ``backfilled" depending using a heuristic that compares the packet timestamps to the server timestamps. Real-time data is data that is recoreded and immediately tranfered over the network whereas backfilled data is recorded and sent over the network at a later time. Finally, the packet is updated with a data key which is the key that will eventually be used to store the data packet in AWS S3, a distributed key-value store. 
+The acquisition service ``Packet Actor" performs several small updates to the packet when it arrives. First, it adds a server receive timestamp which marks the time that the packet was received at the server. This, along with the packet sensor time stamps allows us to keep a running record of latency values from sensors to acquisition service. Next, the authentication token and Firebase token are redacted since their values are only used within the acquisition service. This prevents others from accessing this data and masquerading as someone else. Finally, the packet is marked as either ``real-time" or ``backfilled" depending using a heuristic that compares the packet timestamps to the server timestamps. Real-time data is data that is recorded and immediately transferred over the network whereas backfilled data is recorded and sent over the network at a later time. Finally, the packet is updated with a data key which is the key that will eventually be used to store the data packet in AWS S3, a distributed key-value store. 
 
 \subsubsection{Mongo Actor}
 Once the packet has been updated by the ``Packet Actor", all meta-data is extracted and stored in MongoDB by a ``Mongo Actor". Everything from the original packet is stored except for the data payloads themselves. However, the descriptive statistics of the payloads are stored so that the database contains some metadata about what the payload contains.
 
 \subsubsection{S3 Actor}
-After the metadata has been stored, the updated packet is serialized back into bytes and then compressed using the same custom LZ4  compression protocol. This data is then sent to AWS S3 by the ``S3 Actor" for permenant storage for later data retrieval. 
+After the metadata has been stored, the updated packet is serialized back into bytes and then compressed using the same custom LZ4  compression protocol. This data is then sent to AWS S3 by the ``S3 Actor" for permanent storage for later data retrieval. 
 
 \subsubsection{Fs Actor}
-The data can optionally be stored to any accesible file system using the ``Fs Actor". This is useful in cases when your acquisition server may only have local network access, such as restricted sites with an acquisition server running on a Raspberry Pi on a LAN.
+The data can optionally be stored to any accessible file system using the ``Fs Actor". This is useful in cases when your acquisition server may only have local network access, such as restricted sites with an acquisition server running on a Raspberry Pi on a LAN.
 
 \subsubsection{Kafka Actor}
 The compressed data is next produced to several Apache Kafka endpoints using the ``Kafka Actor".
@@ -1385,7 +1385,7 @@ Lokahi also provides secure real-time Kafka endpoints to our collaborators which
 Each device is provided its own partition within Kafka to publish data to. Since each Kafka partition creates a file on the file system, the number of Kafka partitions and the partitions themselves must be managed intelligently. Partitions are assigned by the acquisition service. The acquisition service looks up the next available partition in the database. Partitions become available if a sensor stops using a partition for longer than an hour. Our current design provides up to 500 concurrent partitions at once. 
 
 \subsubsection{Relay Actor}
-The acquisition service can act as a relay to other acquisition services that speak the same protocol. If this actor is enabled, any packets it receives are relayed to the configured acquisition server. This is useful for load balancing and for timing accuracy. In load balancing, this server can be configured to filter subsets of devices to other acquisition servers by configuring a relay actor for each server that data is being forwarded to. For timing accuracy, this service can be deployed on a Raspberry Pi at the edge of a network near the sensors, reducing the latency between sensor and server. Then, when a packet arrives at the server, it is updated with a low latency server timestamp which improvies timing accuracy. The low powered Raspberry Pi can then relay the packet to the cloud where it will be handled, but already have the improved timing accuracy built into the packet. 
+The acquisition service can act as a relay to other acquisition services that speak the same protocol. If this actor is enabled, any packets it receives are relayed to the configured acquisition server. This is useful for load balancing and for timing accuracy. In load balancing, this server can be configured to filter subsets of devices to other acquisition servers by configuring a relay actor for each server that data is being forwarded to. For timing accuracy, this service can be deployed on a Raspberry Pi at the edge of a network near the sensors, reducing the latency between sensor and server. Then, when a packet arrives at the server, it is updated with a low latency server timestamp which improves timing accuracy. The low powered Raspberry Pi can then relay the packet to the cloud where it will be handled, but already have the improved timing accuracy built into the packet. 
 
 \subsection{Lokahi Communication Protocols}
 TODO
@@ -1402,11 +1402,11 @@ TODO
 \subsection{Lokahi Time Synchronization}
 Much of Lokahi's sensor analysis requires that sensors be synchronized in time. In order to calculate direction and distance to a signal source, sensors should have clocks that are synchronized within milliseconds of each other. We initially tried to use NTP, but it did not provide the timing accuracy we desired, and thus, implemented a custom time synchronization protocol.
 
-The protocol used in Lokahi is an implementation described by Tian et al in their Tri-Message Exchange paper\cite{tian2009tri}. This algorithm was developed specfically for providing accurate time synchronization in high latency networks. 
+The protocol used in Lokahi is an implementation described by Tian et al in their Tri-Message Exchange paper\cite{tian2009tri}. This algorithm was developed specifically for providing accurate time synchronization in high latency networks. 
 
-This service is written in Rust and utilizes encrypted WebSockets for communication with sensors. While a sensor is recording data, a separate thread on that sensor continuously performs message exchanges with this service. The best exchange out of a group of exchanges (the one with the lowest latency) is then used to correct timing for packets. 
+This service is written in Rust and utilizes encrypted x for communication with sensors. While a sensor is recording data, a separate thread on that sensor continuously performs message exchanges with this service. The best exchange out of a group of exchanges (the one with the lowest latency) is then used to correct timing for packets. 
 
-A description of the algorithm is provied below. This algorithm expects that the client will build up a successive message exchange consisting of the elements B0, B1, B2, B3, A1, A2, A3, but only up two a maximum of two timestamps are ever exchanged at one time. These coefficients are then stored in each data packet so that the server can use them to correct for timing.
+A description of the algorithm is provided below. This algorithm expects that the client will build up a successive message exchange consisting of the elements B0, B1, B2, B3, A1, A2, A3, but only up two a maximum of two timestamps are ever exchanged at one time. These coefficients are then stored in each data packet so that the server can use them to correct for timing.
 
 \begin{enumerate}
 	\item Client connects to redvox-synch-server over WebSocket connection
@@ -1478,7 +1478,7 @@ It's also possible to display a historic view up Up/Down metrics as shown in fig
 
 \subsubsection{System Metrics}
 
-``node\_exporter" provides Prometheus with a large selection of system metrics. We colletion these metrics for each virtual server that we are running. We colect metrics on file system usage, memory usage, cpu usage, and network usage. An example of this from one of our services is displayed in figure \ref{fig:systemstats}.
+``node\_exporter" provides Prometheus with a large selection of system metrics. We collect these metrics for each virtual server that we are running. We collect metrics on file system usage, memory usage, CPU usage, and network usage. An example of this from one of our services is displayed in figure \ref{fig:systemstats}.
 
 \begin{figure}
 	\centering
@@ -1494,7 +1494,7 @@ Lokahi also collects metrics from devices grouped by device and also grouped by 
 \subsection{Lokahi Analysis}
 Analysis of sensor data is provided by a custom Python framework. This framework utilizes an Apache Kafka client to subscribe to data request topics and real-time data topics. 
 
-When a request for analaysis is received, the analysis framework will create a new process pool to run all of the analysis. Once the analysis is completed, the process pool is destroyed freeing up memory leaks caused by matplotlib. Requests for analysis include a time window, the devices that should be included for analysis, and the types of analysis that should be performed for those devices.
+When a request for analysis is received, the analysis framework will create a new process pool to run all of the analysis. Once the analysis is completed, the process pool is destroyed freeing up memory leaks caused by matplotlib. Requests for analysis include a time window, the devices that should be included for analysis, and the types of analysis that should be performed for those devices.
 
 If the request is for real-time data, then the process will acquire the data from the Kafka real-time ring buffer data queue. If the request is for historic data, then the associated data will be looked up in the MongoDB database, and then the data payloads will be retrieved from AWS S3.
 
@@ -1508,7 +1508,7 @@ Lokahi Analysis is capable of creating the following products from sensor data:
 	\item Multiresolution Microphone
 	\item Barometer FFT
 	\item Multiresolution Barometer
-	\item Latency statistical line plit
+	\item Latency statistical line plot
 	\item Location (latitude, longitude, altitude, speed) statistical line plot
 	\item Magnetometer Waveform and FFT
 	\item Gyroscope Waveform and FFT
@@ -1533,7 +1533,7 @@ An overview of the analysis architecture is provided in figure \ref{fig:analysis
 Lokahi Web is a web interface that allows users to check the status of their sensors, download sensor data, and generate analysis reports. It also allows administrators to view sensor data usage, send alerts to sensors, and manage users. Lokahi Web is written in Java and powered by the Play Framework. Most functionality in Lokahi Web is provided from metadata stored in the MongoDB and by passing messages band and forth to the analysis service over a Kafka queue.
 
 \subsubsection{Sensor Status}
-The main page of Lokahi Web displays a map of currently active sensors (that the logged in user can access) and displays a list of those sensors sorted by distance from the users current location. This data is ontained by loading metadata from the database. An example if this interface is displayed in figure \ref{fig:lweb_main}.
+The main page of Lokahi Web displays a map of currently active sensors (that the logged in user can access) and displays a list of those sensors sorted by distance from the users current location. This data is obtained by loading metadata from the database. An example if this interface is displayed in figure \ref{fig:lweb_main}.
 
 \begin{figure}
 	\centering
@@ -1560,7 +1560,7 @@ It's possible to drill into the details of an individual device by clicking the 
 	\label{fig:lweb_detail}
 \end{figure}
 
-Users are able to create groups of devices based on geolocation by defining a bounding box. Then all sensors that are within that bounding box will appear in that user created group. This allows users to view the status of multiple devices at one time for a specific geographic location. This data is stored as metadata in the database. An example of the group creation interface is displayed in figure \ref{fig:lweb_groupcreate}. 
+Users are able to create groups of devices based on geo-location by defining a bounding box. Then all sensors that are within that bounding box will appear in that user created group. This allows users to view the status of multiple devices at one time for a specific geographic location. This data is stored as metadata in the database. An example of the group creation interface is displayed in figure \ref{fig:lweb_groupcreate}. 
 
 \begin{figure}
 	\centering
@@ -1640,9 +1640,9 @@ The global collection interface shows the last location of every device that Lok
 \subsubsection{Lokahi Geofenced Alerts}
 Lokahi utilizes Google's Firebase Cloud Messaging (FCM) to send geofenced alerts to mobile devices. Since we know the location of each device through its metadata, it's possible to define a bounding box in which only devices within that bounding box will receive an alert. 
 
-This is useful when we want to alert users of our sensors to specific events and provides a means of producing actionable insights that can increase S2N. As an example, we may wan to collect data on an upcomming SpaceX launch in Florida. We can create a bounding box for all users in the target area and alert them to an upcomming launch and ask them to turn on their sensors for data collection.
+This is useful when we want to alert users of our sensors to specific events and provides a means of producing actionable insights that can increase S2N. As an example, we may wan to collect data on an upcoming SpaceX launch in Florida. We can create a bounding box for all users in the target area and alert them to an upcoming launch and ask them to turn on their sensors for data collection.
 
-The interface for this is provided by ``Lokahi Web". Once an adminstrator selects their bounding box and supplies their alert message, Lokahi Web uses the FCM API for queuing a message to all sensors in the target area. 
+The interface for this is provided by ``Lokahi Web". Once an administrator selects their bounding box and supplies their alert message, Lokahi Web uses the FCM API for queuing a message to all sensors in the target area. 
 
 An example of the alerting interface is provided in figure \ref{fig:fcm}.
 
