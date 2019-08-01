@@ -75,18 +75,34 @@ A graphical representation showing the complete coverage of Boxes on the UH Mano
 All devices were placed in a location that had access to UH Manoa's wireless network. As soon as they were installed, they started transmitting PQ data for that location.
 
 \subsection{Lokahi Reference Deployment}
-%In Q2 and Q3 2019, 15 Laha-compliant OPQBoxes were deployed on the University of Hawaii at Manoa's power microgrid. Using a provided blueprint of the microgrid as a guide and collaborating with the Office of Energy Management, these sensors were placed strategically with the hopes of observing PQ signals on the same line, PQ signals generated from intermittent renewables, local PQ signals, global PQ signals, and PQ signals near sensitive lab electronics. Many of these sensors are co-located with industry standard PQ monitoring systems. The industry standard sensors provide both ground truth and a means of comparison between a Laha designed network and a non-Laha designed network.. 
-
-%In Q3 2019,  20 to 30 Laha-compliant Lokahi sensors were deployed near and around the Infrasound Laboratory in Kailua-Kona on the Big Island of Hawaii. These sensors were be placed strategically around a calibrated infrasound source. The sensors were placed with the assistance of Dr. Milton Garces to ensure that I can target sensors at different distances by tuning the amplitude and frequencies of the infrasound signal. In this way, I know which devices should or should not have received the signal.
+%TODO
 
 \section{Validate data collected by Laha deployment}
-Beginning in Q1 2019, I  began validated data collection from both the OPQ network and the Lokahi network. 
+Data from both experimental deployments were validated against ground truth data. In the OPQ deployment, ground truth is provided by UH meters installed at the main of each building. In the Lokahi deployment, ground truth was provided by high-end calibrated microphones. 
 
-Data was validated in the OPQ network be comparing detected and classified signals against industry standard meters that are co-located with our sensors. Data validation is an autonomous process that validates signals and trends seen in both the industry sensor and the OPQ sensors. Data validation provides metrics for signals and trends that the reference sensors observed but OPQ sensors did not (false negatives) as well as signals that the OPQ sensors observed and the reference sensors did not (false negatives).  Specifically, I looked to compare long term trends (voltage, frequency, and THD readings over a time period of days) as well as more transient signals of interest (i.e. voltage sags/swells, frequency variations, excessive THD, and outages).
+\subsection{Validate data collected by OPQ deployment}
 
-Data from the Lokahi network was validated against industry standard infrasound sensors. We also control the amplitude and frequency of the signals generated from the calibrated infrasound source and can use geophysical equations to predict which sensors should have seen or not seen an infrasonic signal. Data validation is autonomous for this network as well. Similar to the OPQ network, I collected metrics on false positive and false negatives as compared to the reference sensors. 
+Ground truth for the UH Manoa microgrid deployment is provided by UH system installed power meters. These meters were installed at the main of most buildings and can provide ground truth for Voltage, Frequency, and THD trends, as well as provide a maximum bounds of these features enabling me to determine if the incidents we see in OPQ would have been seen by the UH meters.
 
-Data validation for both networks continued for all data collection until the end of the project.
+The UH meters provide data trends for Voltage, Frequency, and THD in rolled-up one minute windows. Each window provides descriptive statistics for the feature it is measureing including minimum, maximum, average, and standard deviation of the feature values during the one minute window. By using the minimum and maximum values, I was able to provide upper and lower bounds for whether or not the PQ incidents we observed were valid or not. 
+
+As an example, if an Incident is created by Mauka with a Voltage sag down to 110V, then I would expect the nearest ground truth meter to also have a minimum Voltage value near 110V for the same time window. If the minimum value from the UH meter does not show a Voltage drop, then we know that Mauka identified a false positive.
+
+I've written a separate service for OPQ called the ``ground-truth-daemon". The role of this daemon is to query the UH Manoa metering HTTP API once per hour and retrieve the previous hours worth of data for all ground truth meteres co-located with an OPQ Box or near an OPQ Box. The descriptive statistics along with the meter metadata are stored in MongoDB so that OPQ data can be compared to the ground truth data to identify false positives and false negatives.
+
+Since one of the core tennants of Laha is to throw away uninteresting data, we need to store all ground truth data in an effort to identify false negatives. 
+
+Two types of validation are performed. First, we compared measurements and trends collected by OPQ to trend data collected by the UH meters. Then, we generated a report that showed the percent different between the two sets of meters. Any differences larger than 5 percent are recorded. 
+
+The second type of validation I performed was checking the bounds of Mauka generated Incidents. When a Voltage Incident is generated, the sag or swell is compared against the minimum and maximum ground truth values of ground truth trends. Differences larger than 5 percent were recorded. Validation for Frequency and THD is performed in the same way.
+
+%Beginning in Q1 2019, I  began validated data collection from both the OPQ network and the Lokahi network. 
+%
+%Data was validated in the OPQ network be comparing detected and classified signals against industry standard meters that are co-located with our sensors. Data validation is an autonomous process that validates signals and trends seen in both the industry sensor and the OPQ sensors. Data validation provides metrics for signals and trends that the reference sensors observed but OPQ sensors did not (false negatives) as well as signals that the OPQ sensors observed and the reference sensors did not (false negatives).  Specifically, I looked to compare long term trends (voltage, frequency, and THD readings over a time period of days) as well as more transient signals of interest (i.e. voltage sags/swells, frequency variations, excessive THD, and outages).
+%
+%Data from the Lokahi network was validated against industry standard infrasound sensors. We also control the amplitude and frequency of the signals generated from the calibrated infrasound source and can use geophysical equations to predict which sensors should have seen or not seen an infrasonic signal. Data validation is autonomous for this network as well. Similar to the OPQ network, I collected metrics on false positive and false negatives as compared to the reference sensors. 
+%
+%Data validation for both networks continued for all data collection until the end of the project.
 
 \section{Use Laha deployments to evaluate the main goals of the framework}
 The Laha deployments for both OPQ and Lokahi were used to evaluate each of the main goals this framework claims to provide. Namely that Laha is a generally useful framework representation for DSNs. Second, Laha provides the ability to turn primitive sensor data into actionable data and insights. Third, Laha's tiered management of sensor data provides metrics on maximum bounds for storage requirements and graceful degradation of DSN performance. 
