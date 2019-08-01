@@ -1530,7 +1530,112 @@ An overview of the analysis architecture is provided in figure \ref{fig:analysis
 \end{figure}
 
 \subsection{Lokahi Web}
-TODO
+Lokahi Web is a web interface that allows users to check the status of their sensors, download sensor data, and generate analysis reports. It also allows administrators to view sensor data usage, send alerts to sensors, and manage users. Lokahi Web is written in Java and powered by the Play Framework. Most functionality in Lokahi Web is provided from metadata stored in the MongoDB and by passing messages band and forth to the analysis service over a Kafka queue.
+
+\subsubsection{Sensor Status}
+The main page of Lokahi Web displays a map of currently active sensors (that the logged in user can access) and displays a list of those sensors sorted by distance from the users current location. This data is ontained by loading metadata from the database. An example if this interface is displayed in figure \ref{fig:lweb_main}.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/lweb_main.png}
+	\caption{Lokahi Web Main Page}
+	\label{fig:lweb_main}
+\end{figure}
+
+The ``Active Devices" page lists all active devices that the logged in user can access as well as some metadata about those sensors. This data is loaded as metadata from the database. An example of this page is displayed in figure \ref{fig:lweb_status}.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/lweb_status.png}
+	\caption{Active Devices}
+	\label{fig:lweb_status}
+\end{figure}
+
+It's possible to drill into the details of an individual device by clicking the ``Details" link on the ``Active Devices" page. The detailed device status includes a map of the location of the device, the device activity over the past hour and past day, metadata details, and real-time plots for microphone, barometer, location, and time synchronization This data is loaded as metadata from the database and also real-time sensor payload data is retrieved from the real-time Kafka ring buffer. An example of detailed device status is provided in figure \ref{fig:lweb_detail}.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.7\linewidth]{figures/lweb_detail.png}
+	\caption{Detailed Device Status}
+	\label{fig:lweb_detail}
+\end{figure}
+
+Users are able to create groups of devices based on geolocation by defining a bounding box. Then all sensors that are within that bounding box will appear in that user created group. This allows users to view the status of multiple devices at one time for a specific geographic location. This data is stored as metadata in the database. An example of the group creation interface is displayed in figure \ref{fig:lweb_groupcreate}. 
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.7\linewidth]{figures/lweb_groupcreate.png}
+	\caption{Sensor Group Creation}
+	\label{fig:lweb_groupcreate}
+\end{figure}
+
+Once a group is created, you can then view the status of all devices in that group by going to the group's page. This page will display device activity for each device over the past hour and provides a quick interface for generating an analysis report from that specific grouping of devices. This data is a combination of metadata and real-time data from the Kafka buffer. An example of this is displayed in figure \ref{fig:lweb_group}.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.7\linewidth]{figures/lweb_group.png}
+	\caption{Sensor Group Status}
+	\label{fig:lweb_group}
+\end{figure}
+
+\subsubsection{Data Explorer}
+The ``Data Explorer" page provides a custom built interface that displays details of individual data packets as they arrive. This is useful for debugging and ensuring that the sensors are sending what the users expect the sensors to be sending. 
+
+This page displays information loaded from the database. If a sensor channel is selected, then the payload is received from AWS S3 and displayed on this page using a custom JavaScript plotter. This page also allows users to download individual data packets or export payloads as CSV.
+
+An example of the data explorer is provided in figure \ref{fig:lweb_dataexplorer} and shows the waveform from a selected microphone channel.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.7\linewidth]{figures/lweb_dataexplorer.png}
+	\caption{Data Explorer Interface}
+	\label{fig:lweb_dataexplorer}
+\end{figure}
+
+Data within the explorer can be filtered by device id, device owner, time window, device make/model, os version, app version, microphone sampling rate, onboard sensors, and privacy status.
+
+\subsubsection{Analysis Reports}
+The main component of Lokahi Web is its report generation functionality. This functionality allows users to generate analysis reports from sensors that they can access with configurable time windows and sensor feature selection. Users can edit report metadata, rerun reports with new parameters, and share their reports with other Lokahi Web users. Administrators can set reports as featured reports which then make those reports available to the general public.
+
+The report generation interface allows users to select devices, time windows, and which products should be generated. When a user selects a time window and an estimated signal source location, the interface automatically lists available sensors for that time window sorted by distance from the signal source. This makes it easy for users to determine which sensors to include in the report by seeing how far sensors are from estimated signal sources. 
+
+When a user has selected all configuration options, a report analysis request is serialized with Protocol Buffers and sent to the Lokahi Analysis service where the report is actually generated. Once the report is generated, the analysis service sends a response back to Lokahi Web and Lokahi Web displays the newly minted report.
+
+The report interface also allows users to download raw sensor data for the selected devices over the selected time range.
+
+An example of the report interface is provided in figure \ref{fig:lweb_reportcreate}.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.7\linewidth]{figures/lweb_reportcreate.png}
+	\caption{Report Creation Interface}
+	\label{fig:lweb_reportcreate}
+\end{figure}
+
+An example of a report with one device is provided in figure \ref{fig:lweb_report}.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.7\linewidth]{figures/lweb_report.png}
+	\caption{Lokahi Web Report}
+	\label{fig:lweb_report}
+\end{figure}
+
+Users have the ability to sanitize reports. This removes timing, device, and location information from the reports and instead displays these values as relative offsets. For example, time is offset as seconds since 0 and location is offset as distance from an unknown source. This allows users to share sensitive reports while removing identifying information.
+
+Each report also has a link that allows users to download the raw sensor data that was used in generating the report.
+
+Finally, there is a ``Print Version" interface of reports that removes some of the metadata, rearranges the maps and plots for printing or distribution. 
+
+\subsubsection{Global Collection}
+The global collection interface shows the last location of every device that Lokahi has ever received. This interface is useful for showing sensor deployment adoption. This interface is shown in figure \ref{fig:lweb_global}.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.7\linewidth]{figures/lweb_global.jpg}
+	\caption{Lokahi Global Collection}
+	\label{fig:lweb_global}
+\end{figure}
 
 \subsubsection{Lokahi Geofenced Alerts}
 Lokahi utilizes Google's Firebase Cloud Messaging (FCM) to send geofenced alerts to mobile devices. Since we know the location of each device through its metadata, it's possible to define a bounding box in which only devices within that bounding box will receive an alert. 
