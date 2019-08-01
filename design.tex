@@ -1406,6 +1406,35 @@ The protocol used in Lokahi is an implementation described by Tian et al in thei
 
 This service is written in Rust and utilizes encrypted WebSockets for communication with sensors. While a sensor is recording data, a separate thread on that sensor continuously performs message exchanges with this service. The best exchange out of a group of exchanges (the one with the lowest latency) is then used to correct timing for packets. 
 
+A description of the algorithm is provied below. This algorithm expects that the client will build up a successive message exchange consisting of the elements B0, B1, B2, B3, A1, A2, A3, but only up two a maximum of two timestamps are ever exchanged at one time. These coefficients are then stored in each data packet so that the server can use them to correct for timing.
+
+\begin{enumerate}
+	\item Client connects to redvox-synch-server over WebSocket connection
+	\item Client records and stores B0 immediately before sending message
+	\item Client sends binary message to server where the payload is a single byte 0x00
+	\item Server responds asynchronously, goto 5
+	\item onMessage fires for client
+	\begin{enumerate}
+		\item Client records Btmp
+		\item Client decodes payload (see protocol below)
+		\item If sequence number is 0, then
+		\begin{enumerate}
+			\item Client extracts and stores A1 from server receive timestamp
+			\item Client stores B1 = Btmp
+			\item Client records and stores B2 immediately before sending message
+			\item Client sends binary message to server where payload is a single byte 0x01
+			\item Server responds asynchronously, goto 5
+		\end{enumerate}
+		\item If sequence number is 1, then
+		\begin{enumerate}
+			\item Client extracts and stores A2 from server receive timestamp
+			\item Client extracts and stores A3 from server send timestamp
+			\item Client stores B3 = Btmp
+			\item Client can close the connection or reuse the same connection to perform another message exchange starting from 2
+		\end{enumerate}
+	\end{enumerate}
+\end{enumerate}
+
 The protocol used for communicating message exchanges is a simple binary protocol designed to reduce bandwidth. The protocol is described in detail in table \ref{table:syncproto}. 
 
 \begin{table}[H]
