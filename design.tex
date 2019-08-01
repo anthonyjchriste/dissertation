@@ -807,6 +807,62 @@ The Incidents collection keeps track of Incidents as defined by Laha. This colle
 	\label{table:Incidents}
 \end{table}
 
+The ``ground\_truth" stores samples collected from the UH installed power meters. This collection is used to compare measurements and trends from OPQ Boxes to the ground truth measured by the UH meters. Each ground truth document consists of meter name, the feature stored, and descriptive statistics for that feature. The ``ground\_truth" data model is described in table \ref{table:ground_truth}.
+
+\begin{table}[H]
+	\centering
+	\caption{Ground Truth Data Model}
+	\begin{tabular}{|c|c|p{8cm}|}
+		\hline 
+		Field & Type & Description \\ 
+		\hline
+		meter-name & str & Name of the meter this sample is from. \\
+		\hline
+		sample-type & str & Name of the feature present in this sample. \\
+		\hline
+		ts-s & int & The timestamp of this sample in seconds. \\
+		\hline
+		min & float & The minimum value of this feature over the time window. \\
+		\hline
+		max & float & The maximum value of this feature over the time window. \\
+		\hline
+		avg & float & The average value of this feature over the time window. \\
+		\hline
+		stddev & float & The standard deviation of values over the time window. \\
+		\hline
+	\end{tabular} 
+	\label{table:ground_truth}
+\end{table}
+
+The ``laha\_config" collection contains dynamic configuration options that Phenomena can alter. The collection is mainly used for defining the default TTL of collections that Mauka manages. The ``laha\_config" data model is described in table \ref{table:laha_config}.
+
+\begin{table}[H]
+	\centering
+	\caption{Laha Config Data Model}
+	\begin{tabular}{|c|c|p{8cm}|}
+		\hline 
+		Field & Type & Description \\ 
+		\hline
+		box\_samples & int & Default TTL of Box samples. \\
+		\hline
+		measurements & int & Default TTL measurements. \\
+		\hline
+		trends & int & Default TTL trends. \\
+		\hline
+		events & int & Default TTL events and box\_events. \\
+		\hline
+		incidents & int & Default TTL incidents. \\
+		\hline
+	\end{tabular} 
+	\label{table:laha_config}
+\end{table}
+
+The ``laha\_stats" collection contains system statistics that measure various performance metrics in relation to Laha's optimizations. The full details of the ``laha\_stats" collection is provided in the section describing the ``SystemStatsPlugin" \ref{lbl:SystemStatsPlugin}.
+
+The ``phenomena" collection contains metadata relating to Phenomena produced by Mauka.
+
+TODO
+
 \subsubsection{PQ Plugins}
 Mauka's functionality is provided by plugins that perform analysis, data management, health, and system tuning. Communication within Mauka is performed using type safe message passing. This section describes in detail how each plugin functions and also documents each plugins inputs and outputs.
 
