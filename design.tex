@@ -1147,7 +1147,7 @@ When a transient is classified a new transient Incident is created. If an incide
 \paragraph{TriggerPlugin}
 The ``TriggerPlugin" provides Mauka with the functionality to trigger OPQ Boxes itself instead of relying on Makai for triggering. Generally, Mauka is only provided with event\_ids when Makai triggers Boxes based off of their low-fidelity data streams. Mauka then loads the associated event data from the database, performs cycle level feature extraction, and then forwards those features to analysis plugins for PQ analysis. 
 
-This plugin takes advantage of Phenomena in order to find incidents that may not have passed Makai's triggering thresholds. As an example, the Phenomena for Topology Optimization uses two different techniques for optmizing the framework. 
+This plugin takes advantage of Phenomena in order to find incidents that may not have passed Makai's triggering thresholds. As an example, the Phenomena for Topology Optimization uses two different techniques for optimizing the framework. 
 
 First, when an incident is identified, a breadth first search (BFS) is used to recursively trigger (using this plugin) all nearest neighbors of the triggering device that were not triggered. Then, data from these new boxes are analyzed for incidents from the same signal that may have missed Makai's triggering threshold. If incidents were missed, then the Phenomena will lower the triggering thresholds for those Boxes in the hopes of catching more signals that may have been missed. 
 
@@ -1159,7 +1159,7 @@ In order to receive data requested from the Boxes, this plugin starts a separate
 
 When data is received from the Boxes, the data is passed to the ``MakaiEventPlugin" where cycle level feature extraction is performed and the features are then forwarded to the other analysis plugins for PQ analysis. 
 
-Data triggered from Mauka is fundamentally different than data triggered from Makai. That's because Boxes triggered from Mauka are always triggered from an associated Incident or Phenomena. If new Incidents are found from this data and they are similar to the original Incident that caused Mauka to trigger, then we've found a global event and possible Phenomena that would not have been observed using Makai's triggering alone. This requires extra schemantic information to be passed to the ``MakaiTriggerPlugin" and other analysis plugins. Data received from Mauka triggers are always forwarded with the associated Incident or Phenomena id so that the relationships can be tracked and maintained. 
+Data triggered from Mauka is fundamentally different than data triggered from Makai. That's because Boxes triggered from Mauka are always triggered from an associated Incident or Phenomena. If new Incidents are found from this data and they are similar to the original Incident that caused Mauka to trigger, then we have found a global event and possible Phenomena that would not have been observed using Makai's triggering alone. This requires extra semantic information to be passed to the ``MakaiEventPlugin" and other analysis plugins. Data received from Mauka triggers are always forwarded with the associated Incident or Phenomena id so that the relationships can be tracked and maintained. 
 
 \subsubsection{Debugging OPQMauka}
 The Mauka system can be configured so that only specified plugins print debug messages. This is accomplished by specifying the names of the plugins which should print debug output in Mauka's configuration file. Without this functionality, parsing through the entirety of Mauka's log output would be a daunting task.
@@ -1182,7 +1182,7 @@ OPQ View provides the ability to manually define minimum and maximum triggering 
 \begin{figure}
 	\centering
 	\includegraphics[width=1\linewidth]{figures/view_thresholds.png}
-	\caption{OPQ View Threshold Configurationt}\label{fig:view_thresholds}
+	\caption{OPQ View Threshold Configuration}\label{fig:view_thresholds}
 \end{figure}
 
 OPQ View also provides a display for Laha metrics that were collected by Mauka. This is described and shown in section \ref{lbl:SystemStatsPlugin}.
