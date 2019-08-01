@@ -1311,7 +1311,7 @@ Sensors in Lokahi are any mobile device that can run iOS or Android. We have sen
 
 Recent development and improvements to the data API have allowed Lokahi to begin accepting data from any of the available onboard sensors on iOS and Android devices. Even though the main focus is still infrasound, having access to all of the available sensors provides the ability to sense other sensor fields and to perform interesting data fusion techniques. 
 
-A diagram of the Lokahi framework is provided in figure \ref{fig:lokahi}.
+A diagram of the Lokahi framework is provided in figure \ref{fig:lokahi}. 
 
 
 \begin{figure}
@@ -1320,4 +1320,101 @@ A diagram of the Lokahi framework is provided in figure \ref{fig:lokahi}.
 	\caption{Lokahi Design}\label{fig:lokahi}
 \end{figure}
 
- 
+Lokahi is made up of several distributed services, each of which will be discussed in the following sections.
+
+\subsection{Lokahi Data Acquisition Service}
+The data acquisition service is responsible for acquiring, authenticating, storing, and moving real-time sensor data from Lokahi sensors. 
+
+The data acqisition service is written in Rust and makes use of Actix Actors for scalability and distributed communication. Originally, the data acquisition server was written in Java using Akka Actors. We've recently moved the acquisition server to Rust so that it can be ran on enbedded hardware such as Raspberry Pis in resource restricted environments or on the edge of networks. Rust also provides performances improvements in terms of CPU utlization and memory utilization.
+
+Type safe data is passed betweem actors where each actor fulfills a single purpose. When an actor succesfully completes a unit of work, it responds with an empty success message to the calling actor. If an actor fails to complete a unit of work, it responds with a type safe error message to the calling actor. Errors messages are passed up the chain until they get to the original caller. 
+
+All actors in this service are optional and configurable. For instance, this service can be brought up with the sole purpose of writing the data to a file system and nothing else, or acting  soley as a data relay, or only storing data to AWS S3, or it can do it all. 
+
+Further, multiple Actors can be ran concurrently with different configurations. For instance, its possible to define multiple Kafka actors, each with their own encryption and endpoint configurations, or you could write data to multiple file systems by configuring multiple Fs Actors, etc.
+
+It's also possible to configure each actor with whitelists and blacklists where items can be added by sensor id or sensor owner. In this way, the configuration for each actor can be fine tuned to only allow certain sensors or sets of sensors or disallow sets of sensors. This is utilized when we require that only a subset of data received be forwarded to a particular actor. For instance, when we share real time data with our collaborators, they are only interested in a certain subset of data that we are receiving. Therefore, we create a whilelist with their information so that they only receive the data they are interested in. On the other hand, that data may be sensitive, so we black list it on other actors so that data is not forwarded to those actors. 
+
+Finally, configuration of all actors is performed declaritively in a type safe configuration file.
+
+Figure \ref{fig:LokahiAcquisition} provides an overview of the workflow and communication between Actors with the acquisition service.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/lokahi_acquisition.png}
+	\caption{Lokahi Acquisition Architecture where OCSP=``original compressed serialized packet", UP=``updated packet", UCSP=``updated compressed serialized packet", M=``metadata", AR=``actor response", DR=``device response".}
+	\label{fig:LokahiAcquisition}
+\end{figure}
+
+\subsubsection{Acquisition Service Configuration}
+
+Configuration for this service is stored in a .toml file. This file is parsed from the environment on service startup and deserialized into a typesafe Rust struct. The configuration is completely declaritive and all actor configurations are optional. Also, it's possible to add new actors to this system by simply declaring a new actor in the configuration and restarting the service. This approach scales much more nicely than our previous approach which required editing the source code directly to modify or add actors. 
+
+An example configuration file with one of each actor type is provided in the appendix in section \ref{lokahi_acquisition_config}.
+
+\subsubsection{Acquisition Actor}
+Lokahi sensors establish an encrypted WebSocket connection to the the acquisition server in which they send data over. Encryption is provided over standard HTTPS using Let's Encrypt as a certificate provider. Once the connection is established, the connection remains open for as long as the sensor is continuously sending data. Each connection causes the creation of a new Actix Actor within the acquisition service. Instead of creating a thread for each connection, actors share their resources over a configurable thread pool and lightweight green threads are used to provide concurrency. Since most of the work of the acquisition service is I/O bound, the use of green threads makes the most sense.
+
+This actor is also responsible for checking the response messages from all actors in the acquisition pipeline. If all responses are ``Ok", then this actor responds to the sensor with a checksum and an ``Ok" response. If any of the actor responses are an error, then this actor responds to the sensor with an error message and the sensor will store the data onboard until it is able to send at a later time.
+
+\subsubsection{Packet Actor}
+The acquisition service ``Packet Actor" handles each packet from a sensor individually. When a packet arrives, the packet is first decompressed using a custom LZ4 compression protocol where the first four bytes of the compressed payload contain the size of the original uncompressed data. 
+
+Once the packet is decompressed, it is then deserialized using Protocol Buffers into a struct that Rust is able to work with. The data packet protocol is provided in full in the appendix in section \ref{lokahi-data-packet-protocol}.
+
+Each packet contains a Json Web Token (JWT) which is a cryptographically signed token generated by Lokahi Web. This token provides user authentication and authorization. The acquisition service extracts the token and either accepts or rejects the packet depending on if authentication is successful or not. 
+
+The acquisition service ``Packet Actor" performs several small updates to the packet when it arrives. First, it adds a server receive timestamp which marks the time that the packet was received at the server. This, along with the packet sensor time stamps allows us to keep a running record of latency values from sensors to acquisition service. Next, the authentication token and Firebase token are redacted since their values are only used within the acquisition service. This prevents others from accessing this data and masqueradaing as someone else. Finally, the packet is marked as either ``real-time" or ``backfilled" depending using a heuristic that compares the packet timestamps to the server timestamps. Real-time data is data that is recoreded and immediately tranfered over the network whereas backfilled data is recorded and sent over the network at a later time. Finally, the packet is updated with a data key which is the key that will eventually be used to store the data packet in AWS S3, a distributed key-value store. 
+
+\subsubsection{Mongo Actor}
+Once the packet has been updated by the ``Packet Actor", all meta-data is extracted and stored in MongoDB by a ``Mongo Actor". Everything from the original packet is stored except for the data payloads themselves. However, the descriptive statistics of the payloads are stored so that the database contains some metadata about what the payload contains.
+
+\subsubsection{S3 Actor}
+After the metadata has been stored, the updated packet is serialized back into bytes and then compressed using the same custom LZ4  compression protocol. This data is then sent to AWS S3 by the ``S3 Actor" for permenant storage for later data retrieval. 
+
+\subsubsection{Fs Actor}
+The data can optionally be stored to any accesible file system using the ``Fs Actor". This is useful in cases when your acquisition server may only have local network access, such as restricted sites with an acquisition server running on a Raspberry Pi on a LAN.
+
+\subsubsection{Kafka Actor}
+The compressed data is next produced to several Apache Kafka endpoints using the ``Kafka Actor".
+
+Apache Kafka provides a distributed messaging queue that can use publish/subscribe semantics. Lokahi uses Kafka for inter-process distributed communication and for providing a real-time data endpoint for our collaborators. Lokahi manages an internal Kafka queue that acts as a ring buffer for storing an hours worth of real-time data for each device. This real-time ring buffer is used for generating real time plots of data without needing to access the database or pull the data from AWS S3. 
+
+Lokahi also provides secure real-time Kafka endpoints to our collaborators which include national labs, defense contractors, and private contracts. The acquisition service filters collaborator packets based off of the JWT and encrypts the compressed serialized packet with the collaborator's GPG public key. Our collaborators then use an Apache NiFi service for collecting and decrypting the data from the Kafka endpoint for their own internal use.  
+
+Each device is provided its own partition within Kafka to publish data to. Since each Kafka partition creates a file on the file system, the number of Kafka partitions and the partitions themselves must be managed intelligently. Partitions are assigned by the acquisition service. The acquisition service looks up the next available partition in the database. Partitions become available if a sensor stops using a partition for longer than an hour. Our current design provides up to 500 concurrent partitions at once. 
+
+\subsubsection{Relay Actor}
+The acquisition service can act as a relay to other acquisition services that speak the same protocol. If this actor is enabled, any packets it receives are relayed to the configured acquisition server. This is useful for load balancing and for timing accuracy. In load balancing, this server can be configured to filter subsets of devices to other acquisition servers by configuring a relay actor for each server that data is being forwarded to. For timing accuracy, this service can be deployed on a Raspberry Pi at the edge of a network near the sensors, reducing the latency between sensor and server. Then, when a packet arrives at the server, it is updated with a low latency server timestamp which improvies timing accuracy. The low powered Raspberry Pi can then relay the packet to the cloud where it will be handled, but already have the improved timing accuracy built into the packet. 
+
+\subsection{Lokahi Data Storage and Data Models}
+
+\subsubsection{Lokahi Metadata Storage}
+
+\subsubsection{Lokahi Sensor Data Storage}
+
+\subsection{Lokahi Time Synchronization}
+
+\subsection{Lokahi Security}
+
+\subsection{Lokahi Health}
+
+\subsection{Lokahi Analysis}
+
+\subsection{Lokahi Web}
+
+\subsubsection{Lokahi Geofenced Alerts}
+Lokahi utilizes Google's Firebase Cloud Messaging (FCM) to send geofenced alerts to mobile devices. Since we know the location of each device through its metadata, it's possible to define a bounding box in which only devices within that bounding box will receive an alert. 
+
+This is useful when we want to alert users of our sensors to specific events and provides a means of producing actionable insights that can increase S2N. As an example, we may wan to collect data on an upcomming SpaceX launch in Florida. We can create a bounding box for all users in the target area and alert them to an upcomming launch and ask them to turn on their sensors for data collection.
+
+The interface for this is provided by ``Lokahi Web". Once an adminstrator selects their bounding box and supplies their alert message, Lokahi Web uses the FCM API for queuing a message to all sensors in the target area. 
+
+An example of the alerting interface is provided in figure \ref{fig:fcm}.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/fcm.png}
+	\caption{Geofence Alert Interface}
+	\label{fig:fcm}
+\end{figure}

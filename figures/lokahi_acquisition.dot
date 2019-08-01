@@ -1,0 +1,49 @@
+digraph LokahiAcquisition {
+    LokahiSensors [label="Lokahi Sensors"];
+    FS [label="Filesystem", shape="cylinder"];
+    MongoDB [shape="cylinder"];
+    S3 [label="AWS S3", shape="cylinder"];
+    Kafka [label="Apache Kafka"];
+    OtherLokahiAcquisition [label="Other Lokahi Acquisition Service"];
+
+    subgraph cluster_acquisition {
+        label = "Lokahi Acquisition Service";
+
+        AcquisitionActor [label="Acquisition Actor", shape="diamond"];
+        PacketActor [label="Packet Actor", shape="diamond"];
+        FsActor [label="Fs Actor", shape="diamond"];
+        MongoActor [label="Mongo Actor", shape="diamond"];
+        S3Actor [label="S3 Actor", shape="diamond"];
+        KafkaActor [label="Kafka Actor", shape="diamond"];
+        RelayActor [label="Relay Actor", shape="diamond"];
+
+        AcquisitionActor -> PacketActor [label="OCSP"];
+        PacketActor -> AcquisitionActor [label="AR"];
+
+        PacketActor -> FsActor [label="UP, UCSP"];
+        FsActor -> PacketActor [label="AR"]
+
+        PacketActor -> MongoActor [label="UP"];
+        MongoActor -> PacketActor [label="AR"];
+
+        PacketActor -> S3Actor [label="UP, UCSP"];
+        S3Actor -> PacketActor [label="AR"];
+
+        PacketActor -> KafkaActor [label="UP, UCSP"];
+        KafkaActor -> PacketActor [label="AR"]
+
+        PacketActor -> RelayActor [label="UCSP"];
+        RelayActor -> PacketActor [label="AR"];
+    }
+
+    LokahiSensors -> AcquisitionActor [label="OCSP"];
+    AcquisitionActor -> LokahiSensors [label="DR"];
+
+    FsActor -> FS [label="UCSP"];
+
+    MongoActor -> MongoDB [label="M"];
+    S3Actor -> S3 [label="UCSP"];
+    KafkaActor -> Kafka [label="UCSP"];
+    RelayActor -> OtherLokahiAcquisition [label="UCSP"];
+    OtherLokahiAcquisition -> RelayActor [label="DR"];
+}

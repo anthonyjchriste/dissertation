@@ -138,3 +138,6 @@ sympy-plots-for-*.tex/
 *.swp
 *.odg#
 *.cookie
+
+.idea
+dissertation.iml
