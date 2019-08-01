@@ -1,0 +1,27 @@
+digraph analysis_architecture {
+    LokahiWeb [label="Lokahi Web"];
+    S3 [label="AWS S3", shape="cylinder"];
+    Mongo [label="MongoDB", shape="cylinder"];
+
+
+    subgraph cluster_analysis {
+        label = "Lokahi Analysis";
+
+        KafkaConsumer [label="Kafka Consumer"];
+        KafkaProducer [label="Kafka Producer"];
+        AnalysisHandler [label="Analysis Handler"];
+        ProcessPool [label="Analysis Process Pool"];
+
+        KafkaConsumer -> AnalysisHandler [label="Analysis Req."];
+        AnalysisHandler -> ProcessPool [label="Metadata & Sensor Data"];
+        ProcessPool -> AnalysisHandler [label="Analysis Reslts"];
+    }
+
+    LokahiWeb -> KafkaConsumer [label="Analysis Req."];
+    AnalysisHandler -> KafkaProducer [label="Analysis Resp."];
+    AnalysisHandler -> Mongo [label="Product metadata"];
+    AnalysisHandler -> S3 [label="Products"];
+    S3 -> AnalysisHandler [label="Sensor data"];
+    Mongo -> AnalysisHandler  [label="Sensor metadata"];
+    KafkaProducer -> LokahiWeb [label="Analysis Resp."];
+}
