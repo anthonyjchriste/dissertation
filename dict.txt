@@ -339,3 +339,5 @@ A1
 Grafana
 geofenced
 SpaceX
+0x00
+0x01
