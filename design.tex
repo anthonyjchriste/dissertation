@@ -1248,7 +1248,7 @@ The OPQ system is made up of many separate services and technology stacks. Each 
 
 Each OPQ service runs in its own Docker container. Each container is configured so that network access is restricted to only the other containers that it is allowed to communicate with. Docker also allows us to manage which ports are open to the outside world for any particular service.
 
-Docker also provides strict access to the filesystem. These features combined help to provide a secure environment for the execution of OPQ services.
+Docker also restricts access to the filesystem. These features combined help to provide a secure environment for the execution of OPQ services.
 
 The Docker architecture that OPQ uses is presented in Figure \ref{fig:docker_deploy}.
 
