@@ -16,13 +16,12 @@ if __name__ == "__main__":
             errs = list(map(lambda line: line.strip(), stdout.strip().split(b"\n")))
             errors.extend(errs)
 
-        warnings = ["todo", "box", "boxes", "incident"]
-        # Check for todo as well
+        warnings = ["todo", " table ", "(table"]
         with open(tex_file, "r") as fin:
             for line_no, line in enumerate(fin.readlines()):
-                l = line.strip().lower()
+                #l = line.strip().lower()
                 for warning in warnings:
-                    if warning in l:
+                    if warning in line:
                         print("WARN: {} {}:{} -- {}".format(warning, tex_file, line_no, line))
 
     if len(errors) > 0:

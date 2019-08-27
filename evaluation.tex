@@ -88,7 +88,7 @@ The UH meters provide data trends for Voltage, Frequency, and THD in rolled-up o
 
 As an example, if an Incident is created by Mauka with a Voltage sag down to 110V, then I would expect the nearest ground truth meter to also have a minimum Voltage value near 110V for the same time window. If the minimum value from the UH meter does not show a Voltage drop, then we know that Mauka identified a false positive.
 
-I have written a separate service for OPQ called the ``ground-truth-daemon". The role of this daemon is to query the UH Manoa metering HTTP API once per hour and retrieve the previous hours worth of data for all ground truth meters co-located with an OPQ Box or near an OPQ Box. The descriptive statistics along with the meter metadata are stored in MongoDB so that OPQ data can be compared to the ground truth data to identify false positives and false negatives. The ground truth data model was described in table \ref{table:ground_truth}.
+I have written a separate service for OPQ called the ``ground-truth-daemon". The role of this daemon is to query the UH Manoa metering HTTP API once per hour and retrieve the previous hours worth of data for all ground truth meters co-located with an OPQ Box or near an OPQ Box. The descriptive statistics along with the meter metadata are stored in MongoDB so that OPQ data can be compared to the ground truth data to identify false positives and false negatives. The ground truth data model was described in Table \ref{table:ground_truth}.
 
 Since one of the core tenants of Laha is to throw away uninteresting data, we need to store all ground truth data in an effort to identify false negatives. 
 

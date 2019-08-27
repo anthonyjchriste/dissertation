@@ -56,7 +56,7 @@ The Laha framework acts as an adaptive sieve for filtering noise and uninteresti
 
 Each level only keeps data for a specified amount of time before it is garbage collected. As data moves up the pyramid, it is generally considered more useful and therefore has a longer Time to Live (TTL), the amount of the time the data lives before it is garbage collected.  When a higher level detects ``something interesting", the data contained in the time window of ``something interesting" is copied into the levels above it and will still persist even though the original data is garbage collected. In this way, Laha preserves data from all levels if they are associated with interesting data. This also provides graceful degradation of services. The TTL is managed by the overall memory management of the system. Laha Actors are designed to work within the constraints of the TTL at different levels. If a constraint is broken, the Actor logs this issue. TTL can be optimized by Phenomena at each level to either tune for system performance or tune for decreasing of false positives and false negatives at different levels within the Laha hierarchy.
 
-A summary of how data management in Laha is provided in table \ref{data-managament-table}. Note that the TTL is configurable for each implementing network and the table provides default values.
+A summary of how data management in Laha is provided in Table \ref{data-managament-table}. Note that the TTL is configurable for each implementing network and Table \ref{data-managament-table} provides default values.
 
 \begin{table}
 	\caption{Summary of data management and context addition in Laha}
@@ -112,7 +112,7 @@ Phenomena are defined as a grouping of incidents that provide one or more of ann
 
 Not only do Phenomena provide interesting insight and analytics into the underlying data, but they also provide a means for adaptively tuning the underlying collection, triggering, detection, and analysis of a distributed sensor network.
 
-Phenomena are summarized in table \ref{phenomena-summary-table} and discussed in great detail in section \ref{phenomena}.
+Phenomena are summarized in Table \ref{phenomena-summary-table} and discussed in great detail in section \ref{phenomena}.
 
 \section{Phenomena: Providing Adaptive Optimizations in Laha} \label{phenomena}
 
@@ -198,7 +198,7 @@ Actors at each level in the hierarchy are governed by a set of constraints. Thes
 
 Actors are responsible for reporting constraint violations and in this way, Actors are the primary provider of health, performance, and status metrics about the Laha framework.
 
-The constraints for each level of Laha hierarchy is summarized in table \ref{actor-constraint-table}.
+The constraints for each level of Laha hierarchy is summarized in Table \ref{actor-constraint-table}.
 
 \begin{table}
 	\centering
@@ -268,7 +268,7 @@ OPQ Mauka (or just Mauka) is a middleware component of the OPQ system that provi
 
 Mauka sits between Makai and OPQ's database. It receives messages from Makai when Makai has triggered OPQBoxes due to something interesting in the low-fidelity data stream. Mauka then retrieves the raw waveforms stored in the database by Makai, performs feature extraction, and then forwards the features and/or raw waveform to various plugins to perform classification and other high level analytics. These results are then stored in our database and presented to users in OPQView.
 
-Mauka is written entirely in Python 3.7\cite{python:2019} and relies on various scientific libraries for analytics. These include SciPy \cite{scipy:2019}, numpy\cite{numpy}, matplotlib\cite{matplotlib}, and scikit-learn\cite{scikitlearn}. Communication between processes are accomplished with the ZeroMQ\cite{zmq} library. Messages are serialized using Protocol Buffers\cite{protobuf}.
+Mauka is written entirely in Python 3.7\cite{python:2019} and relies on various scientific libraries for analytics. These include SciPy \cite{scipy:2019}, numpy\cite{numpy}, matplotlib\cite{matplotlib}, and scikit-learn\cite{scikitlearn}. Communication between processes are accomplished with the ZeroMQ\cite{zmq} library. Messages are serialized using Protocol Buffers\cite{protobuf}. The Mauka code base consists of over 9,594 lines of Python code split over 45 Python modules. The code base is licensed under the GNU General Public License (GPL) version 3\cite{gplv3}. Mauka is hosted and publicly accessible at OPQ's github repository\cite{opqgithub}.
 
 Mauka is designed as a distributed set of processes that communicate via type-safe message passing. Most functionality in Mauka is implemented as plugins where each plugin runs in its own process, providing horizontal scalability. The direction of communication between plugins can be modeled by a directed acyclic graph (DAG). The DAG property of Mauka plugins ensures easy horizontal scalability by making it possible to trivially create many distributed instances of plugins to meet the computational load. 
 
@@ -281,7 +281,7 @@ In publish/subscribe, any producer can produce messages where each message conta
 
 The push/pull model on the other hand provides unidirectional message flow from a single pushed to a single puller. Using these two types of communications models in conjunction provides the entire communications backbone for Mauka.
 
-To facilitate communication between Mauka and Makai and between Mauka plugins, two communications brokers are provided. 
+To facilitate communication between Mauka and Makai and between Mauka plugins, two communications brokers are provided. Brokers are separate processes whose only jobs are to manage moving typed messages from a source destination to multiple target destinations.
 
 The first broker, the Makai Event Bridge broker, is responsible for subscribing to a ZeroMQ endpoint provided by Makai. This bridge is used to pass event ids created by Makai into Mauka, alerting Mauka to the presence of new data in the database to analyze. When the message is received by the broker, it is transformed into a Mauka Message and published to the second broker, the Mauka Pub Sub Broker, and then broadcast to any subscribing plugins. Mauka plugins that subscribe to event ids then use the event id to look up the associated raw waveforms in the database to perform analysis.
 
@@ -303,7 +303,7 @@ The messages that are passed over ZeroMQ are serialized using the type safe prot
 
 Mauka provides a single message type, ``MaukaMessage", that includes many subtypes. All messages passed within Mauka are of the instance MaukaMessage and may include different subtypes. The MaukaMessage protocol is described in detail in the following tables.
 
-The ``MaukaMessage" (table \ref{table:MaukaMessage}) type contains a timestamp, source, and a union type which can contain multiple types of type safe messages. Every plugin within Mauka sends and receives MaukaMessages and the plugin is responsible for checking the type of the ``message" field and acting on it.
+The ``MaukaMessage" (Table \ref{table:MaukaMessage}) type contains a timestamp, source, and a union type which can contain multiple types of type safe messages. Every plugin within Mauka sends and receives MaukaMessages and the plugin is responsible for checking the type of the ``message" field and acting on it.
 
 \begin{table}[H]
 	\centering
@@ -322,7 +322,7 @@ The ``MaukaMessage" (table \ref{table:MaukaMessage}) type contains a timestamp, 
 	\label{table:MaukaMessage}
 \end{table}
 
-The ``Payload" (table \ref{table:Payload}) variant of message contains data payloads cast to 64-bit precision floating point numbers. This allows us to work with data of multiple type by assuming all data payloads can be cast to 64-bit floats. This message also contains metadata relating to where the data came from, timing information, and a type safe enumeration describing the type of data stored in the payload.
+The ``Payload" (Table \ref{table:Payload}) variant of message contains data payloads cast to 64-bit precision floating point numbers. This allows us to work with data of multiple type by assuming all data payloads can be cast to 64-bit floats. This message also contains metadata relating to where the data came from, timing information, and a type safe enumeration describing the type of data stored in the payload.
 
 \begin{table}[H]
 	\centering
@@ -346,7 +346,7 @@ The ``Payload" (table \ref{table:Payload}) variant of message contains data payl
 	\label{table:Payload}
 \end{table}
 
-The ``PayloadType" (table \ref{table:PayloadType}) variant is an enumeration that describes the type of data stored in any provided payload.
+The ``PayloadType" (Table \ref{table:PayloadType}) variant is an enumeration that describes the type of data stored in any provided payload.
 
 \begin{table}[H]
 	\centering
@@ -369,7 +369,7 @@ The ``PayloadType" (table \ref{table:PayloadType}) variant is an enumeration tha
 	\label{table:PayloadType}
 \end{table}
 
-The ``Heartbeat" (table \ref{table:Heartbeat}) variant is a message that is periodically sent from each plugin providing statistics about plugin health. 
+The ``Heartbeat" (Table \ref{table:Heartbeat}) variant is a message that is periodically sent from each plugin providing statistics about plugin health. 
 
 \begin{table}[H]
 	\centering
@@ -388,7 +388,7 @@ The ``Heartbeat" (table \ref{table:Heartbeat}) variant is a message that is peri
 	\label{table:Heartbeat}
 \end{table}
 
-The ``MakaiEvent" (table \ref{table:MakaiEvent}) variant is a message which includes the ``event\_id" of a newly created event from Makai. This message is received by the ``MakaiEventPlugin" and is used to begin processing new events within Mauka generated by Makai.
+The ``MakaiEvent" (Table \ref{table:MakaiEvent}) variant is a message which includes the ``event\_id" of a newly created event from Makai. This message is received by the ``MakaiEventPlugin" and is used to begin processing new events within Mauka generated by Makai.
 
 \begin{table}[H]
 	\centering
@@ -403,7 +403,7 @@ The ``MakaiEvent" (table \ref{table:MakaiEvent}) variant is a message which incl
 	\label{table:MakaiEvent}
 \end{table}
 
-The ``Measurement" (table \ref{table:Measurement}) variant is a message that contains an instantaneous measurement which includes a timestamp, Voltage, Frequency, and THD metrics.
+The ``Measurement" (Table \ref{table:Measurement}) variant is a message that contains an instantaneous measurement which includes a timestamp, Voltage, Frequency, and THD metrics.
 
 \begin{table}[H]
 	\centering
@@ -426,7 +426,7 @@ The ``Measurement" (table \ref{table:Measurement}) variant is a message that con
 	\label{table:Measurement}
 \end{table}
 
-The ``MakaiTrigger" (table \ref{table:MakaiTrigger}) variant is a message type that is used to send to Makai in order for Mauka to trigger boxes for raw data. This is used when Mauka sees something interesting and wishes to request more data than what was originally provided by Makai.
+The ``MakaiTrigger" (Table \ref{table:MakaiTrigger}) variant is a message type that is used to send to Makai in order for Mauka to trigger boxes for raw data. This is used when Mauka sees something interesting and wishes to request more data than what was originally provided by Makai.
 
 \begin{table}[H]
 	\centering
@@ -449,7 +449,7 @@ The ``MakaiTrigger" (table \ref{table:MakaiTrigger}) variant is a message type t
 	\label{table:MakaiTrigger}
 \end{table}
 
-The ``Laha" (table \ref{table:Laha}) message variant contains multiple types of messages all relating to Laha. These include messages for managing TTL, garbage collection, and Laha based statistics.
+The ``Laha" (Table \ref{table:Laha}) message variant contains multiple types of messages all relating to Laha. These include messages for managing TTL, garbage collection, and Laha based statistics.
 
 \begin{table}[H]
 	\centering
@@ -464,7 +464,7 @@ The ``Laha" (table \ref{table:Laha}) message variant contains multiple types of 
 	\label{table:Laha}
 \end{table}
 
-The ``Ttl" (table \ref{table:Ttl}) Laha message variant is used to dynamically specify TTLs for the provided collection. 
+The ``Ttl" (Table \ref{table:Ttl}) Laha message variant is used to dynamically specify TTLs for the provided collection. 
 
 \begin{table}[H]
 	\centering
@@ -481,7 +481,7 @@ The ``Ttl" (table \ref{table:Ttl}) Laha message variant is used to dynamically s
 	\label{table:Ttl} 
 \end{table}
 
-The ``GcTrigger" (table \ref{table:GcTrigger}) variant is a message that is sent to the GC plugin to notify it that GC should be performed on the domains specified in the message.
+The ``GcTrigger" (Table \ref{table:GcTrigger}) variant is a message that is sent to the GC plugin to notify it that GC should be performed on the domains specified in the message.
 
 \begin{table}[H]
 	\centering
@@ -496,7 +496,7 @@ The ``GcTrigger" (table \ref{table:GcTrigger}) variant is a message that is sent
 	\label{table:GcTrigger}
 \end{table}
 
-The ``GcDomain" (table \ref{table:GcDomain}) enum is used to specify a garbage collection domain within Laha.
+The ``GcDomain" (Table \ref{table:GcDomain}) enum is used to specify a garbage collection domain within Laha.
 
 \begin{table}[H]
 	\centering
@@ -521,7 +521,7 @@ The ``GcDomain" (table \ref{table:GcDomain}) enum is used to specify a garbage c
 	\label{table:GcDomain}
 \end{table}
 
-A ``GcUpdate" (table \ref{table:GcUpdate}) variant is a message that informs the GC plugin to update the TTL for a particular document and all documents living under it. 
+A ``GcUpdate" (Table \ref{table:GcUpdate}) variant is a message that informs the GC plugin to update the TTL for a particular document and all documents living under it. 
 
 \begin{table}[H]
 	\centering
@@ -538,7 +538,7 @@ A ``GcUpdate" (table \ref{table:GcUpdate}) variant is a message that informs the
 	\label{table:GcUpdate}
 \end{table}
 
-A ``GcStat" (table \ref{table:GcStat}) variant message is a message that contains statistics on the number of items garbage collected from a particular GcDomain.
+A ``GcStat" (Table \ref{table:GcStat}) variant message is a message that contains statistics on the number of items garbage collected from a particular GcDomain.
 
 \begin{table}[H]
 	\centering
@@ -555,7 +555,7 @@ A ``GcStat" (table \ref{table:GcStat}) variant message is a message that contain
 	\label{table:GcStat}
 \end{table}
 
-A ``TriggerRequest" (table \ref{table:TriggerRequest}) variant message is a message that is instantiated by Phenomena and sent to the ``TriggerPlugin" enabling Mauka to directly trigger OPQ Boxes for raw data. 
+A ``TriggerRequest" (Table \ref{table:TriggerRequest}) variant message is a message that is instantiated by Phenomena and sent to the ``TriggerPlugin" enabling Mauka to directly trigger OPQ Boxes for raw data. 
 
 \begin{table}[H]
 	\centering
@@ -576,7 +576,7 @@ A ``TriggerRequest" (table \ref{table:TriggerRequest}) variant message is a mess
 	\label{table:TriggerRequest}
 \end{table}
 
-A ``TriggeredEvent" (table \ref{table:TriggeredEvent}) message is constructed by the ``TriggerPlugin" when Mauka receives raw data from Boxes and forwards that data to the  ``MakaiEventPlugin" to perform cycle level feature extraction where the features are eventually forwarded  to relevant plugins for PQ analysis.
+A ``TriggeredEvent" (Table \ref{table:TriggeredEvent}) message is constructed by the ``TriggerPlugin" when Mauka receives raw data from Boxes and forwards that data to the  ``MakaiEventPlugin" to perform cycle level feature extraction where the features are eventually forwarded  to relevant plugins for PQ analysis.
 
 \begin{table}[H]
 	\centering
@@ -662,7 +662,7 @@ Mauka is highly configurable and it loads various static and dynamic configurati
 \subsubsection{Mauka Data Models}
 Mauka works directly with the following data models: Measurements, Trends, Events, BoxEvents, Incidents, and Phenomena. The data models for these collections are described in this sections. 
 
-The measurements collection contains instantaneous measurements produced by Makai. The data model for measurements is described in table \ref{table:Measurement}.
+The measurements collection contains instantaneous measurements produced by Makai. The data model for measurements is described in Table \ref{table:Measurement}.
 
 \begin{table}[H]
 	\centering
@@ -687,7 +687,7 @@ The measurements collection contains instantaneous measurements produced by Maka
 	\label{table:Measurements}
 \end{table}
 
-The trends collection provides summary statistics of frequency, voltage, and THD over a configurable time window. The data model for the trends collection is given in table \ref{table:Trends}.
+The trends collection provides summary statistics of frequency, voltage, and THD over a configurable time window. The data model for the trends collection is given in Table \ref{table:Trends}.
 
 \begin{table}[H]
 	\centering
@@ -714,7 +714,7 @@ The trends collection provides summary statistics of frequency, voltage, and THD
 	\label{table:Trends}
 \end{table}
 
-The events collection contains metadata that map a Makai triggered event to a list of box\_events which points to raw data for each box that was requested raw data for that event. The event data model is described in table \ref{table:Events}.
+The events collection contains metadata that map a Makai triggered event to a list of box\_events which points to raw data for each box that was requested raw data for that event. The event data model is described in Table \ref{table:Events}.
 
 \begin{table}[H]
 	\centering
@@ -741,7 +741,7 @@ The events collection contains metadata that map a Makai triggered event to a li
 	\label{table:Events}
 \end{table}
 
-The box\_events data model is described in table \ref{table:BoxEvents}.
+The box\_events data model is described in Table \ref{table:BoxEvents}.
 
 \begin{table}[H]
 	\centering
@@ -766,7 +766,7 @@ The box\_events data model is described in table \ref{table:BoxEvents}.
 	\label{table:BoxEvents}
 \end{table}
 
-The Incidents collection keeps track of Incidents as defined by Laha. This collections includes metadata for classification and other contextual information relating to power incident. The Incident collection data model is described in table \ref{table:Incidents}.
+The Incidents collection keeps track of Incidents as defined by Laha. This collections includes metadata for classification and other contextual information relating to power incident. The Incident collection data model is described in Table \ref{table:Incidents}.
 
 \begin{table}[H]
 	\centering
@@ -807,7 +807,7 @@ The Incidents collection keeps track of Incidents as defined by Laha. This colle
 	\label{table:Incidents}
 \end{table}
 
-The ``ground\_truth" stores samples collected from the UH installed power meters. This collection is used to compare measurements and trends from OPQ Boxes to the ground truth measured by the UH meters. Each ground truth document consists of meter name, the feature stored, and descriptive statistics for that feature. The ``ground\_truth" data model is described in table \ref{table:ground_truth}.
+The ``ground\_truth" stores samples collected from the UH installed power meters. This collection is used to compare measurements and trends from OPQ Boxes to the ground truth measured by the UH meters. Each ground truth document consists of meter name, the feature stored, and descriptive statistics for that feature. The ``ground\_truth" data model is described in Table \ref{table:ground_truth}.
 
 \begin{table}[H]
 	\centering
@@ -834,7 +834,7 @@ The ``ground\_truth" stores samples collected from the UH installed power meters
 	\label{table:ground_truth}
 \end{table}
 
-The ``laha\_config" collection contains dynamic configuration options that Phenomena can alter. The collection is mainly used for defining the default TTL of collections that Mauka manages. The ``laha\_config" data model is described in table \ref{table:laha_config}.
+The ``laha\_config" collection contains dynamic configuration options that Phenomena can alter. The collection is mainly used for defining the default TTL of collections that Mauka manages. The ``laha\_config" data model is described in Table \ref{table:laha_config}.
 
 \begin{table}[H]
 	\centering
@@ -887,22 +887,22 @@ The BasePlugin provides a MongoDB client for each plugin for reading and writing
 
 \paragraph{MakaiEventPlugin} The ``MakaiEventPlugin" is responsible for reading events newly created by Makai into Mauka. It performs feature extraction on the raw event data streams and forwards those features (or the raw data) to subscribing plugins. This allows Mauka to perform the important feature extraction once, and reuse those features in multiple plugins.
 
-The MakaiEventPlugin subscribes to messages from the topic ``MakaiEventMessage". These messages are described in table \ref{table:MakaiEvent}. When a message is received, the plugin waits a configurable amount of time to ensure that Makai has finished writing data to the database. Once the data is in the database, the plugin loads the raw data and performs feature extraction.
+The MakaiEventPlugin subscribes to messages from the topic ``MakaiEventMessage". These messages are described in Table \ref{table:MakaiEvent}. When a message is received, the plugin waits a configurable amount of time to ensure that Makai has finished writing data to the database. Once the data is in the database, the plugin loads the raw data and performs feature extraction.
 
-The raw waveform from the OPQBox is serialized into a Payload (table \ref{table:Payload}) with PayloadType (table \ref{table:PayloadType}) ``ADC\_SAMPLES" and produced to the topic ``AdcSamples".
+The raw waveform from the OPQBox is serialized into a Payload (Table \ref{table:Payload}) with PayloadType (Table \ref{table:PayloadType}) ``ADC\_SAMPLES" and produced to the topic ``AdcSamples".
 
-The raw Voltage is calculated by dividing each sample of the raw waveform by the calibration constant loaded from the database that is set for each device. The raw Voltage  is serialized into a Payload (table \ref{table:Payload}) with PayloadType (table \ref{table:PayloadType}) ``VOLTAGE\_RAW" and produced to the topic ``RawVoltage".
+The raw Voltage is calculated by dividing each sample of the raw waveform by the calibration constant loaded from the database that is set for each device. The raw Voltage  is serialized into a Payload (Table \ref{table:Payload}) with PayloadType (Table \ref{table:PayloadType}) ``VOLTAGE\_RAW" and produced to the topic ``RawVoltage".
 
-$V_{rms}$ is the peak-to-peak voltage over a configurable time window. By default, Mauka uses a time window of one electrical cycle at 60$Hz$ which works out to be $1/60$ seconds. $V_{rms}$ is calculated by moving a running window over the raw voltage waveform. The computation of $V_{rms}$ for each window with $n$ samples is given by equation \ref{equation:Vrms}. The RMS Voltage  is serialized into a Payload (table \ref{table:Payload}) with PayloadType (table \ref{table:PayloadType}) ``VOLTAGE\_RMS\_WINDOWED" and produced to the topic ``RmsWindowedVoltage".
+$V_{rms}$ is the peak-to-peak voltage over a configurable time window. By default, Mauka uses a time window of one electrical cycle at 60$Hz$ which works out to be $1/60$ seconds. $V_{rms}$ is calculated by moving a running window over the raw voltage waveform. The computation of $V_{rms}$ for each window with $n$ samples is given by equation \ref{equation:Vrms}. The RMS Voltage  is serialized into a Payload (Table \ref{table:Payload}) with PayloadType (Table \ref{table:PayloadType}) ``VOLTAGE\_RMS\_WINDOWED" and produced to the topic ``RmsWindowedVoltage".
 
 \begin{equation}
 \label{equation:Vrms}
 	V_{RMS} = \sqrt{\frac{\sum_{i=0}^{n} n_{i}^2}{n}}
 \end{equation}
 
-Windowed frequency is the frequency calculated for a configurable time window. By default, Mauka uses a time window of one electrical cycle at 60$Hz$ which works out to be $1/60$ seconds. The frequency is calculated by first smoothing the raw Voltage waveform by applying a $4^{th}$ order Butterworth filter to the waveform with a cutoff frequency of 500$Hz$ and a down sampling rate of 2. Then, a window is moved across the smoothed signal and the frequency is calculated for each window by performing a least squares regression and fitting a sinusoide. The windowed frequency is serialized into a Payload (table \ref{table:Payload}) with PayloadType (table \ref{table:PayloadType}) ``FREQUENCY\_WINDOWED" and produced to the topic ``WindowedFrequency".
+Windowed frequency is the frequency calculated for a configurable time window. By default, Mauka uses a time window of one electrical cycle at 60$Hz$ which works out to be $1/60$ seconds. The frequency is calculated by first smoothing the raw Voltage waveform by applying a $4^{th}$ order Butterworth filter to the waveform with a cutoff frequency of 500$Hz$ and a down sampling rate of 2. Then, a window is moved across the smoothed signal and the frequency is calculated for each window by performing a least squares regression and fitting a sinusoide. The windowed frequency is serialized into a Payload (Table \ref{table:Payload}) with PayloadType (Table \ref{table:PayloadType}) ``FREQUENCY\_WINDOWED" and produced to the topic ``WindowedFrequency".
 
-When new events are received by the MakaiEventPlugin, a GcUpdate (table \ref{table:GcUpdate}) message is produced informing the LahaGcPlugin that all ``measurements" and ``trends" stored by Makai should receive a TTL of the newly created event.
+When new events are received by the MakaiEventPlugin, a GcUpdate (Table \ref{table:GcUpdate}) message is produced informing the LahaGcPlugin that all ``measurements" and ``trends" stored by Makai should receive a TTL of the newly created event.
 
 \paragraph{FrequencyVariationPlugin}
 The ``FrequencyVariationPlugin" is used to classify generic frequency sags, swells, and interruptions as defined by the IEEE1159 standard\cite{IEEE:2018:1159D3}. The plugin subscribes to messages from the ``WindowedFrequency" topic which includes a payload of frequency features over one electrical cycle.
@@ -976,7 +976,7 @@ Table \ref{table:DefaultTtls} displays the default TTL in seconds for each OPQ c
 	\label{table:DefaultTtls}
 \end{table}
 
-As each item is saved to the database, it is assigned with a default TTL as described in table \ref{table:DefaultTtls}. If the item that was assigned to the database is later deemed important by Mauka and is referenced by a parent item, it receives the TTL of the parent item allowing that data to live as long as the parent does. If the parent item is a Phenomena, then all data relating to that Phenomena (from all levels are the hierarchy) will live forever. The process of updating
+As each item is saved to the database, it is assigned with a default TTL as described in Table \ref{table:DefaultTtls}. If the item that was assigned to the database is later deemed important by Mauka and is referenced by a parent item, it receives the TTL of the parent item allowing that data to live as long as the parent does. If the parent item is a Phenomena, then all data relating to that Phenomena (from all levels are the hierarchy) will live forever. The process of updating
 
 The Mauka plugin ``LahaGcPlugin" is responsible for GC and TTL management. Each plugin in Mauka produces a heartbeat at a predefined interval. GC within the LahaGcPlugin takes place every time the plugin produces a heartbeat.
 
@@ -1025,7 +1025,7 @@ The SemiF47 curve is displayed in figure \ref{fig:SemiF47Curve}.
 	\label{fig:SemiF47Curve}
 \end{figure}
 
-SemiF47 described in table form is presented in table \ref{fig:SemiF47Table}.
+SemiF47 is described in Table \ref{fig:SemiF47Table}.
 
 \begin{figure}
 	\centering
@@ -1040,7 +1040,7 @@ Mauka provides a health endpoint that can be queried by OPQ Health to determine 
 
 The Mauka plugin ``StatusPlugin" is responsible for obtaining and providing the status of the OPQ Mauka service. The plugin subscribes to heartbeats sent at configurable intervals from all other plugins including itself. When the plugin receives a heartbeat, it updates its internal state which includes a mapping of all plugins, their state, and the last time that plugin sent a heartbeat. 
 
-The plugin provides a configurable HTTP endpoint which is queried by OPQ Health. The plugin extracts the internal health state and serializes the state as JSON using the protocol described in table \ref{table:HealthProtocol}. This protocol is standardized for health collection across all OPQ services.
+The plugin provides a configurable HTTP endpoint which is queried by OPQ Health. The plugin extracts the internal health state and serializes the state as JSON using the protocol described in Table \ref{table:HealthProtocol}. This protocol is standardized for health collection across all OPQ services.
 
 \begin{table}[H]
 	\centering
@@ -1091,9 +1091,9 @@ The types of metrics collected include plugin statistics, system statistics, and
 
 Metrics are collected at a configurable interval. System statistics such as CPU usage, memory usage, and disk usage are sampled once every 10 seconds. Once every 5 minutes, all metrics are saved to disk. The system statistic metrics which are sampled more frequency are rolled into a 5 minute metric only storing min, max, mean, variance, count, and start and end timestamp.
 
-Mauka metrics consist of nested documents. The following table swill describe each of the documents stored in the metrics collection.
+Mauka metrics consist of nested documents. The following Table swill describe each of the documents stored in the metrics collection.
 
-The base document shown in table \ref{table:Metrics} contains links to all of the high level metrics that Mauka collects. This includes metrics for plugins, system statistics, Laha metrics, and ground truth.
+The base document shown in Table \ref{table:Metrics} contains links to all of the high level metrics that Mauka collects. This includes metrics for plugins, system statistics, Laha metrics, and ground truth.
 
 \begin{table}[H]
 	\centering
@@ -1115,7 +1115,7 @@ The base document shown in table \ref{table:Metrics} contains links to all of th
 	\label{table:Metrics}
 \end{table}
 
-Plugin metrics are described in table \ref{table:MetricsPluginStat} and mainly record the plugin name and the number and size of messages received and produced for each plugin.
+Plugin metrics are described in Table \ref{table:MetricsPluginStat} and mainly record the plugin name and the number and size of messages received and produced for each plugin.
 
 \begin{table}[H]
 	\centering
@@ -1136,7 +1136,7 @@ Plugin metrics are described in table \ref{table:MetricsPluginStat} and mainly r
 	\label{table:MetricsPluginStat}
 \end{table}
 
-System metrics as shown in table \ref{table:MetricsSystemStat} use descriptive statistics over a time window to collect the minimum, maximum, mean, variance, and count of memory, disk, and CPU usage.
+System metrics as shown in Table \ref{table:MetricsSystemStat} use descriptive statistics over a time window to collect the minimum, maximum, mean, variance, and count of memory, disk, and CPU usage.
 
 \begin{table}[H]
 	\centering
@@ -1163,7 +1163,7 @@ System metrics as shown in table \ref{table:MetricsSystemStat} use descriptive s
 	\label{table:MetricsSystemStat}
 \end{table}
 
-The Laha metrics described in table \ref{table:MetricsLaha} store metrics relating to the TTL, size, and count of Laha collections.
+The Laha metrics described in Table \ref{table:MetricsLaha} store metrics relating to the TTL, size, and count of Laha collections.
 
 \begin{table}[H]
 	\centering
@@ -1325,7 +1325,7 @@ Lokahi is made up of several distributed services, each of which will be discuss
 \subsection{Lokahi Data Acquisition Service}
 The data acquisition service is responsible for acquiring, authenticating, storing, and moving real-time sensor data from Lokahi sensors. 
 
-The data acquisition service is written in Rust and makes use of Actix Actors for scalability and distributed communication. Originally, the data acquisition server was written in Java using Akka Actors. We've recently moved the acquisition server to Rust so that it can be ran on embedded hardware such as Raspberry Pis in resource restricted environments or on the edge of networks. Rust also provides performances improvements in terms of CPU utilization and memory utilization.
+The data acquisition service is written in Rust and makes use of Actix Actors for scalability and distributed communication. Originally, the data acquisition server was written in Java using Akka Actors. I recently moved the acquisition server to Rust so that it can be ran on embedded hardware such as Raspberry Pis in resource restricted environments or on the edge of networks. Rust also provides performances improvements in terms of CPU utilization and memory utilization.
 
 Type safe data is passed between actors where each actor fulfills a single purpose. When an actor successfully completes a unit of work, it responds with an empty success message to the calling actor. If an actor fails to complete a unit of work, it responds with a type safe error message to the calling actor. Errors messages are passed up the chain until they get to the original caller. 
 
@@ -1435,7 +1435,7 @@ A description of the algorithm is provided below. This algorithm expects that th
 	\end{enumerate}
 \end{enumerate}
 
-The protocol used for communicating message exchanges is a simple binary protocol designed to reduce bandwidth. The protocol is described in detail in table \ref{table:syncproto}. 
+The protocol used for communicating message exchanges is a simple binary protocol designed to reduce bandwidth. The protocol is described in detail in Table \ref{table:syncproto}. 
 
 \begin{table}[H]
 	\centering
