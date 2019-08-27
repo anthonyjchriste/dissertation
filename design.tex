@@ -947,7 +947,7 @@ In order for Mauka to know when items should be GCed, all elements stored in the
 
 Data within Laha is continually refined with context and by importance in Laha and by extension, OPQ does the same. As data is deemed interesting by Mauka, it is moved upward through the Laha hierarchy by Laha Actors. In the case of Mauka, this means moving raw data and features from OPQ Boxes into Mauka. When Mauka identifies interesting features of this data, it is moved into events. Interesting enough events are moved into Incidents, and collections of Incidents are moved into Phenomena. Whenever data is moved upwards, that data receives the TTL of its parent, and thus, will live for as long as its parent does.  
 
-Originally, Mauka relied on MongoDB's Time-to-Live (TTL) semantics for expiring and deleting uninteresting data. This worked trivially, but did not provide the flexibility needed for Mauka's refined garbage collection needs. For example, MongoDB's TTL could only be applied to entire collections and not dynamically to individual elements in the collection. MongoDB's TTL was also difficult to update dynamically based on the state of the system. Because we want to assign TTLs dynamically (as interesting data is moved upwards) we required a more robust solution to TTL and GC management.
+Originally, Mauka relied on MongoDB's Time-to-Live (TTL) semantics for expiring and deleting uninteresting data. This did not provide the flexibility needed for Mauka's refined garbage collection needs. For example, MongoDB's TTL could only be applied to entire collections and not dynamically to individual elements in the collection. MongoDB's TTL was also difficult to update dynamically based on the state of the system. Because we want to assign TTLs dynamically (as interesting data is moved upwards) we required a more robust solution to TTL and GC management.
 
 Default TTLs are dynamically stored in the Mongo database under the ``laha\_config" collection and the ``ttls" key. Since the TTLs are stored in the database, they can be updated and tuned by Mauka's Phenomena.
 
@@ -992,7 +992,7 @@ In order to GC events, first all events with a TTL less than the current date an
 
 To GC incidents, a similar algorithm is provided. First, incidents with a TTL less than the current date and time are identified. From these identified incidents, Mauka looks up and removes the corresponding data in gridfs. Finally, the incidents are removed.
 
-Phenomena, being the top of the hierarchy is never GCed.
+Phenomena, being the top of the hierarchy are GCed the least since it provides the most context for optimizing the DSN. Phenomena are only GCed when they are shown to be incorrect or are otherwise unused over the period of a year. Thus, Phenomena take the same default TTL as Incidents. Phenomena differ from Incidents in that every time a Phenomena is referenced by the DSN, it's TTL is renewed for another year from the last use date. Similarly to other collections, when a Phenomena's TTL is updated, all collections that the Phenomena references will also have their TTL updated.
 
 Metrics for GC (i.e. the number of items removed per collection) are stored providing insights to data management and effectiveness. 
 
