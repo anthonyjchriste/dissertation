@@ -6,7 +6,9 @@ graph MaukaMessages {
   MaukaMessage -- MakaiTrigger
   MaukaMessage -- Laha
   MaukaMessage -- TriggerRequest
-  MaukaMessage -- TriggeredEvent
+  MaukaMessage -- ThresholdOptimizationRequest
+  MaukaMessage -- TtlOptimizationRequest
+  MaukaMessage -- RateOptimizationRequest
 
   Payload -- PayloadType
 

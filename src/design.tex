@@ -362,7 +362,7 @@ The ``MaukaMessage" (Table~\ref{table:MaukaMessage}) type contains a timestamp, 
 		\hline
 		source & string & Name of plugin that produced this message. \\
 		\hline
-		message & oneof (Payload, Heartbeat, MakaiEvent, Measurement, MakaiTrigger, Laha, TriggerRequest, TriggeredEvent) & A union of subtypes. \\
+		message & oneof (Payload, Heartbeat, MakaiEvent, Measurement, MakaiTrigger, Laha, TriggerRequest, ThresholdOptimizationRequest, ) & A union of subtypes. \\
 		\hline
 	\end{tabular}
 	\label{table:MaukaMessage}
@@ -622,27 +622,47 @@ A ``TriggerRequest" (Table~\ref{table:TriggerRequest}) variant message is a mess
 	\label{table:TriggerRequest}
 \end{table}
 
-A ``TriggeredEvent" (Table~\ref{table:TriggeredEvent}) message is constructed by the ``TriggerPlugin" when Mauka receives raw data from Boxes and forwards that data to the  ``MakaiEventPlugin" to perform cycle level feature extraction where the features are eventually forwarded  to relevant plugins for PQ analysis.
+A ``ThresholdOptimizationRequest" (Table~\ref{table:ThresholdOptimziationRequest}) variant message is a message that is created by Phenomena and sent to the ``ThresholdOptimizationPlugin" to dynamically modify default or override thresholds values for Makai's threshold triggering plugin.
 
 \begin{table}[H]
 	\centering
-	\caption{TriggerRequest}
+	\caption{ThresholdOptimizationRequest}
 	\begin{tabular}{|c|c|p{8cm}|}
 		\hline
 		Field & Type & Description  \\
 		\hline
-		start\_timestamp\_ms & uint64 & Start time of data request. \\
+		default\_ref\_f & f64 & Default reference frequency \\
 		\hline
-		end\_timestamp\_ms & uint64 & End time of data request. \\
+		default\_ref\_v & f64 & Default reference voltage \\
 		\hline
-		box\_id & string & The Box that the data is from. \\
+		default\_threshold\_percent\_f\_low & f64 & Default frequency percent low threshold \\
 		\hline
-		incident\_id & uint64 & The original Incident leading to this new Event. \\
+		default\_threshold\_percent\_f\_high & f64 & Default frequency percent high threshold \\
 		\hline
-		data & [i32] & The raw data casted from i16 to i32 since protobuf does not have a 16-bit type. \\
+		default\_threshold\_percent\_v\_low & f64 & Default voltage percent low threshold \\
+		\hline
+		default\_threshold\_percent\_v\_high & f64 & Default voltage percent high threshold \\
+		\hline
+		default\_threshold\_percent\_thd\_high & f64 & Default THD percent high threshold \\
+		\hline
+		box\_id & str & Override Box id \\
+		\hline
+		ref\_f & f64 & Override reference frequency \\
+		\hline
+		ref\_v & f64 & Override reference voltage \\
+		\hline
+		threshold\_percent\_f\_low & f64 & Override frequency percent low threshold \\
+		\hline
+		threshold\_percent\_f\_high & f64 & Override frequency percent high threshold \\
+		\hline
+		threshold\_percent\_v\_low & f64 & Override voltage percent low threshold \\
+		\hline
+		threshold\_percent\_v\_high & f64 & Override voltage percent high threshold \\
+		\hline
+		threshold\_percent\_thd\_high & f64 & Override THD percent high threshold \\
 		\hline
 	\end{tabular}
-	\label{table:TriggeredEvent}
+	\label{table:ThresholdOptimziationRequest}
 \end{table}
 
 Figure~\ref{fig:mauka_messages} displays all types used and their variants for the Mauka communications protocol.
@@ -703,7 +723,7 @@ It's important to note some distinctions between the commands. Loading a plugin 
 \end{table}
 
 \subsubsection{Mauka Configuration}
-Mauka is highly configurable and it loads various static and dynamic configurations. Static configurations, or configurations that are loaded when Mauka starts are provided by a JSON file (appendix~\ref{appendix:MaukaConfig}). Dynamic configurations related to TTL and garbage collection are stored in the MongoDB and are discussed in detail in section~\ref{gc_plugin}.
+Mauka is highly configurable and it loads various static and dynamic configurations. Static configurations, or configurations that are loaded when Mauka starts are provided by a JSON file (appendix~\ref{appendix:MaukaConfig}). Dynamic configurations related to TTL and garbage collection are stored in the MongoDB and are discussed in detail in section~\ref{sec:gc_plugin}.
 
 \subsubsection{Mauka Data Models}
 Mauka works directly with the following data models: Measurements, Trends, Events, BoxEvents, Incidents, and Phenomena. The data models for these collections are described in this sections.
@@ -904,6 +924,62 @@ The ``laha\_config" collection contains dynamic configuration options that Pheno
 \end{table}
 
 The ``laha\_stats" collection contains system statistics that measure various performance metrics in relation to Laha's optimizations. The full details of the ``laha\_stats" collection is provided in the section describing the ``SystemStatsPlugin"~\ref{lbl:SystemStatsPlugin}.
+
+The ``makai\_config" collection contains default and Box override thresholds used by Makai's threshold triggering plugin. These items can be dynamically modified by the ``ThresholdOptimizationPlugin"\ref{subsubsec:threshold-optimization-pugin}.
+
+\begin{table}[H]
+	\centering
+	\caption{Makai Config Data Model}
+	\begin{tabular}{|c|c|p{8cm}|}
+		\hline
+		Field & Type & Description \\
+		\hline
+		default\_ref\_f & f64 & Default reference frequency \\
+		\hline
+		default\_ref\_v & f64 & Default reference voltage \\
+		\hline
+		default\_threshold\_percent\_f\_low & f64 & Default frequency percent low threshold \\
+		\hline
+		default\_threshold\_percent\_f\_high & f64 & Default frequency percent high threshold \\
+		\hline
+		default\_threshold\_percent\_v\_low & f64 & Default voltage percent low threshold \\
+		\hline
+		default\_threshold\_percent\_v\_high & f64 & Default voltage percent high threshold \\
+		\hline
+		default\_threshold\_percent\_thd\_high & f64 & Default THD percent high threshold \\
+		\hline
+		triggering\_overrides & [Makai Config Override] & List of Box specific overrides \\
+		\hline
+	\end{tabular}
+	\label{table:makai_config}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\caption{Makai Config Override Data Model}
+	\begin{tabular}{|c|c|p{8cm}|}
+		\hline
+		Field & Type & Description \\
+		\hline
+		box\_id & str & Override Box id \\
+		\hline
+		ref\_f & f64 & Override reference frequency \\
+		\hline
+		ref\_v & f64 & Override reference voltage \\
+		\hline
+		threshold\_percent\_f\_low & f64 & Override frequency percent low threshold \\
+		\hline
+		threshold\_percent\_f\_high & f64 & Override frequency percent high threshold \\
+		\hline
+		threshold\_percent\_v\_low & f64 & Override voltage percent low threshold \\
+		\hline
+		threshold\_percent\_v\_high & f64 & Override voltage percent high threshold \\
+		\hline
+		threshold\_percent\_thd\_high & f64 & Override THD percent high threshold \\
+		\hline
+	\end{tabular}
+	\label{table:makai_config_override}
+\end{table}
 
 The ``phenomena" collection contains metadata relating to Phenomena produced by Mauka.
 
@@ -1282,9 +1358,15 @@ Data triggered from Mauka is fundamentally different than data triggered from Ma
 \paragraph{ThresholdOptimizationPlugin}\label{subsubsec:threshold-optimization-pugin}
 The ThresholdOptimizationPlugin is responsible for modifying dynamic triggering thresholds within Makai. Makai utilizes two methods for triggering Boxes. One method called ``Napali" was produced by Sergey Negrashov as part of his dissertation research. The Napali trigger uses a windowed statistical model for triggering devices based off of metric distance from standard deviations and means. The second approach to triggering is a threshold trigger which watches Frequency, Voltage, and THD levels to determine if they've passed certain thresholds. This plugin works with the second type of triggering, the threshold trigger. Threshold based triggering is described in section~\ref{subsubsec:dynamic-triggering}.
 
-Thresholds are stored in MongoDB and consist of default thresholds and override thresholds which are thresholds set specifically for individual devices. This plugin can dynamically modify both types of thresholds.
+Thresholds are stored in MongoDB and consist of default thresholds and override thresholds which are thresholds set specifically for individual devices. This plugin can dynamically modify both types of thresholds. The data model for thresholds are presented in Table~\ref{table:makai_config}.
+
+This plugin receives the MaukaMessage variant ``ThresholdOptimizationRequest"\ref{table:ThresholdOptimziationRequest}. When a request is received, the default thresholds can be updated, a single override threshold can be updated, or both can be updated at the same time.
+
+For any default value in the request that is larger than 0, the default threshold value in the database is updated with the new request value. If the request contains an override value larger than 0, this plugin first checks to see an override for that Box already exists in the database. If an override already exists, then the override is updated with the new override values from the request. If the override does not exist, then a new override is created with default values and the override values are updated from the request.
 
 \paragraph{RateOptimizationPlugin}
+
+The ``RateOptimizationPlugin"
 
 \paragraph{TtlOptimizationPlugin}\label{subsubsec:ttl-optimization-pugin}
 
