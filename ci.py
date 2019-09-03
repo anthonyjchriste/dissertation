@@ -5,7 +5,7 @@ import subprocess
 import sys
 
 if __name__ == "__main__":
-    tex_files = glob.glob("*.tex")
+    tex_files = glob.glob("src/*.tex")
     print("Checking spelling of {} tex source files...".format(len(tex_files)))
     errors = []
 

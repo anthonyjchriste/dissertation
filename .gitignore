@@ -140,4 +140,7 @@ sympy-plots-for-*.tex/
 *.cookie
 
 .idea
-dissertation.iml
+*.iml
+
+out
+auxil
