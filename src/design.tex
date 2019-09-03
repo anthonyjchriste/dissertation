@@ -287,8 +287,27 @@ Figure~\ref{fig:threshold_triggering} provides an overview of the states that ar
 \end{figure}
 
 \subsubsection{TTL Provider Service}
+Time-to-Live (or TTL) is a metric for defining when documents in the Mongo database should be garbage collected. The TTL metric is stored dynamically in the MongoDB collection ``laha\_config". A TTL metric is provided for each collection and the value represents the number of seconds after document creation that that document should be garbage collected. TTLs are dynamically managed by Mauka's ``TtlOptimizationPlugin"~\ref{subsubsec:ttl-optimization-pugin}. The actual garbage collection itself is provided by Mauka's ``LahaGcPlugin"\ref{sec:gc_plugin}.
+
+TTLs are assigned in Makai to measurements, trends, and events since Makai handles storage for these collections. Because TTLs are dynamic and can be updated by Mauka at anytime, a cached TTL provider service was created to provide performant access to TTLs in the database. This service loads the TTLs from the database and caches those values for a configurable amount of time (which defaults to one minute). The cache enables Makai to assign TTLs without hitting the database for every measurement, trend, and event that it creates. If a TTL is updated by Mauka, then the cached value will expire after a configurable amount of time and the new TTL will be cached and used until the next cache invalidation.
+
+This service lives within Makai and was written in Rust.
 
 \subsubsection{Event Id Service}
+Event ids are used to uniquely identify events produced by either Makai or Mauka. We need to ensure that event ids are unique between services and monotonically increasing. This restraint requires that a single source of truth provide the event ids to avoid race conditions between Makai and Mauka. The EventId Service is a service written in Rust that resides in Makai's Event Broker.
+
+The service wraps an atomic integer and provides thread-safe access to this integer. The service allows anyone to peak at the current highest event id and to also increment and get the next highest available event id. When this service is initialized, it queries the MongoDB for the highest event id in the database. All other requests to this service will increment the atomic integer and use that value for the next event id. In this way, the database only needs to be queried once on initialization and all other operations are on the atomic integer.
+
+This service can be passed directly into Makai's Event Broker using automatic reference counting (ARC). To enable Mauka to access this service, the same service is passed into a ZMQ thread using ARC. The ZMQ thread provides a ZMQ REP endpoint for requesting atomic event ids from this service. An example of Mauka requesting the event id from Makai is described in section~\ref{sec:trigger_plugin}.
+
+A high level overview of the Event Id Service is provided if figure~\ref{fig:eid_service}.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.7\linewidth]{figures/event_id_service.png}
+	\caption{Event Id Service}
+	\label{fig:eid_service}
+\end{figure}
 
 \subsection{OPQ: Mauka}\label{subsec:opq:-mauka}
 OPQ Mauka (or just Mauka) is a middleware component of the OPQ system that provides higher level analytics on PQ data as well as a platform for managing data volume, providing actionable insights into the network, optimizing the network, and providing PQ based Phenomena. Most importantly, Mauka provides most of the functionality that makes OPQ a Laha-compliant DSN\@.
@@ -967,7 +986,7 @@ In order to plot the value on the curve, the curve is first constructed as a set
 
 If a new incident is created, a message is sent to the LahaGcPlugin informing the plugin to update the TTL of all measurements, trends, and events that belong to the incident.
 
-\paragraph{LahaGcPlugin}\label{gc_plugin}
+\paragraph{LahaGcPlugin}\label{sec:gc_plugin}
 Mauka provides custom garbage collection (GC) for identifying and removing ``uninteresting" data. This fulfills one of Laha's claims that it is able to manage data storage pressure while increasing the signal-to-noise ratio within the data set.
 
 In order for Mauka to know when items should be GCed, all elements stored in the database are assigned a TTL. A default TTL is assigned when the element is first created, but can be updated later by Mauka plugins depending on if that data is deemed ``interesting".
@@ -1227,7 +1246,7 @@ The full details of our transient classification system are published in the Pro
 
 When a transient is classified a new transient Incident is created. If an incident is created, this plugin sends a GC\_UPDATE message to the LahaGcPlugin informing it to update the TTLs for all measurements, trends, and events that belong to this new incident.
 
-\paragraph{TriggerPlugin}
+\paragraph{TriggerPlugin}\label{sec:trigger_plugin}
 The ``TriggerPlugin" provides Mauka with the functionality to trigger OPQ Boxes itself instead of relying on Makai for triggering. Generally, Mauka is only provided with event\_ids when Makai triggers Boxes based off of their low-fidelity data streams. Mauka then loads the associated event data from the database, performs cycle level feature extraction, and then forwards those features to analysis plugins for PQ analysis.
 
 This plugin takes advantage of Phenomena in order to find incidents that may not have passed Makai's triggering thresholds.

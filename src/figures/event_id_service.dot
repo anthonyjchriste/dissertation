@@ -1,0 +1,17 @@
+digraph event_id_service {
+    Mauka [shape="box"]
+
+    subgraph cluster_makai {
+        label = "Makai Services";
+        EventService [label="Event Service"]
+        EventIdService [label="Event Id Service"]
+        EventIdBroker [label="ZMQ REQ/REP EID Broker"]
+    }
+
+    Mauka -> EventIdBroker [label="EID Req"]
+    EventIdBroker -> EventIdService [label="EID Req"]
+    EventIdService -> EventIdBroker [label="EID Resp"]
+    EventIdBroker -> Mauka [label="EID Resp"]
+    EventService -> EventIdService [label="EID Req"]
+    EventIdService -> EventService [label="EID Resp"]
+}
