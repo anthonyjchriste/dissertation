@@ -1,0 +1,15 @@
+digraph threhold_triggering {
+    BoxId
+    Frequency
+    Voltage
+    THD
+    TriggerState [label="Trigger State [NOMINAL | TRIGGER]"]
+
+    BoxId -> Frequency
+    BoxId -> Voltage
+    BoxId -> THD
+
+    Frequency -> TriggerState
+    Voltage -> TriggerState
+    THD -> TriggerState
+}
