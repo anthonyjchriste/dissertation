@@ -8,129 +8,129 @@
 {
 	// Enables debugging for Mauka plugins
 	"mauka.debug": true,
-	
+
 	// List of plugins to debug
 	"mauka.debug.plugins": ["MakaiEventPlugin", "StatusPlugin"],
-	
+
 	// Should the event broker be started with Mauka?
 	"mauka.startEventBroker": true,
-	
+
 	// Should the pub/sub broker be started with Mauka?
 	"mauka.startPubSubBroker": true,
-	
+
 	// Should the plugins be started with Mauka?
 	"mauka.startPlugins": true,
-	
+
 	// Makai's event endpoint
 	"zmq.event.interface"           : "tcp://localhost:10000",
-	
+
 	// Makai's triggering endpoint
 	"zmq.trigger.interface"         : "tcp://localhost:9899",
-	
+
 	// Mauka's pub/sub broker producer endpoint
 	"zmq.mauka.broker.pub.interface": "tcp://*:9883",
-	
+
 	// Mauka's pub/sub broker consumer endpoint
 	"zmq.mauka.broker.sub.interface": "tcp://*:9882",
-	
+
 	// Mauka's plugin producer endpoint
 	"zmq.mauka.plugin.pub.interface": "tcp://localhost:9882",
-	
+
 	// Mauka's plugin consumer endpoint
 	"zmq.mauka.plugin.sub.interface": "tcp://localhost:9883",
-	
+
 	// Plugin manager response endpoint
 	"zmq.mauka.plugin.management.rep.interface": "tcp://*:12000",
-	
+
 	// Plugin manager request endpoint
 	"zmq.mauka.plugin.management.req.interface": "tcp://localhost:12000",
-	
+
 	// MongoDB host
 	"mongo.host": "localhost",
-	
+
 	// MongoDB port
 	"mongo.port": 27017,
-	
+
 	// MongoDB database
 	"mongo.db": "opq",
-	
+
 	// Plugin heartbeat interval in seconds
 	"plugins.base.heartbeatIntervalS": 60.0,
-	
+
 	// ITIC segmentation threshold
 	"plugins.IticPlugin.segment.threshold.rms": 0.1,
-	
+
 	// FrequencyVariationPlugin reference frequency
 	"plugins.FrequencyVariationPlugin.frequency.ref": 60.0,
-	
+
 	// FrequencyVariationPlugin threshold low
 	"plugins.FrequencyVariationPlugin.frequency.variation.threshold.low": 0.1,
-	
+
 	// FrequencyVariationPlugin threshold high
 	"plugins.FrequencyVariationPlugin.frequency.variation.threshold.high": 0.1,
-	
+
 	// FrequencyVariationPlugin interruption threshold
 	"plugins.FrequencyVariationPlugin.frequency.interruption": 58.0,
-	
+
 	// FrequencyVariationPlugin maximum lull in windows
 	"plugins.FrequencyVariationPlugin.max.lull.windows": 3,
-	
+
 	// TransietPlugin noise floor
 	"plugins.TransientPlugin.noise.floor" : 6.0,
-	
+
 	// TransietPlugin minimum oscillatory cycles
 	"plugins.TransientPlugin.oscillatory.min.cycles" : 3,
-	
+
 	// TransietPlugin low frequency max hz
 	"plugins.TransientPlugin.oscillatory.low.freq.max.hz" : 5000.0,
-	
+
 	// TransietPlugin medium frequency max hx
 	"plugins.TransientPlugin.oscillatory.med.freq.max.hz" : 500000.0,
-	
+
 	// TransietPlugin high frequency max hz
 	"plugins.TransientPlugin.oscillatory.high.freq.max.hz" : 5000000.0,
-	
+
 	// TransietPlugin Zero crossing threshold
 	"plugins.TransientPlugin.arcing.zero.crossing.threshold" : 10,
-	
+
 	// TransietPlugin Maximum lull in milliseconds
 	"plugins.TransientPlugin.max.lull.ms" : 4.0,
-	
+
 	// TransietPlugin periodic notching standard deviation
 	"plugins.TransientPlugin.max.periodic.notching.std.dev" : 2.0,
-	
+
 	// TransietPlugin periodicity threshold
 	"plugins.TransientPlugin.auto.corr.thresh.periodicity" : 0.4,
-	
+
 	// MakaiEventPlugin wait this many seconds before accessing data
 	"plugins.MakaiEventPlugin.getDataAfterS": 10.0,
-	
+
 	// MakaiEventPlugin filter order for frequency extraction
 	"plugins.MakaiEventPlugin.filterOrder":4,
-	
+
 	// MakaiEventPlugin cutoff frequency for frequency extraction
 	"plugins.MakaiEventPlugin.cutoffFrequency": 500.0,
-	
+
 	// MakaiEventPlugin number of cycles per frequency measurements
 	"plugins.MakaiEventPlugin.frequencyWindowCycles": 1,
-	
+
 	// MakaiEventPlugin down sample rate for frequency extraction
 	"plugins.MakaiEventPlugin.frequencyDownSampleRate": 2,
-	
+
 	// ThdPlugin threshold percent
 	"plugins.ThdPlugin.threshold.percent": 5.0,
 	// ThdPlugin window size in milliseconds
 	"plugins.ThdPlugin.window.size.ms": 200,
-	
+
 	// Mauka's health endpoint
 	"plugins.StatusPlugin.port": 8911,
-	
+
 	// How often system statistics should be summarized
 	"plugins.SystemStatsPlugin.intervalS": 60,
-	
+
 	// How often system statistics should be queried
 	"plugins.SystemStatsPlugin.systemStatsIntervalS": 5,
-	
+
 	// Default configuration for Laha if one does not exist in the databasr
 	"laha.config.default": {
 		"ttls": {
@@ -144,7 +144,7 @@
 }
 \end{verbatim}
 
-\subsection]{ITIC Curve Polygon Points}
+\subsection{ITIC Curve Polygon Points}
 \label{appendix:Itic}
 \begin{verbatim}
 HUNDREDTH_OF_A_CYCLE = analysis.c_to_ms(0.01)
