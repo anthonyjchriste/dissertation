@@ -345,3 +345,12 @@ GPL
 github
 GPL
 github
+uuid
+v4
+UUID
+TriggerRecords
+reentrant
+REQ
+TriggerMappings
+uncalibrated
+stateful
