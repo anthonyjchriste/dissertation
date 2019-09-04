@@ -362,7 +362,7 @@ The ``MaukaMessage" (Table~\ref{table:MaukaMessage}) type contains a timestamp, 
 		\hline
 		source & string & Name of plugin that produced this message. \\
 		\hline
-		message & oneof (Payload, Heartbeat, MakaiEvent, Measurement, MakaiTrigger, Laha, TriggerRequest, ThresholdOptimizationRequest, ) & A union of subtypes. \\
+		message & oneof (Payload, Heartbeat, MakaiEvent, Measurement, MakaiTrigger, Laha, TriggerRequest, ThresholdOptimizationRequest, RateOptimizaionRequest, TtlOptimization, Request) & A union of subtypes. \\
 		\hline
 	\end{tabular}
 	\label{table:MaukaMessage}
@@ -665,6 +665,42 @@ A ``ThresholdOptimizationRequest" (Table~\ref{table:ThresholdOptimziationRequest
 	\label{table:ThresholdOptimziationRequest}
 \end{table}
 
+A ``RateOptimizationRequest" (Table~\ref{table:RateOptimizationRequest}) variant message is a message that is instantiated by Phenomena and sent to the ``RateOptimizationPlugin" enabling Mauka to dynamically modify the receive rate of Measurements and Trends for specified Boxes.
+
+\begin{table}[H]
+	\centering
+	\caption{RateOptimizationRequest}
+	\begin{tabular}{|c|c|p{8cm}|}
+		\hline
+		Field & Type & Description  \\
+		\hline
+		box\_id & str & The id of the Box to change the receive rate for \\
+		\hline
+		measurements\_hz & f32 & Measurements per second \\
+		\hline
+		trends\_hz & f32 & Trends per second \\
+		\hline
+	\end{tabular}
+	\label{table:RateOptimizationRequest}
+\end{table}
+
+A ``TtlOptimizationRequest" (Table~\ref{table:TtlOptimizationRequest}) variant message is a message that is instantiated by Phenomena and sent to the ``TtlOptimizationPlugin" enabling Mauka to dynamically modify the TTL of collections stored in the ``laha\_config" collection.
+
+\begin{table}[H]
+	\centering
+	\caption{TtlOptimizationRequest}
+	\begin{tabular}{|c|c|p{8cm}|}
+		\hline
+		Field & Type & Description  \\
+		\hline
+		collection_name & str & Collection to modify the TTL for \\
+		\hline
+		ttl & int32 & New TTL for the defined collection in seconds \\
+		\hline
+	\end{tabular}
+	\label{table:TtlOptimizationRequest}
+\end{table}
+
 Figure~\ref{fig:mauka_messages} displays all types used and their variants for the Mauka communications protocol.
 
 \begin{figure}
@@ -673,6 +709,15 @@ Figure~\ref{fig:mauka_messages} displays all types used and their variants for t
 	\caption{OPQ Mauka Communications Protocol Summary}
 	\label{fig:mauka_messages}
 \end{figure}
+
+\subsubsection{Makai Communications Protocol}
+
+Most communications take place inside of Mauka, however there are several communications channels that occur from Mauka to Makai. These include requesting event ids, sending triggers, and sending Box data rate commands. The communications protocols for these actions are described in this section.
+
+Requesting event ids from Makai's Event Id Service is performed over a REQ/REP ZMQ socket. Requests from the client should be an empty string. Replies from the host should be a string that only includes the event\_id.
+
+
+
 
 \subsubsection{Plugin Manager}
 Plugins within Mauka are managed using a ``Plugin Manager". The Plugin Manager is responsible for starting, loading, unloading, reloading, terminating, and general management of Mauka plugins at runtime.
@@ -1366,7 +1411,8 @@ For any default value in the request that is larger than 0, the default threshol
 
 \paragraph{RateOptimizationPlugin}
 
-The ``RateOptimizationPlugin"
+The ``RateOptimizationPlugin" is responsible for modifying the send rate of Measurements and Trends from specific Boxes. This plugin subscribes to ``RateOptimizationRequest" messages\ref{table:RateOptimizationRequest} which include a Box id and sample rates for the Measurements and Trends collections.
+
 
 \paragraph{TtlOptimizationPlugin}\label{subsubsec:ttl-optimization-pugin}
 
