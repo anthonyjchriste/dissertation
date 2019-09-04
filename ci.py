@@ -10,7 +10,15 @@ if __name__ == "__main__":
     errors = []
 
     for tex_file in tex_files:
-        result = subprocess.run(["hunspell", "-u3", "-d", "en_US", "-p", "dict.txt", "-t", tex_file], stdout=subprocess.PIPE)
+        result = subprocess.run(["hunspell",
+                                 "-u3",
+                                 "-d",
+                                 "en_US",
+                                 "-p",
+                                 "dict.txt",
+                                 "-t",
+                                 tex_file],
+                                stdout=subprocess.PIPE)
         stdout = result.stdout
         if len(stdout) > 0:
             errs = list(map(lambda line: line.strip(), stdout.strip().split(b"\n")))
@@ -19,7 +27,6 @@ if __name__ == "__main__":
         warnings = ["todo", " table ", "(table", " figure ", "(figure"]
         with open(tex_file, "r") as fin:
             for line_no, line in enumerate(fin.readlines()):
-                #l = line.strip().lower()
                 for warning in warnings:
                     if warning in line:
                         print("WARN: {} {}:{} -- {}".format(warning, tex_file, line_no, line))

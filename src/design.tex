@@ -1518,52 +1518,6 @@ The Docker architecture that OPQ uses is presented in Figure~\ref{fig:docker_dep
 	\caption{OPQ Docker Architecture}\label{fig:docker_deploy}
 \end{figure}
 
-%\subsection{OPQ as a Laha-compliant DSN}
-%OPQ and specifically OPQMauka comply with the Laha abstract framework. Table \ref{opq-compliance} summarizes how the OPQ data architecture fits within the Laha conceptual model.
-%
-%\begin{table}
-%	\caption{OPQ as a Laha-compliant DSN}
-%	\begin{tabular}{|c|c|c|c|c|}
-%		\hline
-%		Laha Level & OPQ & Created By & Stored By & TTL \\
-%		\hline
-%		IML & raw ADC Samples & OPQBox & Onboard memory & 20 minutes \\
-%		\hline
-%		AML & min,max,avg V, F, THD & OPQBox & trends\footnotemark & 1 day \\
-%		\hline
-%		DL & triggered waveforms & Makai/Mauka & events/box\_events\textsuperscript{\ref{fn-1}} & 1 week \\
-%		\hline
-%		IL & Classified detections & Mauka & incidents\textsuperscript{\ref{fn-1}} & 1 year \\
-%		\hline
-%		PL & Predictive analytics & Mauka & phenomena\textsuperscript{\ref{fn-1}} & N/A \\
-%		\hline
-%	\end{tabular}
-%	\label{opq-compliance}
-%\end{table}
-%\footnotetext{MongoDB Collection Name\label{fn-1}}
-%
-%In order to be a Laha compliant DSN, the reference DSN must also implement Laha Actors. Table \ref{opq-actors} summarizes how OPQ implements Laha actors.
-%
-%\begin{table}
-%	\caption{OPQ  Actors Implementation}
-%	\begin{tabular}{|c|c|c|}
-%		\hline
-%		Laha Actors & OPQ Equivalent & Description \\
-%		\hline
-%		IML Actors & Boxes & Store window of raw sensor samples \\
-%		\hline
-%		AML Actors & Boxes \& Makai & Makai stores and triggers on aggregate data from Boxes \\
-%		\hline
-%		DL Actors & Mauka & MakaiEvent plugin \\
-%		\hline
-%		IL Actors & Mauka & Voltage, Frequency, THD, Outage, plugins \\
-%		\hline
-%		PL Actors & Mauka & Annotations, Locality, Similarity,  Periodic, Predictive,  Future plugins\\
-%		\hline
-%	\end{tabular}
-%	\label{opq-actors}
-%\end{table}
-
 \section{Lokahi: A Laha-compliant Infrasound DSN}\label{sec:lokahi:-a-laha-compliant-infrasound-dsn}
 Lokahi is a dynamic DSN that originally evolved as a distributed infrasound detection network. Infrasound is characterized as sound waves that are less than 20 Hz. Infrasound generally can not be deciphered by the human ear, but it can be detected using microphone and barometric pressure sensors. Any large movements of the atmosphere can produce infrasound. The Lokahi network was designed to supplement the International Monitoring System (IMS) for the capture  of undeclared and declared nuclear explosions. Lokahi has been successfully used to capture signals from volcanoes, hurricanes, aircraft, meteors, and other large atmospheric events.
 
@@ -1629,8 +1583,268 @@ The acquisition service ``Packet Actor" performs several small updates to the pa
 \subsubsection{Mongo Actor}
 Once the packet has been updated by the ``Packet Actor", all meta-data is extracted and stored in MongoDB by a ``Mongo Actor". Everything from the original packet is stored except for the data payloads themselves. However, the descriptive statistics of the payloads are stored so that the database contains some metadata about what the payload contains.
 
+Multiple collections are updated by the Mongo Actor when a packet is received.
+
+The ``RedvoxPacketApi900" collection stores metadata for all data packets received from sensors. The schema for this collection is described in Table~\ref{table:RedvoxPacketApi900}. This document also includes two embedded documents EvenlySampledChannel\ref{table:EvenlySampledChannel} and UnevenlySampledChannel\ref{table:UnevenlySampledChannel}. The EvenlySampledChannel document contains metadata for evenly sampled channels such as the microphone. The UnevenlySampledChannel document contains metadata for unevenly sampled channels such as barometer, location, gyroscope, accelerometer, etc.
+
+\begin{table}[H]
+	\centering
+	\caption{RedvoxPacketApi900}
+	\begin{tabular}{|c|c| p{7.5cm} |}
+		\hline
+		Field & Enum Value & Description  \\
+		\hline
+		\_id & bson.ObjectId & The object id associated with the document. \\
+		\hline
+		className & str & The class name used for Java serialization and deserialization. \\
+		\hline
+		api & int32 & The API version of this data (should be 900). \\
+		\hline
+		redvoxId & str & The id of the sensor. \\
+		\hline
+		redvoxUuid & str & The uuid of the sensor. \\
+		\hline
+		authenticatedEmail & str & The user account associated with this device. \\
+		\hline
+		authenticationToken & str & The JWT that was used for authenticating this packet. \\
+		\hline
+		firebaseToken & str & The firebase token associated with this device. \\
+		\hline
+		isBackfilled & bool & True if this packet was backfilled, False otherwise. \\
+		\hline
+		isPrivate & bool & True if this packet is marked as private, False otherwise. \\
+		\hline
+		isScrambled & bool & True if this packet has voice data scrambled, False otherwise. \\
+		\hline
+		deviceMake & str & The make of the sensor. \\
+		\hline
+		deviceModel & str & The model of the sensor. \\
+		\hline
+		deviceOs & str & The OS of the sensor (either iOS or Android). \\
+		\hline
+		deviceOsVersion & str & The OS version. \\
+		\hline
+		appVersion & str & The sensor app version. \\
+		\hline
+		batteryLevelPercent & f32 & The sensor's battery level. \\
+		\hline
+		deviceTemperatureC & f32 & The sensor's temperature in C. \\
+		\hline
+		acquisitionServer & str & The server that this data was sent to. \\
+		\hline
+		timeSynchronizationServer & str & The server this sensor used for synch. \\
+		\hline
+		authenticationServer & str & The server this sensor used to authenticated with. \\
+		\hline
+		appFileStartUsUtc & i64 & The timestamp of the start of this packet. \\
+		\hline
+		appFileStartMachine & i64 & The machine timestamp of the start of this packet. \\
+		\hline
+		serverTimestampUsUtc & i64 & The time that this packet was received at the server. \\
+		\hline
+		evenlySampledChannels & [EvenlySampledChannel] & Evenly sampled channels metadata. \\
+		\hline
+		unevenlySampledChannels& [UnevenlySampledChannel] & Unevenly sampled channels metadata. \\
+		\hline
+		metadata & [str] & A list of metadata added to this packet. \\
+		\hline
+		dataKey & str & The location of the original data file stored in AWS S3. \\
+		\hline
+	\end{tabular}
+	\label{table:RedvoxPacketApi900}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\caption{RedvoxPacketApi900.EvenlySampledChannel}
+	\begin{tabular}{|c|c| p{8cm} |}
+		\hline
+		Field & Enum Value & Description  \\
+		\hline
+		channelTypes & [str] & A list of sub-channels included in this channel. \\
+		\hline
+		sensorName & str & The name of sensor. \\
+		\hline
+		sampleRateHz & f64 & The sample rate of this sensor. \\
+		\hline
+		firstSampleTimestampUs & i64 & Timestamp of the first sample. \\
+		\hline
+		payloadCase & str & An enum string for the data type stored in the payload. \\
+		\hline
+		payloadCount & i32 & The number of items in the payload in the original data. \\
+		\hline
+		valueMeans & [f64] & List of mean values of the payload for each sub-channel. \\
+		\hline
+		valueStds & [f64] & List of the stddev of the values of the payload for each sub-channel. \\
+		\hline
+		valueMedians & [f64] & List of medians of the values of the payload for each sub-channel. \\
+		\hline
+		metadata & [str] & List of metadata added to this channel. \\
+		\hline
+	\end{tabular}
+	\label{table:EvenlySampledChannel}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\caption{RedvoxPacketApi900.UnevenlySampledChannel}
+	\begin{tabular}{|c|c| p{8cm} |}
+		\hline
+		Field & Enum Value & Description  \\
+		\hline
+		channelTypes & [str] & A list of sub-channels included in this channel. \\
+		\hline
+		sensorName & str & The name of sensor. \\
+		\hline
+		timestampsCount & i32 & The number of timestamps for this channel in the original data. \\
+		\hline
+		payloadCase & str & An enum string for the data type stored in the payload. \\
+		\hline
+		payloadCount & i32 & The number of items in the payload in the original data. \\
+		\hline
+		valueMeans & [f64] & List of mean values of the payload for each sub-channel. \\
+		\hline
+		valueStds & [f64] & List of the stddev of the values of the payload for each sub-channel. \\
+		\hline
+		valueMedians & [f64] & List of medians of the values of the payload for each sub-channel. \\
+		\hline
+		sampleIntervalMean & f64 & The mean sample interval of each sample. \\
+		\hline
+		sampleIntervalStd & f64 & The mean sample stddev of each sample. \\
+		\hline
+		sampleIntervalMedian & f64 & The median sample interval of each sample. \\
+		\hline
+		metadata & [str] & List of metadata added to this channel. \\
+		\hline
+	\end{tabular}
+	\label{table:UnevenlySampledChannel}
+\end{table}
+
+The Mongo Actor also updates other documents which are used by Lokahi View for display, device, and user management. The schemas for these collections are described next.
+
+The ``RedvoxDeviceApi900" collection contains metadata relating to each sensor that Lokahi receives from. This collection is described in Table~\ref{table:RedvoxDeviceApi900}. This collection also contains two embedded documents ``PrivacyPolicy"\ref{table:PrivacyPolicy} and ``AuthenticatedEmailEntry"\ref{table:AuthenticatedEmailEntry}.
+
+\begin{table}[H]
+	\centering
+	\caption{RedvoxDeviceApi900}
+	\begin{tabular}{|c|c| p{8cm} |}
+		\hline
+		Field & Enum Value & Description  \\
+		\hline
+		\_id & bson.ObjectId & The object id of this document. \\
+		\hline
+		className & str & Used for Java ORM interop. \\
+		\hline
+		redvoxId & str & The id associated with this device. \\
+		\hline
+		uuid & str & The uuid associated with this device. \\
+		\hline
+		lastUpdatedTimestamp & i64 & The timestamp of the last time this device received data. \\
+		\hline
+		lastPacket & DBRef & A reference to the last received packet. \\
+		\hline
+		lastLocationPoint & mongo.Point & The last location this device was received from. \\
+		\hline
+		currentPolicyType & str & The devices policy type (public/private). \\
+		\hline
+		privacyPolicies & [PrivacyPolicy] & A list of privacy policies this device has used. \\
+		\hline
+		currentAuthenticatedEmail & str & This devices current user. \\
+		\hline
+		authenticatedEmailEntries & [AuthenticatedEmailEntry] & A list of all users who have used this device. \\
+		\hline
+		valid & bool & A field that marks this device as valid or invalid. \\
+		\hline
+		receivers & [str] & A list of users who can access data from this device. \\
+		\hline
+	\end{tabular}
+	\label{table:RedvoxDeviceApi900}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\caption{PrivacyPolicy}
+	\begin{tabular}{|c|c| p{8cm} |}
+		\hline
+		Field & Enum Value & Description  \\
+		\hline
+		policyType & str & A string representing the policy type (public/private). \\
+		\hline
+		startTimestampMillisecondsSinceEpochUtc & i64 & Start time of this policy. \\
+		\hline
+	\end{tabular}
+	\label{table:PrivacyPolicy}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\caption{AuthenticatedEmailEntry}
+	\begin{tabular}{|c|c| p{8cm} |}
+		\hline
+		Field & Enum Value & Description  \\
+		\hline
+		authenticatedEmail & str & The email associated with this account at this time. \\
+		\hline
+		startTimestampMillisecondsSinceEpochUtc & i64 & Start time of this email entry. \\
+		\hline
+	\end{tabular}
+	\label{table:AuthenticatedEmailEntry}
+\end{table}
+
+The ``HistoricalDevice" collection is used to store metadata about the last data that was received for each sensor. This is used in Lokahi View for displaying the location of every sensor ever received. The HistoricalDevice collection is described in Table~\ref{table:HistoricalDevice}.
+
+\begin{table}[H]
+	\centering
+	\caption{HistoricalDevice}
+	\begin{tabular}{|c|c| p{8cm} |}
+		\hline
+		Field & Enum Value & Description  \\
+		\hline
+		deviceId & i64 & The sensor id. \\
+		\hline
+		uuid & i64 & The sensor uuid. \\
+		\hline
+		lastActive & Date & The last time this device was active. \\
+		\hline
+		lastLocation & mongodb.Point & The last location this device was received from. \\
+		\hline
+		os & str & The OS of this device as of its last sent packet. \\
+		\hline
+	\end{tabular}
+	\label{table:HistoricalDevice}
+\end{table}
+
+The ``DailyDataUsage" collection is a collection that stores metadata relating to how much data is used daily per user of the Lokahi service. The ``DailyDataUsage" document schema is provided in Table~\ref{table:DailyDataUsage}.
+
+\begin{table}[H]
+	\centering
+	\caption{DailyDataUsage}
+	\begin{tabular}{|c|c| p{8cm} |}
+		\hline
+		Field & Enum Value & Description  \\
+		\hline
+		\_id & bson.ObjectId & The object id of this document. \\
+		\hline
+		user & str & The user account associated with this document. \\
+		\hline
+		year & int32 & The year of this document. \\
+		\hline
+		month & int32 & The month of this document. \\
+		\hline
+		day & int32 & The day of this document. \\
+		\hline
+		bytesContributed & int64 & The number of bytes contributed by this user. \\
+		\hline
+		bytesConsumed & int64 & The number of bytes consumed by this user. \\
+		\hline
+	\end{tabular}
+	\label{table:DailyDataUsage}
+\end{table}
+
 \subsubsection{S3 Actor}
-After the metadata has been stored, the updated packet is serialized back into bytes and then compressed using the same custom LZ4  compression protocol. This data is then sent to AWS S3 by the ``S3 Actor" for permanent storage for later data retrieval.
+After the metadata has been stored, the updated packet is serialized back into bytes and then compressed using the same custom LZ4  compression protocol. This data is then sent to AWS S3 by the ``S3 Actor" for permanent storage for later data retrieval. S3 is a cloud service offered by Amazon which acts as a distributed key-value store with essentially unlimited space.
+
+Data is stored to S3 using using the following directory layout: api900/[YYYY]/[MM]/[DD]/[sensor\_id]_[packet\_timestamp\_ms].rdvxz.
 
 \subsubsection{Fs Actor}
 The data can optionally be stored to any accessible file system using the ``Fs Actor". This is useful in cases when your acquisition server may only have local network access, such as restricted sites with an acquisition server running on a Raspberry Pi on a LAN\@.
@@ -1646,18 +1860,6 @@ Each device is provided its own partition within Kafka to publish data to. Since
 
 \subsubsection{Relay Actor}
 The acquisition service can act as a relay to other acquisition services that speak the same protocol. If this actor is enabled, any packets it receives are relayed to the configured acquisition server. This is useful for load balancing and for timing accuracy. In load balancing, this server can be configured to filter subsets of devices to other acquisition servers by configuring a relay actor for each server that data is being forwarded to. For timing accuracy, this service can be deployed on a Raspberry Pi at the edge of a network near the sensors, reducing the latency between sensor and server. Then, when a packet arrives at the server, it is updated with a low latency server timestamp which improves timing accuracy. The low powered Raspberry Pi can then relay the packet to the cloud where it will be handled, but already have the improved timing accuracy built into the packet.
-
-\subsection{Lokahi Communication Protocols}\label{subsec:lokahi-communication-protocols}
-TODO
-
-\subsection{Lokahi Data Storage and Data Models}\label{subsec:lokahi-data-storage-and-data-models}
-TODO
-
-\subsubsection{Lokahi Metadata Storage}
-TODO
-
-\subsubsection{Lokahi Sensor Data Storage}
-TODO
 
 \subsection{Lokahi Time Synchronization}\label{subsec:lokahi-time-synchronization}
 Much of Lokahi's sensor analysis requires that sensors be synchronized in time. In order to calculate direction and distance to a signal source, sensors should have clocks that are synchronized within milliseconds of each other. We initially tried to use NTP, but it did not provide the timing accuracy we desired, and thus, implemented a custom time synchronization protocol.
