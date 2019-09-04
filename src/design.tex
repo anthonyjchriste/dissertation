@@ -517,7 +517,7 @@ The ``Measurement" (Table~\ref{table:Measurement}) variant is a message that con
 	\label{table:Measurement}
 \end{table}
 
-The ``MakaiTrigger" (Table~\ref{table:MakaiTrigger}) variant is a message type that is used to send to Makai in order for Mauka to trigger boxes for raw data. This is used when Mauka sees something interesting and wishes to request more data than what was originally provided by Makai.
+The ``MakaiTrigger" (Table~\ref{table:MakaiTrigger}) variant is a message type that is used to send to Makai in order for Mauka to trigger Boxes for raw data. This is used when Mauka sees something interesting and wishes to request more data than what was originally provided by Makai.
 
 \begin{table}[H]
 	\centering
@@ -530,7 +530,7 @@ The ``MakaiTrigger" (Table~\ref{table:MakaiTrigger}) variant is a message type t
 		\hline
 		event\_end\_timestamp\_ms & uint64 & The end timestamp of the trigger. \\
 		\hline
-		event\_type & String & A string description of the event (or reason) we are triggering boxes. \\
+		event\_type & String & A string description of the event (or reason) we are triggering Boxes. \\
 		\hline
 		max\_value & double & The maximum value of ``event\_type" observed in the triggering stream. \\
 		\hline
@@ -1889,7 +1889,7 @@ The ``DailyDataUsage" collection is a collection that stores metadata relating t
 \subsubsection{S3 Actor}
 After the metadata has been stored, the updated packet is serialized back into bytes and then compressed using the same custom LZ4  compression protocol. This data is then sent to AWS S3 by the ``S3 Actor" for permanent storage for later data retrieval. S3 is a cloud service offered by Amazon which acts as a distributed key-value store with essentially unlimited space.
 
-%Data is stored to S3 using using the following directory layout: api900/[YYYY]/[MM]/[DD]/[sensor\_id]_[packet\_timestamp\_ms].rdvxz.
+Data is stored to S3 using using the following directory layout: api900/[YYYY]/[MM]/[DD]/[sensor\_id]_[packet\_timestamp\_ms].rdvxz.
 
 \subsubsection{Fs Actor}
 The data can optionally be stored to any accessible file system using the ``Fs Actor". This is useful in cases when your acquisition server may only have local network access, such as restricted sites with an acquisition server running on a Raspberry Pi on a LAN\@.
