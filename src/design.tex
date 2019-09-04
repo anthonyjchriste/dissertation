@@ -103,13 +103,13 @@ Similar to other levels, the DL level will have its IMs and AMs copied into leve
 \subsection{Incidents Level}\label{subsec:incidents-level}
 Incidents represent classified signals. Incidents are individual classifications for signals of interest and are created by analyzing waveforms from Events. Waveforms from Events may contain multiple Incidents. Individual signals may be classified as multiple Incidents (for example a transient being classified as both a transient and frequency Incidents).
 
-Incidents are further analyzed to produce phenomena.
+Incidents are further analyzed to produce Phenomena.
 
 Incidents are expired after one year of storage.
 
 
 \subsection{Phenomena Level}\label{subsec:phenomena-level}
-Phenomena are defined as a grouping of Incidents that provide one or more of annotations, locality, periodicity, predictiveness, similarity, and future phenomena.
+Phenomena are defined as a grouping of Incidents that provide one or more of annotations, locality, periodicity, predictiveness, similarity, and future Phenomena.
 
 Not only do Phenomena provide interesting insight and analytics into the underlying data, but they also provide a means for adaptively tuning the underlying collection, triggering, detection, and analysis of a distributed sensor network.
 
@@ -156,7 +156,7 @@ Annotations can be used to tune a DSN by allowing Laha to filter on Incidents wi
 \subsection{Locality Phenomena}\label{subsec:locality-phenomena}
 Locality provides context on how Incidents are related to each other in both space in time. Laha is able to determine if classified Incidents are local to a single sensor, to a group of co-located sensors, or global across an entire network. Sensors can be co-located in both the physical sense and also co-located within a sensing field. For example, sensors in a power quality network may be separated by large distance geographically, but co-located through the electrical grid and the grid's topology.
 
-Over time, Locality Phenomena is used to build a model of sensors in relation to each other and to provide a statistical likelihood that co-located sensors will observe the same signal. Locality phenomena can be used to drive network triggering, detection, and classification thresholds within a distributed sensor network by using this probabilistic model for determining the likelihood that a sensor or sensors will observe a signal of interest.
+Over time, Locality Phenomena is used to build a model of sensors in relation to each other and to provide a statistical likelihood that co-located sensors will observe the same signal. Locality Phenomena can be used to drive network triggering, detection, and classification thresholds within a distributed sensor network by using this probabilistic model for determining the likelihood that a sensor or sensors will observe a signal of interest.
 
 The Locality of Incidents are constantly being tested. The main approach for determining the locality is combining a breadth first search (BFS) with Similarity Phenomena. When a new Incident is generated, location metadata of the sensors is used to perform a BFS of all other sensors by latitude and longitude. This is done because other sensors may have seen a similar signal of interest, but did not trigger an Event due do the signal not passing any triggering thresholds. When an Incident is triggered by a sensor or multiple sensors, for each sensor that was originally triggered a BFS is used to trigger the nearest neighbor of each of the triggering sensors. The newly triggered data is compared using Similarity Phenomena to determine if the same signal was observed in the newly triggered sensors. This process takes place recursively until sensors triggered by the BFS no longer contain the signal of interest.
 
@@ -173,11 +173,11 @@ By understanding the general locality of Incidents and building a statistical mo
 Locality Phenomena can also tune the sampling rate or send rate of features from sensors. Certain signals may only be observed at certain sampling rates due to the Nyquist-Shannon sampling theorem\cite{landau1967sampling} which states that signals with a frequency $F$ can only be observed by sampling at at a rate of $2F$. Knowing that signals attenuate as a function of their distance from the source, the sampling rate of sensors can be modified to ensure that signals of interest are captured at difference distances from the signal source.
 
 \subsection{Periodic Phenomena} \label{subsec:periodicity-phenomena}
-Periodic phenomena consists of Incidents that exhibit repetitive behavior, that is, the same types of Incidents appearing in cycles from single or multiple devices. Periodicity allows for the easy creation of Predictive phenomena.
+Periodic Phenomena consists of Incidents that exhibit repetitive behavior, that is, the same types of Incidents appearing in cycles from single or multiple devices. Periodicity allows for the easy creation of Predictive Phenomena.
 
-Periodic phenomena can come from a single Incident or from multiple Incidents. Periodic phenomena allow us to either tune our network to find periodic Incidents or tune the  network to ignore periodic Incidents depending on if the Incidents are of interest. Periodic phenomena are especially useful in conjunction with Annotation phenomena as Laha can assign causality to the periodic signal.
+Periodic Phenomena can come from a single Incident or from multiple Incidents. Periodic Phenomena allow us to either tune our network to find periodic Incidents or tune the  network to ignore periodic Incidents depending on if the Incidents are of interest. Periodic Phenomena are especially useful in conjunction with Annotation Phenomena as Laha can assign causality to the periodic signal.
 
-Periodic phenomena are identified using two different approaches, a brute force approach and an approach that utilized the FFT.
+Periodic Phenomena are identified using two different approaches, a brute force approach and an approach that utilized the FFT.
 
 The brute force approach uses the Similarity Phenomena to determine if multiple consecutive similar Incidents occur at similar time intervals. The time intervals can be anywhere on the order of seconds and go up to the order of the TTL of Incidents (that is how long Incident live in the database). An $\alpha$ parameter is used to provide the amount of uncertainty in the periodic interval and represents the absolute value of uncertainty as a percentage of the period. The $\alpha$ parameter is provided by the DSN configuration and can also be dynamically tuned by the network itself. A new Incident is marked as periodic if it is similar (as defined by Similarity Phenomena) to at least two previous Incidents and has a period $P$ between $P + (P * \alpha)$ and $P - (P * \alpha)$. When Incidents are marked as Periodic, a Periodic Phenomena is created referencing the periodic Incidents.
 
@@ -187,7 +187,7 @@ Periodic Phenomena are instrumental in creating Future Phenomena. Periodic Pheno
 
 
 \subsection{Similarity Phenomena}\label{subsec:similarity-phenomena}
-Similarity phenomena utilize grouping and community detection algorithms to group Incidents together by their features. Common features used for grouping include time, location, Incident type, Incident duration, or Incident features.
+Similarity Phenomena utilize grouping and community detection algorithms to group Incidents together by their features. Common features used for grouping include time, location, Incident type, Incident duration, or Incident features.
 
 Similarity between signals in a DSN is a difficult problem. Signals attenuate as a function of distance from the source and the topology of the network can also change the shape of the signals. For instance, in a power quality network, signals may change as they pass through the power grid and multiple electronic components. In an infrasound DSN, signals will attenuate based on distance from the source and also change as the signals encounter physical obstacles in the environment (such as hills, man made structures, or even weather patterns).
 
