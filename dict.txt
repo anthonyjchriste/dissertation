@@ -444,3 +444,10 @@ firebaseToken
 appFileStartMachine
 currentAuthenticatedEmail
 authenticatedEmailEntries
+preconfigured
+SetMeasurementRateCommand
+SendCommandToPlugin
+batteryLevelPercent
+currentPolicyType
+DailyDataUsage
+YYYY
