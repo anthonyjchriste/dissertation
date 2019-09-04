@@ -314,7 +314,7 @@ This plugin checks if a measurement stream from a Box passes minimum or maximum 
 
 Not only does the database provide default dynamic thresholds for all devices, but it also includes threshold overrides for individual devices. Override thresholds contain the same information as default thresholds, but also include a box\_id. When loading thresholds for a device, if an override does not exist, then default thresholds are used. If an override does exist, then the thresholds from the override are used.
 
-All thresholds are cached for performance reasons. Values from Measurements are compared to these cached thresholds. This is needed so that this plugin does not have to request the thresholds from the database on every measurement from every box. Instead, cached values are used. The cache is updated at a configurable interval but defaults to once a minute.
+All thresholds are cached for performance reasons. Values from Measurements are compared to these cached thresholds. This is needed so that this plugin does not have to request the thresholds from the database on every measurement from every Box. Instead, cached values are used. The cache is updated at a configurable interval but defaults to once a minute.
 
 Thresholds are dynamic and can be modified by the ``ThresholdOptimizationPlugin"\ref{subsubsec:threshold-optimization-pugin} in Mauka.
 
@@ -446,7 +446,7 @@ The ``PayloadType" (Table~\ref{table:PayloadType}) variant is an enumeration tha
 		\hline
 		Field & Enum Value & Description  \\
 		\hline
-		ADC\_SAMPLES & 0 & ADC waveform samples from the box.  \\
+		ADC\_SAMPLES & 0 & ADC waveform samples from the Box.  \\
 		\hline
 		VOLTAGE\_RAW & 1 & Raw waveform voltage obtained by dividing ADC values by a calibration constant. \\
 		\hline
@@ -795,7 +795,7 @@ The ``GetDataCommand" message (Table~\ref{table:GetDataCommand}) is sent with a 
 		\hline
 		end\_ms & uint64 & The end timestamp of the data request. \\
 		\hline
-		wait & bool & If set, the box will wait to send data if timestamps are in the future. \\
+		wait & bool & If set, the Box will wait to send data if timestamps are in the future. \\
 		\hline
 	\end{tabular}
 	\label{table:GetDataCommand}
@@ -922,7 +922,7 @@ The trends collection provides summary statistics of frequency, voltage, and THD
 	\label{table:Trends}
 \end{table}
 
-The events collection contains metadata that map a Makai triggered event to a list of box\_events which points to raw data for each box that was requested raw data for that event. The event data model is described in Table~\ref{table:Events}.
+The events collection contains metadata that map a Makai triggered event to a list of box\_events which points to raw data for each Box that was requested raw data for that event. The event data model is described in Table~\ref{table:Events}.
 
 \begin{table}[H]
 	\centering
@@ -962,13 +962,13 @@ The box\_events data model is described in Table~\ref{table:BoxEvents}.
 		\hline
 		box\_id & str & ID of the OPQBox that sent data for this event \\
 		\hline
-		event\_start\_timestamp\_ms & int & Timestamp of the start of the event for this box \\
+		event\_start\_timestamp\_ms & int & Timestamp of the start of the event for this Box \\
 		\hline
-		event\_end\_timestamp\_ms & int & Timestamp of the end of the event for this box \\
+		event\_end\_timestamp\_ms & int & Timestamp of the end of the event for this Box \\
 		\hline
 		data\_fs\_filename & str & Reference to the waveform stored in gridfs \\
 		\hline
-		location & str & Location slug of where this box sent data from \\
+		location & str & Location slug of where this Box sent data from \\
 		\hline
 	\end{tabular}
 	\label{table:BoxEvents}
@@ -1250,7 +1250,7 @@ When the LahaGcPlugin receives a ``GcTrigger" message, it extracts from the mess
 
 The measurements and trends collections perform GC by simply removing from the database all measurements and trends that have a TTL that is older than the current date and time.
 
-Events in OPQ are spread out over three collections: events, box\_events, and gridfs files. Events contain metadata about an event which includes information about all Boxes that sent data in response to that event. Each box that sent data for an event will spawn a box\_event document which includes information relating to a box for a specific event. Further, each box\_event document points to where the raw data is stored in MongoDB using the gridfs data layer provided by the database.
+Events in OPQ are spread out over three collections: events, box\_events, and gridfs files. Events contain metadata about an event which includes information about all Boxes that sent data in response to that event. Each Box that sent data for an event will spawn a box\_event document which includes information relating to a Box for a specific event. Further, each box\_event document points to where the raw data is stored in MongoDB using the gridfs data layer provided by the database.
 
 In order to GC events, first all events with a TTL less than the current date and time are identified. From the events, we look up the corresponding box\_events. From each box\_event, we look up corresponding raw data in gridfs. First the gridfs data is removed, then the box\_events are removed, and finally the events themselves are removed.
 
