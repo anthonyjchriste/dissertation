@@ -101,7 +101,7 @@ The actual methods of detection is dependent on the characteristics of every ind
 Similar to other levels, the DL level will have its IMs and AMs copied into levels above it when upper levels observe something interesting in the DL. The Detections level is set to have a TTL of a week.
 
 \subsection{Incidents Level}\label{subsec:incidents-level}
-Incidents represent classified signals. Incidents are individual classifications for signals of interest and are created by analyzing waveforms from Events. Waveforms from Events may contain multiple incidents. Individual signals may be classified as multiple incidents (for example a transient being classified as both a transient and frequency incidents).
+Incidents represent classified signals. Incidents are individual classifications for signals of interest and are created by analyzing waveforms from Events. Waveforms from Events may contain multiple Incidents. Individual signals may be classified as multiple Incidents (for example a transient being classified as both a transient and frequency Incidents).
 
 Incidents are further analyzed to produce phenomena.
 
@@ -109,7 +109,7 @@ Incidents are expired after one year of storage.
 
 
 \subsection{Phenomena Level}\label{subsec:phenomena-level}
-Phenomena are defined as a grouping of incidents that provide one or more of annotations, locality, periodicity, predictiveness, similarity, and future phenomena.
+Phenomena are defined as a grouping of Incidents that provide one or more of annotations, locality, periodicity, predictiveness, similarity, and future phenomena.
 
 Not only do Phenomena provide interesting insight and analytics into the underlying data, but they also provide a means for adaptively tuning the underlying collection, triggering, detection, and analysis of a distributed sensor network.
 
@@ -124,15 +124,15 @@ Phenomena are summarized in Table~\ref{phenomena-summary-table} and discussed in
 		\hline
 		Phenomena & Description \\
 		\hline
-		Annotations & Provide context about an Incident or set of incidents \\
+		Annotations & Provide context about an Incident or set of Incidents \\
 		\hline
-		Locality & Provides context on how incidents are related in time and space \\
+		Locality & Provides context on how Incidents are related in time and space \\
 		\hline
-		Periodicity & Designation for incidents that exhibit repetitive or periodic behavior \\
+		Periodicity & Designation for Incidents that exhibit repetitive or periodic behavior \\
 		\hline
-		Similarity & Subset of incidents found using grouping and community detection algorithms \\
+		Similarity & Subset of Incidents found using grouping and community detection algorithms \\
 		\hline
-		Predictive & Subset of incidents characterized by predictive or forecasting models\\
+		Predictive & Subset of Incidents characterized by predictive or forecasting models\\
 		\hline
 		Future & Incidents scheduled to occur in the future\\
 		\hline
@@ -143,7 +143,7 @@ Phenomena are summarized in Table~\ref{phenomena-summary-table} and discussed in
 \subsection{Annotations Phenomena}\label{subsec:annotations-phenomena}
 Annotations provide context about an Incident or a set of Incidents. Annotations are generally user provided or sourced from other data sources to provide supporting context to Incidents. For example, Annotations might include ``Cloud Cover", ``Hurricane Hector", ``Dryer Turns On", etc.
 
-In some sense, annotations allow us to label our data sets beyond a simple classification and start looking at causal classifications. Once enough annotations have been assigned to classified incidents, Laha can used Annotations to attempt to label unknown incidents with similar characteristics.
+In some sense, annotations allow us to label our data sets beyond a simple classification and start looking at causal classifications. Once enough annotations have been assigned to classified Incidents, Laha can used Annotations to attempt to label unknown Incidents with similar characteristics.
 
 Annotations are useful for creating labeled data sets. Although it is a non-goal of this dissertation to investigate the use of machine learning for signal classification and prediction, annotations provide a path for Laha-based DSNs to implement machine learning on Incidents and Events and Annotations are a useful tool for providing training data.
 
@@ -151,10 +151,10 @@ Annotations can be created in two ways. Either through a user interface (View in
 
 The second approach to creating annotations is algorithmically. For this, we can make use of Similarity Phenomena. When new Incidents are generated, they are compared against the list of Incidents referenced by Annotation Phenomena for similarity. If the Incidents are statistically similar (with better than 75\% probability), then the newly generated Incidents will be Annotated by the same Annotation. In this case, a new Annotation Phenomena is not created, but rather the new Incidents are referenced in the original Annotation Phenomena.
 
-Annotations can be used to tune a DSN by allowing Laha to filter on incidents with known Annotations. Users may only care about certain types of Incidents, and would prefer to filter out other types of Incidents. As an example, let's say a user of a distributed power quality network has provided an Annotation for Incidents that are generated by their solar panel installation during times of high solar radiance. This Incident may cause power issues locally and as such they are only interested in similar Incidents. The user can specify that Measurements, Trends, Events, or Incidents from their sensor should only be stored if newly created Incidents have the same Annotations that the user is interested in.
+Annotations can be used to tune a DSN by allowing Laha to filter on Incidents with known Annotations. Users may only care about certain types of Incidents, and would prefer to filter out other types of Incidents. As an example, let's say a user of a distributed power quality network has provided an Annotation for Incidents that are generated by their solar panel installation during times of high solar radiance. This Incident may cause power issues locally and as such they are only interested in similar Incidents. The user can specify that Measurements, Trends, Events, or Incidents from their sensor should only be stored if newly created Incidents have the same Annotations that the user is interested in.
 
 \subsection{Locality Phenomena}\label{subsec:locality-phenomena}
-Locality provides context on how incidents are related to each other in both space in time. Laha is able to determine if classified incidents are local to a single sensor, to a group of co-located sensors, or global across an entire network. Sensors can be co-located in both the physical sense and also co-located within a sensing field. For example, sensors in a power quality network may be separated by large distance geographically, but co-located through the electrical grid and the grid's topology.
+Locality provides context on how Incidents are related to each other in both space in time. Laha is able to determine if classified Incidents are local to a single sensor, to a group of co-located sensors, or global across an entire network. Sensors can be co-located in both the physical sense and also co-located within a sensing field. For example, sensors in a power quality network may be separated by large distance geographically, but co-located through the electrical grid and the grid's topology.
 
 Over time, Locality Phenomena is used to build a model of sensors in relation to each other and to provide a statistical likelihood that co-located sensors will observe the same signal. Locality phenomena can be used to drive network triggering, detection, and classification thresholds within a distributed sensor network by using this probabilistic model for determining the likelihood that a sensor or sensors will observe a signal of interest.
 
@@ -173,21 +173,21 @@ By understanding the general locality of Incidents and building a statistical mo
 Locality Phenomena can also tune the sampling rate or send rate of features from sensors. Certain signals may only be observed at certain sampling rates due to the Nyquist-Shannon sampling theorem\cite{landau1967sampling} which states that signals with a frequency $F$ can only be observed by sampling at at a rate of $2F$. Knowing that signals attenuate as a function of their distance from the source, the sampling rate of sensors can be modified to ensure that signals of interest are captured at difference distances from the signal source.
 
 \subsection{Periodic Phenomena} \label{subsec:periodicity-phenomena}
-Periodic phenomena consists of incidents that exhibit repetitive behavior, that is, the same types of incidents appearing in cycles from single or multiple devices. Periodicity allows for the easy creation of Predictive phenomena.
+Periodic phenomena consists of Incidents that exhibit repetitive behavior, that is, the same types of Incidents appearing in cycles from single or multiple devices. Periodicity allows for the easy creation of Predictive phenomena.
 
-Periodic phenomena can come from a single incident or from multiple incidents. Periodic phenomena allow us to either tune our network to find periodic incidents or tune the  network to ignore periodic incidents depending on if the incidents are of interest. Periodic phenomena are especially useful in conjunction with Annotation phenomena as Laha can assign causality to the periodic signal.
+Periodic phenomena can come from a single Incident or from multiple Incidents. Periodic phenomena allow us to either tune our network to find periodic Incidents or tune the  network to ignore periodic Incidents depending on if the Incidents are of interest. Periodic phenomena are especially useful in conjunction with Annotation phenomena as Laha can assign causality to the periodic signal.
 
 Periodic phenomena are identified using two different approaches, a brute force approach and an approach that utilized the FFT.
 
 The brute force approach uses the Similarity Phenomena to determine if multiple consecutive similar Incidents occur at similar time intervals. The time intervals can be anywhere on the order of seconds and go up to the order of the TTL of Incidents (that is how long Incident live in the database). An $\alpha$ parameter is used to provide the amount of uncertainty in the periodic interval and represents the absolute value of uncertainty as a percentage of the period. The $\alpha$ parameter is provided by the DSN configuration and can also be dynamically tuned by the network itself. A new Incident is marked as periodic if it is similar (as defined by Similarity Phenomena) to at least two previous Incidents and has a period $P$ between $P + (P * \alpha)$ and $P - (P * \alpha)$. When Incidents are marked as Periodic, a Periodic Phenomena is created referencing the periodic Incidents.
 
-The second approach uses the FFT to attempt to find frequency bins on recorded Incidents. This approach computes the FFT in two phases. First, it computes the FFT over the timestamps of all Incidents. This will provide high energy in frequency bins for Incidents that occur at well defined periodic rates. Then, for each bin with energy $E_1$ above a preconfigured threshold, the Incidents in that bin are filtered for similarity using Similarity Phenomena. A second FFT is ran over the set of remaining Incidents. If the energy $E_2$ for the remaining incidents is still above the preconfigured threshold, then those Incidents are considered periodic and a Periodic Phenomena is created referencing those Incidents. Once a periodic Phenomena is created, future Incidents can be compared to the Phenomena instead of re-running the FFT over all previous incidents.
+The second approach uses the FFT to attempt to find frequency bins on recorded Incidents. This approach computes the FFT in two phases. First, it computes the FFT over the timestamps of all Incidents. This will provide high energy in frequency bins for Incidents that occur at well defined periodic rates. Then, for each bin with energy $E_1$ above a preconfigured threshold, the Incidents in that bin are filtered for similarity using Similarity Phenomena. A second FFT is ran over the set of remaining Incidents. If the energy $E_2$ for the remaining Incidents is still above the preconfigured threshold, then those Incidents are considered periodic and a Periodic Phenomena is created referencing those Incidents. Once a periodic Phenomena is created, future Incidents can be compared to the Phenomena instead of re-running the FFT over all previous Incidents.
 
 Periodic Phenomena are instrumental in creating Future Phenomena. Periodic Phenomena are used to create Future Phenomena which attempt to predict Incident arrivals at future dates. Periodic Phenomena produce Future Phenomena for all devices that are shown to be periodic. Periodic Phenomena will continue to produce Future Phenomena until consecutive Future Phenomena no longer observe the predicted signals of interest.
 
 
 \subsection{Similarity Phenomena}\label{subsec:similarity-phenomena}
-Similarity phenomena utilize grouping and community detection algorithms to group incidents together by their features. Common features used for grouping include time, location, incident type, incident duration, or incident features.
+Similarity phenomena utilize grouping and community detection algorithms to group Incidents together by their features. Common features used for grouping include time, location, Incident type, Incident duration, or Incident features.
 
 Similarity between signals in a DSN is a difficult problem. Signals attenuate as a function of distance from the source and the topology of the network can also change the shape of the signals. For instance, in a power quality network, signals may change as they pass through the power grid and multiple electronic components. In an infrasound DSN, signals will attenuate based on distance from the source and also change as the signals encounter physical obstacles in the environment (such as hills, man made structures, or even weather patterns).
 
@@ -201,7 +201,7 @@ From these clusters, this Phenomena creates a similarity metric. The metric is d
 
 
 \subsection{Future Phenomena}\label{subsec:future-phenomena}
-Future Phenomena are a statistical model of the likelihood of seeing an incident or incidents at future points in time. Knowing that a signal may occur with some probability allows Actor affected by those signals time to prepare for the signals.
+Future Phenomena are a statistical model of the likelihood of seeing an Incident or Incidents at future points in time. Knowing that a signal may occur with some probability allows Actor affected by those signals time to prepare for the signals.
 
 Future Phenomena are created by a combination of other Phenomena types. The most useful Phenomena for creating Future Phenomena are Periodic Phenomena which forecasts future Incidents based off of periodicity. However, Future Phenomena also take into account other Phenomena. For instance, Future Phenomena uses Locality Phenomena to automatically trigger predicted sensors that often observe the same signals. In this way, Future Phenomena can identify signals of interest that may have not passed various triggering thresholds.
 
@@ -215,7 +215,7 @@ Future Phenomena can work the other way as well by increasing triggering thresho
 
 
 \section{Laha Actors: Acting on the Laha Data Model}\label{sec:laha-actors:-acting-on-the-laha-data-model}
-Laha Actors act on the Laha hierarchy and provide one of two functions. Actors can move data from one level of the hierarchy upwards through the hierarchy when interesting data is requested by an upper level. Actors can also apply adaptive optimizations downwards through the hierarchy. The Laha framework can support multiple actors at each level. For example, the Incidents Level in our reference power quality network contains actors for each of the following functions: IEEE classified voltage events, frequency variations, power outages, excessive THD, and many others. The Incident Level Actors move data from these incidents upwards to the Phenomena Level.
+Laha Actors act on the Laha hierarchy and provide one of two functions. Actors can move data from one level of the hierarchy upwards through the hierarchy when interesting data is requested by an upper level. Actors can also apply adaptive optimizations downwards through the hierarchy. The Laha framework can support multiple actors at each level. For example, the Incidents Level in our reference power quality network contains actors for each of the following functions: IEEE classified voltage events, frequency variations, power outages, excessive THD, and many others. The Incident Level Actors move data from these Incidents upwards to the Phenomena Level.
 
 Table~\ref{laha-actors-tables} summarizes the actors that exist within the Laha framework and their purposes.
 
@@ -260,9 +260,9 @@ The constraints for each level of Laha hierarchy is summarized in Table~\ref{act
 		\hline
 		DL & Windowed waveforms & Hi-fi extracted features & AML & IL & Data \& features available \\
 		\hline
-		IL & Hi-fi extracted features & Contextualized incidents & DL & PL & Incident types available \\
+		IL & Hi-fi extracted features & Contextualized Incidents & DL & PL & Incident types available \\
 		\hline
-		PL & Contextualized incidents & Optimizations & IL & All levels & Optimizations available \\
+		PL & Contextualized Incidents & Optimizations & IL & All levels & Optimizations available \\
 		\hline
 	\end{tabular}
 	\label{actor-constraint-table}
@@ -301,7 +301,7 @@ The feature extraction algorithms extract from the sampled waveform the followin
 
 The OPQ network is a hybrid network that uses edge computing for calculating features at the edge of the network. This is opposed to networks that utilize a ``send everything" approach. In this way, Laha is able to minimize bandwidth.
 
-OPQBoxes are synchronized to each other and the OPQ back end using the network time protocol (NTP). This provides synchronization to the millisecond level, which although is great for longer incidents, does not provide accurate timing for transients that may be shorter than tens of milliseconds.
+OPQBoxes are synchronized to each other and the OPQ back end using the network time protocol (NTP). This provides synchronization to the millisecond level, which although is great for longer Incidents, does not provide accurate timing for transients that may be shorter than tens of milliseconds.
 
 \subsection{OPQ: Makai}\label{subsec:opq:-makai}
 OPQ Makai is the central sink and triggering daemon for the OPQ framework. It is made up of several services which are responsible for aggregating and processing the measurements generated by OPQ Boxes. Low fidelity feature extracted data consisting of $V_{RMS}$, Frequency, and THD are streamed from OPQ Boxes at a configurable message rate. These data streams are observed by OPQ Makai and the daemon uses statistical methods and configurable thresholds to determine if the sensor or a subset of sensors should be triggered for a window of raw sampled waveforms.
@@ -602,7 +602,7 @@ The ``GcDomain" (Table~\ref{table:GcDomain}) enum is used to specify a garbage c
 		\hline
 		EVENTS & 2 & Laha events. \\
 		\hline
-		INCIDENTS & 3 & Laha incidents. \\
+		INCIDENTS & 3 & Laha Incidents. \\
 		\hline
 		PHENOMENA & 4 & Laha Phenomena. \\
 		\hline
@@ -974,7 +974,7 @@ The box\_events data model is described in Table~\ref{table:BoxEvents}.
 	\label{table:BoxEvents}
 \end{table}
 
-The Incidents collection keeps track of Incidents as defined by Laha. This collections includes metadata for classification and other contextual information relating to power incident. The Incident collection data model is described in Table~\ref{table:Incidents}.
+The Incidents collection keeps track of Incidents as defined by Laha. This collections includes metadata for classification and other contextual information relating to power Incident. The Incident collection data model is described in Table~\ref{table:Incidents}.
 
 \begin{table}[H]
 	\centering
@@ -983,33 +983,33 @@ The Incidents collection keeps track of Incidents as defined by Laha. This colle
 		\hline
 		Field & Type & Description \\
 		\hline
-		incident\_id & int & ID of the incident \\
+		incident\_id & int & ID of the Incident \\
 		\hline
-		event\_id & int & ID of the event this incident references \\
+		event\_id & int & ID of the event this Incident references \\
 		\hline
-		box\_id & str & ID of the OPQBox that this incident references \\
+		box\_id & str & ID of the OPQBox that this Incident references \\
 		\hline
-		start\_timestamp\_ms & int & Start of this incident \\
+		start\_timestamp\_ms & int & Start of this Incident \\
 		\hline
-		end\_timestamp\_ms & int & End of this incident \\
+		end\_timestamp\_ms & int & End of this Incident \\
 		\hline
-		location & str & Location slug of where this incident originated from \\
+		location & str & Location slug of where this Incident originated from \\
 		\hline
-		measurement\_type & str & A description of the measurements used in this incident \\
+		measurement\_type & str & A description of the measurements used in this Incident \\
 		\hline
 		deviation\_from\_nominal & float & The maximum deviation from nominal for the provided measurement\_type \\
 		\hline
-		measurements & [Measurement] & List of measurements stored in this incident \\
+		measurements & [Measurement] & List of measurements stored in this Incident \\
 		\hline
-		gridfs\_filename & str & Location in gridfs that the waveform for this incident is stored \\
+		gridfs\_filename & str & Location in gridfs that the waveform for this Incident is stored \\
 		\hline
 		ieee\_duration & str & An IEEE1159 duration \\
 		\hline
-		annotations & [str] & A list of annotations added to this incident \\
+		annotations & [str] & A list of annotations added to this Incident \\
 		\hline
-		metadata & object & Metadata associated with this incident \\
+		metadata & object & Metadata associated with this Incident \\
 		\hline
-		expire\_at & int & This incident should expire after this timestamp \\
+		expire\_at & int & This Incident should expire after this timestamp \\
 		\hline
 	\end{tabular}
 	\label{table:Incidents}
@@ -1059,7 +1059,7 @@ The ``laha\_config" collection contains dynamic configuration options that Pheno
 		\hline
 		events & int & Default TTL events and box\_events. \\
 		\hline
-		incidents & int & Default TTL incidents. \\
+		incidents & int & Default TTL Incidents. \\
 		\hline
 	\end{tabular}
 	\label{table:laha_config}
@@ -1171,12 +1171,12 @@ When new events are received by the MakaiEventPlugin, a GcUpdate (Table~\ref{tab
 \paragraph{FrequencyVariationPlugin}
 The ``FrequencyVariationPlugin" is used to classify generic frequency sags, swells, and interruptions as defined by the IEEE1159 standard\cite{IEEE:2018:1159D3}. The plugin subscribes to messages from the ``WindowedFrequency" topic which includes a payload of frequency features over one electrical cycle.
 
-When a message is received, the plugin uses configurable thresholds to find frequency fluctuations within the windowed frequency streams. The plugin is able to classify frequency swells, frequency interruptions, and frequency sags. When a new frequency variation is detected, a frequency incident is created and a GC\_UPDATE message is sent to the LahaGcPlugin to update the TTL of all measurements, trends, and events that belong to this new incident.
+When a message is received, the plugin uses configurable thresholds to find frequency fluctuations within the windowed frequency streams. The plugin is able to classify frequency swells, frequency interruptions, and frequency sags. When a new frequency variation is detected, a frequency Incident is created and a GC\_UPDATE message is sent to the LahaGcPlugin to update the TTL of all measurements, trends, and events that belong to this new Incident.
 
 \paragraph{IEEE1159VoltagePlugin}
-The ``IEEE1159VoltagePlugin" is a plugin that is able to classify voltage incidents in accordance to the IEEE1159 standard\cite{IEEE:2018:1159D3}. The plugin subscribes to messages from the ``RmsWindowedVoltage" topic which includes payloads of $V_{RMS}$ features over a window of one electrical cycle.
+The ``IEEE1159VoltagePlugin" is a plugin that is able to classify voltage Incidents in accordance to the IEEE1159 standard\cite{IEEE:2018:1159D3}. The plugin subscribes to messages from the ``RmsWindowedVoltage" topic which includes payloads of $V_{RMS}$ features over a window of one electrical cycle.
 
-This plugin is capable of classifying voltage sags, swells, and interruptions as defined by the standard. The plugin works by identifying sags, swells, and interruptions and determining the duration of those events. If the duration or delta is large enough, a voltage incident is created and a GC\_UPDATE message is sent to the LahaGcPlugin asking it to update the TTL for all measurements, trends, and events that belong to this new incident.
+This plugin is capable of classifying voltage sags, swells, and interruptions as defined by the standard. The plugin works by identifying sags, swells, and interruptions and determining the duration of those events. If the duration or delta is large enough, a voltage Incident is created and a GC\_UPDATE message is sent to the LahaGcPlugin asking it to update the TTL for all measurements, trends, and events that belong to this new Incident.
 
 \paragraph{ITICPlugin}
 The ``ITICPlugin" analyzes $V_{rms}$ to determine where it falls within the ITIC curve\cite{thallam2000power}. The ITIC curve is a power acceptability curve that plots time on the x-axis and $V_{rms}$ on the y-axis. The ITIC curve is displayed in Figure~\ref{fig:IticCurve}.
@@ -1200,9 +1200,9 @@ Given an array of values $A$, the length of the array $len(A)$, and a segmentati
 
 Once the segments are defined, we calculate the duration of each segment. We know that each sample in the $V_{rms}$ features represents one electrical cycle at 60$Hz$. Thus, to find the duration of a segment in milliseconds we can simply divide the number of cycles by the number of cycles in milliseconds. Thus, $duration\_ms = \frac{cycles}{0.06}$. The plugin also calculates the mean $V_{rms}$ for each segment. Once we have a duration and mean $V_{rms}$ for each segment, we can plot it on the ITIC curve and get a region classification.
 
-In order to plot the value on the curve, the curve is first constructed as a set of polygons representing each ITIC region. Each polygon is represented by an array of points (see appendix~\ref{appendix:Itic}). Once the polygons are constructed, matplotlib's point-in-polygon algorithm is used to determine which ITIC region a point of $(duration\_ms, V_{rms})$ falls within. If a region of ``No Interruption" or "Prohibited" is returned, then a new ITIC incident is created and stored to the database.
+In order to plot the value on the curve, the curve is first constructed as a set of polygons representing each ITIC region. Each polygon is represented by an array of points (see appendix~\ref{appendix:Itic}). Once the polygons are constructed, matplotlib's point-in-polygon algorithm is used to determine which ITIC region a point of $(duration\_ms, V_{rms})$ falls within. If a region of ``No Interruption" or "Prohibited" is returned, then a new ITIC Incident is created and stored to the database.
 
-If a new incident is created, a message is sent to the LahaGcPlugin informing the plugin to update the TTL of all measurements, trends, and events that belong to the incident.
+If a new Incident is created, a message is sent to the LahaGcPlugin informing the plugin to update the TTL of all measurements, trends, and events that belong to the Incident.
 
 \paragraph{LahaGcPlugin}\label{sec:gc_plugin}
 Mauka provides custom garbage collection (GC) for identifying and removing ``uninteresting" data. This fulfills one of Laha's claims that it is able to manage data storage pressure while increasing the signal-to-noise ratio within the data set.
@@ -1254,7 +1254,7 @@ Events in OPQ are spread out over three collections: events, box\_events, and gr
 
 In order to GC events, first all events with a TTL less than the current date and time are identified. From the events, we look up the corresponding box\_events. From each box\_event, we look up corresponding raw data in gridfs. First the gridfs data is removed, then the box\_events are removed, and finally the events themselves are removed.
 
-To GC incidents, a similar algorithm is provided. First, incidents with a TTL less than the current date and time are identified. From these identified incidents, Mauka looks up and removes the corresponding data in gridfs. Finally, the incidents are removed.
+To GC Incidents, a similar algorithm is provided. First, Incidents with a TTL less than the current date and time are identified. From these identified Incidents, Mauka looks up and removes the corresponding data in gridfs. Finally, the Incidents are removed.
 
 Phenomena, being the top of the hierarchy are GCed the least since it provides the most context for optimizing the DSN. Phenomena are only GCed when they are shown to be incorrect or are otherwise unused over the period of a year. Thus, Phenomena take the same default TTL as Incidents. Phenomena differ from Incidents in that every time a Phenomena is referenced by the DSN, it's TTL is renewed for another year from the last use date. Similarly to other collections, when a Phenomena's TTL is updated, all collections that the Phenomena references will also have their TTL updated.
 
@@ -1264,7 +1264,7 @@ The Mauka GC plugin does not manage raw data on OPQ Boxes. Instead, OPQ Boxes ma
 
 Dynamically updating TTLs is also performed by the LahaGcPlugin. The LahaGcPlugin listens for specific ``Ttl" messages that contain the source item that the TTL is being updated for. Then all child elements of the source element also have their TTLs updated. TTLs are updated in the following manner.
 
-When new events are created, the TTL of measurements and trends that coincide with that event receive the TTL of the event. When incidents are created, the events, trends, and measurements associated with that incident receive the TTL of the incident. When Phenomena are created, the TTLs of incidents, events, trends, and measurements are assigned the TTL of the Phenomena (which is infinite).
+When new events are created, the TTL of measurements and trends that coincide with that event receive the TTL of the event. When Incidents are created, the events, trends, and measurements associated with that Incident receive the TTL of the Incident. When Phenomena are created, the TTLs of Incidents, events, trends, and measurements are assigned the TTL of the Phenomena (which is infinite).
 
 \paragraph{MockPlugin}
 The ``MockPlugin" is a special plugin that can be instantiated at run time and sends and receives messages to configurable topics. This plugin is useful for debugging and rerunning (or running new) analysis over old data. As an example, let's say a new plugin Foo is designed. We want to run historical data through Foo. To do that, the MockPlugin can be configured to read the database for all old events, and then construct a message to Foo so that Foo runs its analysis over those events.
@@ -1272,7 +1272,7 @@ The ``MockPlugin" is a special plugin that can be instantiated at run time and s
 \paragraph{OutagePlugin}
 The ``OutagePlugin" classifies power outages. Since no real power data is produced during an outage, this plugin only subscribes to its own heartbeats. When a heartbeat is received, the outage plugin looks up in the database all OPQBoxes that are marked ``down" by OPQHealth and not marked as ``unplugged" in the database. This plugin keeps track of current outages so that if an OPQBox is already in an outage state a new outage Incident is not created on each subsequent heartbeat.
 
-When outage incidents are created, TTL update messages are not sent because there is no data during the time period of an outage to adjust the TTL for.
+When outage Incidents are created, TTL update messages are not sent because there is no data during the time period of an outage to adjust the TTL for.
 
 \paragraph{PrintPlugin}
 The ``PrintPlugin" is a special plugin that is mainly used for debugging. It subscribes to all topics and simply prints the contents of the message to STDOUT. This is useful in development or when bringing up a new Mauka system to ensure that the communications infrastructure is in place. It can also be enabled at runtime from the Mauka CLI to debug all communication channels for all plugins.
@@ -1454,7 +1454,7 @@ The ``ThdPlugin" classifies abnormal amounts of total harmonic distortion (THD) 
 	THD_F = \frac{\sqrt{V_2^2 + V_3^2 + V_4^2 + \dots}}{V_1}
 \end{equation}
 
-For each continuous set of windows that has THD higher than the configured threshold, a THD Incident is created. If an Incident is created, this plugin sends a GC\_UPDATE message to the LahaGcPlugin informing it that it should update all measurements, trends, and events that belong to the new incident to match the incident's TTL\@.
+For each continuous set of windows that has THD higher than the configured threshold, a THD Incident is created. If an Incident is created, this plugin sends a GC\_UPDATE message to the LahaGcPlugin informing it that it should update all measurements, trends, and events that belong to the new Incident to match the Incident's TTL\@.
 
 
 \paragraph{TransientPlugin}
@@ -1462,12 +1462,12 @@ The ``TransientPlugin" is responsible for classifying frequency transients in po
 
 The full details of our transient classification system are published in the Proceedings of the Ninth International Conference on Smart Grids, Green Communications and IT Energy-aware Technologies\cite{csdl2-19-02}.
 
-When a transient is classified a new transient Incident is created. If an incident is created, this plugin sends a GC\_UPDATE message to the LahaGcPlugin informing it to update the TTLs for all measurements, trends, and events that belong to this new incident.
+When a transient is classified a new transient Incident is created. If an Incident is created, this plugin sends a GC\_UPDATE message to the LahaGcPlugin informing it to update the TTLs for all measurements, trends, and events that belong to this new Incident.
 
 \paragraph{TriggerPlugin}\label{sec:trigger_plugin}
 The ``TriggerPlugin" provides Mauka with the functionality to trigger OPQ Boxes itself instead of relying on Makai for triggering. Generally, Mauka is only provided with event\_ids when Makai triggers Boxes based off of their low-fidelity data streams. Mauka then loads the associated event data from the database, performs cycle level feature extraction, and then forwards those features to analysis plugins for PQ analysis.
 
-This plugin takes advantage of Phenomena in order to find incidents that may not have passed Makai's triggering thresholds.
+This plugin takes advantage of Phenomena in order to find Incidents that may not have passed Makai's triggering thresholds.
 
 This plugin consists of two threads running in a single process. The main thread (or the plugin thread) is responsible for listening for ``TriggerRequest" messages from other plugins and sending trigger requests to Makai's acquisition broker. The second data thread is responsible for listening for data from triggered Boxes routed through Makai.
 
