@@ -1889,7 +1889,9 @@ The ``DailyDataUsage" collection is a collection that stores metadata relating t
 \subsubsection{S3 Actor}
 After the metadata has been stored, the updated packet is serialized back into bytes and then compressed using the same custom LZ4  compression protocol. This data is then sent to AWS S3 by the ``S3 Actor" for permanent storage for later data retrieval. S3 is a cloud service offered by Amazon which acts as a distributed key-value store with essentially unlimited space.
 
-Data is stored to S3 using using the following directory layout: api900/[YYYY]/[MM]/[DD]/[sensor\_id]_[packet\_timestamp\_ms].rdvxz.
+Data is stored to S3 using using the following directory layout:
+
+api900/[YYYY]/[MM]/[DD]/[sensor\_id]\_[packet\_timestamp\_ms].rdvxz.
 
 \subsubsection{Fs Actor}
 The data can optionally be stored to any accessible file system using the ``Fs Actor". This is useful in cases when your acquisition server may only have local network access, such as restricted sites with an acquisition server running on a Raspberry Pi on a LAN\@.
