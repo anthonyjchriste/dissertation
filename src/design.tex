@@ -59,7 +59,7 @@ Each level only keeps data for a specified amount of time before it is garbage c
 
 A summary of how data management in Laha is provided in Table~\ref{data-managament-table}. Note that the TTL is configurable for each implementing network and Table~\ref{data-managament-table} provides default values.
 
-\begin{table}
+\begin{table}[h]
 	\centering
 	\begin{tabularx}{\textwidth}{lXl}
 		\toprule
@@ -120,26 +120,21 @@ Not only do Phenomena provide context, but they also play an important role with
 
 The following sections investigate the details of Phenomena and how they are implemented within Laha.
 
-\begin{table}
+\begin{table}[h]
 	\centering
-	\caption{Summary of Laha Phenomena}
-	\begin{tabular}{|c|c|}
-		\hline
-		Phenomena & Description \\
-		\hline
+	\begin{tabularx}{\textwidth}{lX}
+		\toprule
+		\textbf{Phenomena} & \textbf{Description} \\
+		\midrule
 		Annotations & Provide context about an Incident or set of Incidents \\
-		\hline
 		Locality & Provides context on how Incidents are related in time and space \\
-		\hline
 		Periodicity & Designation for Incidents that exhibit repetitive or periodic behavior \\
-		\hline
 		Similarity & Subset of Incidents found using grouping and community detection algorithms \\
-		\hline
 		Predictive & Subset of Incidents characterized by predictive or forecasting models\\
-		\hline
 		Future & Incidents scheduled to occur in the future\\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
+	\caption{Summary of Laha Phenomena}
 	\label{phenomena-summary-table}
 \end{table}
 
@@ -222,24 +217,20 @@ Laha Actors act on the Laha hierarchy and provide one of two functions. Actors c
 
 Table~\ref{laha-actors-tables} summarizes the actors that exist within the Laha framework and their purposes.
 
-\begin{table}
+\begin{table}[h]
 	\centering
 	\caption{Summary of Laha Actors}
-	\begin{tabular}{|c|c|}
-		\hline
-		Actor & Purpose \\
-		\hline
+	\begin{tabularx}{\textwidth}{lX}
+		\toprule
+		\textbf{Actor} & \textbf{Purpose} \\
+		\midrule
 		IML Actors & Perform feature extraction and move aggregate data to AML \\
-		\hline
 		AML Actors & Perform triggering on data from IML, copy data to DL if interesting \\
-		\hline
 		DL Actors & Perform high fidelity feature extraction on possible detections \\
-		\hline
 		IL Actors & Perform classification and contextualization on possible detections \\
-		\hline
 		PL Actors & Generate predictive analytics and optimize the lower levels of the hierarchy \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{laha-actors-tables}
 \end{table}
 
@@ -250,24 +241,20 @@ Actors are responsible for reporting constraint violations and in this way, Acto
 
 The constraints for each level of Laha hierarchy is summarized in Table~\ref{actor-constraint-table}.
 
-\begin{table}
+\begin{table}[h]
 	\centering
 	\caption{Summary of Laha Actor Constraints at Each Level}
-	\begin{tabular}{|c|c|c|c|c|c|}
-		\hline
-		Level & $A_i$ & $Ao$ & $A_{ai}$ & $A_{ao}$ & $A_p$ \\
-		\hline
+	\begin{tabularx}{\textwidth}{lXXllX}
+		\toprule
+		\textbf{Level} & \boldmath{$A_i$} & \boldmath{$Ao$} & \boldmath{$A_{ai}$} & \boldmath{$A_{ao}$} & \boldmath{$A_p$} \\
+		\midrule
 		IML & Raw samples & Aggregate trends & n/a & AML & Data ranges available \\
-		\hline
 		AML & Aggregate trends & Detections & IML & DL & Data ranges available \\
-		\hline
 		DL & Windowed waveforms & Hi-fi extracted features & AML & IL & Data \& features available \\
-		\hline
 		IL & Hi-fi extracted features & Contextualized Incidents & DL & PL & Incident types available \\
-		\hline
 		PL & Contextualized Incidents & Optimizations & IL & All levels & Optimizations available \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{actor-constraint-table}
 \end{table}
 
@@ -402,17 +389,15 @@ The ``MaukaMessage" (Table~\ref{table:MaukaMessage}) type contains a timestamp, 
 \begin{table}[H]
 	\centering
 	\caption{MaukaMessage}
-	\begin{tabular}{|c|p{6cm}|c|}
-		\hline
-		Field & Type & Description  \\
-		\hline
+	\begin{tabularx}{\textwidth}{lXX}
+		\toprule
+		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
+		\midrule
 		timestamp\_ms & uint64 & Timestamp of message creation.  \\
-		\hline
 		source & string & Name of plugin that produced this message. \\
-		\hline
 		message & oneof (Payload, Heartbeat, MakaiEvent, Measurement, MakaiTrigger, Laha, TriggerRequest, ThresholdOptimizationRequest, RateOptimizationRequest, TtlOptimizationRequest, Request) & A union of subtypes. \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:MaukaMessage}
 \end{table}
 
@@ -421,22 +406,18 @@ The ``Payload" (Table~\ref{table:Payload}) variant of message contains data payl
 \begin{table}[H]
 	\centering
 	\caption{Payload}
-	\begin{tabular}{|c|c| p{8cm} |}
-		\hline
-		Field & Type & Description  \\
-		\hline
+	\begin{tabularx}{\textwidth}{llX}
+		\toprule
+		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
+		\midrule
 		event\_id & uint32 & Event that this payload originated from.  \\
-		\hline
 		box\_id & string & Box that this payload originated from. \\
-		\hline
 		data & [f64] & An array of data cast to double precision floats. \\
-		\hline
 		payload\_type & PayloadType & Enumeration providing payload type information. \\
 		start\_timestamp\_ms & uint64 & Start timestamp of first payload element \\
-		\hline
 		end\_timestamp\_ms & uint64 & End timestamp of last payload element\\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:Payload}
 \end{table}
 
@@ -445,21 +426,17 @@ The ``PayloadType" (Table~\ref{table:PayloadType}) variant is an enumeration tha
 \begin{table}[H]
 	\centering
 	\caption{PayloadType}
-	\begin{tabular}{|c|c| p{8cm} |}
-		\hline
-		Field & Enum Value & Description  \\
-		\hline
+	\begin{tabularx}{\textwidth}{XlX}
+		\toprule
+		\textbf{Field} & \textbf{Enum} & \textbf{Value} & \textbf{Description} \\
+		\midrule
 		ADC\_SAMPLES & 0 & ADC waveform samples from the Box.  \\
-		\hline
 		VOLTAGE\_RAW & 1 & Raw waveform voltage obtained by dividing ADC values by a calibration constant. \\
-		\hline
 		VOLTAGE\_RMS & 2 & RMS waveform obtained by dividing raw voltage by sqrt(2). \\
-		\hline
 		VOLTAGE\_RMS\_WINDOWED & 3 & RMS extracted feature array. \\
-		\hline
 		FREQUENCY\_WINDOWED & 4 & Frequency extracted feature array. \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:PayloadType}
 \end{table}
 
@@ -468,17 +445,15 @@ The ``Heartbeat" (Table~\ref{table:Heartbeat}) variant is a message that is peri
 \begin{table}[H]
 	\centering
 	\caption{Heartbeat}
-	\begin{tabular}{|c|c|p{8cm}|}
-		\hline
-		Field & Type & Description  \\
-		\hline
+	\begin{tabularx}{\textwidth}{llX}
+		\toprule
+		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
+		\midrule
 		last\_received\_timestamp\_ms & uint64 & Last time a plugin on\_message was fired.  \\
-		\hline
 		on\_message\_count & uint32 & The amount of times on\_message has been fired. \\
-		\hline
 		status & string & Custom status message that plugin can override. \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:Heartbeat}
 \end{table}
 
@@ -487,13 +462,13 @@ The ``MakaiEvent" (Table~\ref{table:MakaiEvent}) variant is a message which incl
 \begin{table}[H]
 	\centering
 	\caption{MakaiEvent}
-	\begin{tabular}{|c|c|p{8cm}|}
-		\hline
-		Field & Type & Description  \\
-		\hline
+	\begin{tabularx}{\textwidth}{llX}
+		\toprule
+		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
+		\midrule
 		event\_id & uint32 & The event number that Makai has recorded.  \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:MakaiEvent}
 \end{table}
 
@@ -502,21 +477,17 @@ The ``Measurement" (Table~\ref{table:Measurement}) variant is a message that con
 \begin{table}[H]
 	\centering
 	\caption{Measurement}
-	\begin{tabular}{|c|c|p{8cm}|}
-		\hline
-		Field & Type & Description  \\
-		\hline
+	\begin{tabularx}{\textwidth}{llX}
+		\toprule
+		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
+		\midrule
 		box\_id & string  & Box that this measurement came from. \\
-		\hline
 		timestamp\_ms & uint64 & Timestamp that this measurement was recorded. \\
-		\hline
 		frequency & double & The instantaneous frequency of this measurement. \\
-		\hline
 		voltage\_rms & double & The instantaneous RMS voltage of this measurement. \\
-		\hline
 		thd & double & The instantaneous THD of this measurement. \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:Measurement}
 \end{table}
 
@@ -525,21 +496,17 @@ The ``MakaiTrigger" (Table~\ref{table:MakaiTrigger}) variant is a message type t
 \begin{table}[H]
 	\centering
 	\caption{MakaiTrigger}
-	\begin{tabular}{|c|c|p{8cm}|}
-		\hline
-		Field & Type & Description  \\
-		\hline
+	\begin{tabularx}{\textwidth}{llX}
+		\toprule
+		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
+		\midrule
 		event\_start\_timestamp\_ms & uint64  & The start timestamp of the trigger. \\
-		\hline
 		event\_end\_timestamp\_ms & uint64 & The end timestamp of the trigger. \\
-		\hline
 		event\_type & String & A string description of the event (or reason) we are triggering Boxes. \\
-		\hline
 		max\_value & double & The maximum value of ``event\_type" observed in the triggering stream. \\
-		\hline
 		box\_id & String & The OPQBox id. \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:MakaiTrigger}
 \end{table}
 
@@ -548,13 +515,13 @@ The ``Laha" (Table~\ref{table:Laha}) message variant contains multiple types of 
 \begin{table}[H]
 	\centering
 	\caption{Laha}
-	\begin{tabular}{|c|c|p{8cm}|}
-		\hline
-		Field & Type & Description  \\
-		\hline
+	\begin{tabularx}{\textwidth}{lXX}
+		\toprule
+		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
+		\midrule
 		laha\_type & Oneof (Ttl, GcTrigger, GcUpdate, GcStat) & Sum type that contains multiple subtypes. \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:Laha}
 \end{table}
 
@@ -563,15 +530,14 @@ The ``Ttl" (Table~\ref{table:Ttl}) Laha message variant is used to dynamically s
 \begin{table}[H]
 	\centering
 	\caption{Ttl}
-	\begin{tabular}{|c|c|p{8cm}|}
-		\hline
-		Field & Type & Description  \\
-		\hline
+	\begin{tabularx}{\textwidth}{llX}
+		\toprule
+		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
+		\midrule
 		collection & String & The data collection type that should have its TTL updated.  \\
-		\hline
 		ttl\_s & uint32 & The number of seconds that a collection should have its TTL set to. \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:Ttl}
 \end{table}
 
@@ -580,13 +546,13 @@ The ``GcTrigger" (Table~\ref{table:GcTrigger}) variant is a message that is sent
 \begin{table}[H]
 	\centering
 	\caption{GcTrigger}
-	\begin{tabular}{|c|c|p{8cm}|}
-		\hline
-		Field & Type & Description  \\
-		\hline
+	\begin{tabularx}{\textwidth}{llX}
+		\toprule
+		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
+		\midrule
 		gc\_domains & [GcDomain] & The data collection type that should have its TTL updated.  \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:GcTrigger}
 \end{table}
 
@@ -595,23 +561,18 @@ The ``GcDomain" (Table~\ref{table:GcDomain}) enum is used to specify a garbage c
 \begin{table}[H]
 	\centering
 	\caption{GcDomain}
-	\begin{tabular}{|c|c| p{8cm} |}
-		\hline
-		Field & Enum Value & Description  \\
-		\hline
+	\begin{tabularx}{\textwidth}{lll}
+		\toprule
+		\textbf{Field} & \textbf{Enum} & \textbf{Value} & \textbf{Description} \\
+		\midrule
 		MEASUREMENTS & 0 & Laha measurements.  \\
-		\hline
 		TRENDS & 1 & Laha trends. \\
-		\hline
 		EVENTS & 2 & Laha events. \\
-		\hline
 		INCIDENTS & 3 & Laha Incidents. \\
-		\hline
 		PHENOMENA & 4 & Laha Phenomena. \\
-		\hline
 		SAMPLES & 5 & Laha samples. \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:GcDomain}
 \end{table}
 
@@ -620,15 +581,14 @@ A ``GcUpdate" (Table~\ref{table:GcUpdate}) variant is a message that informs the
 \begin{table}[H]
 	\centering
 	\caption{GcUpdate}
-	\begin{tabular}{|c|c|p{8cm}|}
-		\hline
-		Field & Type & Description  \\
-		\hline
+	\begin{tabularx}{\textwidth}{llX}
+		\toprule
+		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
+		\midrule
 		from\_domain & GcDomain & The GcDomain from which this update originated. All collections under this domain are also updated.  \\
-		\hline
 		id & uint32 & The id of the document that should have its TTL updated. \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:GcUpdate}
 \end{table}
 
@@ -637,15 +597,14 @@ A ``GcStat" (Table~\ref{table:GcStat}) variant message is a message that contain
 \begin{table}[H]
 	\centering
 	\caption{GcStat}
-	\begin{tabular}{|c|c|p{8cm}|}
-		\hline
-		Field & Type & Description  \\
-		\hline
+	\begin{tabularx}{\textwidth}{llX}
+		\toprule
+		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
+		\midrule
 		gc\_domain & GcDomain & The GcDomain from which this statistic originated. \\
-		\hline
 		gc\_cnt & uint64 & The count of items garbage collected on the last GcTrigger message.  \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:GcStat}
 \end{table}
 
@@ -654,19 +613,16 @@ A ``TriggerRequest" (Table~\ref{table:TriggerRequest}) variant message is a mess
 \begin{table}[H]
 	\centering
 	\caption{TriggerRequest}
-	\begin{tabular}{|c|c|p{8cm}|}
-		\hline
-		Field & Type & Description  \\
-		\hline
+	\begin{tabularx}{\textwidth}{llX}
+		\toprule
+		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
+		\midrule
 		start\_timestamp\_ms & uint64 & Start time of data request. \\
-		\hline
 		end\_timestamp\_ms & uint64 & End time of data request. \\
-		\hline
 		box\_ids & [string] & An array of Boxes to request data from. \\
-		\hline
 		incident\_id & uint64 & The original Incident leading to this trigger request. \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:TriggerRequest}
 \end{table}
 
@@ -675,41 +631,27 @@ A ``ThresholdOptimizationRequest" (Table~\ref{table:ThresholdOptimziationRequest
 \begin{table}[H]
 	\centering
 	\caption{ThresholdOptimizationRequest}
-	\begin{tabular}{|c|c|p{8cm}|}
-		\hline
-		Field & Type & Description  \\
-		\hline
+	\begin{tabularx}{\textwidth}{XlX}
+		\toprule
+		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
+		\midrule
 		default\_ref\_f & f64 & Default reference frequency \\
-		\hline
 		default\_ref\_v & f64 & Default reference voltage \\
-		\hline
 		default\_threshold\_percent\_f\_low & f64 & Default frequency percent low threshold \\
-		\hline
 		default\_threshold\_percent\_f\_high & f64 & Default frequency percent high threshold \\
-		\hline
 		default\_threshold\_percent\_v\_low & f64 & Default voltage percent low threshold \\
-		\hline
 		default\_threshold\_percent\_v\_high & f64 & Default voltage percent high threshold \\
-		\hline
 		default\_threshold\_percent\_thd\_high & f64 & Default THD percent high threshold \\
-		\hline
 		box\_id & str & Override Box id \\
-		\hline
 		ref\_f & f64 & Override reference frequency \\
-		\hline
 		ref\_v & f64 & Override reference voltage \\
-		\hline
 		threshold\_percent\_f\_low & f64 & Override frequency percent low threshold \\
-		\hline
 		threshold\_percent\_f\_high & f64 & Override frequency percent high threshold \\
-		\hline
 		threshold\_percent\_v\_low & f64 & Override voltage percent low threshold \\
-		\hline
 		threshold\_percent\_v\_high & f64 & Override voltage percent high threshold \\
-		\hline
 		threshold\_percent\_thd\_high & f64 & Override THD percent high threshold \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:ThresholdOptimziationRequest}
 \end{table}
 
@@ -718,15 +660,14 @@ A ``RateOptimizationRequest" (Table~\ref{table:RateOptimizationRequest}) variant
 \begin{table}[H]
 	\centering
 	\caption{RateOptimizationRequest}
-	\begin{tabular}{|c|c|p{8cm}|}
-		\hline
-		Field & Type & Description  \\
-		\hline
+	\begin{tabularx}{\textwidth}{llX}
+		\toprule
+		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
+		\midrule
 		box\_id & str & The id of the Box to change the receive rate for \\
-		\hline
 		measurements\_hz & f32 & Measurements per second \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:RateOptimizationRequest}
 \end{table}
 
@@ -735,15 +676,14 @@ A ``TtlOptimizationRequest" (Table~\ref{table:TtlOptimizationRequest}) variant m
 \begin{table}[H]
 	\centering
 	\caption{TtlOptimizationRequest}
-	\begin{tabular}{|c|c|p{8cm}|}
-		\hline
-		Field & Type & Description  \\
-		\hline
+	\begin{tabularx}{\textwidth}{llX}
+		\toprule
+		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
+		\midrule
 		collection\_name & str & Collection to modify the TTL for \\
-		\hline
 		ttl & int32 & New TTL for the defined collection in seconds \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:TtlOptimizationRequest}
 \end{table}
 
@@ -767,41 +707,35 @@ The ``Command" message (Table~\ref{table:Command}) is the base message used for 
 \begin{table}[H]
 	\centering
 	\caption{Command}
-	\begin{tabular}{|c|c|p{8cm}|}
-		\hline
-		Field & Type & Description  \\
-		\hline
+	\begin{tabularx}{\textwidth}{lXX}
+		\toprule
+		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
+		\midrule
 		seq & uint32 & The command sequence number \\
-		\hline
 		box\_id & int32 & The Box id this command references \\
-		\hline
 		timestamp\_ms & uint64 & The timestamp of this command \\
-		\hline
 		identity & str & The formatted identity for this command \\
-		\hline
 		command & oneof(GetInfoCommand, GetDataCommand, SetMeasurementRateCommand, SendCommandToPlugin) & Command variant \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:Command}
 \end{table}
 
 The ``GetDataCommand" message (Table~\ref{table:GetDataCommand}) is sent with a ``Command" message when Mauka wants to trigger Boxes for data.
 
 \begin{table}[H]
-	\centering
-	\caption{GetDataCommand}
-	\begin{tabular}{|c|c|p{8cm}|}
-		\hline
-		Field & Type & Description  \\
-		\hline
-		start\_ms & uint64 & The start timestamp of the data request. \\
-		\hline
-		end\_ms & uint64 & The end timestamp of the data request. \\
-		\hline
-		wait & bool & If set, the Box will wait to send data if timestamps are in the future. \\
-		\hline
-	\end{tabular}
-	\label{table:GetDataCommand}
+    \centering
+    \caption{GetDataCommand}
+    \begin{tabularx}{\textwidth}{llX}
+        \toprule
+        \textbf{Field} & \textbf{Type} & \textbf{Description} \\
+        \midrule
+        start\_ms & uint64 & The start timestamp of the data request. \\
+        end\_ms & uint64 & The end timestamp of the data request. \\
+        wait & bool & If set, the Box will wait to send data if timestamps are in the future. \\
+        \bottomrule
+    \end{tabularx}
+    \label{table:GetDataCommand}
 \end{table}
 
 The ``SetMeasurementRateCommand" (Table~\ref{table:SetMeasurementRateCommand}) message is sent with a ``Command" message when Mauka wants to modify the measurement rate of OPQ Boxes.
@@ -809,13 +743,13 @@ The ``SetMeasurementRateCommand" (Table~\ref{table:SetMeasurementRateCommand}) m
 \begin{table}[H]
 	\centering
 	\caption{SetMeasurementRateCommand}
-	\begin{tabular}{|c|c|p{8cm}|}
-		\hline
-		Field & Type & Description  \\
-		\hline
+	\begin{tabularx}{\textwidth}{llX}
+		\toprule
+		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
+		\midrule
 		measurement\_window\_cycles & uint32 & How many grid cycles to process per measurements. \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:SetMeasurementRateCommand}
 \end{table}
 
@@ -833,37 +767,25 @@ It's important to note some distinctions between the commands. Loading a plugin 
 \begin{table}[H]
 	\centering
 	\caption{Plugin Manager CLI Reference}
-	\begin{tabular}{|c|c|p{8cm}|}
-		\hline
-		Command & Arguments & Description \\
-		\hline
+	\begin{tabularx}{\textwidth}{llX}
+		\toprule
+		\textbf{Command} & \textbf{Arguments} & \textbf{Description} \\
+		\midrule
 		completions & & Returns a list of completions for auto-complete. \\
-		\hline
 		disable-plugin & Plugin name & Disables the named plugin. \\
-		\hline
 		enable-plugin & Plugin name & Enables the named plugin. \\
-		\hline
 		help & & Displays the help text. \\
-		\hline
 		kill-plugin & Plugin name & Kills the named plugin. \\
-		\hline
 		load-config & Configuration path & Reloads the configuration from file. \\
-		\hline
 		load-plugin & Plugin name & Loads (or reloads) a plugin from disk. \\
-		\hline
 		list-plugins & & Lists all loaded plugins. \\
-		\hline
 		start-plugin & Plugin name & Starts the named plugin. \\
-		\hline
 		stop-plugin & Plugin name & Stops the named plugin. \\
-		\hline
 		stop-all-plugins & & Stops all running plugins. \\
-		\hline
 		restart-plugin & & Restarts the named plugin. \\
-		\hline
 		unload-plugin & Plugin name & Unloads the named plugin. \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:PluginManager}
 \end{table}
 
@@ -878,23 +800,18 @@ The measurements collection contains instantaneous measurements produced by Maka
 \begin{table}[H]
 	\centering
 	\caption{Measurement Data Model}
-	\begin{tabular}{|c|c|p{8cm}|}
-		\hline
-		Field & Type & Description \\
-		\hline
+	\begin{tabularx}{\textwidth}{llX}
+		\toprule
+		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
+		\midrule
 		box\_id & str & OPQBox id \\
-		\hline
 		timestamp\_ms & int & Timestamp of the measurement in milliseconds \\
-		\hline
 		expire\_at & int & The timestamp in seconds that this document should be garbage collected \\
-		\hline
 		frequency & float & The instantaneous frequency measurement in Hz \\
-		\hline
 		voltage & float & The instantaneous voltage measurement \\
-		\hline
 		thd & float & The instantaneous THD measurement as a percentage \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:Measurements}
 \end{table}
 
@@ -903,25 +820,19 @@ The trends collection provides summary statistics of frequency, voltage, and THD
 \begin{table}[H]
 	\centering
 	\caption{Trend Data Model}
-	\begin{tabular}{|c|c|p{8cm}|}
-		\hline
-		Field & Type & Description \\
-		\hline
+	\begin{tabularx}{\textwidth}{XlX}
+		\toprule
+		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
+		\midrule
 		min\_(thd, frequency, voltage) & float & Minimum values for THD, frequency, and voltage \\
-		\hline
 		max\_(thd, frequency, voltage) & float & Maximum values for THD, frequency, and voltage \\
-		\hline
 		average\_(thd, frequency, voltage) & float & Mean values for THD, frequency, and voltage \\
-		\hline
 		box\_id & str & OPQBox id \\
-		\hline
 		timestamp\_ms & int & Timestamp of end of trend in milliseconds \\
-		\hline
 		location & str & Location slug from the location that this trend originated from \\
-		\hline
 		expire\_at & int & Timestamp in seconds that this document should expire after \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:Trends}
 \end{table}
 
@@ -930,51 +841,40 @@ The events collection contains metadata that map a Makai triggered event to a li
 \begin{table}[H]
 	\centering
 	\caption{Event Data Model}
-	\begin{tabular}{|c|c|p{8cm}|}
-		\hline
-		Field & Type & Description \\
-		\hline
+	\begin{tabularx}{\textwidth}{llX}
+		\toprule
+		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
+		\midrule
 		event\_id & int & Id of the event generated \\
-		\hline
 		description & str & Description of the event \\
-		\hline
 		boxes\_triggered & [str] & A list of box\_ids that were triggered from this event \\
-		\hline
 		boxes\_received & [str] & A list of box\_ids that data was received from \\
-		\hline
 		target\_event\_start\_timestamp\_ms & int & Start of event \\
-		\hline
 		target\_event\_end\_timestamp\_ms & int & End of the event \\
-		\hline
 		expire\_at & int & Timestamp that this document should expire after \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:Events}
 \end{table}
 
 The box\_events data model is described in Table~\ref{table:BoxEvents}.
 
 \begin{table}[H]
-	\centering
-	\caption{BoxEvent Data Model}
-	\begin{tabular}{|c|c|p{8cm}|}
-		\hline
-		Field & Type & Description \\
-		\hline
-		event\_id & int & ID of the event this box\_event refers to \\
-		\hline
-		box\_id & str & ID of the OPQBox that sent data for this event \\
-		\hline
-		event\_start\_timestamp\_ms & int & Timestamp of the start of the event for this Box \\
-		\hline
-		event\_end\_timestamp\_ms & int & Timestamp of the end of the event for this Box \\
-		\hline
-		data\_fs\_filename & str & Reference to the waveform stored in gridfs \\
-		\hline
-		location & str & Location slug of where this Box sent data from \\
-		\hline
-	\end{tabular}
-	\label{table:BoxEvents}
+    \centering
+    \caption{BoxEvent Data Model}
+    \begin{tabularx}{\textwidth}{llX}
+        \toprule
+        \textbf{Field} & \textbf{Type} & \textbf{Description} \\
+        \midrule
+        event\_id & int & ID of the event this box\_event refers to \\
+        box\_id & str & ID of the OPQBox that sent data for this event \\
+        event\_start\_timestamp\_ms & int & Timestamp of the start of the event for this Box \\
+        event\_end\_timestamp\_ms & int & Timestamp of the end of the event for this Box \\
+        data\_fs\_filename & str & Reference to the waveform stored in gridfs \\
+        location & str & Location slug of where this Box sent data from \\
+        \bottomrule
+    \end{tabularx}
+    \label{table:BoxEvents}
 \end{table}
 
 The Incidents collection keeps track of Incidents as defined by Laha. This collections includes metadata for classification and other contextual information relating to power Incident. The Incident collection data model is described in Table~\ref{table:Incidents}.
@@ -982,39 +882,26 @@ The Incidents collection keeps track of Incidents as defined by Laha. This colle
 \begin{table}[H]
 	\centering
 	\caption{Incident Data Model}
-	\begin{tabular}{|c|c|p{8cm}|}
-		\hline
-		Field & Type & Description \\
-		\hline
+	\begin{tabularx}{\textwidth}{llX}
+		\toprule
+		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
+		\midrule
 		incident\_id & int & ID of the Incident \\
-		\hline
 		event\_id & int & ID of the event this Incident references \\
-		\hline
 		box\_id & str & ID of the OPQBox that this Incident references \\
-		\hline
 		start\_timestamp\_ms & int & Start of this Incident \\
-		\hline
 		end\_timestamp\_ms & int & End of this Incident \\
-		\hline
 		location & str & Location slug of where this Incident originated from \\
-		\hline
 		measurement\_type & str & A description of the measurements used in this Incident \\
-		\hline
 		deviation\_from\_nominal & float & The maximum deviation from nominal for the provided measurement\_type \\
-		\hline
 		measurements & [Measurement] & List of measurements stored in this Incident \\
-		\hline
 		gridfs\_filename & str & Location in gridfs that the waveform for this Incident is stored \\
-		\hline
 		ieee\_duration & str & An IEEE1159 duration \\
-		\hline
 		annotations & [str] & A list of annotations added to this Incident \\
-		\hline
 		metadata & object & Metadata associated with this Incident \\
-		\hline
 		expire\_at & int & This Incident should expire after this timestamp \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:Incidents}
 \end{table}
 
@@ -1023,25 +910,19 @@ The ``ground\_truth" stores samples collected from the UH installed power meters
 \begin{table}[H]
 	\centering
 	\caption{Ground Truth Data Model}
-	\begin{tabular}{|c|c|p{8cm}|}
-		\hline
-		Field & Type & Description \\
-		\hline
+	\begin{tabularx}{\textwidth}{llX}
+		\toprule
+		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
+		\midrule
 		meter-name & str & Name of the meter this sample is from. \\
-		\hline
 		sample-type & str & Name of the feature present in this sample. \\
-		\hline
 		ts-s & int & The timestamp of this sample in seconds. \\
-		\hline
 		min & float & The minimum value of this feature over the time window. \\
-		\hline
 		max & float & The maximum value of this feature over the time window. \\
-		\hline
 		avg & float & The average value of this feature over the time window. \\
-		\hline
 		stddev & float & The standard deviation of values over the time window. \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:ground_truth}
 \end{table}
 
@@ -1050,21 +931,17 @@ The ``laha\_config" collection contains dynamic configuration options that Pheno
 \begin{table}[H]
 	\centering
 	\caption{Laha Config Data Model}
-	\begin{tabular}{|c|c|p{8cm}|}
-		\hline
-		Field & Type & Description \\
-		\hline
+	\begin{tabularx}{\textwidth}{llX}
+		\toprule
+		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
+		\midrule
 		box\_samples & int & Default TTL of Box samples. \\
-		\hline
 		measurements & int & Default TTL measurements. \\
-		\hline
 		trends & int & Default TTL trends. \\
-		\hline
 		events & int & Default TTL events and box\_events. \\
-		\hline
 		incidents & int & Default TTL Incidents. \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:laha_config}
 \end{table}
 
@@ -1075,54 +952,40 @@ The ``makai\_config" collection contains default and Box override thresholds use
 \begin{table}[H]
 	\centering
 	\caption{Makai Config Data Model}
-	\begin{tabular}{|c|c|p{8cm}|}
-		\hline
-		Field & Type & Description \\
-		\hline
+	\begin{tabularx}{\textwidth}{XlX}
+		\toprule
+		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
+		\midrule
 		default\_ref\_f & f64 & Default reference frequency \\
-		\hline
 		default\_ref\_v & f64 & Default reference voltage \\
-		\hline
 		default\_threshold\_percent\_f\_low & f64 & Default frequency percent low threshold \\
-		\hline
 		default\_threshold\_percent\_f\_high & f64 & Default frequency percent high threshold \\
-		\hline
 		default\_threshold\_percent\_v\_low & f64 & Default voltage percent low threshold \\
-		\hline
 		default\_threshold\_percent\_v\_high & f64 & Default voltage percent high threshold \\
-		\hline
 		default\_threshold\_percent\_thd\_high & f64 & Default THD percent high threshold \\
-		\hline
-		triggering\_overrides & [Makai Config Override] & List of Box specific overrides \\
-		\hline
-	\end{tabular}
+		triggering\_overrides & [MakaiConfigOverride] & List of Box specific overrides \\
+		\bottomrule
+	\end{tabularx}
 	\label{table:makai_config}
 \end{table}
 
 \begin{table}[H]
 	\centering
 	\caption{Makai Config Override Data Model}
-	\begin{tabular}{|c|c|p{8cm}|}
-		\hline
-		Field & Type & Description \\
-		\hline
+	\begin{tabularx}{\textwidth}{XlX}
+		\toprule
+		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
+		\midrule
 		box\_id & str & Override Box id \\
-		\hline
 		ref\_f & f64 & Override reference frequency \\
-		\hline
 		ref\_v & f64 & Override reference voltage \\
-		\hline
 		threshold\_percent\_f\_low & f64 & Override frequency percent low threshold \\
-		\hline
 		threshold\_percent\_f\_high & f64 & Override frequency percent high threshold \\
-		\hline
 		threshold\_percent\_v\_low & f64 & Override voltage percent low threshold \\
-		\hline
 		threshold\_percent\_v\_high & f64 & Override voltage percent high threshold \\
-		\hline
 		threshold\_percent\_thd\_high & f64 & Override THD percent high threshold \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:makai_config_override}
 \end{table}
 
@@ -1221,26 +1084,21 @@ Default TTLs are dynamically stored in the Mongo database under the ``laha\_conf
 Table~\ref{table:DefaultTtls} displays the default TTL in seconds for each OPQ collection.
 
 \begin{table}[H]
-	\centering
-	\caption{Default TTLs for OPQ Collections}
-	\begin{tabular}{|c|c|}
-		\hline
-		Collection & Default TTL (seconds) \\
-		\hline
-		box\_samples & 900 \\
-		\hline
-		measurements & 86400 \\
-		\hline
-		trends & 604800 \\
-		\hline
-		events & 2592000 \\
-		\hline
-		incidents & 31536000 \\
-		\hline
-		phenomena & Does not expire \\
-		\hline
-	\end{tabular}
-	\label{table:DefaultTtls}
+    \centering
+    \caption{Default TTLs for OPQ Collections}
+    \begin{tabularx}{\textwidth}{XX}
+        \toprule
+        \textbf{Collection} & \textbf{Default} & \textbf{TTL} & \textbf{(seconds)} \\
+        \midrule
+        box\_samples & 900 \\
+        measurements & 86400 \\
+        trends & 604800 \\
+        events & 2592000 \\
+        incidents & 31536000 \\
+        phenomena & Does not expire \\
+        \bottomrule
+    \end{tabularx}
+    \label{table:DefaultTtls}
 \end{table}
 
 As each item is saved to the database, it is assigned with a default TTL as described in Table~\ref{table:DefaultTtls}. If the item that was assigned to the database is later deemed important by Mauka and is referenced by a parent item, it receives the TTL of the parent item allowing that data to live as long as the parent does. If the parent item is a Phenomena, then all data relating to that Phenomena (from all levels are the hierarchy) will live forever. The process of updating
@@ -1312,19 +1170,16 @@ The plugin provides a configurable HTTP endpoint which is queried by OPQ Health.
 \begin{table}[H]
 	\centering
 	\caption{Mauka HealthProtocol}
-	\begin{tabular}{|c|c|c|}
-		\hline
-		Field & Type & Description \\
-		\hline
+	\begin{tabularx}{\textwidth}{llX}
+		\toprule
+		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
+		\midrule
 		name & string & Name of the service \\
-		\hline
 		ok & bool & Whether the entire service is ok or not \\
-		\hline
 		timestamp & int & The timestamp of when the health request was received \\
-		\hline
 		subcomponents & [HealthProtocol] & Health protocol for each plugin \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:HealthProtocol}
 \end{table}
 
@@ -1365,20 +1220,17 @@ The base document shown in Table~\ref{table:Metrics} contains links to all of th
 \begin{table}[H]
 	\centering
 	\caption{Mauka Metrics}
-	\begin{tabular}{|c|c|c|}
-		\hline
-		Metric & Type & Description \\
+	\begin{tabularx}{\textwidth}{llX}
+		\toprule
+		\textbf{Metric} & \textbf{Type} & \textbf{Description} \\
+		\midrule
 		plugin\_stats & [PluginStat] & List of metrics for each plugin. \\
-		\hline
 		system\_stats & [SystemStat] & System statistics for CPU, memory, and disk usage. \\
-		\hline
 		laha\_stats & [LahaStat] & Statistics on count, size, and TTL for each collection. \\
-		\hline
 		ground\_truth\_count & int & Count of ground truth documents. \\
-		\hline
 		ground\_truth\_size\_bytes & int & Size of ground truth in bytes. \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:Metrics}
 \end{table}
 
@@ -1387,19 +1239,16 @@ Plugin metrics are described in Table~\ref{table:MetricsPluginStat} and mainly r
 \begin{table}[H]
 	\centering
 	\caption{PluginStat}
-	\begin{tabular}{|c|c|c|}
-		\hline
-		Metric & Type & Description \\
-		\hline
+	\begin{tabularx}{\textwidth}{llX}
+		\toprule
+		\textbf{Metric} & \textbf{Type} & \textbf{Description} \\
+		\midrule
 		messages\_received & int & The number of messages the plugin has received. \\
-		\hline
 		messages\_published & int & The number of messages the plugin has published. \\
-		\hline
 		bytes\_received & int & The number of bytes the plugin has received. \\
-		\hline
 		bytes\_published & int & The number of bytes the plugin has published. \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:MetricsPluginStat}
 \end{table}
 
@@ -1408,44 +1257,37 @@ System metrics as shown in Table~\ref{table:MetricsSystemStat} use descriptive s
 \begin{table}[H]
 	\centering
 	\caption{SystemStat}
-	\begin{tabular}{|c|c|c|}
-		\hline
-		Metric & Type & Description \\
-		\hline
+	\begin{tabularx}{\textwidth}{llX}
+		\toprule
+		\textbf{Metric} & \textbf{Type} & \textbf{Description} \\
+		\midrule
 		min & float & Minimum value over time window. \\
-		\hline
 		max & float & Maximum value over time window. \\
-		\hline
 		mean & float & Mean value over time window. \\
-		\hline
 		var & float & Variance of values over time window. \\
-		\hline
 		cnt & int & The number of items sampled over time window. \\
-		\hline
 		start\_timestamp\_s & int & Start timestamp of time window. \\
-		\hline
 		end\_timestamp\_s & int & End timestamp of time window. \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:MetricsSystemStat}
 \end{table}
+
 
 The Laha metrics described in Table~\ref{table:MetricsLaha} store metrics relating to the TTL, size, and count of Laha collections.
 
 \begin{table}[H]
 	\centering
 	\caption{LahaStat}
-	\begin{tabular}{|c|c|c|}
-		\hline
-		Metric & Type & Description \\
-		\hline
+	\begin{tabularx}{\textwidth}{llX}
+		\toprule
+		\textbf{Metric} & \textbf{Type} & \textbf{Description} \\
+		\midrule
 		ttl & int & Default TTL for a Laha level. \\
-		\hline
 		count & int & Number of items in a Laha level. \\
-		\hline
 		size\_bytes & int & Size of a Laha level in bytes. \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:MetricsLaha}
 \end{table}
 
@@ -1635,136 +1477,89 @@ Multiple collections are updated by the Mongo Actor when a packet is received.
 
 The ``RedvoxPacketApi900" collection stores metadata for all data packets received from sensors. The schema for this collection is described in Table~\ref{table:RedvoxPacketApi900}. This document also includes two embedded documents EvenlySampledChannel\ref{table:EvenlySampledChannel} and UnevenlySampledChannel\ref{table:UnevenlySampledChannel}. The EvenlySampledChannel document contains metadata for evenly sampled channels such as the microphone. The UnevenlySampledChannel document contains metadata for unevenly sampled channels such as barometer, location, gyroscope, accelerometer, etc.
 
-\begin{table}[H]
+\begin{table}
 	\centering
 	\caption{RedvoxPacketApi900}
-	\begin{tabular}{|c|c| p{7.5cm} |}
-		\hline
-		Field & Enum Value & Description  \\
-		\hline
+	\begin{tabularx}{\textwidth}{llX}
+		\toprule
+		\textbf{Field} & \textbf{Value} & \textbf{Description} \\
+		\midrule
 		\_id & bson.ObjectId & The object Id associated with the document. \\
-		\hline
 		className & str & The class name used for Java serialization and deserialization. \\
-		\hline
 		api & int32 & The API version of this data (should be 900). \\
-		\hline
 		redvoxId & str & The Id of the sensor. \\
-		\hline
 		redvoxUuid & str & The uuid of the sensor. \\
-		\hline
 		authenticatedEmail & str & The user account associated with this device. \\
-		\hline
 		authenticationToken & str & The JWT that was used for authenticating this packet. \\
-		\hline
 		firebaseToken & str & The firebase token associated with this device. \\
-		\hline
 		isBackfilled & bool & True if this packet was backfilled, False otherwise. \\
-		\hline
 		isPrivate & bool & True if this packet is marked as private, False otherwise. \\
-		\hline
 		isScrambled & bool & True if this packet has voice data scrambled, False otherwise. \\
-		\hline
 		deviceMake & str & The make of the sensor. \\
-		\hline
 		deviceModel & str & The model of the sensor. \\
-		\hline
 		deviceOs & str & The OS of the sensor (either iOS or Android). \\
-		\hline
 		deviceOsVersion & str & The OS version. \\
-		\hline
 		appVersion & str & The sensor app version. \\
-		\hline
 		batteryLevelPercent & f32 & The sensor's battery level. \\
-		\hline
 		deviceTemperatureC & f32 & The sensor's temperature in C. \\
-		\hline
 		acquisitionServer & str & The server that this data was sent to. \\
-		\hline
 		timeSynchronizationServer & str & The server this sensor used for synch. \\
-		\hline
 		authenticationServer & str & The server this sensor used to authenticated with. \\
-		\hline
 		appFileStartUsUtc & i64 & The timestamp of the start of this packet. \\
-		\hline
 		appFileStartMachine & i64 & The machine timestamp of the start of this packet. \\
-		\hline
 		serverTimestampUsUtc & i64 & The time that this packet was received at the server. \\
-		\hline
 		evenlySampledChannels & [EvenlySampledChannel] & Evenly sampled channels metadata. \\
-		\hline
 		unevenlySampledChannels& [UnevenlySampledChannel] & Unevenly sampled channels metadata. \\
-		\hline
 		metadata & [str] & A list of metadata added to this packet. \\
-		\hline
 		dataKey & str & The location of the original data file stored in AWS S3. \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:RedvoxPacketApi900}
 \end{table}
 
 \begin{table}[H]
 	\centering
 	\caption{RedvoxPacketApi900.EvenlySampledChannel}
-	\begin{tabular}{|c|c| p{8cm} |}
-		\hline
-		Field & Enum Value & Description  \\
-		\hline
+	\begin{tabularx}{\textwidth}{llX}
+		\toprule
+		\textbf{Field} & \textbf{Value} & \textbf{Description} \\
+		\midrule
 		channelTypes & [str] & A list of sub-channels included in this channel. \\
-		\hline
 		sensorName & str & The name of sensor. \\
-		\hline
 		sampleRateHz & f64 & The sample rate of this sensor. \\
-		\hline
 		firstSampleTimestampUs & i64 & Timestamp of the first sample. \\
-		\hline
 		payloadCase & str & An enum string for the data type stored in the payload. \\
-		\hline
 		payloadCount & i32 & The number of items in the payload in the original data. \\
-		\hline
 		valueMeans & [f64] & List of mean values of the payload for each sub-channel. \\
-		\hline
 		valueStds & [f64] & List of the stddev of the values of the payload for each sub-channel. \\
-		\hline
 		valueMedians & [f64] & List of medians of the values of the payload for each sub-channel. \\
-		\hline
 		metadata & [str] & List of metadata added to this channel. \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:EvenlySampledChannel}
 \end{table}
 
 \begin{table}[H]
 	\centering
 	\caption{RedvoxPacketApi900.UnevenlySampledChannel}
-	\begin{tabular}{|c|c| p{8cm} |}
-		\hline
-		Field & Enum Value & Description  \\
-		\hline
+	\begin{tabularx}{\textwidth}{llX}
+		\toprule
+		\textbf{Field} & \textbf{Value} & \textbf{Description} \\
+		\midrule
 		channelTypes & [str] & A list of sub-channels included in this channel. \\
-		\hline
 		sensorName & str & The name of sensor. \\
-		\hline
 		timestampsCount & i32 & The number of timestamps for this channel in the original data. \\
-		\hline
 		payloadCase & str & An enum string for the data type stored in the payload. \\
-		\hline
 		payloadCount & i32 & The number of items in the payload in the original data. \\
-		\hline
 		valueMeans & [f64] & List of mean values of the payload for each sub-channel. \\
-		\hline
 		valueStds & [f64] & List of the stddev of the values of the payload for each sub-channel. \\
-		\hline
 		valueMedians & [f64] & List of medians of the values of the payload for each sub-channel. \\
-		\hline
 		sampleIntervalMean & f64 & The mean sample interval of each sample. \\
-		\hline
 		sampleIntervalStd & f64 & The mean sample stddev of each sample. \\
-		\hline
 		sampleIntervalMedian & f64 & The median sample interval of each sample. \\
-		\hline
 		metadata & [str] & List of metadata added to this channel. \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:UnevenlySampledChannel}
 \end{table}
 
@@ -1775,67 +1570,53 @@ The ``RedvoxDeviceApi900" collection contains metadata relating to each sensor t
 \begin{table}[H]
 	\centering
 	\caption{RedvoxDeviceApi900}
-	\begin{tabular}{|c|c| p{8cm} |}
-		\hline
-		Field & Enum Value & Description  \\
-		\hline
+	\begin{tabularx}{\textwidth}{llX}
+		\toprule
+		\textbf{Field} & \textbf{Value} & \textbf{Description} \\
+		\midrule
 		\_id & bson.ObjectId & The object Id of this document. \\
-		\hline
 		className & str & Used for Java ORM interop. \\
-		\hline
 		redvoxId & str & The Id associated with this device. \\
-		\hline
 		uuid & str & The uuid associated with this device. \\
-		\hline
 		lastUpdatedTimestamp & i64 & The timestamp of the last time this device received data. \\
-		\hline
 		lastPacket & DBRef & A reference to the last received packet. \\
-		\hline
 		lastLocationPoint & mongo.Point & The last location this device was received from. \\
-		\hline
 		currentPolicyType & str & The devices policy type (public/private). \\
-		\hline
 		privacyPolicies & [PrivacyPolicy] & A list of privacy policies this device has used. \\
-		\hline
 		currentAuthenticatedEmail & str & This devices current user. \\
-		\hline
 		authenticatedEmailEntries & [AuthenticatedEmailEntry] & A list of all users who have used this device. \\
-		\hline
 		valid & bool & A field that marks this device as valid or invalid. \\
-		\hline
 		receivers & [str] & A list of users who can access data from this device. \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:RedvoxDeviceApi900}
 \end{table}
 
 \begin{table}[H]
 	\centering
 	\caption{PrivacyPolicy}
-	\begin{tabular}{|c|c| p{8cm} |}
-		\hline
-		Field & Enum Value & Description  \\
-		\hline
+	\begin{tabularx}{\textwidth}{llX}
+		\toprule
+		\textbf{Field} & \textbf{Value} & \textbf{Description} \\
+		\midrule
 		policyType & str & A string representing the policy type (public/private). \\
-		\hline
 		startTimestampMillisecondsSinceEpochUtc & i64 & Start time of this policy. \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:PrivacyPolicy}
 \end{table}
 
 \begin{table}[H]
 	\centering
 	\caption{AuthenticatedEmailEntry}
-	\begin{tabular}{|c|c| p{8cm} |}
-		\hline
-		Field & Enum Value & Description  \\
-		\hline
+	\begin{tabularx}{\textwidth}{XlX}
+		\toprule
+		\textbf{Field} & \textbf{Value} & \textbf{Description} \\
+		\midrule
 		authenticatedEmail & str & The email associated with this account at this time. \\
-		\hline
 		startTimestampMillisecondsSinceEpochUtc & i64 & Start time of this email entry. \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:AuthenticatedEmailEntry}
 \end{table}
 
@@ -1844,21 +1625,17 @@ The ``HistoricalDevice" collection is used to store metadata about the last data
 \begin{table}[H]
 	\centering
 	\caption{HistoricalDevice}
-	\begin{tabular}{|c|c| p{8cm} |}
-		\hline
-		Field & Enum Value & Description  \\
-		\hline
+	\begin{tabularx}{\textwidth}{llX}
+		\toprule
+		\textbf{Field} & \textbf{Value} & \textbf{Description} \\
+		\midrule
 		deviceId & i64 & The sensor Id. \\
-		\hline
 		uuid & i64 & The sensor uuid. \\
-		\hline
 		lastActive & Date & The last time this device was active. \\
-		\hline
 		lastLocation & mongodb.Point & The last location this device was received from. \\
-		\hline
 		os & str & The OS of this device as of its last sent packet. \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:HistoricalDevice}
 \end{table}
 
@@ -1867,25 +1644,19 @@ The ``DailyDataUsage" collection is a collection that stores metadata relating t
 \begin{table}[H]
 	\centering
 	\caption{DailyDataUsage}
-	\begin{tabular}{|c|c| p{8cm} |}
-		\hline
-		Field & Enum Value & Description  \\
-		\hline
+	\begin{tabularx}{\textwidth}{llX}
+		\toprule
+		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
+		\midrule
 		\_id & bson.ObjectId & The object Id of this document. \\
-		\hline
 		user & str & The user account associated with this document. \\
-		\hline
 		year & int32 & The year of this document. \\
-		\hline
 		month & int32 & The month of this document. \\
-		\hline
 		day & int32 & The day of this document. \\
-		\hline
 		bytesContributed & int64 & The number of bytes contributed by this user. \\
-		\hline
 		bytesConsumed & int64 & The number of bytes consumed by this user. \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:DailyDataUsage}
 \end{table}
 
@@ -1952,19 +1723,18 @@ The protocol used for communicating message exchanges is a simple binary protoco
 \begin{table}[H]
 	\centering
 	\caption{Time Synchronization Binary Protocol}
-	\begin{tabular}{|c|c|c|}
-		\hline
-		Byte Offset & Size & Description \\
-		\hline
+	\begin{tabularx}{\textwidth}{llX}
+		\toprule
+		\textbf{Byte} & \textbf{Offset} & \textbf{Size} & \textbf{Description} \\
+		\midrule
 		0 & 1 & Sequence Number (0 or 1) \\
-		\hline
 		1 &  8 & Int timestamp A $\mu\sec$  \\
-		\hline
 		9 & 8 & Int timestamp B $\mu\sec$ \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
 	\label{table:syncproto}
 \end{table}
+
 
 \subsection{Lokahi Health}\label{subsec:lokahi-health}
 System health is provided by three open source components Prometheus, Grafana, and node\_exporter. Prometheus is a time series database for metric collection and Grafana is a visualization solution for time series databases. ``node\_exporter" is installed on each system for collecting system statistics and sending them to a Prometheus endpoint. With these three systems, we are able to provide coverage for all performance metrics required by Lokahi.
