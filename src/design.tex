@@ -345,11 +345,11 @@ TTLs are assigned in Makai to measurements, trends, and events since Makai handl
 This service lives within Makai and was written in Rust.
 
 \subsubsection{Event Id Service}
-Event Ids are used to uniquely identify events produced by either Makai or Mauka. We need to ensure that event ids are unique between services and monotonically increasing. This restraint requires that a single source of truth provide the event ids to avoid race conditions between Makai and Mauka. The EventId Service is a service written in Rust that resides in Makai's Event Broker.
+Event Ids are used to uniquely identify events produced by either Makai or Mauka. We need to ensure that Event Ids are unique between services and monotonically increasing. This restraint requires that a single source of truth provide the Event Ids to avoid race conditions between Makai and Mauka. The EventId Service is a service written in Rust that resides in Makai's Event Broker.
 
 The service wraps an atomic integer and provides thread-safe access to this integer. The service allows anyone to peak at the current highest event id and to also increment and get the next highest available event id. When this service is initialized, it queries the MongoDB for the highest event id in the database. All other requests to this service will increment the atomic integer and use that value for the next event id. In this way, the database only needs to be queried once on initialization and all other operations are on the atomic integer.
 
-This service can be passed directly into Makai's Event Broker using automatic reference counting (ARC). To enable Mauka to access this service, the same service is passed into a ZMQ thread using ARC. The ZMQ thread provides a ZMQ REP endpoint for requesting atomic event ids from this service. An example of Mauka requesting the event id from Makai is described in section~\ref{sec:trigger_plugin}.
+This service can be passed directly into Makai's Event Broker using automatic reference counting (ARC). To enable Mauka to access this service, the same service is passed into a ZMQ thread using ARC. The ZMQ thread provides a ZMQ REP endpoint for requesting atomic Event Ids from this service. An example of Mauka requesting the event id from Makai is described in section~\ref{sec:trigger_plugin}.
 
 A high level overview of the Event Id Service is provided in Figure~\ref{fig:eid_service}.
 
@@ -380,7 +380,7 @@ The push/pull model on the other hand provides unidirectional message flow from 
 
 To facilitate communication between Mauka and Makai and between Mauka plugins, two communications brokers are provided. Brokers are separate processes whose only jobs are to manage moving typed messages from a source destination to multiple target destinations.
 
-The first broker, the Makai Event Bridge broker, is responsible for subscribing to a ZeroMQ endpoint provided by Makai. This bridge is used to pass event ids created by Makai into Mauka, alerting Mauka to the presence of new data in the database to analyze. When the message is received by the broker, it is transformed into a Mauka Message and published to the second broker, the Mauka Pub Sub Broker, and then broadcast to any subscribing plugins. Mauka plugins that subscribe to event ids then use the event id to look up the associated raw waveforms in the database to perform analysis.
+The first broker, the Makai Event Bridge broker, is responsible for subscribing to a ZeroMQ endpoint provided by Makai. This bridge is used to pass Event Ids created by Makai into Mauka, alerting Mauka to the presence of new data in the database to analyze. When the message is received by the broker, it is transformed into a Mauka Message and published to the second broker, the Mauka Pub Sub Broker, and then broadcast to any subscribing plugins. Mauka plugins that subscribe to Event Ids then use the event id to look up the associated raw waveforms in the database to perform analysis.
 
 The second broker, the Mauka Pub Sub broker facilitates message passing between all other parts of the Mauka ecosystem. All messages in this system are published to this broker, and all plugins subscribe to topics provided by this broker. In essence, this broker is used to route type safe messages between distributed components of this system. By using pub/sub and a broker, the plugins only need to worry about one communication endpoint instead of knowing exactly where each plugin lives in the network and how to address it individually.
 
@@ -761,9 +761,9 @@ Figure~\ref{fig:mauka_messages} displays all types used and their variants for t
 
 \subsubsection{Makai Communications Protocol}
 
-Most communications take place inside of Mauka, however there are several communications channels that occur from Mauka to Makai. These include requesting event ids, sending triggers, and sending Box data rate commands. The communications protocols for these actions are described in this section.
+Most communications take place inside of Mauka, however there are several communications channels that occur from Mauka to Makai. These include requesting Event Ids, sending triggers, and sending Box data rate commands. The communications protocols for these actions are described in this section.
 
-Requesting event ids from Makai's Event Id Service is performed over a REQ/REP ZMQ socket. Requests from the client should be an empty string. Replies from the host should be a string that only includes the event\_id.
+Requesting Event Ids from Makai's Event Id Service is performed over a REQ/REP ZMQ socket. Requests from the client should be an empty string. Replies from the host should be a string that only includes the event\_id.
 
 The ``Command" message (Table~\ref{table:Command}) is the base message used for sending commands to Makai and subsequently OPQ Boxes.
 
@@ -1487,7 +1487,7 @@ The data commands\ref{table:Command} are serialized and sent over a ZMQ PUSH/PUL
 
 Previously, Makai handled all Event storage. With this plugin, Mauka now has to handle Event storage for Boxes that Mauka has triggered. This includes creating and modifying the Event document metadata, BoxEvent document metadata, and gridfs waveform storage.
 
-Just after the data commands are sent to Makai's acquisition broker, a ZMQ REQ/REP channel is used to query Makai's event id service. Makai's event id service provides atomic access to the next available event id for storage of events in the Mongo database. Once the next available event id is received by Mauka, it is used to create a new Event document in the database with the new event id, the event time window, and a list of triggered Boxes.
+Just after the data commands are sent to Makai's acquisition broker, a ZMQ REQ/REP channel is used to query Makai's Event Id service. Makai's Event Id service provides atomic access to the next available Event Id for storage of events in the Mongo database. Once the next available Event Id is received by Mauka, it is used to create a new Event document in the database with the new Event Id, the event time window, and a list of triggered Boxes.
 
 Just after the event\_id is received, the plugin updates the thread-safe TriggerMappings class with mappings from the new event\_token to the new event\_id, the incident\_id, the Boxes triggered, and the timestamp of the triggers.
 
@@ -1497,11 +1497,11 @@ When data is received for a Box in the data thread, the metadata and uncalibrate
 
 Next, the original Event document is updated to insert the received box\_id into the ``received\_boxes" field.
 
-Then, the received Box id is removed from the TriggerRecords class since we are no longer waiting on it. If this was the last Box we were waiting on for an associated event, then the trigger record associated with this identity is removed and a message with the new event\_id is sent to the ``MakaiEventPlugin" which then forwards feature extracted data to the rest of the analysis pipeline.
+Then, the received Box Id is removed from the TriggerRecords class since we are no longer waiting on it. If this was the last Box we were waiting on for an associated event, then the trigger record associated with this identity is removed and a message with the new event\_id is sent to the ``MakaiEventPlugin" which then forwards feature extracted data to the rest of the analysis pipeline.
 
 By using the above approach, we ensure that we never request analysis of the data until all triggered Boxes are received for a particular event. However, we can run into the issue of triggered Boxes never returning data for a request. To deal with this issue, the TriggerRecords class timestamps each record that is inserted. If the data receive thread does not receive data from all triggered Boxes within a configurable amount of time (default 1 minute), then the records are removed and an event\_id is sent to the ``MakaiEventPlugin" so that it can process data for all of the Boxes that it did receive.
 
-Data triggered from Mauka is fundamentally different than data triggered from Makai. That's because Boxes triggered from Mauka are always triggered from an associated Incident or Phenomena. If new Incidents are found from this data and they are similar to the original Incident that caused Mauka to trigger, then we have found a global event and possible Phenomena that would not have been observed using Makai's triggering alone. This requires extra semantic information to be passed to the ``MakaiEventPlugin" and other analysis plugins. Data received from Mauka triggers are always forwarded with the associated Incident or Phenomena id so that the relationships can be tracked and maintained.
+Data triggered from Mauka is fundamentally different than data triggered from Makai. That's because Boxes triggered from Mauka are always triggered from an associated Incident or Phenomena. If new Incidents are found from this data and they are similar to the original Incident that caused Mauka to trigger, then we have found a global event and possible Phenomena that would not have been observed using Makai's triggering alone. This requires extra semantic information to be passed to the ``MakaiEventPlugin" and other analysis plugins. Data received from Mauka triggers are always forwarded with the associated Incident or Phenomena Id so that the relationships can be tracked and maintained.
 
 \paragraph{ThresholdOptimizationPlugin}\label{subsubsec:threshold-optimization-pugin}
 The ThresholdOptimizationPlugin is responsible for modifying dynamic triggering thresholds within Makai. Makai utilizes two methods for triggering Boxes. One method called ``Napali" was produced by Sergey Negrashov as part of his dissertation research. The Napali trigger uses a windowed statistical model for triggering devices based off of metric distance from standard deviations and means. The second approach to triggering is a threshold trigger which watches Frequency, Voltage, and THD levels to determine if they've passed certain thresholds. This plugin works with the second type of triggering, the threshold trigger. Threshold based triggering is described in section~\ref{subsubsec:dynamic-triggering}.
@@ -1514,11 +1514,11 @@ For any default value in the request that is larger than 0, the default threshol
 
 \paragraph{RateOptimizationPlugin}
 
-The ``RateOptimizationPlugin" is responsible for modifying the send rate of Measurements for specific Boxes. This plugin subscribes to ``RateOptimizationRequest" messages~\ref{table:RateOptimizationRequest} which include a Box id and requested sample rate for the Measurements collection.
+The ``RateOptimizationPlugin" is responsible for modifying the send rate of Measurements for specific Boxes. This plugin subscribes to ``RateOptimizationRequest" messages~\ref{table:RateOptimizationRequest} which include a Box Id and requested sample rate for the Measurements collection.
 
 Requests from this plugin are sent from Phenomena when a Phenomena believes that changing the Measurement rate of a Box or Boxes could enhance Mauka's ability to discover signals of interest.
 
-When a request is received, this plugin sends a Makai Command\ref{table:Command} to Makai's acquisition broker over a ZMQ socket. The command message includes the Box id and Measurement sample rate. Makai then handles forwarding the command to the relevant Box which will then change its Measurement rate to match that of the request.
+When a request is received, this plugin sends a Makai Command\ref{table:Command} to Makai's acquisition broker over a ZMQ socket. The command message includes the Box Id and Measurement sample rate. Makai then handles forwarding the command to the relevant Box which will then change its Measurement rate to match that of the request.
 
 \paragraph{TtlOptimizationPlugin}\label{subsubsec:ttl-optimization-pugin}
 
@@ -1598,7 +1598,7 @@ All actors in this service are optional and configurable. For instance, this ser
 
 Further, multiple Actors can be ran concurrently with different configurations. For instance, its possible to define multiple Kafka actors, each with their own encryption and endpoint configurations, or you could write data to multiple file systems by configuring multiple Fs Actors, etc.
 
-It's also possible to configure each actor with whitelists and blacklists where items can be added by sensor id or sensor owner. In this way, the configuration for each actor can be fine tuned to only allow certain sensors or sets of sensors or disallow sets of sensors. This is utilized when we require that only a subset of data received be forwarded to a particular actor. For instance, when we share real time data with our collaborators, they are only interested in a certain subset of data that we are receiving. Therefore, we create a whilelist with their information so that they only receive the data they are interested in. On the other hand, that data may be sensitive, so we black list it on other actors so that data is not forwarded to those actors.
+It's also possible to configure each actor with whitelists and blacklists where items can be added by sensor Id or sensor owner. In this way, the configuration for each actor can be fine tuned to only allow certain sensors or sets of sensors or disallow sets of sensors. This is utilized when we require that only a subset of data received be forwarded to a particular actor. For instance, when we share real time data with our collaborators, they are only interested in a certain subset of data that we are receiving. Therefore, we create a whilelist with their information so that they only receive the data they are interested in. On the other hand, that data may be sensitive, so we black list it on other actors so that data is not forwarded to those actors.
 
 Finally, configuration of all actors is performed declaratively in a type safe configuration file.
 
@@ -1645,13 +1645,13 @@ The ``RedvoxPacketApi900" collection stores metadata for all data packets receiv
 		\hline
 		Field & Enum Value & Description  \\
 		\hline
-		\_id & bson.ObjectId & The object id associated with the document. \\
+		\_id & bson.ObjectId & The object Id associated with the document. \\
 		\hline
 		className & str & The class name used for Java serialization and deserialization. \\
 		\hline
 		api & int32 & The API version of this data (should be 900). \\
 		\hline
-		redvoxId & str & The id of the sensor. \\
+		redvoxId & str & The Id of the sensor. \\
 		\hline
 		redvoxUuid & str & The uuid of the sensor. \\
 		\hline
@@ -1782,11 +1782,11 @@ The ``RedvoxDeviceApi900" collection contains metadata relating to each sensor t
 		\hline
 		Field & Enum Value & Description  \\
 		\hline
-		\_id & bson.ObjectId & The object id of this document. \\
+		\_id & bson.ObjectId & The object Id of this document. \\
 		\hline
 		className & str & Used for Java ORM interop. \\
 		\hline
-		redvoxId & str & The id associated with this device. \\
+		redvoxId & str & The Id associated with this device. \\
 		\hline
 		uuid & str & The uuid associated with this device. \\
 		\hline
@@ -1851,7 +1851,7 @@ The ``HistoricalDevice" collection is used to store metadata about the last data
 		\hline
 		Field & Enum Value & Description  \\
 		\hline
-		deviceId & i64 & The sensor id. \\
+		deviceId & i64 & The sensor Id. \\
 		\hline
 		uuid & i64 & The sensor uuid. \\
 		\hline
@@ -1874,7 +1874,7 @@ The ``DailyDataUsage" collection is a collection that stores metadata relating t
 		\hline
 		Field & Enum Value & Description  \\
 		\hline
-		\_id & bson.ObjectId & The object id of this document. \\
+		\_id & bson.ObjectId & The object Id of this document. \\
 		\hline
 		user & str & The user account associated with this document. \\
 		\hline
@@ -2107,7 +2107,7 @@ An example of the data explorer is provided in Figure~\ref{fig:lweb_dataexplorer
 	\label{fig:lweb_dataexplorer}
 \end{figure}
 
-Data within the explorer can be filtered by device id, device owner, time window, device make/model, os version, app version, microphone sampling rate, onboard sensors, and privacy status.
+Data within the explorer can be filtered by device Id, device owner, time window, device make/model, os version, app version, microphone sampling rate, onboard sensors, and privacy status.
 
 \subsubsection{Analysis Reports}
 The main component of Lokahi Web is its report generation functionality. This functionality allows users to generate analysis reports from sensors that they can access with configurable time windows and sensor feature selection. Users can edit report metadata, rerun reports with new parameters, and share their reports with other Lokahi Web users. Administrators can set reports as featured reports which then make those reports available to the general public.

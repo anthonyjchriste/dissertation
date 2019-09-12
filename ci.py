@@ -24,7 +24,7 @@ if __name__ == "__main__":
             errs = list(map(lambda line: line.strip(), stdout.strip().split(b"\n")))
             errors.extend(errs)
 
-        warnings = ["todo", " table ", "(table", " figure ", "(figure"]
+        warnings = ["todo", " table ", "(table", " figure ", "(figure", " id ", " ids "]
         with open(tex_file, "r") as fin:
             for line_no, line in enumerate(fin.readlines()):
                 for warning in warnings:
