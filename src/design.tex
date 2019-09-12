@@ -60,23 +60,20 @@ Each level only keeps data for a specified amount of time before it is garbage c
 A summary of how data management in Laha is provided in Table~\ref{data-managament-table}. Note that the TTL is configurable for each implementing network and Table~\ref{data-managament-table} provides default values.
 
 \begin{table}
-	\caption{Summary of data management and context addition in Laha}
-	\begin{tabular}{|c|c|c|}
-		\hline
-		Level & Description & Time-to-Live (TTL) \\
-		\hline
+	\centering
+	\begin{tabularx}{\textwidth}{lXl}
+		\toprule
+		\textbf{Level} & \textbf{Description} & \textbf{Time-to-Live (TTL)} \\
+		\midrule
 		Phenomena Level (PL) & Contextual \& predictive analytics &  \\
-		\hline
 		Incidents Level (IL) & Classified signals &  1 year \\
-		\hline
 		Detections Level (DL) & Triggered windowed raw data & 1 week  \\
-		\hline
 		Aggregate Measurements Level (AML) & Statistical aggregates of raw data  & 1 day  \\
-		\hline
 		Instantaneous Measurements Level (IML) & Raw sensor data  & 1 hour \\
-		\hline
-	\end{tabular}
+		\bottomrule
+	\end{tabularx}
     \label{data-managament-table}
+	\caption{Summary of data management and context addition in Laha}
 \end{table}
 
 \subsection{Instantaneous Measurements Level}\label{subsec:instantaneous-measurements-level}
