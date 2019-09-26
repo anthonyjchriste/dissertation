@@ -160,11 +160,28 @@ Let us consider theoretical bounds on storage requirements at each level in the 
 \paragraph{IML Requirements}
 The IML level contains instantaneous samples from a sensor. These values are generally stored in memory on the sensors. We can calculate several useful metrics for this layer.
 
-First, I examined the IML requirements for individual sensors.
+Equations \Crefrange{iml:SSEN}{iml:SDSN} calculate the maximum bounds for IML storage for individual sensors and the entire DSN respectively when sensor parameters are known for each sensor.
 
 \begin{align}
-	&S_{SEN} = S_{SAMP} * SR * T \\
-	&S_{DSN} = \sum_{i=1}^{B_{n}} S_{SEN_{i}}
+	&S_{SEN} = S_{SAMP} * SR * T \label{iml:SSEN} \\
+	&S_{DSN} = \sum_{i=1}^{B_{n}} S_{SEN_{i}} \label{iml:SDSN}
+\end{align}
+
+where:
+\begin{align*}
+	B &= \text{A sensor in the DSN} \\
+	S_{SEN} &= \text{IML sensor size bytes} \\
+	S_{DSN} &= \text{IML DSN size bytes} \\
+	S_{SAMP} &= \text{Size of sample bytes} \\
+	SR &= \text{AML rate Hz} \\
+	T &= \text{Sensing time seconds}
+\end{align*}
+
+Equations \Crefrange{iml:aSSEN}{iml:aSDSN} calculate minimum and maximum bounds for the IML when the sensor sampling rate and sample size are provided as averages.
+
+\begin{align}
+	&\mu S_{SEN} = S_{SAMP} * SR * T \label{iml:aSSEN} \\
+	&\mu S_{DSN} = \sum_{i=1}^{B_{n}} S_{SEN_{i}} \label{iml:aSDSN}
 \end{align}
 
 where:
@@ -187,7 +204,7 @@ To simplify calculating the bounds on the AML level, we make an assumption that 
 
 \begin{align}
 	&S_{SL} = S_{V} * SR * T * B_{n} \\
-	&S_{AML} = \sum_{i=1}^{S_{SL_{n}}} S_{SL}_{i}
+	&S_{AML} = \sum_{i=1}^{S_{SL_{n}}} S_{SL_{i}}
 \end{align}
 
 where:
@@ -210,20 +227,21 @@ I make the assumption that the window lengths for each high-fidelitiy stream wit
 Calculating the bounds of this collection is further complicated by the fact that Detections are not generated at a constant rate and the window length of the detections can be highly variable. Therefore, I provide statistical calculations for these bounds.
 
 \begin{align}
-	&S_{SEN} = S_{SAMP} * SR * T \\
-	&S_{DSN} = \sum_{i=1}^{B_{n}} S_{SEN_{i}}
+	&S_{SUBDET} = S_{SAMP} * SR * T + S_{SUBMETA} \\
+	&S_{DET} = \sum_{i=1}^{S_{SUBDEC_{n}}} S_{SUBDEC_{i}} \\
+	&S_{DL} =
 \end{align}
 
 where:
 \begin{align*}
-	S_{D} &=
-
-	B &= \text{A sensor in the DSN} \\
-	S_{SEN} &= \text{IML sensor size bytes} \\
-	S_{DSN} &= \text{IML DSN size bytes} \\
+	S_{SUBDET} &= \text{Size of individual sub-detection in bytes} \\
+	S_{SUBMETA} &= \text{Size of metadata for sub-detection in bytes} \\
 	S_{SAMP} &= \text{Size of sample bytes} \\
-	SR &= \text{AML rate Hz} \\
-	T &= \text{Sensing time seconds}
+	SR &= \text{Sensor sampling rate Hz} \\
+	S_{META} &= \text{Size of a detection in bytes} \\
+	S_{DET} &= \text{Size of individual sub-detection in bytes} \\
+	\mu_{SR} &= \text{Mean detection rate Hz} \\
+	T &= \text{Detection window length seconds}
 \end{align*}
 
 During the acquisition and curating of data, metrics were collected and stored about how much data is saved (in bytes) versus how much data is discarded at each level within the Laha data hierarchy. These numbers were compared against data storage as if the OPQ and Lokahi frameworks were to take a ``store everything" approach. Evaluation metrics provided include percentage of data storage saved per data hierarchy level as well as an estimate of overall decrease in data storage requirements for the entire DSN. A positive result from these metrics would show significant reduction in storage requirements for each level in the framework compared against a ``store everything approach" and other state-of-the-art data storage solutions.

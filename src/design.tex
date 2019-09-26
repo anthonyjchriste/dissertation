@@ -428,7 +428,7 @@ The ``PayloadType" (Table~\ref{table:PayloadType}) variant is an enumeration tha
 	\caption{PayloadType}
 	\begin{tabularx}{\textwidth}{XlX}
 		\toprule
-		\textbf{Field} & \textbf{Enum} & \textbf{Value} & \textbf{Description} \\
+		\textbf{Field} & \textbf{Value} & \textbf{Description} \\
 		\midrule
 		ADC\_SAMPLES & 0 & ADC waveform samples from the Box.  \\
 		VOLTAGE\_RAW & 1 & Raw waveform voltage obtained by dividing ADC values by a calibration constant. \\
@@ -563,7 +563,7 @@ The ``GcDomain" (Table~\ref{table:GcDomain}) enum is used to specify a garbage c
 	\caption{GcDomain}
 	\begin{tabularx}{\textwidth}{lll}
 		\toprule
-		\textbf{Field} & \textbf{Enum} & \textbf{Value} & \textbf{Description} \\
+		\textbf{Field} & \textbf{Value} & \textbf{Description} \\
 		\midrule
 		MEASUREMENTS & 0 & Laha measurements.  \\
 		TRENDS & 1 & Laha trends. \\
@@ -1088,7 +1088,7 @@ Table~\ref{table:DefaultTtls} displays the default TTL in seconds for each OPQ c
     \caption{Default TTLs for OPQ Collections}
     \begin{tabularx}{\textwidth}{XX}
         \toprule
-        \textbf{Collection} & \textbf{Default} & \textbf{TTL} & \textbf{(seconds)} \\
+        \textbf{Collection} & \textbf{Default TTL seconds} \\
         \midrule
         box\_samples & 900 \\
         measurements & 86400 \\
@@ -1725,7 +1725,7 @@ The protocol used for communicating message exchanges is a simple binary protoco
 	\caption{Time Synchronization Binary Protocol}
 	\begin{tabularx}{\textwidth}{llX}
 		\toprule
-		\textbf{Byte} & \textbf{Offset} & \textbf{Size} & \textbf{Description} \\
+		\textbf{Byte} & \textbf{Offset} & \textbf{Description} \\
 		\midrule
 		0 & 1 & Sequence Number (0 or 1) \\
 		1 &  8 & Int timestamp A $\mu\sec$  \\
