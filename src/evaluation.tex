@@ -1,12 +1,12 @@
-\chapter{Evaluation}
+\chapter{Evaluation}\label{ch:evaluation}
 Evaluation of the Laha framework involves deploying reference Laha-compliant DSNs, validating the data collected from the reference implementations, and then comparing and contrasting various metrics for each of the stated goals. Metrics were collected during a set of experiments for each of the Laha reference implementations in summer 2019.
 
 The following sections describe my plans for deployment of reference implementations, data validation, evaluating the main goals of the Laha framework, and evaluating the tertiary goals of the Laha framework.
 
-\section{Deploy Laha reference implementations on test sites}
+\section{Deploy Laha reference implementations on test sites}\label{sec:deploy-laha-reference-implementations-on-test-sites}
 Both the OPQ and Lokahi reference implementations were deployed to test sites where validated data collection took place. The following sections describe the reference implementation deployments in detail.
 
-\subsection{OPQ Reference Deployment}
+\subsection{OPQ Reference Deployment}\label{subsec:opq-reference-deployment}
 Fifteen Laha-compliant OPQ Boxes were deployed over the UH Manoa microgrid during the Summer of 2019.
 
 The placement strategy I utilized aimed to maximize collecting distributed PQ events by placing sensors on the same electrical lines. We also considered placing Boxes in locations co-located with sensitive or demanding electrical equipment in the hopes of seeing PQ events generated from this equipment. Finally, we considered data access in terms of network availability and ground truth availability. Working with my colleagues and the Office of Energy Management, I selected the locations for the campus wide deployment. Table \ref{table:OpqDeployment} displays the details of the UH Manoa campus deployment and justifications for choosing those locations.
@@ -59,13 +59,13 @@ A graphical representation showing the complete coverage of Boxes on the UH Mano
 
 All devices were placed in a location that had access to UH Manoa's wireless network. As soon as they were installed, they started transmitting PQ data for that location.
 
-\subsection{Lokahi Reference Deployment}
+\subsection{Lokahi Reference Deployment}\label{subsec:lokahi-reference-deployment}
 %TODO
 
-\section{Validate data collected by Laha deployment}
+\section{Validate data collected by Laha deployment}\label{sec:validate-data-collected-by-laha-deployment}
 Data from both experimental deployments were validated against ground truth data. In the OPQ deployment, ground truth is provided by UH meters installed at the main of each building. In the Lokahi deployment, ground truth was provided by high-end calibrated microphones.
 
-\subsection{Validate data collected by OPQ deployment}
+\subsection{Validate data collected by OPQ deployment}\label{subsec:validate-data-collected-by-opq-deployment}
 
 Ground truth for the UH Manoa microgrid deployment is provided by UH system installed power meters. These meters were installed at the main of most buildings and can provide ground truth for Voltage, Frequency, and THD trends, as well as provide a maximum bounds of these features enabling me to determine if the incidents we see in OPQ would have been seen by the UH meters.
 
@@ -73,7 +73,7 @@ The UH meters provide data trends for Voltage, Frequency, and THD in rolled-up o
 
 As an example, if an Incident is created by Mauka with a Voltage sag down to 110V, then I would expect the nearest ground truth meter to also have a minimum Voltage value near 110V for the same time window. If the minimum value from the UH meter does not show a Voltage drop, then we know that Mauka identified a false positive.
 
-I have written a separate service for OPQ called the ``ground-truth-daemon". The role of this daemon is to query the UH Manoa metering HTTP API once per hour and retrieve the previous hours worth of data for all ground truth meters co-located with an OPQ Box or near an OPQ Box. The descriptive statistics along with the meter metadata are stored in MongoDB so that OPQ data can be compared to the ground truth data to identify false positives and false negatives. The ground truth data model was described in Table \ref{table:ground_truth}.
+I have written a separate service for OPQ called the ``ground-truth-daemon". The role of this daemon is to query the UH Manoa metering HTTP API once per hour and retrieve the previous hours worth of data for all ground truth meters co-located with an OPQ Box or near an OPQ Box. The descriptive statistics along with the meter metadata are stored in MongoDB so that OPQ data can be compared to the ground truth data to identify false positives and false negatives. The ground truth data model was described in Table~\ref{table:ground_truth}.
 
 Since one of the core tenants of Laha is to throw away uninteresting data, we need to store all ground truth data in an effort to identify false negatives.
 
@@ -81,7 +81,7 @@ Two types of validation are performed. First, we compared measurements and trend
 
 The second type of validation I performed was checking the bounds of Mauka generated Incidents. When a Voltage Incident is generated, the sag or swell is compared against the minimum and maximum ground truth trends. Differences larger than 5 percent were recorded. Validation for Frequency and THD was performed in a similar way.
 
-\section{Use Laha deployments to evaluate the main goals of the framework}
+\section{Use Laha deployments to evaluate the main goals of the framework}\label{sec:use-laha-deployments-to-evaluate-the-main-goals-of-the-framework}
 The Laha deployments for both OPQ and Lokahi were used to evaluate each of the main goals this framework claims to provide. Namely that Laha is a generally useful framework representation for DSNs. Second, Laha provides the ability to turn primitive sensor data into actionable data and insights. Third, Laha's tiered management of sensor data provides metrics on maximum bounds for storage requirements and graceful degradation of DSN performance.
 
 Each deployment requires different techniques for performing evaluation.
@@ -92,7 +92,7 @@ In the Lokahi deployment, I had the opportunity to generate infrasound signals u
 
 Evaluation of the main goals of this network are provided in the following sections.
 
-\subsection{Evaluation of the Generality of this Framework}
+\subsection{Evaluation of the Generality of this Framework}\label{subsec:evaluation-of-the-generality-of-this-framework}
 I claim that the Laha framework is useful and general enough to be applied to DSNs in different domains. To test this, I designed, developed, and deployed two DSNs. The first OPQ, measures distributed PQ signals on the electrical grid. The second, Lokahi, observes infrasound signals traveling through the atmosphere.
 
 To evaluate the generality of the Laha design, I provided metrics for whether or not each deployment is able to fulfill the goals of the given network.
@@ -113,7 +113,7 @@ Finally, backed by the metrics for both deployments, I provide a critical discus
 
 The following sections continue to discuss the evaluation strategies required to show that Laha is a generally useful representation for a DSN.
 
-\subsection{Evaluation of Converting Primitive Data into Actionable Insights}
+\subsection{Evaluation of Converting Primitive Data into Actionable Insights}\label{subsec:evaluation-of-converting-primitive-data-into-actionable-insights}
 An important goal of any DSN is to convert primitive sensor data into actionable insights. This is generally accomplished by adding some kind of context associated with the data such as classifications of a signal or linking the data with other data by comparing similarities in time, space, or other physical features.
 
 I claim that Laha's use of Actors acting on and moving data between levels in the Laha hierarchy provides a useful and generic approach to systematically adding context to data as it moves through the framework. Laha is designed with a specific number of levels where data within each level shares the same type. In each deployment, I evaluated the usefulness of each level with regards to adding context to the data.
@@ -147,26 +147,102 @@ The goal of tiered management of Big Data is to add a mechanism that provides a 
 
 Other approaches to Big Data management include compression\cite{tang2004compression} or storage systems where the goal is to have a distributed file system and move data close to where it is being processed, such as the Hadoop Distributed File System\cite{warrier2007much}. Other systems such as NiFi\cite{hughes2016survey} provide a nice interface for ingestion and movement of data between Big Data tools while also providing data provenance, but do not go far enough in focusing on data reduction and graceful degradation. Carney et al.\cite{carney2002monitoring} discuss how monitoring applications require management and clean up of stale sensor data.
 
+\subsubsection{Evaluation of False Positives and False Negatives}\label{eval-fp-fn}
 It's possible that Laha threw away data that did contain signals of interest. In this case, detection or classification Actors did not observe the signals because the data has been discarded leading to increased false negatives. On the other hand, by reducing false positives and increasing the signal-to-noise ratio as data moves upward, Phenomena has a better chance of optimizing triggering, detection, and classification which may in turn inform Laha to save data that would have been previously thrown away. In this way, it's possible that Laha reduces false negatives.
 
 I evaluated the number of false positives and false negatives in detections, classifications, and Phenomena compared against industry standard reference sensors. A positive outcome for this metric would be a reduction in both false positives and false negatives compared to an approach that does not use tiered data management. A negative result would be an increase in either false positives or false negatives.
+
+\subsubsection{Evaluation of DSN System Requirements}
+I examined theoretical requirements for any DSN that utilizes Laha as an abstract model. These include examining these metrics without optimizations provided by Laha and then examining the metrics with Laha optimizations in place.
+
+Let us consider theoretical bounds on storage requirements at each level in the Laha hierarchy.
+
+\paragraph{IML Requirements}
+The IML level contains instantaneous samples from a sensor. These values are generally stored in memory on the sensors. We can calculate several useful metrics for this layer.
+
+First, I examined the IML requirements for individual sensors.
+
+\begin{align}
+	&S_{SEN} = S_{SAMP} * SR * T \\
+	&S_{DSN} = \sum_{i=1}^{B_{n}} S_{SEN_{i}}
+\end{align}
+
+where:
+\begin{align*}
+	B &= \text{A sensor in the DSN} \\
+	S_{SEN} &= \text{IML sensor size bytes} \\
+	S_{DSN} &= \text{IML DSN size bytes} \\
+	S_{SAMP} &= \text{Size of sample bytes} \\
+	SR &= \text{AML rate Hz} \\
+	T &= \text{Sensing time seconds}
+\end{align*}
+
+
+\paragraph{AML Requirements}
+Aggregate measurements provide rolled-up feature extracted values generated from the IML layer. These often include multiple features (i.e. Voltage, Frequency, THD) and descriptive statistics of each feature (i.e. minimum, maximum, average, variance). It's worth noting that the theoretical bounds may differ from the actual bounds in practice due to the way the underlying storage engine persists the values. These differences will be examined in the results section.
+
+Laha allows for multiple sub-levels within the AML level. For instance, the OPQ DSN has both measurements and trends AMLs which summarize data at different rates. We need to take this into considering when generation upper bounds for the AML level.
+
+To simplify calculating the bounds on the AML level, we make an assumption that the variance of the size of each AML value is close to 0. The actual metrics for each AML value remain constant sized while the metadata associated with each AML may differ in size. Since each AML value contains similar metadata, the variance on the size of the metadata should remain small.
+
+\begin{align}
+	&S_{SL} = S_{V} * SR * T * B_{n} \\
+	&S_{AML} = \sum_{i=1}^{S_{SL_{n}}} S_{SL}_{i}
+\end{align}
+
+where:
+\begin{align*}
+	B &= \text{A sensor in the DSN} \\
+	S_{V} &= \text{Average (or constant) size of AML value in bytes} \\
+	S_{SL} &= \text{AML sub-level size bytes} \\
+	S_{AML} &= \text{AML size bytes} \\
+	SR &= \text{Sensor sample rate Hz} \\
+	T &= \text{Sensing time seconds}
+\end{align*}
+
+\paragraph{DL Requirements}
+The detections level contains metadata and associated sampled high fidelity data that was returned from sensors for a given time window. A single detection can contain samples from multiple data streams for a single event of interest.
+
+Similarly to the AML level, we assume that the metadata for each detection remains a constant or close to constant size and we focus on the raw data which dominates the storage requirements in the DL.
+
+I make the assumption that the window lengths for each high-fidelitiy stream within a single detection are equally sized. In reality, it's possible that a sensor encounters an error and does not return data for the entire requested time window.
+
+Calculating the bounds of this collection is further complicated by the fact that Detections are not generated at a constant rate and the window length of the detections can be highly variable. Therefore, I provide statistical calculations for these bounds.
+
+\begin{align}
+	&S_{SEN} = S_{SAMP} * SR * T \\
+	&S_{DSN} = \sum_{i=1}^{B_{n}} S_{SEN_{i}}
+\end{align}
+
+where:
+\begin{align*}
+	S_{D} &=
+
+	B &= \text{A sensor in the DSN} \\
+	S_{SEN} &= \text{IML sensor size bytes} \\
+	S_{DSN} &= \text{IML DSN size bytes} \\
+	S_{SAMP} &= \text{Size of sample bytes} \\
+	SR &= \text{AML rate Hz} \\
+	T &= \text{Sensing time seconds}
+\end{align*}
 
 During the acquisition and curating of data, metrics were collected and stored about how much data is saved (in bytes) versus how much data is discarded at each level within the Laha data hierarchy. These numbers were compared against data storage as if the OPQ and Lokahi frameworks were to take a ``store everything" approach. Evaluation metrics provided include percentage of data storage saved per data hierarchy level as well as an estimate of overall decrease in data storage requirements for the entire DSN. A positive result from these metrics would show significant reduction in storage requirements for each level in the framework compared against a ``store everything approach" and other state-of-the-art data storage solutions.
 
 I also provide metrics on ``continuous storage pressure" which is a measure of the average amount of data storage required at each level given the current state of the network. That is, since data at all lower levels of the framework assigns a TTL to the data within the collection, the collection will exhibit a constant data pressure during sensor data collection. For example, at the lowest level, the IML collects raw data from all sensors all the time. Given the sample rate per sensor, the size per sample, the number of sensors, and a known TTL for this level, I can estimate the maximum bounds of data management requirements that the IML requires. We can develop similar estimation strategies with higher levels of the framework. I computed the statistical error between the predicted storage pressure and the actual storage pressure recorded during the experiments. A positive outcome would show strong correlation between the predicted storage pressure and the actual storage pressure. A negative outcome would show weak correlation between the predicted and actual values.
 
+\subsubsection{Combined Evaluation of Tiered Data Management}
 Finally, I provided an evaluation that weighs the results of all three metrics against each other. For example, if I see positive results for data storage reduction and negative results for false positives, do the benefits of the data storage reduction outweigh the negatives of increased false positives?
 
 I expect that DSNs that have a lower signal-to-noise ratio will see greater benefits from tiered data management than DSNs that already have a decent signal-to-noise ratio.
 
-\section{Evaluation of Tertiary Goals}
+\section{Evaluation of Tertiary Goals}\label{sec:evaluation-of-tertiary-goals}
 In order to achieve the main goals of this framework, I claim that either all or a subset of the following tertiary goals must be fulfilled. Optimization of triggering, detection, classification, sensor energy usage, bandwidth, predictive analytics, and the ability to derive models of the underlying sensing field topology.
 
 To evaluate these tertiary goals, I selected and implemented DSN optimization techniques from current literature. I then compared and contrasted the usefulness of different techniques and discuss how each of these techniques perform in the different sensor domains.
 
 Finally, I discuss how each of these tertiary goals make progress towards overall goals of this sensor network.
 
-\subsection{Evaluation of Adaptive Optimizations for Triggering}
+\subsection{Evaluation of Adaptive Optimizations for Triggering}\label{subsec:evaluation-of-adaptive-optimizations-for-triggering}
 Triggering is the act of observing a feature extracted data stream for interesting features and triggering sensors to provide raw data for a requested time window for higher level analysis. Adaptively optimizing triggering is a way to tune triggering algorithms and parameters with the aim of decreasing false positives and false negatives. In this context, a false positive is triggering on a data stream that does not contain a signal of interest and a false negative is not triggering on a data stream that does contain a signal of interest.
 
 Adaptive triggering is only useful in networks that utilize triggering. Specifically, this technique can not be applied to DSNs that take a collect everything all the time approach.
@@ -183,7 +259,7 @@ I hope to show that a side effect of Laha's optimized triggering is reduced band
 
 I further hope to show that another benefit of Laha's optimized triggering is reduced sensor energy requirements. The evaluation for this metric occurred with the Lokahi network where sensors can be dependent on batteries. I ran two experiments. For each experiment, all sensors were charged to battery level of 100\%. In the first experiment, I did not utilize optimized triggering. In the second experiment I did utilize optimized triggering. In both experiments, I measured the final battery level after the experiment and also measure how quickly the battery depletes for each sensor. This is possible because data in the Lokahi network contains timestamped entries with battery levels.
 
-\subsection{Evaluation of Adaptive Optimizations for Detection and Classifications}
+\subsection{Evaluation of Adaptive Optimizations for Detection and Classifications}\label{subsec:evaluation-of-adaptive-optimizations-for-detection-and-classifications}
 Detections occur when triggering observes something ``interesting" in the feature extracted data stream. A Detection is a contiguous window of raw sensor data that was requested by triggering that may or may not contain signals of interest. Optimizing detections involves optimized the window sizes to increase the signal-to-noise ratio of the window. Fine grained features are then computed by Detection Actors and moved to the Incidents Level where classification of signals takes place. Optimizing Detections involves trimming detection windows to increase signal-to-noise. Optimizing of classifications for Incidents involves tuning parameter sets for the underlying classification algorithms.
 
 Predictive and Locality Phenomena as well as topology optimizations were used to provide optimizations to the Detections and Incidents levels.
