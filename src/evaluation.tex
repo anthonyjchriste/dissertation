@@ -177,20 +177,23 @@ where:
 	T &= \text{Sensing time seconds}
 \end{align*}
 
-Equations \Crefrange{iml:aSSEN}{iml:aSDSN} calculate minimum and maximum bounds for the IML when the sensor sampling rate and sample size are provided as averages.
+\Crefrange{iml:aSSEN}{iml:aSDSN} calculate minimum and maximum bounds for the IML when the sensor sampling rate and sample size are provided as statistical averages and also calculates the errors on these bounds.
 
 \begin{align}
-	&\mu S_{SEN} = S_{SAMP} * SR * T \label{iml:aSSEN} \\
-	&\mu S_{DSN} = \sum_{i=1}^{B_{n}} S_{SEN_{i}} \label{iml:aSDSN}
+	&\mu S_{SEN} = \mu S_{SAMP} * \mu SR * T \label{iml:aSSEN} \\
+	&\mu S_{SENERR} = 
+	&\mu S_{DSN} = \sum_{i=1}^{B_{n}} \mu S_{SEN_{i}} \label{iml:aSDSN} \\
+	&\mu B_{L} = something
+	&\mu B_{U} = something
 \end{align}
 
 where:
 \begin{align*}
 	B &= \text{A sensor in the DSN} \\
-	S_{SEN} &= \text{IML sensor size bytes} \\
-	S_{DSN} &= \text{IML DSN size bytes} \\
-	S_{SAMP} &= \text{Size of sample bytes} \\
-	SR &= \text{AML rate Hz} \\
+	\mu S_{SEN} &= \text{IML sensor size bytes} \\
+	\mu S_{DSN} &= \text{IML DSN size bytes} \\
+	\mu S_{SAMP} &= \text{Size of sample bytes} \\
+	\mu SR &= \text{AML rate Hz} \\
 	T &= \text{Sensing time seconds}
 \end{align*}
 
