@@ -160,42 +160,60 @@ Let us consider theoretical bounds on storage requirements at each level in the 
 \paragraph{IML Requirements}
 The IML level contains instantaneous samples from a sensor. These values are generally stored in memory on the sensors. We can calculate several useful metrics for this layer.
 
-Equations \Crefrange{iml:SSEN}{iml:SDSN} calculate the maximum bounds for IML storage for individual sensors and the entire DSN respectively when sensor parameters are known for each sensor.
+First, we can calculate the IML size for an individual sensor $S_{SEN}$, with a sample size in bytes $S_{SAMP}$, a sample rate in Hz $SR$, and a time window in seconds $T$. This is shown in equation~\ref{iml:SSEN}.
+
+\begin{equation}\label{iml:SSEN}
+	S_{SEN} = S_{SAMP} * SR * T
+\end{equation}
+
+Next, we can calculate the IML size for the entire network by summing up the IML size for each individual sensor $B$ in the network. Equation~\ref{iml:DSEN} provides these calculations.
+
+\begin{equation}\label{iml:DSEN}
+	S_{DSN} = \sum_{i=1}^{B_{n}} S_{SEN_{i}}
+\end{equation}
+
+If the sampling rate is not constant, then we can calculate the sensor IML size statistically assuming that we have a known average sample rate $\mu SR$ and a measure of standard deviation $\sigma$ on the samples.
+
+The error for sampling rate $\delta_{\mu SR}$ is given in equation~\ref{iml:uErr}. The error calculation for a single sensor is given in equation~\ref{iml:uSSEN}.
+
+By propagating the error as an error multiplied with a constant, we get a final bounds for a single sensor $\mu S_{SEN}$ as described in equation~\ref{iml:sbounds}.
 
 \begin{align}
-	&S_{SEN} = S_{SAMP} * SR * T \label{iml:SSEN} \\
-	&S_{DSN} = \sum_{i=1}^{B_{n}} S_{SEN_{i}} \label{iml:SDSN}
+	\delta_{\mu SR} &= \frac{\sigma}{\sqrt{N}} \label{iml:uErr} \\
+	\delta S_{SEN} &= \delta_{\mu SR} * |S_{SAMP} * T| \label{iml:uSSEN}  \\
+	\mu S_{SEN} &= (S_{SAMP} * \mu SR * T) \pm \delta S_{SEN} \label{iml:sbounds}
 \end{align}
 
-where:
-\begin{align*}
-	B &= \text{A sensor in the DSN} \\
-	S_{SEN} &= \text{IML sensor size bytes} \\
-	S_{DSN} &= \text{IML DSN size bytes} \\
-	S_{SAMP} &= \text{Size of sample bytes} \\
-	SR &= \text{AML rate Hz} \\
-	T &= \text{Sensing time seconds}
-\end{align*}
-
-\Crefrange{iml:aSSEN}{iml:aSDSN} calculate minimum and maximum bounds for the IML when the sensor sampling rate and sample size are provided as statistical averages and also calculates the errors on these bounds.
+Finally, we can calculate the bounds for an entire network $\mu S_{DSN}$ with a mean sample rate as shown in equation~\ref{iml:uDSN}.
 
 \begin{align}
-	&\mu S_{SEN} = \mu S_{SAMP} * \mu SR * T \label{iml:aSSEN} \\
-	&\mu S_{SENERR} =
-	&\mu S_{DSN} = \sum_{i=1}^{B_{n}} \mu S_{SEN_{i}} \label{iml:aSDSN} \\
-	&\mu B_{L} = something
-	&\mu B_{U} = something
+	\delta S_{DSN} &= \sqrt{\sum_{i=1}^{\delta S_{SEN_{n}}} (\delta S_{SEN_{i}})^2} \label{iml:dDSN} \\
+	\mu S_{DSN} &= (\sum_{i=1}^{B_{n}} \mu S_{SEN_{i}}) \pm \delta S_{DSN} \label{iml:uDSN}
 \end{align}
 
-where:
-\begin{align*}
-	B &= \text{A sensor in the DSN} \\
-	\mu S_{SEN} &= \text{IML sensor size bytes} \\
-	\mu S_{DSN} &= \text{IML DSN size bytes} \\
-	\mu S_{SAMP} &= \text{Size of sample bytes} \\
-	\mu SR &= \text{AML rate Hz} \\
-	T &= \text{Sensing time seconds}
-\end{align*}
+Each sample in this level is generally stored using build in machine types that generally take 1, 2, 4, or 8 bytes. Further, depending on the network requirements, each sample may or may not have an associated timestamp. Each timestamp generally adds between 4 and 8 bytes to each sample.
+
+First, let's examine how sample size affects constant data pressure with a stable sampling rate
+
+%\Crefrange{iml:aSSEN}{iml:aSDSN} calculates minimum and maximum bounds for the IML when the sensor sampling rate and sample size are provided as statistical averages and also calculates the errors on these bounds.
+%
+%\begin{align}
+%	&\mu S_{SEN} = \mu S_{SAMP} * \mu SR * T \label{iml:aSSEN} \\
+%	&\mu S_{SENERR} =
+%	&\mu S_{DSN} = \sum_{i=1}^{B_{n}} \mu S_{SEN_{i}} \label{iml:aSDSN} \\
+%	&\mu B_{L} = something
+%	&\mu B_{U} = something
+%\end{align}
+%
+%where:
+%\begin{align*}
+%	B &= \text{A sensor in the DSN} \\
+%	\mu S_{SEN} &= \text{IML sensor size bytes} \\
+%	\mu S_{DSN} &= \text{IML DSN size bytes} \\
+%	\mu S_{SAMP} &= \text{Size of sample bytes} \\
+%	\mu SR &= \text{AML rate Hz} \\
+%	T &= \text{Sensing time seconds}
+%\end{align*}
 
 
 \paragraph{AML Requirements}
