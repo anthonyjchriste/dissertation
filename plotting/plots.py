@@ -25,8 +25,9 @@ def plot_iml_level_no_opt_var_sample_size(sample_sizes_bytes: typing.List[int],
     ))
     plt.xlabel("Time (S)")
     plt.ylabel("Bytes")
-    plt.savefig("plot_iml_level_no_opt_var_sample_size.png")
     plt.legend()
+
+    plt.savefig("../src/figures/plot_iml_level_no_opt_var_sample_size.png")
     plt.show()
 
 
@@ -48,13 +49,16 @@ def plot_iml_level_no_opt_var_sample_rate(sample_size_bytes: int,
     ))
     plt.xlabel("Time (S)")
     plt.ylabel("Bytes")
-    plt.savefig("plot_iml_level_no_opt_var_sample_rate.png")
     plt.legend()
+
+    plt.savefig("../src/figures/plot_iml_level_no_opt_var_sample_rate.png")
     plt.show()
+
 
 
 if __name__ == "__main__":
     sample_sizes = [1, 2, 4, 8, 16]
     sample_rates = [80, 800, 8_000, 12_000]
-    # plot_iml_level_no_opt_var_sample_size(sample_sizes, 10, S_IN_YEAR)
+    plot_iml_level_no_opt_var_sample_size(sample_sizes, 10, S_IN_YEAR)
     plot_iml_level_no_opt_var_sample_rate(2, sample_rates, S_IN_YEAR)
+

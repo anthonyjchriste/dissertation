@@ -193,27 +193,14 @@ Finally, we can calculate the bounds for an entire network $\mu S_{DSN}$ with a 
 
 Each sample in this level is generally stored using build in machine types that generally take 1, 2, 4, or 8 bytes. Further, depending on the network requirements, each sample may or may not have an associated timestamp. Each timestamp generally adds between 4 and 8 bytes to each sample.
 
-First, let's examine how sample size affects constant data pressure with a stable sampling rate
+Figure~\ref{fig:iml_growth_vary_sample_size} shows IML growth for a single sensor with various common sample sizes over a time period of one year.
 
-%\Crefrange{iml:aSSEN}{iml:aSDSN} calculates minimum and maximum bounds for the IML when the sensor sampling rate and sample size are provided as statistical averages and also calculates the errors on these bounds.
-%
-%\begin{align}
-%	&\mu S_{SEN} = \mu S_{SAMP} * \mu SR * T \label{iml:aSSEN} \\
-%	&\mu S_{SENERR} =
-%	&\mu S_{DSN} = \sum_{i=1}^{B_{n}} \mu S_{SEN_{i}} \label{iml:aSDSN} \\
-%	&\mu B_{L} = something
-%	&\mu B_{U} = something
-%\end{align}
-%
-%where:
-%\begin{align*}
-%	B &= \text{A sensor in the DSN} \\
-%	\mu S_{SEN} &= \text{IML sensor size bytes} \\
-%	\mu S_{DSN} &= \text{IML DSN size bytes} \\
-%	\mu S_{SAMP} &= \text{Size of sample bytes} \\
-%	\mu SR &= \text{AML rate Hz} \\
-%	T &= \text{Sensing time seconds}
-%\end{align*}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{figures/plot_iml_level_no_opt_var_sample_size.png}
+	\caption{IML Growth Varying Sample Size Bytes}
+	\label{fig:iml_growth_vary_sample_size}
+\end{figure}
 
 
 \paragraph{AML Requirements}
