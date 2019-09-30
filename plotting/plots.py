@@ -54,6 +54,7 @@ def plot_iml_level_no_opt_var_sample_rate(sample_size_bytes: int,
     plt.savefig("../src/figures/plot_iml_level_no_opt_var_sample_rate.png")
     plt.show()
 
+
 def plot_iml_level_no_opt_var_num_sensors(sample_size_bytes: int,
                                           sample_rate_hz: int,
                                           window_length_s: int,
@@ -81,6 +82,25 @@ def plot_iml_level_no_opt_var_num_sensors(sample_size_bytes: int,
     plt.show()
 
 
+def plot_iml_level_no_opt_var_std(sample_size_bytes: int,
+                                  mean_sample_rate_hz: int,
+                                  window_length_s: int,
+                                  std: float):
+    x_values = np.arange(1, window_length_s + 1, step=S_IN_DAY)
+
+    plt.figure(figsize=(12, 5))
+
+    # First, lets plot the average
+    y_values = x_values * sample_size_bytes * mean_sample_rate_hz
+    # plt.plot(x_values, y_values, label="Mean Size Bytes")
+
+    e_sr = std / np.sqrt(mean_sample_rate_hz * x_values)
+    e = e_sr * np.abs(mean_sample_rate_hz * x_values)
+
+    plt.errorbar(x_values, y_values, yerr=e)
+
+    plt.show()
+
 
 if __name__ == "__main__":
     sample_sizes = [1, 2, 4, 8, 16]
@@ -88,5 +108,5 @@ if __name__ == "__main__":
     num_boxes = [1, 10, 100, 1_000, 10_000, 100_000, 1_000_000]
     # plot_iml_level_no_opt_var_sample_size(sample_sizes, 10, S_IN_YEAR)
     # plot_iml_level_no_opt_var_sample_rate(2, sample_rates, S_IN_YEAR)
-    plot_iml_level_no_opt_var_num_sensors(4, 12000, S_IN_YEAR, num_boxes)
-
+    # plot_iml_level_no_opt_var_num_sensors(4, 12000, S_IN_YEAR, num_boxes)
+    plot_iml_level_no_opt_var_std(2, 80, S_IN_DAY * 5, 1000)

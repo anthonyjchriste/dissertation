@@ -174,12 +174,10 @@ Next, we can calculate the IML size for the entire network by summing up the IML
 
 If the sampling rate is not constant, then we can calculate the sensor IML size statistically assuming that we have a known average sample rate $\mu SR$ and a measure of standard deviation $\sigma$ on the samples.
 
-The error for sampling rate $\delta_{\mu SR}$ is given in equation~\ref{iml:uErr}. The error calculation for a single sensor is given in equation~\ref{iml:uSSEN}.
-
-By propagating the error as an error multiplied with a constant, we get a final bounds for a single sensor $\mu S_{SEN}$ as described in equation~\ref{iml:sbounds}.
+The error for sampling rate $\delta_{\mu SR}$ is given in equation~\ref{iml:uErr}. The error calculation for a single sensor is given in equation~\ref{iml:uSSEN}. By propagating the error as an error multiplied with a constant, we get a final bounds for a single sensor $\mu S_{SEN}$ as described in equation~\ref{iml:sbounds}.
 
 \begin{align}
-	\delta_{\mu SR} &= \frac{\sigma}{\sqrt{N}} \label{iml:uErr} \\
+	\delta_{\mu SR} &= \frac{\sigma}{\sqrt{\mu SR * T}} \label{iml:uErr} \\
 	\delta S_{SEN} &= \delta_{\mu SR} * |S_{SAMP} * T| \label{iml:uSSEN}  \\
 	\mu S_{SEN} &= (S_{SAMP} * \mu SR * T) \pm \delta S_{SEN} \label{iml:sbounds}
 \end{align}
@@ -219,6 +217,8 @@ Figure~\ref{fig:iml_growth_vary_num_sensors} shows the IML growth assuming stabl
 	\caption{IML Growth Varying Number of Sensors}
 	\label{fig:iml_growth_vary_num_sensors}
 \end{figure}
+
+Finally, Figure~\ref{} displays IML data growth for a single sensor given a mean sampling rate and various standard deviations over a time period of one year.
 
 \paragraph{AML Requirements}
 Aggregate measurements provide rolled-up feature extracted values generated from the IML layer. These often include multiple features (i.e. Voltage, Frequency, THD) and descriptive statistics of each feature (i.e. minimum, maximum, average, variance). It's worth noting that the theoretical bounds may differ from the actual bounds in practice due to the way the underlying storage engine persists the values. These differences will be examined in the results section.
