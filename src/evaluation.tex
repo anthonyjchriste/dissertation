@@ -220,27 +220,49 @@ Figure~\ref{fig:iml_growth_vary_num_sensors} shows the IML growth assuming stabl
 
 Finally, Figure~\ref{} displays IML data growth for a single sensor given a mean sampling rate and various standard deviations over a time period of one year.
 
+% TODO add figure
+% TODO make figures applicable to OPQ and Lokahi
+
 \paragraph{AML Requirements}
 Aggregate measurements provide rolled-up feature extracted values generated from the IML layer. These often include multiple features (i.e. Voltage, Frequency, THD) and descriptive statistics of each feature (i.e. minimum, maximum, average, variance). It's worth noting that the theoretical bounds may differ from the actual bounds in practice due to the way the underlying storage engine persists the values. These differences will be examined in the results section.
 
-Laha allows for multiple sub-levels within the AML level. For instance, the OPQ DSN has both measurements and trends AMLs which summarize data at different rates. We need to take this into considering when generation upper bounds for the AML level.
+Laha allows for multiple sub-levels within the AML level. For instance, the OPQ DSN has both measurements and trends AMLs which summarize data at different window lengths. We need to take this into consideration when generating bounds for the AML level.
 
 To simplify calculating the bounds on the AML level, we make an assumption that the variance of the size of each AML value is close to 0. The actual metrics for each AML value remain constant sized while the metadata associated with each AML may differ in size. Since each AML value contains similar metadata, the variance on the size of the metadata should remain small.
 
-\begin{align}
-	&S_{SL} = S_{V} * SR * T * B_{n} \\
-	&S_{AML} = \sum_{i=1}^{S_{SL_{n}}} S_{SL_{i}}
-\end{align}
+Equation~\ref{eq:aml_sl} computes the size of a sub-level within the AML $S_{SL}$ by examining the size of an AML entry $S_{V}$, sub-level send rate in Hz $SR$, sensing time in seconds $T$, and a set of sensors $B$.
 
-where:
-\begin{align*}
-	B &= \text{A sensor in the DSN} \\
-	S_{V} &= \text{Average (or constant) size of AML value in bytes} \\
-	S_{SL} &= \text{AML sub-level size bytes} \\
-	S_{AML} &= \text{AML size bytes} \\
-	SR &= \text{Sensor sample rate Hz} \\
-	T &= \text{Sensing time seconds}
-\end{align*}
+\begin{equation}\label{eq:aml_sl}
+	S_{SL} = S_{V} * SR * T * B_{n}
+\end{equation}
+
+Equation~\ref{eq:aml} shows the size of the AML $S_{AML}$ including all sub-levels.
+
+\begin{equation}\label{eq:aml}
+	S_{AML} = \sum_{i=1}^{S_{SL_{n}}} S_{SL_{i}}
+\end{equation}
+
+Figure~\ref{fig:plot_aml_level_opq_single} examines the growth of the AML level using OPQ as a basis over a time period of one year. We can see that measurements which have a size of 144 bytes and a rate of 1 Hz dominates the data growth which is what we would expect since measurements send at a higher rate. Trends data growth (orange series) on the other hand appears to be almost flat. Finally, the green series represents the total size of the two sub-levels and the sum data storage of the AML.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{figures/plot_aml_level_opq_single.png}
+	\caption{OPQ AML Growth with Sub-Levels}
+	\label{fig:plot_aml_level_opq_single}
+\end{figure}
+
+We can see from this figure that left unbounded, the AML can grow to near 5GB a year per sensor in the OPQ network.
+
+Figure~\ref{fig:plot_aml_level_lokahi_single} examines data growth of the AML using Lokahi as a basis over a time period of one year. In this sensor network, the size of each Aggreagate Measurement remains constant over each sub-level and only the AML rate varies. We can see that none of the sub-levels tend to dominate, but the combined size of the AML can grow quickly.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{figures/plot_aml_level_lokahi_single.png}
+	\caption{Lokahi AML Growth with Sub-Levels}
+	\label{fig:plot_aml_level_lokahi_single}
+\end{figure}
+
+From this figure, we can conclude that the AML can grown to near 7GB a year per sensor in the Lokahi network if the the data remained unbounded.
 
 \paragraph{DL Requirements}
 The detections level contains metadata and associated sampled high fidelity data that was returned from sensors for a given time window. A single detection can contain samples from multiple data streams for a single event of interest.
@@ -249,25 +271,39 @@ Similarly to the AML level, we assume that the metadata for each detection remai
 
 I make the assumption that the window lengths for each high-fidelitiy stream within a single detection are equally sized. In reality, it's possible that a sensor encounters an error and does not return data for the entire requested time window.
 
-Calculating the bounds of this collection is further complicated by the fact that Detections are not generated at a constant rate and the window length of the detections can be highly variable. Therefore, I provide statistical calculations for these bounds.
+Calculating the bounds of this collection is further complicated by the fact that Detections are not generated at a constant rate and the window length of the detections can be highly variable. Further, the number of sensors that return data for any given detection is also variable. Therefore, I provide statistical calculations for these bounds.
 
-\begin{align}
-	&S_{SUBDET} = S_{SAMP} * SR * T + S_{SUBMETA} \\
-	&S_{DET} = \sum_{i=1}^{S_{SUBDEC_{n}}} S_{SUBDEC_{i}} \\
-	&S_{DL} =
-\end{align}
+First, let's examine calculating the bounds when all parameters are known for a sub-detection. A sub-detection is data returned from a single sensor within a detection. The bounds for each sub-dection is similar to the bounds for a single sensor in the IML, because this level contains the IML data plus some close to constant sized metadata providing context to the IML data.
 
-where:
-\begin{align*}
-	S_{SUBDET} &= \text{Size of individual sub-detection in bytes} \\
-	S_{SUBMETA} &= \text{Size of metadata for sub-detection in bytes} \\
-	S_{SAMP} &= \text{Size of sample bytes} \\
-	SR &= \text{Sensor sampling rate Hz} \\
-	S_{META} &= \text{Size of a detection in bytes} \\
-	S_{DET} &= \text{Size of individual sub-detection in bytes} \\
-	\mu_{SR} &= \text{Mean detection rate Hz} \\
-	T &= \text{Detection window length seconds}
-\end{align*}
+Equation~\ref{eq:dl:ssd} computes the size of a sub-detection $S_{SD}$ using a given sensor sampling rate in Hz $SR$, the length of the detection in seconds $T$, and the size of the sub-detection metadata $S_{SDM}$.
+
+\begin{equation}\label{eq:dl:ssd}
+	S_{SD} = S_{SAMP} * SR * T + S_{SDM}
+\end{equation}
+
+It follows that we can compute the size of an entire detection in bytes $S_{D}$ by summing the sizes of all sub-detections as shown in Equation~\ref{eq:dl:sd}.
+
+\begin{equation}\label{eq:dl:sd}
+	S_{D} = \sum_{i=0}^{S_{SD_{n}}} S_{SD_{i}}
+\end{equation}
+
+Then, we can find the size of the DL $S_{DL}$ by summing the sizes of all Detections as shown in Equation~\ref{eq:dl:dl}.
+
+\begin{equation}\label{eq:dl:dl}
+	S_{DL} = \sum_{i=0}^{S_{D_{n}}} S_{D_{i}}
+\end{equation}
+
+Since the parameters for sub-detections and detection windows can vary wildly, I next provide statistical approximations for computing upper and lower bounds on the DL@.
+
+\begin{equation}
+	\mu S_{D} =
+\end{equation}
+
+\paragraph{IL Requirements}
+
+\paragraph{PL Requirements}
+
+\paragraph{Comparing Laha Requirements}
 
 During the acquisition and curating of data, metrics were collected and stored about how much data is saved (in bytes) versus how much data is discarded at each level within the Laha data hierarchy. These numbers were compared against data storage as if the OPQ and Lokahi frameworks were to take a ``store everything" approach. Evaluation metrics provided include percentage of data storage saved per data hierarchy level as well as an estimate of overall decrease in data storage requirements for the entire DSN. A positive result from these metrics would show significant reduction in storage requirements for each level in the framework compared against a ``store everything approach" and other state-of-the-art data storage solutions.
 
