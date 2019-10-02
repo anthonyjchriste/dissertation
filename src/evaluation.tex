@@ -177,7 +177,7 @@ If the sampling rate is not constant, then we can calculate the sensor IML size 
 The error for sampling rate $\delta_{\mu SR}$ is given in equation~\ref{iml:uErr}. The error calculation for a single sensor is given in equation~\ref{iml:uSSEN}. By propagating the error as an error multiplied with a constant, we get a final bounds for a single sensor $\mu S_{SEN}$ as described in equation~\ref{iml:sbounds}.
 
 \begin{align}
-	\delta_{\mu SR} &= \frac{\sigma}{\sqrt{\mu SR * T}} \label{iml:uErr} \\
+	\delta_{\mu SR} &= \frac{\sigma SR}{\sqrt{\mu SR * T}} \label{iml:uErr} \\
 	\delta S_{SEN} &= \delta_{\mu SR} * |S_{SAMP} * T| \label{iml:uSSEN}  \\
 	\mu S_{SEN} &= (S_{SAMP} * \mu SR * T) \pm \delta S_{SEN} \label{iml:sbounds}
 \end{align}
@@ -296,13 +296,37 @@ Then, we can find the size of the DL $S_{DL}$ by summing the sizes of all Detect
 Since the parameters for sub-detections and detection windows can vary wildly, I next provide statistical approximations for computing upper and lower bounds on the DL\@.
 
 \begin{align}
-	\delta S_{SAMP} &= \frac{\sigma S_{SAMP}}{\mu SR * \mu T}
+	\delta S_{SAMP} &= \frac{\sigma S_{SAMP}}{\sqrt{\mu SR * \mu T}} \\
+	\delta \mu SR &= \frac{\sigma SR}{\sqrt{\mu SR * \mu T }} \\
+	\delta \mu T &= \frac{\sigma T}{\sqrt{T}} \\
+	\delta \mu B &= \frac{\sigma B}{\sqrt{B}} \\
 	\mu S_{D} &= (\mu S_{SAMP} * \mu SR * \mu T * \mu B_{n}) + (S_{META} * \mu B_{n})
 \end{align}
 
 \paragraph{IL Requirements}
+The Incidents Level provides added context on top of the DL in the form of signal of interest classifications. This level is structured similarly to the DL in that it contains trimmed down IML samples from one or more sensors over a varying time window and added context in the form of metadata. Due to these similarities, the bounds calculations are also quite similar.
+
+The IL differs from the DL in that the associated IML samples in the IL are always subsets of the samples in the DL\@.
 
 \paragraph{PL Requirements}
+The Phenomena Level provides actionable insights and context beyond what is provided in the IL. Examples of added context include predictive analysis, Annotations, or similarity metrics between Incidents. The Phenomena level consists mainly of metadata describing the Phenomena. Different types of Phenomena require varying amounts of metadata.
+
+Equation~\ref{eq:pl} calculates the size of the PL $S_{PL}$ by summing the size of each Phenomena $S_{P}$ that is stored.
+
+\begin{equation}\label{eq:pl}
+	S_{PL} = \sum_{i=0}^{S_{P_{n}}} S_{P_{i}}
+\end{equation}
+
+An upper and lower bounds on storage requirements for the PL can be found given an average Phenomena size in bytes $\mu S_{P}$, an average Phenomena rate per sensor in Hz $\mu SR$, and sensing window in seconds $T$ over a set of Phenomena with size $P$. Equations~\ref{eq:pl:dsp},~\ref{eq:pl:dsr}, and~\ref{eq:pl:ddl} compute the errors on the averages. Equation~\ref{eq:pl:sdl} computes the lower and upper bounds of the PL\@.
+
+\begin{align}
+	\delta S_{P} &= \frac{\sigma S_{P}}{\sqrt{P}} \label{eq:pl:dsp} \\
+	\delta SR &= \frac{\sigma SR}{\sqrt{P}} \label{eq:pl:dsr} \\
+	\delta S_{DL} &= \sqrt{(\frac{\delta S_{P}}{\mu S_{P}})^2 + (\frac{\delta SR}{\mu SR})^2} * |T| \label{eq:pl:ddl} \\
+	\mu S_{DL} &= \mu S_{P} * \mu SR * T \pm \delta S_{DL} \label{eq:pl:sdl}
+\end{align}
+
+% TODO: IS this per box? Per PL?
 
 \paragraph{Comparing Laha Requirements}
 
