@@ -189,7 +189,7 @@ Finally, we can calculate the bounds for an entire network $\mu S_{DSN}$ with a 
 	\mu S_{DSN} &= (\sum_{i=1}^{B_{n}} \mu S_{SEN_{i}}) \pm \delta S_{DSN} \label{iml:uDSN}
 \end{align}
 
-Each sample in this level is generally stored using build in machine types that generally take 1, 2, 4, or 8 bytes. Further, depending on the network requirements, each sample may or may not have an associated timestamp. Each timestamp generally adds between 4 and 8 bytes to each sample.
+Each sample in this level is generally stored using built in machine types that generally take 1, 2, 4, or 8 bytes. Further, depending on the network requirements, each sample may or may not have an associated timestamp. Each timestamp generally adds between 4 and 8 bytes to each sample.
 
 Figure~\ref{fig:iml_growth_vary_sample_size} shows IML growth for a single sensor with various common sample sizes over a time period of one year.
 
@@ -293,14 +293,18 @@ Then, we can find the size of the DL $S_{DL}$ by summing the sizes of all Detect
 	S_{DL} = \sum_{i=0}^{S_{D_{n}}} S_{D_{i}}
 \end{equation}
 
-Since the parameters for sub-detections and detection windows can vary wildly, I next provide statistical approximations for computing upper and lower bounds on the DL\@.
+Since the parameters for sub-detections and detection windows can vary wildly, I next provide statistical approximations for computing upper and lower bounds on the DL per sensor.
+
+Equation~\ref{eq:dl:dssamp} computes the error on the mean sample size $\delta \mu S_{SAMP}$ over the size of the set of samples $SAMP$. Equation~\ref{eq:dl:dsr} calculates the error on the mean detection rate $\delta \mu SR$ over the size of the set of detections $D$. Equation~\ref{eq:dl:dt} computers the error on the average length of a detection $\delta \mu T$ over the size of the set of all detections $D$.
 
 \begin{align}
-	\delta S_{SAMP} &= \frac{\sigma S_{SAMP}}{\sqrt{\mu SR * \mu T}} \\
-	\delta \mu SR &= \frac{\sigma SR}{\sqrt{\mu SR * \mu T }} \\
-	\delta \mu T &= \frac{\sigma T}{\sqrt{T}} \\
-	\delta \mu B &= \frac{\sigma B}{\sqrt{B}} \\
-	\mu S_{D} &= (\mu S_{SAMP} * \mu SR * \mu T * \mu B_{n}) + (S_{META} * \mu B_{n})
+	\delta \mu S_{SAMP} &= \frac{\sigma S_{SAMP}}{\sqrt{$SAMP$}} \label{eq:dl:dssamp} \\
+	\delta \mu SR &= \frac{\sigma SR}{\sqrt{D}} \label{eq:dl:dsr} \\
+	\delta \mu T &= \frac{\sigma T}{\sqrt{D}} \label{eq:dl:dt} \\
+	\delta S_{SD} &= \\\
+	\mu S_{SD} &= \mu S_{SAMP} * \mu SR * \mu T + S_{SDM} \pm \delta S_{SD} \\
+	\mu S_{D} &= \\
+	\mu S_{DL} &= (\mu S_{SAMP} * \mu SR * \mu T + S_{META}) \pm \delta S_{DL}
 \end{align}
 
 \paragraph{IL Requirements}
@@ -317,7 +321,7 @@ Equation~\ref{eq:pl} calculates the size of the PL $S_{PL}$ by summing the size 
 	S_{PL} = \sum_{i=0}^{S_{P_{n}}} S_{P_{i}}
 \end{equation}
 
-An upper and lower bounds on storage requirements for the PL can be found given an average Phenomena size in bytes $\mu S_{P}$, an average Phenomena rate per sensor in Hz $\mu SR$, and sensing window in seconds $T$ over a set of Phenomena with size $P$. Equations~\ref{eq:pl:dsp},~\ref{eq:pl:dsr}, and~\ref{eq:pl:ddl} compute the errors on the averages. Equation~\ref{eq:pl:sdl} computes the lower and upper bounds of the PL\@.
+An upper and lower bounds on storage requirements per sensor for the PL can be found given an average Phenomena size in bytes $\mu S_{P}$, an average Phenomena rate per sensor in Hz $\mu SR$, and sensing window in seconds $T$ over a set of Phenomena with size $P$. Equations~\ref{eq:pl:dsp},~\ref{eq:pl:dsr}, and~\ref{eq:pl:ddl} compute the errors on the averages. Equation~\ref{eq:pl:sdl} computes the lower and upper bounds of the PL\@.
 
 \begin{align}
 	\delta S_{P} &= \frac{\sigma S_{P}}{\sqrt{P}} \label{eq:pl:dsp} \\
@@ -329,6 +333,9 @@ An upper and lower bounds on storage requirements for the PL can be found given 
 % TODO: IS this per box? Per PL?
 
 \paragraph{Comparing Laha Requirements}
+
+Now that we can compute the bounds for different levels within the Laha hierarchy, let's examine how the requirements compare between each level given data that resembles the OPQ and Lokahi DSNs.
+
 
 During the acquisition and curating of data, metrics were collected and stored about how much data is saved (in bytes) versus how much data is discarded at each level within the Laha data hierarchy. These numbers were compared against data storage as if the OPQ and Lokahi frameworks were to take a ``store everything" approach. Evaluation metrics provided include percentage of data storage saved per data hierarchy level as well as an estimate of overall decrease in data storage requirements for the entire DSN. A positive result from these metrics would show significant reduction in storage requirements for each level in the framework compared against a ``store everything approach" and other state-of-the-art data storage solutions.
 
