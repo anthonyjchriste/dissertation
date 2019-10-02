@@ -262,7 +262,7 @@ Figure~\ref{fig:plot_aml_level_lokahi_single} examines data growth of the AML us
 	\label{fig:plot_aml_level_lokahi_single}
 \end{figure}
 
-From this figure, we can conclude that the AML can grown to near 7GB a year per sensor in the Lokahi network if the the data remained unbounded.
+From this figure, we can conclude that the AML can grown to near 7GB a year per sensor in the Lokahi network if the data remains unbounded.
 
 \paragraph{DL Requirements}
 The detections level contains metadata and associated sampled high fidelity data that was returned from sensors for a given time window. A single detection can contain samples from multiple data streams for a single event of interest.
@@ -293,11 +293,12 @@ Then, we can find the size of the DL $S_{DL}$ by summing the sizes of all Detect
 	S_{DL} = \sum_{i=0}^{S_{D_{n}}} S_{D_{i}}
 \end{equation}
 
-Since the parameters for sub-detections and detection windows can vary wildly, I next provide statistical approximations for computing upper and lower bounds on the DL@.
+Since the parameters for sub-detections and detection windows can vary wildly, I next provide statistical approximations for computing upper and lower bounds on the DL\@.
 
-\begin{equation}
-	\mu S_{D} =
-\end{equation}
+\begin{align}
+	\delta S_{SAMP} &= \frac{\sigma S_{SAMP}}{\mu SR * \mu T}
+	\mu S_{D} &= (\mu S_{SAMP} * \mu SR * \mu T * \mu B_{n}) + (S_{META} * \mu B_{n})
+\end{align}
 
 \paragraph{IL Requirements}
 
