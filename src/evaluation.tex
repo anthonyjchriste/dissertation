@@ -153,9 +153,9 @@ It's possible that Laha threw away data that did contain signals of interest. In
 I evaluated the number of false positives and false negatives in detections, classifications, and Phenomena compared against industry standard reference sensors. A positive outcome for this metric would be a reduction in both false positives and false negatives compared to an approach that does not use tiered data management. A negative result would be an increase in either false positives or false negatives.
 
 \subsubsection{Evaluation of DSN System Requirements}
-I examined theoretical requirements for any DSN that utilizes Laha as an abstract model. These include examining these metrics without optimizations provided by Laha and then examining the metrics with Laha optimizations in place.
+I examined theoretical data storage requirements for any DSN that utilizes Laha as an abstract model.
 
-Let us consider theoretical bounds on storage requirements at each level in the Laha hierarchy.
+Let us consider the theoretical bounds on storage requirements at each level in the Laha hierarchy.
 
 \paragraph{IML Requirements}
 The IML level contains instantaneous samples from a sensor. These values are generally stored in memory on the sensors. We can calculate several useful metrics for this layer.
@@ -166,62 +166,48 @@ First, we can calculate the IML size for an individual sensor $S_{SEN}$, with a 
 	S_{SEN} = S_{SAMP} * SR * T
 \end{equation}
 
-Next, we can calculate the IML size for the entire network by summing up the IML size for each individual sensor $B$ in the network. Equation~\ref{iml:DSEN} provides these calculations.
+Next, we can calculate the IML size for the entire network $S_{IML}$ by summing up the IML size for each individual sensor $B$ in the network. Equation~\ref{iml:DSEN} provides these calculations.
 
 \begin{equation}\label{iml:DSEN}
-	S_{DSN} = \sum_{i=1}^{B_{n}} S_{SEN_{i}}
+	S_{IML} = \sum_{i=1}^{B_{n}} S_{SEN_{i}}
 \end{equation}
 
-If the sampling rate is not constant, then we can calculate the sensor IML size statistically assuming that we have a known average sample rate $\mu SR$ and a measure of standard deviation $\sigma$ on the samples.
+If the sampling rate is not constant, then we can calculate the sensor IML size statistically assuming that we have a known average sample rate $\mu SR$ and a measure of standard deviation $\sigma SR$.
 
-The error for sampling rate $\delta_{\mu SR}$ is given in equation~\ref{iml:uErr}. The error calculation for a single sensor is given in equation~\ref{iml:uSSEN}. By propagating the error as an error multiplied with a constant, we get a final bounds for a single sensor $\mu S_{SEN}$ as described in equation~\ref{iml:sbounds}.
+The error for sampling rate $\delta SR$ is given in equation~\ref{iml:uErr}. The error calculation for a single sensor $\delta S_{SEN}$ is given in equation~\ref{iml:uSSEN}. By propagating the error as an error multiplied with a constant, we get a final bounds for a single sensor $\mu S_{SEN}$ as described in equation~\ref{iml:sbounds}.
 
 \begin{align}
-	\delta_{\mu SR} &= \frac{\sigma SR}{\sqrt{\mu SR * T}} \label{iml:uErr} \\
+	\delta SR &= \frac{\sigma SR}{\sqrt{SAMP}} \label{iml:uErr} \\
 	\delta S_{SEN} &= \delta_{\mu SR} * |S_{SAMP} * T| \label{iml:uSSEN}  \\
 	\mu S_{SEN} &= (S_{SAMP} * \mu SR * T) \pm \delta S_{SEN} \label{iml:sbounds}
 \end{align}
 
-Finally, we can calculate the bounds for an entire network $\mu S_{DSN}$ with a mean sample rate as shown in equation~\ref{iml:uDSN}.
+Finally, we can calculate the bounds for the IML $\mu S_{IML}$ with a mean sample rate as shown in equation~\ref{iml:uDSN}.
 
 \begin{align}
-	\delta S_{DSN} &= \sqrt{\sum_{i=1}^{\delta S_{SEN_{n}}} (\delta S_{SEN_{i}})^2} \label{iml:dDSN} \\
-	\mu S_{DSN} &= (\sum_{i=1}^{B_{n}} \mu S_{SEN_{i}}) \pm \delta S_{DSN} \label{iml:uDSN}
+	\delta S_{IML} &= \sqrt{\sum_{i=1}^{\delta S_{SEN_{n}}} (\delta S_{SEN_{i}})^2} \label{iml:dDSN} \\
+	\mu S_{IML} &= (\sum_{i=1}^{B_{n}} \mu S_{SEN_{i}}) \pm \delta S_{IML} \label{iml:uDSN}
 \end{align}
 
 Each sample in this level is generally stored using built in machine types that generally take 1, 2, 4, or 8 bytes. Further, depending on the network requirements, each sample may or may not have an associated timestamp. Each timestamp generally adds between 4 and 8 bytes to each sample.
 
-Figure~\ref{fig:iml_growth_vary_sample_size} shows IML growth for a single sensor with various common sample sizes over a time period of one year.
+Figure~\ref{fig:iml_growth_opq} shows IML growth for a single sensor modeled after the OPQ DSN\@. It's evident that the IML produces a significant amount of data. In the case of OPQ, it produces around 700 gigabytes of data per year per device or on the order of 2 gigabytes of data per day.
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\linewidth]{figures/plot_iml_level_no_opt_var_sample_size.png}
-	\caption{IML Growth Varying Sample Size Bytes}
-	\label{fig:iml_growth_vary_sample_size}
+	\includegraphics[width=\linewidth]{figures/plot_iml_level_opq.png}
+	\caption{IML Growth OPQ}
+	\label{fig:iml_growth_opq}
 \end{figure}
 
-Figure~\ref{fig:iml_growth_vary_sample_rate} shows the IML growth for a single sensor with various common sampling rates over a time period of one year.
+Figure~\ref{fig:iml_growth_lokahi} shows the IML growth for a single sensor modeled after the Lokahi DSN\@. The Lokahi DSN produces 10 gigabytes of data at 80Hz, 100 gigabytes at 800Hz, and 1000 gigabytes of data at 8000Hz over the course of a year for a single sensor.
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width=\linewidth]{figures/plot_iml_level_no_opt_var_sample_rate.png}
-	\caption{IML Growth Varying Sample Rate Hz}
-	\label{fig:iml_growth_vary_sample_rate}
+	\includegraphics[width=\linewidth]{figures/plot_iml_level_lokahi.png}
+	\caption{IML Growth Lokahi}
+	\label{fig:iml_growth_lokahi}
 \end{figure}
-
-Figure~\ref{fig:iml_growth_vary_num_sensors} shows the IML growth assuming stable sampling rate and sample size for varying numbers of sensors over a time period of one year.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=\linewidth]{figures/plot_iml_level_no_opt_var_num_sensors.png}
-	\caption{IML Growth Varying Number of Sensors}
-	\label{fig:iml_growth_vary_num_sensors}
-\end{figure}
-
-Finally, Figure~\ref{} displays IML data growth for a single sensor given a mean sampling rate and various standard deviations over a time period of one year.
-
-% TODO add figure
-% TODO make figures applicable to OPQ and Lokahi
 
 \paragraph{AML Requirements}
 Aggregate measurements provide rolled-up feature extracted values generated from the IML layer. These often include multiple features (i.e. Voltage, Frequency, THD) and descriptive statistics of each feature (i.e. minimum, maximum, average, variance). It's worth noting that the theoretical bounds may differ from the actual bounds in practice due to the way the underlying storage engine persists the values. These differences will be examined in the results section.
@@ -262,7 +248,7 @@ Figure~\ref{fig:plot_aml_level_lokahi_single} examines data growth of the AML us
 	\label{fig:plot_aml_level_lokahi_single}
 \end{figure}
 
-From this figure, we can conclude that the AML can grown to near 7GB a year per sensor in the Lokahi network if the data remains unbounded.
+From this figure, we can conclude that the AML can grown to near 3GB a year per sensor at the maximum sampling rate in the Lokahi network if the data remains unbounded.
 
 \paragraph{DL Requirements}
 The detections level contains metadata and associated sampled high fidelity data that was returned from sensors for a given time window. A single detection can contain samples from multiple data streams for a single event of interest.
@@ -281,10 +267,10 @@ Equation~\ref{eq:dl:ssd} computes the size of a sub-detection $S_{SD}$ using a g
 	S_{SD} = S_{SAMP} * SR * T + S_{SDM}
 \end{equation}
 
-It follows that we can compute the size of an entire detection in bytes $S_{D}$ by summing the sizes of all sub-detections as shown in Equation~\ref{eq:dl:sd}.
+It follows that we can compute the size of an entire detection in bytes $S_{D}$ by summing the sizes of all sub-detections and adding constant metadata size per detection $S_{DM}$ as shown in Equation~\ref{eq:dl:sd}.
 
 \begin{equation}\label{eq:dl:sd}
-	S_{D} = \sum_{i=0}^{S_{SD_{n}}} S_{SD_{i}}
+	S_{D} = \sum_{i=0}^{S_{SD_{n}}} S_{SD_{i}} + S_{DM}
 \end{equation}
 
 Then, we can find the size of the DL $S_{DL}$ by summing the sizes of all Detections as shown in Equation~\ref{eq:dl:dl}.
@@ -295,17 +281,59 @@ Then, we can find the size of the DL $S_{DL}$ by summing the sizes of all Detect
 
 Since the parameters for sub-detections and detection windows can vary wildly, I next provide statistical approximations for computing upper and lower bounds on the DL per sensor.
 
-Equation~\ref{eq:dl:dssamp} computes the error on the mean sample size $\delta \mu S_{SAMP}$ over the size of the set of samples $SAMP$. Equation~\ref{eq:dl:dsr} calculates the error on the mean detection rate $\delta \mu SR$ over the size of the set of detections $D$. Equation~\ref{eq:dl:dt} computers the error on the average length of a detection $\delta \mu T$ over the size of the set of all detections $D$.
+Equation~\ref{eq:dl:muS_SD} provides the calculation for mean sub-detection size $\mu S_{SD}$.
+
+\begin{equation}\label{eq:dl:muS_SD}
+	\mu S_{SD} = \mu S_{SAMP} * \mu SR * \mu T_{SD} + S_{SDM} \pm \delta S_{SD}
+\end{equation}
+
+Equation~\ref{eq:dl:msd} shows the mean detection size $\mu S{D}$.
+
+\begin{equation}\label{eq:dl:msd}
+	\mu S_{D} = \mu S_{SD} * \mu SD + S_{DM} \pm \delta S_{D}
+\end{equation}
+
+Equation~\ref{eq:dl:usdl} provides the mean DL size $\mu S_{DL}$
+
+\begin{equation}\label{eq:dl:usdl}
+	\mu S_{DL} = \mu S_{D} * \mu DR * T \pm \delta S_{DL}
+\end{equation}
+
+Equations~\ref{eq:dl0},~\ref{eq:dl1},~\ref{eq:dl2},~\ref{eq:dl3},~\ref{eq:dl4},~\ref{eq:dl5},~\ref{eq:dl6}, and~\ref{eq:dl7} provide the error calculations on the previous bounds. These are computed over the averaged variables mean sample size $\mu S_{SAMP}$ over the size of the set of samples $SAMP$, mean sample rate in Hz $\mu SR$ over the size of samples $SAMP$, mean detection length in seconds $\mu T_{SD}$, mean number of sensors that respond to a detection $\mu SD$, and mean detection rate $\mu DR$.
 
 \begin{align}
-	\delta \mu S_{SAMP} &= \frac{\sigma S_{SAMP}}{\sqrt{$SAMP$}} \label{eq:dl:dssamp} \\
-	\delta \mu SR &= \frac{\sigma SR}{\sqrt{D}} \label{eq:dl:dsr} \\
-	\delta \mu T &= \frac{\sigma T}{\sqrt{D}} \label{eq:dl:dt} \\
-	\delta S_{SD} &= \\\
-	\mu S_{SD} &= \mu S_{SAMP} * \mu SR * \mu T + S_{SDM} \pm \delta S_{SD} \\
-	\mu S_{D} &= \\
-	\mu S_{DL} &= (\mu S_{SAMP} * \mu SR * \mu T + S_{META}) \pm \delta S_{DL}
+	\delta S_{SAMP} &= \frac{\sigma S_{SAMP}}{\sqrt{SAMP}} \label{eq:dl0} \\
+	\delta SR &= \frac{\sigma SR}{\sqrt{SAMP}} \label{eq:dl1} \\
+	\delta SD &= \frac{\sigma SD}{\sqrt{SD}} \label{eq:dl2} \\
+	\delta T_{SD} &= \frac{\sigma T_{SD}}{\sqrt{SD}} \label{eq:dl3} \\
+	\delta DR &= \frac{\sigma DR}{\sqrt{DR}} \label{eq:dl4} \\
+	\delta S_{SD} &= |\mu S_{SD}| * \sqrt{(\frac{\sigma S_{SAMP}}{\mu S_{SAMP}})^2 + (\frac{\sigma SR}{\mu SR})^2 + (\frac{\sigma SD}{\mu SD})^2} \label{eq:dl5} \\
+	\delta S_{D} &= |\mu S_{D}| * \sqrt{(\frac{\sigma S_{SD}}{\mu S_{SD}})^2 + (\frac{\sigma T_{SD}}{\mu T_{SD}})^2} \label{eq:dl6} \\
+	\delta S_{DL} &= |\mu S_{DL}| * \sqrt{(\frac{\sigma S_{D}}{\mu S_{D}})^2 + (\frac{\sigma DR}{\mu DR})^2} * |T| \label{eq:dl7}
 \end{align}
+
+Next, I provide figures which show the bounds DL bounds on the OPQ and Lokahi networks using average values gathered from the data.
+
+Figure shows the DL growth based on estimated parameters from the OPQ DSN\@.
+
+Table~\ref{table:dl:opq} shows the estimated parameters that were used.
+
+\begin{table}[H]
+	\centering
+	\caption{Estimated OPQ DL Parameters}
+	\begin{tabularx}{\textwidth}{llX}
+		\toprule
+		\textbf{Parameter} & \textbf{Mean} & \textbf{Standard Deviation} \\
+		\midrule
+		\mu S_{SAMP} & 2.0 & 0.0 \\
+		\mu SR & 12000 & 0.0 \\
+		\mu SD & 1.185407440686306 & 1.0209460091478992 \\
+		\mu T_{SD} & 11.787460720323569 & 15.040829579595933 \\
+		\mu DR & 0.293433583168666 & 10.403490650228573 \\
+		\bottomrule
+	\end{tabularx}
+	\label{table:dl:opq}
+\end{table}
 
 \paragraph{IL Requirements}
 The Incidents Level provides added context on top of the DL in the form of signal of interest classifications. This level is structured similarly to the DL in that it contains trimmed down IML samples from one or more sensors over a varying time window and added context in the form of metadata. Due to these similarities, the bounds calculations are also quite similar.

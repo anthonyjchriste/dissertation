@@ -7,6 +7,41 @@ S_IN_DAY = 86_400
 S_IN_YEAR = 31_540_000
 
 
+def plot_iml_level_opq():
+    plt.figure(figsize=(12, 5))
+    sample_size_bytes = 2
+    sample_rate_hz = 12_000
+    x_values = np.arange(S_IN_YEAR, step=S_IN_DAY)
+    y_values = x_values * sample_size_bytes * sample_rate_hz
+
+    plt.plot(x_values, y_values)
+
+    plt.title("IML Size (Lokahi) Sample Size=4, SR=12000, Len=1yr")
+    plt.xlabel("Time (S)")
+    plt.ylabel("Bytes")
+
+    plt.savefig("../src/figures/plot_iml_level_opq.png")
+    plt.show()
+
+
+def plot_iml_level_lokahi():
+    plt.figure(figsize=(12, 5))
+    sample_size_bytes = 4
+    sample_rates_hz = [80, 800, 8000]
+    x_values = np.arange(S_IN_YEAR, step=S_IN_DAY)
+    for sample_rate_hz in sample_rates_hz:
+        y_values = x_values * sample_size_bytes * sample_rate_hz
+        plt.plot(x_values, y_values, label="%d Hz" % sample_rate_hz)
+
+    plt.title("IML Size (Lokahi) Sample Size=4, SR=[80,800,8000], Len=1yr")
+    plt.xlabel("Time (S)")
+    plt.ylabel("Bytes")
+
+    plt.legend()
+    plt.savefig("../src/figures/plot_iml_level_lokahi.png")
+    plt.show()
+
+
 def plot_iml_level_no_opt_var_sample_size(sample_sizes_bytes: typing.List[int],
                                           sample_rate_hz: int,
                                           window_length_s: int):
@@ -138,6 +173,7 @@ def plot_aml_level_opq_single(window_length_s: int):
     plt.savefig("../src/figures/plot_aml_level_opq_single.png")
     plt.show()
 
+
 def plot_aml_level_lokahi_single(window_length_s: int):
     sub_levels = ["80Hz", "800Hz", "8000Hz"]
     sl_to_size = {
@@ -174,6 +210,40 @@ def plot_aml_level_lokahi_single(window_length_s: int):
     plt.savefig("../src/figures/plot_aml_level_lokahi_single.png")
     plt.show()
 
+
+def plot_dl_opq():
+    plt.figure(figsize=(12, 5))
+    x_values = np.arange(S_IN_YEAR, step=S_IN_DAY)
+    N = 93472.0
+    mean_sample_size = 2.0
+    std_sample_size = 0.0
+    mean_sample_rate = 12_000.0
+    std_sample_rate = 0.0
+    mean_event_len = 11.787460720323569
+    std_event_len = 15.040829579595933
+    mean_event_rate = 0.293433583168666
+    std_event_rate = 0.293433583168666
+    mean_boxes_recv = 1.185407440686306
+    std_boxes_recv = 1.0209460091478992
+
+    e_sample_size = 0.0
+    e_sample_rate = 0.0
+    e_event_len = std_event_len / np.sqrt(N)
+    e_event_rate = std_event_rate / np.sqrt(N)
+    e_boxes_recv = std_boxes_recv / np.sqrt(N)
+    e_s_sd = np.abs(mean_boxes_recv)
+
+    y_values = (mean_sample_size * mean_sample_rate * mean_event_len) * mean_event_rate * mean_boxes_recv * x_values
+
+    plt.plot(x_values, y_values)
+    plt.savefig("../src/figures/plot_dl_opq.png")
+    plt.show()
+
+
+def plot_dl_lokahi():
+    pass
+
+
 if __name__ == "__main__":
     sample_sizes = [1, 2, 4, 8, 16]
     sample_rates = [80, 800, 8_000, 12_000]
@@ -183,4 +253,7 @@ if __name__ == "__main__":
     # plot_iml_level_no_opt_var_num_sensors(4, 12000, S_IN_YEAR, num_boxes)
     # plot_iml_level_no_opt_var_std(2, 80, S_IN_DAY * 5, 1000)
     # plot_aml_level_opq_single(S_IN_YEAR)
-    plot_aml_level_lokahi_single(S_IN_YEAR)
+    # plot_aml_level_lokahi_single(S_IN_YEAR)
+    # plot_iml_level_opq()
+    # plot_iml_level_lokahi()
+    plot_dl_opq()
