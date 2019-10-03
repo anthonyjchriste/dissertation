@@ -338,7 +338,7 @@ Table~\ref{table:dl:opq} shows the estimated parameters that were used.
 \paragraph{IL Requirements}
 The Incidents Level provides added context on top of the DL in the form of signal of interest classifications. This level is structured similarly to the DL in that it contains trimmed down IML samples from one or more sensors over a varying time window and added context in the form of metadata. Due to these similarities, the bounds calculations are also quite similar.
 
-The IL differs from the DL in that the associated IML samples in the IL are always subsets of the samples in the DL\@.
+The IL differs from the DL in that the associated IML samples in the IL are always subsets of the samples in the DL\@. The IL also differs from the DL in the fact that the IL does not have a concept of ``sub-incidents". Every Incident in the IL is associated with exactly one Event waveform.
 
 \paragraph{PL Requirements}
 The Phenomena Level provides actionable insights and context beyond what is provided in the IL. Examples of added context include predictive analysis, Annotations, or similarity metrics between Incidents. The Phenomena level consists mainly of metadata describing the Phenomena. Different types of Phenomena require varying amounts of metadata.
