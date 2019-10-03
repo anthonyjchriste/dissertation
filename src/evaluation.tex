@@ -155,7 +155,7 @@ I evaluated the number of false positives and false negatives in detections, cla
 \subsubsection{Evaluation of DSN System Requirements}
 I examined theoretical data storage requirements for any DSN that utilizes Laha as an abstract model.
 
-Let us consider the theoretical bounds on storage requirements at each level in the Laha hierarchy.
+Let us consider the theoretical bounds on storage requirements at each level in the Laha hierarchy. First we will consider the storage bounds when all parameters are known and then we will look at bounds using estimated parameters for each level.
 
 \paragraph{IML Requirements}
 The IML level contains instantaneous samples from a sensor. These values are generally stored in memory on the sensors. We can calculate several useful metrics for this layer.
@@ -172,21 +172,23 @@ Next, we can calculate the IML size for the entire network $S_{IML}$ by summing 
 	S_{IML} = \sum_{i=1}^{B_{n}} S_{SEN_{i}}
 \end{equation}
 
-If the sampling rate is not constant, then we can calculate the sensor IML size statistically assuming that we have a known average sample rate $\mu SR$ and a measure of standard deviation $\sigma SR$.
+If the sampling rate and number of sensors is not constant, then we can calculate the sensor IML size statistically assuming that we have a known average sample rate $\mu SR$ and a measure of standard deviation $\sigma SR$ and an average number of sensors $\mu B$ and the standard deviation $\sigma B$.
 
 The error for sampling rate $\delta SR$ is given in equation~\ref{iml:uErr}. The error calculation for a single sensor $\delta S_{SEN}$ is given in equation~\ref{iml:uSSEN}. By propagating the error as an error multiplied with a constant, we get a final bounds for a single sensor $\mu S_{SEN}$ as described in equation~\ref{iml:sbounds}.
 
 \begin{align}
+	\delta S_{SAMP} &= \frac{\sigma S_{SAMP}}{\sqrt{SAMP}} \label{} \\
 	\delta SR &= \frac{\sigma SR}{\sqrt{SAMP}} \label{iml:uErr} \\
-	\delta S_{SEN} &= \delta_{\mu SR} * |S_{SAMP} * T| \label{iml:uSSEN}  \\
-	\mu S_{SEN} &= (S_{SAMP} * \mu SR * T) \pm \delta S_{SEN} \label{iml:sbounds}
+	\delta S_{SEN} &= |\mu S_{SEN}| * \sqrt{(\frac{\delta S_{SAMP}}{\mu S_{SAMP}})^2 + (\frac{\delta SR}{\mu SR})^2} * |T| \label{iml:uSSEN}  \\
+	\mu S_{SEN} &= \mu S_{SAMP} * \mu SR * T \pm \delta S_{SEN} \label{iml:sbounds}
 \end{align}
 
-Finally, we can calculate the bounds for the IML $\mu S_{IML}$ with a mean sample rate as shown in equation~\ref{iml:uDSN}.
+We can calculate the bounds for the IML $\mu S_{IML}$ as shown in equation~\ref{iml:uDSN}.
 
 \begin{align}
-	\delta S_{IML} &= \sqrt{\sum_{i=1}^{\delta S_{SEN_{n}}} (\delta S_{SEN_{i}})^2} \label{iml:dDSN} \\
-	\mu S_{IML} &= (\sum_{i=1}^{B_{n}} \mu S_{SEN_{i}}) \pm \delta S_{IML} \label{iml:uDSN}
+	\delta B &= \frac{\sigma B}{\sqrt{B}} \\
+	\delta S_{IML} &= |\mu S_{IML}| * \sqrt{(\frac{\delta S_{SAMP}}{\mu S_{SAMP}})^2 + (\frac{\delta SR}{\mu SR})^2 + (\frac{\delta B}{\mu B})^2} * |T| \label{}  \\
+	\mu S_{IML} &= \mu S_{SAMP} * \mu SR * \mu B * T \pm \delta S_{IML} \label{iml:uDSN}
 \end{align}
 
 Each sample in this level is generally stored using built in machine types that generally take 1, 2, 4, or 8 bytes. Further, depending on the network requirements, each sample may or may not have an associated timestamp. Each timestamp generally adds between 4 and 8 bytes to each sample.
@@ -356,6 +358,43 @@ However, Figure~\ref{fig:plot_dl_opq_err} shows the DL growth based on estimated
 The Incidents Level provides added context on top of the DL in the form of signal of interest classifications. This level is structured similarly to the DL in that it contains trimmed down IML samples from one or more sensors over a varying time window and added context in the form of metadata. Due to these similarities, the bounds calculations are also quite similar.
 
 The IL differs from the DL in that the associated IML samples in the IL are always subsets of the samples in the DL\@. The IL also differs from the DL in the fact that the IL does not have a concept of ``sub-incidents". Every Incident in the IL is associated with exactly one Event waveform.
+
+When all parameters are known, the individual size of an Incident $S_{I}$ within the IL can be calculated over the size of each sample $S_{SAMP}$, sample rate in Hz $SR$, length of the incident $T+{I}$, and size of the associated metadata $S_{M}$ with Equation~\ref{eq:il:s_i}.
+
+\begin{equation}\label{eq:il:s_i}
+	S_{I} = S_{SAMP} * SR * T_{I} + S_{M}
+\end{equation}
+
+Then, computing the size of the entire IL can be done with a simple summation as shown in Equation~\ref{eq:il:s_il}.
+
+\begin{equation}\label{eq:il:s_il}
+	S_{IL} = \sum_{i=0}^{S_{I_{n}}} S_{I_{i}}
+\end{equation}
+
+Next, we examine computing the bounds of the IL using estimated parameters.
+
+Equation~\ref{eq:il:mu_s_i} provides the mean size of an Incident with a mean sample size $\mu S_{SAMP}$, mean sample rate in Hz $\mu SR$, mean incident length $\mu T_{I}$, and near constant metadata size $S_{M}$ over the set of Incidents $I$.
+
+\begin{equation}\label{eq:il:mu_s_i}
+	\mu S_{I} = \mu S_{SAMP} * \mu SR * \mu T_{I} + S_{M} \pm \delta S_{I}
+\end{equation}
+
+Equation~\ref{eq:il:mu_s_il} provides the mean size of the IL with a given mean Incident rate $\mu IR$ over a sensing time of $T$ seconds.
+
+\begin{equation}\label{eq:il:mu_s_il}
+	\mu S_{IL} = \mu S_{I} * \mu IR * T \pm \delta S_{IL}
+\end{equation}
+
+Errors for the mean IL calculations are provided in Equations .
+
+\begin{align}
+	\delta S_{SAMP} &= \frac{\sigma S_{SAMP}}{\sqrt{SAMP}} \label{eq:il0} \\
+	\delta SR &= \frac{\sigma SR}{\sqrt{SAMP}} \label{eq:il1} \\
+	\delta T_{I} &= \frac{\sigma T_{I}}{\sqrt{I}} \label{eq:il2} \\
+	\delta IR &= \frac{\sigma IR}{\sqrt{I}} \label{eq:il3} \\
+	\delta S_{I} &= |\mu S_{I}| * \sqrt{(\frac{\delta S_{SAMP}}{\mu S_{SAMP}})^2 + (\frac{\delta SR}{\mu SR})^2 + (\frac{\delta T_{I}}{\mu T_{I}})^2} \label{eq:il4} \\
+	\delta S_{IL} &= |\mu S_{IL}| * \sqrt{(\frac{\delta IR}{\mu IR})^2} * |T| \label{eq:il5}
+\end{align}
 
 \paragraph{PL Requirements}
 The Phenomena Level provides actionable insights and context beyond what is provided in the IL. Examples of added context include predictive analysis, Annotations, or similarity metrics between Incidents. The Phenomena level consists mainly of metadata describing the Phenomena. Different types of Phenomena require varying amounts of metadata.
