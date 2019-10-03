@@ -213,7 +213,7 @@ def plot_aml_level_lokahi_single(window_length_s: int):
     plt.show()
 
 
-def plot_dl_opq():
+def plot_dl_opq_no_err():
     plt.figure(figsize=(12, 5))
     # x_values = np.arange(S_IN_YEAR, step=S_IN_DAY)
     x_values = np.arange(S_IN_DAY * 2, step=S_IN_DAY)
@@ -250,10 +250,62 @@ def plot_dl_opq():
     e_values = np.array(e_values)
 
     plt.plot(x_values, y_values)
-    
+
     # plt.plot(x_values, y_values + e_values)
     # plt.plot(x_values, y_values - e_values)
-    plt.savefig("../src/figures/plot_dl_opq.png")
+
+    plt.title("$\mu$ DL (OPQ)")
+    plt.xlabel("Time (S)")
+    plt.ylabel("Bytes")
+    plt.savefig("../src/figures/plot_dl_opq_no_err.png")
+    plt.show()
+
+def plot_dl_opq_err():
+    plt.figure(figsize=(12, 5))
+    # x_values = np.arange(S_IN_YEAR, step=S_IN_DAY)
+    x_values = np.arange(S_IN_DAY * 2, step=S_IN_DAY)
+    N = 93472.0
+    mu_s_samp = 2.0
+    sigma_s_samp = 0.0
+    mu_sr = 12_000.0
+    sigma_sr = 0.0
+    mu_t_sd = 11.787460720323569
+    sigma_t_sd = 15.040829579595933
+    mu_dr = 0.293433583168666
+    sigma_dr = 10.403490650228573
+    mu_sd = 1.185407440686306
+    sigma_sd = 1.0209460091478992
+
+    # y_values = (mean_sample_size * mean_sample_rate * mean_event_len) * mean_event_rate * mean_boxes_recv * x_values
+    y_values = []
+    e_values = []
+    for t in x_values:
+        y, e = dl.mu_s_dl(N,
+                          mu_s_samp,
+                          mu_sr,
+                          mu_t_sd,
+                          sigma_t_sd,
+                          mu_sd,
+                          sigma_sd,
+                          mu_dr,
+                          sigma_dr,
+                          t)
+        y_values.append(y)
+        e_values.append(e)
+
+    y_values = np.array(y_values)
+    e_values = np.array(e_values)
+
+    plt.plot(x_values, y_values, label="$\mu$ DL")
+
+    plt.plot(x_values, y_values + e_values, label="$+\delta$")
+    plt.plot(x_values, y_values - e_values, label="$-\delta$")
+
+    plt.title("$\mu$ DL (OPQ) with Error Bounds")
+    plt.xlabel("Time (S)")
+    plt.ylabel("Bytes")
+    plt.legend()
+    plt.savefig("../src/figures/plot_dl_opq_err.png")
     plt.show()
 
 
@@ -273,4 +325,5 @@ if __name__ == "__main__":
     # plot_aml_level_lokahi_single(S_IN_YEAR)
     # plot_iml_level_opq()
     # plot_iml_level_lokahi()
-    plot_dl_opq()
+    # plot_dl_opq_no_err()
+    plot_dl_opq_err()

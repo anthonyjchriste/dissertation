@@ -314,9 +314,7 @@ Equations~\ref{eq:dl0},~\ref{eq:dl1},~\ref{eq:dl2},~\ref{eq:dl3},~\ref{eq:dl4},~
 
 Next, I provide figures which show the bounds DL bounds on the OPQ and Lokahi networks using average values gathered from the data.
 
-Figure shows the DL growth based on estimated parameters from the OPQ DSN\@.
-
-Table~\ref{table:dl:opq} shows the estimated parameters that were used.
+Table~\ref{table:dl:opq} shows the estimated parameters that were gathered from the OPQ DSN for use in the following DL (OPQ) figures.
 
 \begin{table}[H]
 	\centering
@@ -334,6 +332,25 @@ Table~\ref{table:dl:opq} shows the estimated parameters that were used.
 	\end{tabularx}
 	\label{table:dl:opq}
 \end{table}
+
+
+Figure~\ref{fig:plot_dl_opq_no_err} shows the DL growth based on estimated parameters from the OPQ DSN\@. From this, it's possible to gather that under standard estimated parameters, the DL layer is expected to grow at a rate of 8 gigabytes per year.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{figures/plot_dl_opq_no_err.png}
+	\caption{$\mu$ DL (OPQ)}
+	\label{fig:plot_dl_opq_no_err}
+\end{figure}
+
+However, Figure~\ref{fig:plot_dl_opq_err} shows the DL growth based on estimated parameters from the OPQ DSN\@ and error bounds. From the estimated OPQ parameters, it's clear that the error bounds quickly overtake the mean value, which tells us that the standard deviations within the OPQ network may be too high to provide bounds for.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{figures/plot_dl_opq_err.png}
+	\caption{$\mu$ DL (OPQ)}
+	\label{fig:plot_dl_opq_err}
+\end{figure}
 
 \paragraph{IL Requirements}
 The Incidents Level provides added context on top of the DL in the form of signal of interest classifications. This level is structured similarly to the DL in that it contains trimmed down IML samples from one or more sensors over a varying time window and added context in the form of metadata. Due to these similarities, the bounds calculations are also quite similar.
