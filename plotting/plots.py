@@ -7,6 +7,74 @@ S_IN_DAY = 86_400
 S_IN_YEAR = 31_540_000
 
 
+def sem(sigma: float, n: float) -> float:
+    return sigma / np.sqrt(n)
+
+
+def mu_s_sd(n: float,
+            mu_s_samp: float,
+            mu_sr: float,
+            mu_t_sd: float,
+            sigma_t_sd: float) -> (float, float):
+    # Result
+    _mu_s_sd = mu_s_samp * mu_sr * mu_t_sd
+
+    # Errors
+    delta_s_samp = 0.0
+    delta_sr = 0.0
+    delta_t_sd = sem(sigma_t_sd, n)
+
+    samp_term = delta_s_samp / mu_s_samp
+    sr_term = delta_sr / mu_sr
+    t_sd_term = delta_t_sd / mu_t_sd
+    delta_s_sd = np.abs(_mu_s_sd) * np.sqrt((samp_term * samp_term) + (sr_term * sr_term) + (t_sd_term * t_sd_term))
+
+    return _mu_s_sd, delta_s_sd
+
+
+def mu_s_d(n: float,
+           mu_s_samp: float,
+           mu_sr: float,
+           mu_t_sd: float,
+           sigma_t_sd: float,
+           mu_sd: float,
+           sigma_sd: float) -> (float, float):
+    (_mu_s_sd, delta_s_sd) = mu_s_sd(n, mu_s_samp, mu_sr, mu_t_sd, sigma_t_sd)
+
+    _mu_s_d = _mu_s_sd * mu_sd
+
+    delta_sd = sem(sigma_sd, n)
+
+    s_sd_term = delta_s_sd / _mu_s_sd
+    sd_term = delta_sd / mu_sd
+    delta_s_d = np.abs(_mu_s_d) * np.sqrt((s_sd_term * s_sd_term) + (sd_term * sd_term))
+
+    return _mu_s_d, delta_s_d
+
+
+def mu_s_dl(n: float,
+            mu_s_samp: float,
+            mu_sr: float,
+            mu_t_sd: float,
+            sigma_t_sd: float,
+            mu_sd: float,
+            sigma_sd: float,
+            mu_dr: float,
+            sigma_dr: float,
+            t: float) -> (float, float):
+    _mu_s_d, delta_s_d = mu_s_d(n, mu_s_samp, mu_sr, mu_t_sd, sigma_t_sd, mu_sd, sigma_sd)
+
+    _mu_s_dl = _mu_s_d * mu_dr * t
+
+    delta_dr = sem(sigma_dr, n)
+
+    s_d_term = delta_s_d / _mu_s_d
+    dr_term = delta_dr / mu_dr
+    delta_s_dl = np.abs(_mu_s_dl) * np.sqrt((s_d_term * s_d_term) + (dr_term * dr_term)) * np.abs(t)
+
+    return _mu_s_dl, delta_s_dl
+
+
 def plot_iml_level_opq():
     plt.figure(figsize=(12, 5))
     sample_size_bytes = 2
@@ -213,29 +281,43 @@ def plot_aml_level_lokahi_single(window_length_s: int):
 
 def plot_dl_opq():
     plt.figure(figsize=(12, 5))
-    x_values = np.arange(S_IN_YEAR, step=S_IN_DAY)
+    # x_values = np.arange(S_IN_YEAR, step=S_IN_DAY)
+    x_values = np.arange(S_IN_DAY * 2, step=S_IN_DAY)
     N = 93472.0
-    mean_sample_size = 2.0
-    std_sample_size = 0.0
-    mean_sample_rate = 12_000.0
-    std_sample_rate = 0.0
-    mean_event_len = 11.787460720323569
-    std_event_len = 15.040829579595933
-    mean_event_rate = 0.293433583168666
-    std_event_rate = 0.293433583168666
-    mean_boxes_recv = 1.185407440686306
-    std_boxes_recv = 1.0209460091478992
+    mu_s_samp = 2.0
+    sigma_s_samp = 0.0
+    mu_sr = 12_000.0
+    sigma_sr = 0.0
+    mu_t_sd = 11.787460720323569
+    sigma_t_sd = 15.040829579595933
+    mu_dr = 0.293433583168666
+    sigma_dr = 10.403490650228573
+    mu_sd = 1.185407440686306
+    sigma_sd = 1.0209460091478992
 
-    e_sample_size = 0.0
-    e_sample_rate = 0.0
-    e_event_len = std_event_len / np.sqrt(N)
-    e_event_rate = std_event_rate / np.sqrt(N)
-    e_boxes_recv = std_boxes_recv / np.sqrt(N)
-    e_s_sd = np.abs(mean_boxes_recv)
+    # y_values = (mean_sample_size * mean_sample_rate * mean_event_len) * mean_event_rate * mean_boxes_recv * x_values
+    y_values = []
+    e_values = []
+    for t in x_values:
+        y, e = mu_s_dl(N,
+                       mu_s_samp,
+                       mu_sr,
+                       mu_t_sd,
+                       sigma_t_sd,
+                       mu_sd,
+                       sigma_sd,
+                       mu_dr,
+                       sigma_dr,
+                       t)
+        y_values.append(y)
+        e_values.append(e)
 
-    y_values = (mean_sample_size * mean_sample_rate * mean_event_len) * mean_event_rate * mean_boxes_recv * x_values
+    y_values = np.array(y_values)
+    e_values = np.array(e_values)
 
     plt.plot(x_values, y_values)
+    plt.plot(x_values, y_values + e_values)
+    plt.plot(x_values, y_values - e_values)
     plt.savefig("../src/figures/plot_dl_opq.png")
     plt.show()
 

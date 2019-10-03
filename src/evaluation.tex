@@ -287,7 +287,7 @@ Equation~\ref{eq:dl:muS_SD} provides the calculation for mean sub-detection size
 	\mu S_{SD} = \mu S_{SAMP} * \mu SR * \mu T_{SD} + S_{SDM} \pm \delta S_{SD}
 \end{equation}
 
-Equation~\ref{eq:dl:msd} shows the mean detection size $\mu S{D}$.
+Equation~\ref{eq:dl:msd} shows the mean detection size $\mu S_{D}$.
 
 \begin{equation}\label{eq:dl:msd}
 	\mu S_{D} = \mu S_{SD} * \mu SD + S_{DM} \pm \delta S_{D}
@@ -307,9 +307,9 @@ Equations~\ref{eq:dl0},~\ref{eq:dl1},~\ref{eq:dl2},~\ref{eq:dl3},~\ref{eq:dl4},~
 	\delta SD &= \frac{\sigma SD}{\sqrt{SD}} \label{eq:dl2} \\
 	\delta T_{SD} &= \frac{\sigma T_{SD}}{\sqrt{SD}} \label{eq:dl3} \\
 	\delta DR &= \frac{\sigma DR}{\sqrt{DR}} \label{eq:dl4} \\
-	\delta S_{SD} &= |\mu S_{SD}| * \sqrt{(\frac{\sigma S_{SAMP}}{\mu S_{SAMP}})^2 + (\frac{\sigma SR}{\mu SR})^2 + (\frac{\sigma SD}{\mu SD})^2} \label{eq:dl5} \\
-	\delta S_{D} &= |\mu S_{D}| * \sqrt{(\frac{\sigma S_{SD}}{\mu S_{SD}})^2 + (\frac{\sigma T_{SD}}{\mu T_{SD}})^2} \label{eq:dl6} \\
-	\delta S_{DL} &= |\mu S_{DL}| * \sqrt{(\frac{\sigma S_{D}}{\mu S_{D}})^2 + (\frac{\sigma DR}{\mu DR})^2} * |T| \label{eq:dl7}
+	\delta S_{SD} &= |\mu S_{SD}| * \sqrt{(\frac{\delta S_{SAMP}}{\mu S_{SAMP}})^2 + (\frac{\delta SR}{\mu SR})^2 + (\frac{\delta T_{SD}}{\mu T_{SD}})^2} \label{eq:dl5} \\
+	\delta S_{D} &= |\mu S_{D}| * \sqrt{(\frac{\delta S_{SD}}{\mu S_{SD}})^2 + (\frac{\delta SD}{\mu SD})^2} \label{eq:dl6} \\
+	\delta S_{DL} &= |\mu S_{DL}| * \sqrt{(\frac{\delta S_{D}}{\mu S_{D}})^2 + (\frac{\delta DR}{\mu DR})^2} * |T| \label{eq:dl7}
 \end{align}
 
 Next, I provide figures which show the bounds DL bounds on the OPQ and Lokahi networks using average values gathered from the data.
@@ -325,11 +325,11 @@ Table~\ref{table:dl:opq} shows the estimated parameters that were used.
 		\toprule
 		\textbf{Parameter} & \textbf{Mean} & \textbf{Standard Deviation} \\
 		\midrule
-		\mu S_{SAMP} & 2.0 & 0.0 \\
-		\mu SR & 12000 & 0.0 \\
-		\mu SD & 1.185407440686306 & 1.0209460091478992 \\
-		\mu T_{SD} & 11.787460720323569 & 15.040829579595933 \\
-		\mu DR & 0.293433583168666 & 10.403490650228573 \\
+		$\mu S_{SAMP}$ & 2.0 & 0.0 \\
+		$\mu SR$ & 12000 & 0.0 \\
+		$\mu SD$ & 1.185407440686306 & 1.0209460091478992 \\
+		$\mu T_{SD}$ & 11.787460720323569 & 15.040829579595933 \\
+		$\mu DR$ & 0.293433583168666 & 10.403490650228573 \\
 		\bottomrule
 	\end{tabularx}
 	\label{table:dl:opq}
