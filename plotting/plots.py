@@ -3,6 +3,7 @@ import typing
 import matplotlib.pyplot as plt
 import numpy as np
 
+import laha.iml as iml
 import laha.dl as dl
 
 S_IN_DAY = 86_400
@@ -308,6 +309,33 @@ def plot_dl_opq_err():
     plt.savefig("../src/figures/plot_dl_opq_err.png")
     plt.show()
 
+def plot_iml_avg_opq():
+    plt.figure(figsize=(12, 5))
+    x_values = np.arange(S_IN_YEAR, step=S_IN_DAY)
+
+    y_values = []
+    e_values = []
+    for t in x_values:
+        samps = t * 12_000
+        y, e = iml.mu_s_iml(samps,
+                            2,
+                            0.0,
+                            12_000,
+                            0.0,
+                            8.9,
+                            0.7,
+                            t)
+        y_values.append(y)
+        e_values.append(e)
+
+    e_values = np.array(e_values)
+    y_values = np.array(y_values)
+
+    plt.plot(x_values, y_values)
+    plt.plot(x_values, y_values + e_values)
+    plt.plot(x_values, y_values - e_values)
+    plt.show()
+
 
 def plot_dl_lokahi():
     pass
@@ -326,4 +354,5 @@ if __name__ == "__main__":
     # plot_iml_level_opq()
     # plot_iml_level_lokahi()
     # plot_dl_opq_no_err()
-    plot_dl_opq_err()
+    # plot_dl_opq_err()
+    plot_iml_avg_opq()
