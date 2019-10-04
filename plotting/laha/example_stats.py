@@ -1,38 +1,74 @@
-# Let's say we wanted to plot upper and lower bounds on a sensor network the following known parameters
-# - sample_size_bytes
-# - sample_rate_hz
-# - sensing_length_seconds
-#
-# And the following estimated parameter
-# - mean_sensors_sending_data
-#
-# mean_size_bytes = sample_size_bytes * sample_rate_hz * sensing_length_seconds * mean_sensors_sending_data
-#
-# So far, so good. Now we want to calculate the error bounds. We'll use standard error of the mean.
-#
-# delta_sensors_sending_data = sigma_sensors_sending_data / sqrt(sensing_length_seconds)
-# delta_size_bytes = delta_sensors_sending_data * |mean_size_bytes|
+
 
 import matplotlib.pyplot as plt
 import numpy as np
 
-if __name__ == "__main__":
+
+def example_1():
     sample_size_bytes = 2
     sample_rate_hz = 12_000
-    sensors_sending_data = np.array([10, 10, 10, 10, 10, 10, 10, 10, 9, 11]) # 80% 10, 10% 9, 10% 8
+    sensors_sending_data = np.array([10, 10, 10, 10, 10, 10, 10, 10, 8, 11])  # 80% 10, 10% 8, 10% 11
+    mean_sensors_sending_data = sensors_sending_data.mean()
+    sigma_sensors_sending_data = sensors_sending_data.std()
 
-    x_values = np.arange(1, 31_540_000, step=86_400) # seconds in year by seconds in day
-    # x_values = np.arange(1, 86_400 * 2, step=86_400) # seconds in year by seconds in day
-    y_values = sample_size_bytes * sample_rate_hz * sensors_sending_data.mean() * x_values
+    x_values = np.arange(1, 31_540_000, step=86_400)  # seconds in year by seconds in day
+    y_values = sample_size_bytes * sample_rate_hz * mean_sensors_sending_data * x_values
 
     e_values = []
     for i in range(len(x_values)):
-        print("(%f / %d) * |%f| = %F" % (sensors_sending_data.std(), x_values[i], np.abs(y_values[i]), (sensors_sending_data.std() / x_values[i]) * np.abs(y_values[i])))
-        # e_values.append((sensors_sending_data.std() / x_values[i]) * np.abs(y_values[i]))
-        e_values.append((1000000.0 / x_values[i]) * np.abs(y_values[i]))
+        delta_sensors_sending_data = sigma_sensors_sending_data / np.sqrt(x_values[i])
+        delta_mean_size = delta_sensors_sending_data * np.abs(sample_size_bytes * sample_rate_hz * x_values[i])
+        e_values.append(delta_mean_size)
     e_values = np.array(e_values)
 
     plt.plot(x_values, y_values)
     plt.plot(x_values, y_values + e_values)
     plt.plot(x_values, y_values - e_values)
+
+    plt.title("Example 1")
+    plt.xlabel("Time (S)")
+    plt.ylabel("Bytes")
+
     plt.show()
+
+
+def example_2():
+    sensors_sending_data = np.array([10, 10, 10, 10, 10, 10, 10, 10, 8, 11])  # 80% 10, 10% 8, 10% 11
+    mean_sample_size_bytes = 2
+    sigma_sample_size_bytes = 0.0
+    mean_sample_rate_hz = 12_000
+    sigma_sample_rate_hz = 0.0
+    mean_sensors_sending_data = sensors_sending_data.mean()
+    sigma_sensors_sending_data = sensors_sending_data.std()
+
+    x_values = np.arange(1, 31_540_000, step=86_400)  # seconds in year by seconds in day
+    y_values = mean_sample_size_bytes * mean_sample_rate_hz * mean_sensors_sending_data * x_values
+
+    e_values = []
+    for i in range(len(x_values)):
+        num_samples = x_values[i] * mean_sample_rate_hz
+        delta_sample_size_bytes = sigma_sample_size_bytes / np.sqrt(num_samples)
+        delta_sample_rate_hz = sigma_sample_rate_hz / np.sqrt(num_samples)
+        delta_sensors_sending_data = sigma_sensors_sending_data / np.sqrt(x_values[i])
+        delta_size_bytes = np.abs(y_values[i]) * np.sqrt((delta_sample_size_bytes / mean_sample_size_bytes) ** 2 + (
+                    delta_sample_rate_hz / mean_sample_rate_hz) ** 2 + (
+                                                                     delta_sensors_sending_data /
+                                                                     mean_sensors_sending_data) ** 2) * \
+                           np.abs(x_values[i])
+        e_values.append(delta_size_bytes)
+    e_values = np.array(e_values)
+
+    plt.plot(x_values, y_values)
+    plt.plot(x_values, y_values + e_values)
+    plt.plot(x_values, y_values - e_values)
+
+    plt.title("Example 2")
+    plt.xlabel("Time (S)")
+    plt.ylabel("Bytes")
+
+    plt.show()
+
+
+if __name__ == "__main__":
+    example_1()
+    example_2()
