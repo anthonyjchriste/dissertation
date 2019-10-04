@@ -47,7 +47,8 @@ def mu_s_d(samples: float,
     return _mu_s_d, delta_s_d
 
 
-def mu_s_dl(n: float,
+def mu_s_dl(samples: float,
+            detections: float,
             mu_s_samp: float,
             mu_sr: float,
             mu_t_sd: float,
@@ -57,14 +58,14 @@ def mu_s_dl(n: float,
             mu_dr: float,
             sigma_dr: float,
             t: float) -> (float, float):
-    _mu_s_d, delta_s_d = mu_s_d(n, mu_s_samp, mu_sr, mu_t_sd, sigma_t_sd, mu_sd, sigma_sd)
+    _mu_s_d, delta_s_d = mu_s_d(samples, detections, mu_s_samp, mu_sr, mu_t_sd, sigma_t_sd, mu_sd, sigma_sd)
 
     _mu_s_dl = _mu_s_d * mu_dr * t
 
-    delta_dr = sem(sigma_dr, n)
-
-    s_d_term = delta_s_d / _mu_s_d
-    dr_term = delta_dr / mu_dr
-    delta_s_dl = np.abs(_mu_s_dl) * np.sqrt((s_d_term * s_d_term) + (dr_term * dr_term)) * np.abs(t)
+    delta_dr = errors.sem(sigma_dr, detections)
+    e = errors.propagate_multiplication(_mu_s_dl,
+                                        (_mu_s_d, delta_s_d),
+                                        (mu_dr, delta_dr))
+    delta_s_dl = errors.propagate_constant(e, t)
 
     return _mu_s_dl, delta_s_dl
