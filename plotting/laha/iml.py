@@ -39,7 +39,7 @@ def mu_s_iml(samp: int,
 
     delta_s_samp = sigma_s_samp / np.sqrt(samp)
     delta_sr = sigma_sr / np.sqrt(samp)
-    delta_b = sigma_b / np.sqrt(t)
+    delta_b = sigma_b / np.sqrt(samp)
 
     s_samp_term = delta_s_samp / mu_s_samp
     sr_term = delta_sr / mu_sr

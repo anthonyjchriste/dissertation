@@ -334,6 +334,8 @@ def plot_iml_avg_opq():
     plt.plot(x_values, y_values)
     plt.plot(x_values, y_values + e_values)
     plt.plot(x_values, y_values - e_values)
+    # plt.ylim((0, y_values.max()))
+    # plt.plot(x_values, e_values)
     plt.show()
 
 
