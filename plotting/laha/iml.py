@@ -1,5 +1,7 @@
 import numpy as np
 
+import laha.errors as errors
+
 
 def s_sen(s_samp: float, sr: float, t: float) -> float:
     return s_samp * sr * t
@@ -17,12 +19,13 @@ def mu_s_sen(samp: int,
              t: float) -> (float, float):
     _mu_s_sen = mu_s_samp * mu_sr * t
 
-    delta_s_samp = sigma_s_samp / np.sqrt(samp)
-    delta_sr = sigma_sr / np.sqrt(samp)
+    delta_s_samp = errors.sem(sigma_s_samp, samp)
+    delta_sr = errors.sem(sigma_sr, samp)
 
-    s_samp_term = delta_s_samp / mu_s_samp
-    sr_term = delta_sr / mu_sr
-    delta_s_sen = np.abs(_mu_s_sen) * np.sqrt((s_samp_term * s_samp_term) + (sr_term * sr_term)) * np.abs(t)
+    e = errors.propagate_multiplication(_mu_s_sen,
+                                        (mu_s_samp, delta_s_samp),
+                                        (mu_sr, delta_sr))
+    delta_s_sen = errors.propagate_constant(e, t)
 
     return _mu_s_sen, delta_s_sen
 
@@ -37,14 +40,14 @@ def mu_s_iml(samp: int,
              t: float) -> (float, float):
     _mu_s_iml = mu_s_samp * mu_sr * mu_b * t
 
-    delta_s_samp = sigma_s_samp / np.sqrt(samp)
-    delta_sr = sigma_sr / np.sqrt(samp)
-    delta_b = sigma_b / np.sqrt(samp)
+    delta_s_samp = errors.sem(sigma_s_samp, samp)
+    delta_sr = errors.sem(sigma_sr, samp)
+    delta_b = errors.sem(sigma_b, samp)
 
-    s_samp_term = delta_s_samp / mu_s_samp
-    sr_term = delta_sr / mu_sr
-    b_term = delta_b / mu_b
-    delta_s_iml = np.abs(_mu_s_iml) * np.sqrt(
-        (s_samp_term * s_samp_term) + (sr_term * sr_term) + (b_term * b_term)) * np.abs(t)
+    e = errors.propagate_multiplication(_mu_s_iml,
+                                        (mu_s_samp, delta_s_samp),
+                                        (mu_sr, delta_sr),
+                                        (mu_b, delta_b))
+    delta_s_iml = errors.propagate_constant(e, t)
 
     return _mu_s_iml, delta_s_iml

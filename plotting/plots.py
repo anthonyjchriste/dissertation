@@ -327,6 +327,7 @@ def plot_iml_avg_opq():
                             t)
         y_values.append(y)
         e_values.append(e)
+        # print(e)
 
     e_values = np.array(e_values)
     y_values = np.array(y_values)
@@ -334,8 +335,6 @@ def plot_iml_avg_opq():
     plt.plot(x_values, y_values)
     plt.plot(x_values, y_values + e_values)
     plt.plot(x_values, y_values - e_values)
-    # plt.ylim((0, y_values.max()))
-    # plt.plot(x_values, e_values)
     plt.show()
 
 
@@ -352,9 +351,9 @@ if __name__ == "__main__":
     # plot_iml_level_no_opt_var_num_sensors(4, 12000, S_IN_YEAR, num_boxes)
     # plot_iml_level_no_opt_var_std(2, 80, S_IN_DAY * 5, 1000)
     # plot_aml_level_opq_single(S_IN_YEAR)
-    plot_aml_level_lokahi_single(S_IN_YEAR)
+    # plot_aml_level_lokahi_single(S_IN_YEAR)
     # plot_iml_level_opq()
     # plot_iml_level_lokahi()
     # plot_dl_opq_no_err()
     # plot_dl_opq_err()
-    # plot_iml_avg_opq()
+    plot_iml_avg_opq()

@@ -1,47 +1,48 @@
 import numpy as np
 
-
-def sem(sigma: float, n: float) -> float:
-    return sigma / np.sqrt(n)
+import laha.errors as errors
 
 
-def mu_s_sd(n: float,
+def mu_s_sd(samps: float,
+            detections: float,
             mu_s_samp: float,
+            sigma_s_samp: float,
             mu_sr: float,
+            sigma_sr: float,
             mu_t_sd: float,
             sigma_t_sd: float) -> (float, float):
     # Result
     _mu_s_sd = mu_s_samp * mu_sr * mu_t_sd
 
     # Errors
-    delta_s_samp = 0.0
-    delta_sr = 0.0
-    delta_t_sd = sem(sigma_t_sd, n)
+    delta_s_samp = errors.sem(sigma_s_samp, samps)
+    delta_sr = errors.sem(sigma_sr, samps)
+    delta_t_sd = errors.sem(sigma_t_sd, detections)
 
-    samp_term = delta_s_samp / mu_s_samp
-    sr_term = delta_sr / mu_sr
-    t_sd_term = delta_t_sd / mu_t_sd
-    delta_s_sd = np.abs(_mu_s_sd) * np.sqrt((samp_term * samp_term) + (sr_term * sr_term) + (t_sd_term * t_sd_term))
+    delta_s_sd = errors.propagate_multiplication(_mu_s_sd,
+                                                 (mu_s_samp, delta_s_samp),
+                                                 (mu_sr, delta_sr),
+                                                 (mu_t_sd, delta_t_sd))
 
     return _mu_s_sd, delta_s_sd
 
 
-def mu_s_d(n: float,
+def mu_s_d(samples: float,
+           detections: float,
            mu_s_samp: float,
            mu_sr: float,
            mu_t_sd: float,
            sigma_t_sd: float,
            mu_sd: float,
            sigma_sd: float) -> (float, float):
-    (_mu_s_sd, delta_s_sd) = mu_s_sd(n, mu_s_samp, mu_sr, mu_t_sd, sigma_t_sd)
+    (_mu_s_sd, delta_s_sd) = mu_s_sd(samples, detections, mu_s_samp, mu_sr, mu_t_sd, sigma_t_sd)
 
     _mu_s_d = _mu_s_sd * mu_sd
 
-    delta_sd = sem(sigma_sd, n)
-
-    s_sd_term = delta_s_sd / _mu_s_sd
-    sd_term = delta_sd / mu_sd
-    delta_s_d = np.abs(_mu_s_d) * np.sqrt((s_sd_term * s_sd_term) + (sd_term * sd_term))
+    delta_sd = errors.sem(sigma_sd, detections)
+    delta_s_d = errors.propagate_multiplication(_mu_s_d,
+                                                (_mu_s_sd, delta_s_sd),
+                                                (mu_sd, delta_sd))
 
     return _mu_s_d, delta_s_d
 
