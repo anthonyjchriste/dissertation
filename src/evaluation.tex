@@ -230,7 +230,7 @@ Equation~\ref{eq:aml} shows the size of the AML $S_{AML}$ including all sub-leve
 	S_{AML} = \sum_{i=1}^{S_{SL_{n}}} S_{SL_{i}}
 \end{equation}
 
-Figure~\ref{fig:plot_aml_level_opq_single} examines the growth of the AML level using OPQ as a basis over a time period of one year. We can see that measurements which have a size of 144 bytes and a rate of 1 Hz dominates the data growth which is what we would expect since measurements send at a higher rate. Trends data growth (orange series) on the other hand appears to be almost flat. Finally, the green series represents the total size of the two sub-levels and the sum data storage of the AML\@.
+Figure~\ref{fig:plot_aml_level_opq_single} examines the growth of the AML level using OPQ as a basis over a time period of one year for a single sensor. We can see that measurements which have a size of 144 bytes and a rate of 1 Hz dominates the data growth which is what we would expect since measurements send at a higher rate. Trends data growth (orange series) on the other hand appears to be almost flat. Finally, the green series represents the total size of the two sub-levels and the sum data storage of the AML for a single sensor.
 
 \begin{figure}[H]
 	\centering
@@ -241,7 +241,7 @@ Figure~\ref{fig:plot_aml_level_opq_single} examines the growth of the AML level 
 
 We can see from this figure that left unbounded, the AML can grow to near 5GB a year per sensor in the OPQ network.
 
-Figure~\ref{fig:plot_aml_level_lokahi_single} examines data growth of the AML using Lokahi as a basis over a time period of one year. In this sensor network, the size of each Aggregate Measurement remains constant over each sub-level and only the AML rate varies. We can see that none of the sub-levels tend to dominate, but the combined size of the AML can grow quickly.
+Figure~\ref{fig:plot_aml_level_lokahi_single} examines data growth of the AML using Lokahi as a basis over a time period of one year for a single sensor. In this sensor network, the size of each Aggregate Measurement remains constant over each sub-level and only the AML rate varies. We can see that none of the sub-levels tend to dominate.
 
 \begin{figure}[H]
 	\centering
@@ -250,7 +250,20 @@ Figure~\ref{fig:plot_aml_level_lokahi_single} examines data growth of the AML us
 	\label{fig:plot_aml_level_lokahi_single}
 \end{figure}
 
-From this figure, we can conclude that the AML can grown to near 3GB a year per sensor at the maximum sampling rate in the Lokahi network if the data remains unbounded.
+From this figure, we can conclude that the AML can grow to near 3GB a year per sensor at the maximum sampling rate in the Lokahi network if the data remains unbounded.
+
+We can also provide statistical bounds on the AML to account for the mean number of sensors $\mu B$ sending Aggregate Measurements at any time $T$.
+
+\begin{align}
+	\delta B &= \frac{\sigma B}{\sqrt{T}} \\
+	\delta S_{SL} &= \delta B * |S_{V} * SR * T| \\
+	\mu S_{SL} &= S_{V} * SR * T * \mu B \pm \delta S_{SL}
+\end{align}
+
+\begin{align}
+	\delta S_{AML} &= \sqrt{\sum_{i=1}^{\delta S_{SL_{n}}} (\delta S_{SL_{i}})^2} \\
+	\mu S_{AML} &= (\sum_{i=1}^{\mu S_{SL_{n}}} \mu S_{SL_{i}}) \pm \delta S_{AML}
+\end{align}
 
 \paragraph{DL Requirements}
 The detections level contains metadata and associated sampled high fidelity data that was returned from sensors for a given time window. A single detection can contain samples from multiple data streams for a single event of interest.
@@ -420,6 +433,20 @@ An upper and lower bounds on storage requirements per sensor for the PL can be f
 
 Now that we can compute the bounds for different levels within the Laha hierarchy, let's examine how the requirements compare between each level given data that resembles the OPQ and Lokahi DSNs.
 
+Analytically, when all parameters are known, the size of the entire DSN $S_{DSN}$ can be computed as shown in Equation.
+
+\begin{equation}
+	S_{DSN} = S_{IML} + S_{AML} + S_{DL} + S_{IL} + S_{P}
+\end{equation}
+
+Statistically speaking, the mean size of the DSN os provided by Equations.
+
+\begin{align}
+	\delta S_{DSN} &= \sqrt{(\delta S_{IML})^2 + (\delta S_{AML})^2 + (\delta S_{DL})^2 + (\delta S_{IL})^2 + (\delta S_{P})^2} \\
+	\mu S_{DSN} &= \mu S_{IML} + \mu S_{AML} + \mu S_{DL} + \mu S_{IL} + \mu S_{P} \pm \delta S_{DSN}
+\end{align}
+
+\subsubsection{Evaluation of TTL}
 
 During the acquisition and curating of data, metrics were collected and stored about how much data is saved (in bytes) versus how much data is discarded at each level within the Laha data hierarchy. These numbers were compared against data storage as if the OPQ and Lokahi frameworks were to take a ``store everything" approach. Evaluation metrics provided include percentage of data storage saved per data hierarchy level as well as an estimate of overall decrease in data storage requirements for the entire DSN. A positive result from these metrics would show significant reduction in storage requirements for each level in the framework compared against a ``store everything approach" and other state-of-the-art data storage solutions.
 

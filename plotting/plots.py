@@ -202,7 +202,7 @@ def plot_aml_level_lokahi_single(window_length_s: int):
         total_y += y_values
         plt.plot(x_values, y_values, label="Sub-Level=%s, Size Bytes=%d, Rate Hz=1/%f" % (sl, size, rate))
 
-    plt.plot(x_values, total_y, label="AML Total Bytes")
+    # plt.plot(x_values, total_y, label="AML Total Bytes")
 
     plt.xlabel("Time (S)")
     plt.ylabel("Bytes")
@@ -352,9 +352,9 @@ if __name__ == "__main__":
     # plot_iml_level_no_opt_var_num_sensors(4, 12000, S_IN_YEAR, num_boxes)
     # plot_iml_level_no_opt_var_std(2, 80, S_IN_DAY * 5, 1000)
     # plot_aml_level_opq_single(S_IN_YEAR)
-    # plot_aml_level_lokahi_single(S_IN_YEAR)
+    plot_aml_level_lokahi_single(S_IN_YEAR)
     # plot_iml_level_opq()
     # plot_iml_level_lokahi()
     # plot_dl_opq_no_err()
     # plot_dl_opq_err()
-    plot_iml_avg_opq()
+    # plot_iml_avg_opq()
