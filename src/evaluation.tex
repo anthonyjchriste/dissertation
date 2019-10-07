@@ -172,25 +172,6 @@ Next, we can calculate the IML size for the entire network $S_{IML}$ by summing 
 	S_{IML} = \sum_{i=1}^{B_{n}} S_{SEN_{i}}
 \end{equation}
 
-If the sampling rate and number of sensors is not constant, then we can calculate the sensor IML size statistically assuming that we have a known average sample rate $\mu SR$ and a measure of standard deviation $\sigma SR$ and an average number of sensors $\mu B$ and the standard deviation $\sigma B$.
-
-The error for sampling rate $\delta SR$ is given in equation~\ref{iml:uErr}. The error calculation for a single sensor $\delta S_{SEN}$ is given in equation~\ref{iml:uSSEN}. By propagating the error as an error multiplied with a constant, we get a final bounds for a single sensor $\mu S_{SEN}$ as described in equation~\ref{iml:sbounds}.
-
-\begin{align}
-	\delta S_{SAMP} &= \frac{\sigma S_{SAMP}}{\sqrt{SAMP}} \label{} \\
-	\delta SR &= \frac{\sigma SR}{\sqrt{SAMP}} \label{iml:uErr} \\
-	\delta S_{SEN} &= |\mu S_{SEN}| * \sqrt{(\frac{\delta S_{SAMP}}{\mu S_{SAMP}})^2 + (\frac{\delta SR}{\mu SR})^2} * |T| \label{iml:uSSEN}  \\
-	\mu S_{SEN} &= \mu S_{SAMP} * \mu SR * T \pm \delta S_{SEN} \label{iml:sbounds}
-\end{align}
-
-We can calculate the bounds for the IML $\mu S_{IML}$ as shown in equation~\ref{iml:uDSN}.
-
-\begin{align}
-	\delta B &= \frac{\sigma B}{\sqrt{B}} \\
-	\delta S_{IML} &= |\mu S_{IML}| * \sqrt{(\frac{\delta S_{SAMP}}{\mu S_{SAMP}})^2 + (\frac{\delta SR}{\mu SR})^2 + (\frac{\delta B}{\mu B})^2} * |T| \label{}  \\
-	\mu S_{IML} &= \mu S_{SAMP} * \mu SR * \mu B * T \pm \delta S_{IML} \label{iml:uDSN}
-\end{align}
-
 Each sample in this level is generally stored using built in machine types that generally take 1, 2, 4, or 8 bytes. Further, depending on the network requirements, each sample may or may not have an associated timestamp. Each timestamp generally adds between 4 and 8 bytes to each sample.
 
 Figure~\ref{fig:iml_growth_opq} shows IML growth for a single sensor modeled after the OPQ DSN\@. It's evident that the IML produces a significant amount of data. In the case of OPQ, it produces around 700 gigabytes of data per year per device or on the order of 2 gigabytes of data per day.
@@ -210,6 +191,17 @@ Figure~\ref{fig:iml_growth_lokahi} shows the IML growth for a single sensor mode
 	\caption{IML Growth Lokahi}
 	\label{fig:iml_growth_lokahi}
 \end{figure}
+
+We can estimate upper and lower bounds when the number of sensors recording data to the IML varies over time by examining the mean number of sensors that recorded data $\mu N_{SEN}$ over a time period in seconds $T$.
+
+\begin{equation}
+	\mu S_{IML} = S_{SAMP} * SR * \mu N_{SEN} * T \pm \delta S_{IML}
+\end{equation}
+
+\begin{align}
+	\delta N_{SEN} &= \frac{\sigma N_{SEN}}{\sqrt{T}} \\
+	\delta S_{IML} &= \delta N_{SEN} * |S_{SAMP} * SR * T|
+\end{align}
 
 \paragraph{AML Requirements}
 Aggregate measurements provide rolled-up feature extracted values generated from the IML layer. These often include multiple features (i.e. Voltage, Frequency, THD) and descriptive statistics of each feature (i.e. minimum, maximum, average, variance). It's worth noting that the theoretical bounds may differ from the actual bounds in practice due to the way the underlying storage engine persists the values. These differences will be examined in the results section.
@@ -250,19 +242,19 @@ Figure~\ref{fig:plot_aml_level_lokahi_single} examines data growth of the AML us
 	\label{fig:plot_aml_level_lokahi_single}
 \end{figure}
 
-From this figure, we can conclude that the AML can grow to near 3GB a year per sensor at the maximum sampling rate in the Lokahi network if the data remains unbounded.
+From this figure, we can conclude that the AML can grow to a maximum bounds of near 3GB a year per sensor at the maximum sampling rate in the Lokahi network if the data remains unbounded and a minimum of near 2 gigabytes per year per sensor at the lowest sampling rate.
 
-We can also provide statistical bounds on the AML to account for the mean number of sensors $\mu B$ sending Aggregate Measurements at any time $T$.
+Similar to what was done for the IML, we can calculate estimate bounds assuming the number of sensors sending data is not constant.
+
+\begin{align}
+	\mu S_{SL} &= S_{V} * SR * T * \mu B \pm \delta S_{SL} \\
+	\mu S_{AML} &= \sum_{i=1}^{S_{\mu SL_{n}}} \mu S_{SL_{i}} \pm \delta S_{AML}
+\end{align}
 
 \begin{align}
 	\delta B &= \frac{\sigma B}{\sqrt{T}} \\
 	\delta S_{SL} &= \delta B * |S_{V} * SR * T| \\
-	\mu S_{SL} &= S_{V} * SR * T * \mu B \pm \delta S_{SL}
-\end{align}
-
-\begin{align}
-	\delta S_{AML} &= \sqrt{\sum_{i=1}^{\delta S_{SL_{n}}} (\delta S_{SL_{i}})^2} \\
-	\mu S_{AML} &= (\sum_{i=1}^{\mu S_{SL_{n}}} \mu S_{SL_{i}}) \pm \delta S_{AML}
+	\delta S_{AML} &= \sqrt{\sum_{i=1}^{\delta S_{SL_{n}}}} (\delta S_{SL_{i}}) ^ 2
 \end{align}
 
 \paragraph{DL Requirements}
@@ -280,92 +272,22 @@ Equation~\ref{eq:dl:ssd} computes the size of a sub-detection $S_{SD}$ using a g
 
 \begin{equation}\label{eq:dl:ssd}
 	S_{SD} = S_{SAMP} * SR * T + S_{SDM}
-\end{equation}
-
-It follows that we can compute the size of an entire detection in bytes $S_{D}$ by summing the sizes of all sub-detections and adding constant metadata size per detection $S_{DM}$ as shown in Equation~\ref{eq:dl:sd}.
-
-\begin{equation}\label{eq:dl:sd}
-	S_{D} = \sum_{i=0}^{S_{SD_{n}}} S_{SD_{i}} + S_{DM}
-\end{equation}
-
-Then, we can find the size of the DL $S_{DL}$ by summing the sizes of all Detections as shown in Equation~\ref{eq:dl:dl}.
+\end{equation}.
 
 \begin{equation}\label{eq:dl:dl}
 	S_{DL} = \sum_{i=0}^{S_{D_{n}}} S_{D_{i}}
 \end{equation}
 
-Since the parameters for sub-detections and detection windows can vary wildly, I next provide statistical approximations for computing upper and lower bounds on the DL per sensor.
+We can provide estimated bounds on the DL with an estimated data rate $\mu DR$ which provides the mean number of bytes generated per second within the DL\@. It should be noted that this includes the parameters for all sub-detections as well.
 
-Equation~\ref{eq:dl:muS_SD} provides the calculation for mean sub-detection size $\mu S_{SD}$.
-
-\begin{equation}\label{eq:dl:muS_SD}
-	\mu S_{SD} = \mu S_{SAMP} * \mu SR * \mu T_{SD} + S_{SDM} \pm \delta S_{SD}
+\begin{equation}
+	\mu S_{DL} = \mu DR * T \pm \delta S_{DL}
 \end{equation}
-
-Equation~\ref{eq:dl:msd} shows the mean detection size $\mu S_{D}$.
-
-\begin{equation}\label{eq:dl:msd}
-	\mu S_{D} = \mu S_{SD} * \mu SD + S_{DM} \pm \delta S_{D}
-\end{equation}
-
-Equation~\ref{eq:dl:usdl} provides the mean DL size $\mu S_{DL}$
-
-\begin{equation}\label{eq:dl:usdl}
-	\mu S_{DL} = \mu S_{D} * \mu DR * T \pm \delta S_{DL}
-\end{equation}
-
-Equations~\ref{eq:dl0},~\ref{eq:dl1},~\ref{eq:dl2},~\ref{eq:dl3},~\ref{eq:dl4},~\ref{eq:dl5},~\ref{eq:dl6}, and~\ref{eq:dl7} provide the error calculations on the previous bounds. These are computed over the averaged variables mean sample size $\mu S_{SAMP}$ over the size of the set of samples $SAMP$, mean sample rate in Hz $\mu SR$ over the size of samples $SAMP$, mean detection length in seconds $\mu T_{SD}$, mean number of sensors that respond to a detection $\mu SD$, and mean detection rate $\mu DR$.
 
 \begin{align}
-	\delta S_{SAMP} &= \frac{\sigma S_{SAMP}}{\sqrt{SAMP}} \label{eq:dl0} \\
-	\delta SR &= \frac{\sigma SR}{\sqrt{SAMP}} \label{eq:dl1} \\
-	\delta SD &= \frac{\sigma SD}{\sqrt{SD}} \label{eq:dl2} \\
-	\delta T_{SD} &= \frac{\sigma T_{SD}}{\sqrt{SD}} \label{eq:dl3} \\
-	\delta DR &= \frac{\sigma DR}{\sqrt{DR}} \label{eq:dl4} \\
-	\delta S_{SD} &= |\mu S_{SD}| * \sqrt{(\frac{\delta S_{SAMP}}{\mu S_{SAMP}})^2 + (\frac{\delta SR}{\mu SR})^2 + (\frac{\delta T_{SD}}{\mu T_{SD}})^2} \label{eq:dl5} \\
-	\delta S_{D} &= |\mu S_{D}| * \sqrt{(\frac{\delta S_{SD}}{\mu S_{SD}})^2 + (\frac{\delta SD}{\mu SD})^2} \label{eq:dl6} \\
-	\delta S_{DL} &= |\mu S_{DL}| * \sqrt{(\frac{\delta S_{D}}{\mu S_{D}})^2 + (\frac{\delta DR}{\mu DR})^2} * |T| \label{eq:dl7}
+	\delta DR = \frac{\sigma DR}{\sqrt{T}} \\
+	\delta S_{DL} = \delta {DR} * |T|
 \end{align}
-
-Next, I provide figures which show the bounds DL bounds on the OPQ and Lokahi networks using average values gathered from the data.
-
-Table~\ref{table:dl:opq} shows the estimated parameters that were gathered from the OPQ DSN for use in the following DL (OPQ) figures.
-
-\begin{table}[H]
-	\centering
-	\caption{Estimated OPQ DL Parameters}
-	\begin{tabularx}{\textwidth}{llX}
-		\toprule
-		\textbf{Parameter} & \textbf{Mean} & \textbf{Standard Deviation} \\
-		\midrule
-		$\mu S_{SAMP}$ & 2.0 & 0.0 \\
-		$\mu SR$ & 12000 & 0.0 \\
-		$\mu SD$ & 1.185407440686306 & 1.0209460091478992 \\
-		$\mu T_{SD}$ & 11.787460720323569 & 15.040829579595933 \\
-		$\mu DR$ & 0.293433583168666 & 10.403490650228573 \\
-		\bottomrule
-	\end{tabularx}
-	\label{table:dl:opq}
-\end{table}
-
-
-Figure~\ref{fig:plot_dl_opq_no_err} shows the DL growth based on estimated parameters from the OPQ DSN\@. From this, it's possible to gather that under standard estimated parameters, the DL layer is expected to grow at a rate of 8 gigabytes per year.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=\linewidth]{figures/plot_dl_opq_no_err.png}
-	\caption{$\mu$ DL (OPQ)}
-	\label{fig:plot_dl_opq_no_err}
-\end{figure}
-
-However, Figure~\ref{fig:plot_dl_opq_err} shows the DL growth based on estimated parameters from the OPQ DSN\@ and error bounds. From the estimated OPQ parameters, it's clear that the error bounds quickly overtake the mean value, which tells us that the standard deviations within the OPQ network may be too high to provide bounds for.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=\linewidth]{figures/plot_dl_opq_err.png}
-	\caption{$\mu$ DL (OPQ)}
-	\label{fig:plot_dl_opq_err}
-\end{figure}
 
 \paragraph{IL Requirements}
 The Incidents Level provides added context on top of the DL in the form of signal of interest classifications. This level is structured similarly to the DL in that it contains trimmed down IML samples from one or more sensors over a varying time window and added context in the form of metadata. Due to these similarities, the bounds calculations are also quite similar.
@@ -384,29 +306,15 @@ Then, computing the size of the entire IL can be done with a simple summation as
 	S_{IL} = \sum_{i=0}^{S_{I_{n}}} S_{I_{i}}
 \end{equation}
 
-Next, we examine computing the bounds of the IL using estimated parameters.
+We can provide estimated bounds on the IL assuming a mean incident rate in bytes per second $\mu IR$.
 
-Equation~\ref{eq:il:mu_s_i} provides the mean size of an Incident with a mean sample size $\mu S_{SAMP}$, mean sample rate in Hz $\mu SR$, mean incident length $\mu T_{I}$, and near constant metadata size $S_{M}$ over the set of Incidents $I$.
-
-\begin{equation}\label{eq:il:mu_s_i}
-	\mu S_{I} = \mu S_{SAMP} * \mu SR * \mu T_{I} + S_{M} \pm \delta S_{I}
+\begin{equation}
+ \mu S_{IL} = \mu IR * T \pm \delta S_{IL}
 \end{equation}
-
-Equation~\ref{eq:il:mu_s_il} provides the mean size of the IL with a given mean Incident rate $\mu IR$ over a sensing time of $T$ seconds.
-
-\begin{equation}\label{eq:il:mu_s_il}
-	\mu S_{IL} = \mu S_{I} * \mu IR * T \pm \delta S_{IL}
-\end{equation}
-
-Errors for the mean IL calculations are provided in Equations .
 
 \begin{align}
-	\delta S_{SAMP} &= \frac{\sigma S_{SAMP}}{\sqrt{SAMP}} \label{eq:il0} \\
-	\delta SR &= \frac{\sigma SR}{\sqrt{SAMP}} \label{eq:il1} \\
-	\delta T_{I} &= \frac{\sigma T_{I}}{\sqrt{I}} \label{eq:il2} \\
-	\delta IR &= \frac{\sigma IR}{\sqrt{I}} \label{eq:il3} \\
-	\delta S_{I} &= |\mu S_{I}| * \sqrt{(\frac{\delta S_{SAMP}}{\mu S_{SAMP}})^2 + (\frac{\delta SR}{\mu SR})^2 + (\frac{\delta T_{I}}{\mu T_{I}})^2} \label{eq:il4} \\
-	\delta S_{IL} &= |\mu S_{IL}| * \sqrt{(\frac{\delta IR}{\mu IR})^2} * |T| \label{eq:il5}
+	\delta IR &= \frac{\sigma IR}{\sqrt{T}} \\
+	\delta S_{IL} = \delta IR * |T|
 \end{align}
 
 \paragraph{PL Requirements}
@@ -417,17 +325,6 @@ Equation~\ref{eq:pl} calculates the size of the PL $S_{PL}$ by summing the size 
 \begin{equation}\label{eq:pl}
 	S_{PL} = \sum_{i=0}^{S_{P_{n}}} S_{P_{i}}
 \end{equation}
-
-An upper and lower bounds on storage requirements per sensor for the PL can be found given an average Phenomena size in bytes $\mu S_{P}$, an average Phenomena rate per sensor in Hz $\mu SR$, and sensing window in seconds $T$ over a set of Phenomena with size $P$. Equations~\ref{eq:pl:dsp},~\ref{eq:pl:dsr}, and~\ref{eq:pl:ddl} compute the errors on the averages. Equation~\ref{eq:pl:sdl} computes the lower and upper bounds of the PL\@.
-
-\begin{align}
-	\delta S_{P} &= \frac{\sigma S_{P}}{\sqrt{P}} \label{eq:pl:dsp} \\
-	\delta SR &= \frac{\sigma SR}{\sqrt{P}} \label{eq:pl:dsr} \\
-	\delta S_{DL} &= \sqrt{(\frac{\delta S_{P}}{\mu S_{P}})^2 + (\frac{\delta SR}{\mu SR})^2} * |T| \label{eq:pl:ddl} \\
-	\mu S_{DL} &= \mu S_{P} * \mu SR * T \pm \delta S_{DL} \label{eq:pl:sdl}
-\end{align}
-
-% TODO: IS this per box? Per PL?
 
 \paragraph{Comparing Laha Requirements}
 
