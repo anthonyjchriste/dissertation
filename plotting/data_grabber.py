@@ -6,65 +6,45 @@ if __name__ == "__main__":
     db = mongo_client.opq
 
     # Events
-    events =  db.events.find({"target_event_start_timestamp_ms": {"$gt": 0}},
-                             projection={"target_event_start_timestamp_ms": True,
-                                         "target_event_end_timestamp_ms": True,
-                                         "boxes_received": True})
-
-    total_events = 0
-    event_lens = []
-    boxes_received = []
-    ts_ms = []
-    diffs = []
+    events = db.events.find({"target_event_start_timestamp_ms": {"$gt": 0},
+                             "target_event_end_timestamp_ms": {"$gt": 0}},
+                            projection={"target_event_start_timestamp_ms": True,
+                                        "target_event_end_timestamp_ms": True,
+                                        "boxes_received": True})
+    events_bytes = []
+    timestamps = []
 
     for event in events:
-        event_lens.append((event["target_event_end_timestamp_ms"] - event["target_event_start_timestamp_ms"]) / 1000.0)
-        boxes_received.append(len(event["boxes_received"]))
-        ts_ms.append(event["target_event_end_timestamp_ms"])
-        total_events += 1
+        timestamps.append(event["target_event_start_timestamp_ms"])
+        timestamps.append(event["target_event_end_timestamp_ms"])
+        range_s = (event["target_event_end_timestamp_ms"] - event["target_event_start_timestamp_ms"]) / 1000.0
+        event_bytes = range_s * 12_000 * 2 * len(event["boxes_received"])
+        events_bytes.append(event_bytes)
 
-    for i in range(1, len(ts_ms)):
-        p = ts_ms[i - 1]
-        n = ts_ms[i]
-        if n - p == 0:
-            continue
-        diffs.append(1.0 / ((n - p) / 1000.0))
+    total_bytes = sum(events_bytes)
+    total_s = (max(timestamps) - min(timestamps)) / 1000.0
+    mean_dr = total_bytes / total_s
+    sigma_dr = np.sqrt((1.0/total_s) * sum([(x - mean_dr)**2 for x in events_bytes]))
 
-    event_lens = np.array(event_lens)
-    boxes_received = np.array(boxes_received)
-    diffs = np.array(diffs)
-    print("total events", total_events)
-    print("mean/std event len", event_lens.mean(), event_lens.std())
-    print("mean/std boxes recv", boxes_received.mean(), boxes_received.std())
-    print("mean/std event rate", diffs.mean(), diffs.std())
+    print("event total_bytes", total_bytes)
+    print("event total_s", total_s)
+    print("event mean_dr", mean_dr)
+    print("event sigma_dr", sigma_dr)
 
-    # Incidents
     incidents = db.incidents.find(projection={"start_timestamp_ms": True,
                                               "end_timestamp_ms": True,
                                               "classifications": True})
-    incident_lens = []
-    ts_ms = []
-    diffs = []
-    total_incidents = 0
-
+    incidents_bytes = []
     for incident in incidents:
         le = (incident["end_timestamp_ms"] - incident["start_timestamp_ms"]) / 1000.0
         if le < 0 or "OUTAGE" in incident["classifications"]:
             continue
+        incidents_bytes.append(le * 12_000 * 2)
 
-        incident_lens.append(le)
-        ts_ms.append(incident["start_timestamp_ms"])
-        total_incidents += 1
+    total_bytes = sum(incidents_bytes)
+    mean_ir = total_bytes / total_s
+    sigma_ir = np.sqrt((1.0/total_s) * sum([(x - mean_ir)**2 for x in incidents_bytes]))
 
-    for i in range(1, len(ts_ms)):
-        p = ts_ms[i - 1]
-        n = ts_ms[i]
-        if n - p == 0:
-            continue
-        diffs.append(1.0 / ((n - p) / 1000.0))
-
-    incident_lens = np.array(incident_lens)
-    diffs = np.array(diffs)
-    print("total incidents",total_incidents )
-    print("mean/std incident len", incident_lens.mean(), incident_lens.std())
-    print("mean/std incident rate", diffs.mean(), diffs.std())
+    print("incident total_bytes", total_bytes)
+    print("incident mean_dr", mean_ir)
+    print("incident sigma_dr", sigma_ir)

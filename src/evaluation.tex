@@ -194,13 +194,17 @@ Figure~\ref{fig:iml_growth_lokahi} shows the IML growth for a single sensor mode
 
 We can estimate upper and lower bounds when the number of sensors recording data to the IML varies over time by examining the mean number of sensors that recorded data $\mu N_{SEN}$ over a time period in seconds $T$.
 
-\begin{equation}
+Equation~\ref{eq:iml:mu_size_iml} provides the calculations for finding the mean size of the IML with varying amounts of sensors.
+
+\begin{equation}\label{eq:iml:mu_size_iml}
 	\mu S_{IML} = S_{SAMP} * SR * \mu N_{SEN} * T \pm \delta S_{IML}
 \end{equation}
 
+Equations~\ref{eq:iml:e1} and~\ref{eq:iml:e2} provide the error bounds for calculating the mean IML size.
+
 \begin{align}
-	\delta N_{SEN} &= \frac{\sigma N_{SEN}}{\sqrt{T}} \\
-	\delta S_{IML} &= \delta N_{SEN} * |S_{SAMP} * SR * T|
+	\delta N_{SEN} &= \frac{\sigma N_{SEN}}{\sqrt{T}} \label{eq:iml:e1} \\
+	\delta S_{IML} &= \delta N_{SEN} * |S_{SAMP} * SR * T| \label{eq:iml:e2}
 \end{align}
 
 \paragraph{AML Requirements}
@@ -244,17 +248,19 @@ Figure~\ref{fig:plot_aml_level_lokahi_single} examines data growth of the AML us
 
 From this figure, we can conclude that the AML can grow to a maximum bounds of near 3GB a year per sensor at the maximum sampling rate in the Lokahi network if the data remains unbounded and a minimum of near 2 gigabytes per year per sensor at the lowest sampling rate.
 
-Similar to what was done for the IML, we can calculate estimate bounds assuming the number of sensors sending data is not constant.
+Similar to what was done for the IML, we can estimate bounds assuming the number of sensors sending data is not constant. Equations~\ref{eq:aml:mu_s_sl} and~\ref{eq:aml:mu_s_aml} provide the calculations for mean sub-AML level size and the mean size of the AML respectively.
 
 \begin{align}
-	\mu S_{SL} &= S_{V} * SR * T * \mu B \pm \delta S_{SL} \\
-	\mu S_{AML} &= \sum_{i=1}^{S_{\mu SL_{n}}} \mu S_{SL_{i}} \pm \delta S_{AML}
+	\mu S_{SL} &= S_{V} * SR * T * \mu B \pm \delta S_{SL} \label{eq:aml:mu_s_sl} \\
+	\mu S_{AML} &= \sum_{i=1}^{S_{\mu SL_{n}}} \mu S_{SL_{i}} \pm \delta S_{AML} \label{eq:aml:mu_s_aml}
 \end{align}
 
+Equations~\ref{eq:aml:e0}, \ref{eq:aml:e1}, and \ref{eq:aml:e2} provide the error on mean calculations for the AML\@.
+
 \begin{align}
-	\delta B &= \frac{\sigma B}{\sqrt{T}} \\
-	\delta S_{SL} &= \delta B * |S_{V} * SR * T| \\
-	\delta S_{AML} &= \sqrt{\sum_{i=1}^{\delta S_{SL_{n}}}} (\delta S_{SL_{i}}) ^ 2
+	\delta B &= \frac{\sigma B}{\sqrt{T}} \label{eq:aml:e0} \\
+	\delta S_{SL} &= \delta B * |S_{V} * SR * T| \label{eq:aml:e1} \\
+	\delta S_{AML} &= \sqrt{\sum_{i=1}^{\delta S_{SL_{n}}}} (\delta S_{SL_{i}}) ^ 2  \label{eq:aml:e2}
 \end{align}
 
 \paragraph{DL Requirements}
@@ -278,16 +284,34 @@ Equation~\ref{eq:dl:ssd} computes the size of a sub-detection $S_{SD}$ using a g
 	S_{DL} = \sum_{i=0}^{S_{D_{n}}} S_{D_{i}}
 \end{equation}
 
-We can provide estimated bounds on the DL with an estimated data rate $\mu DR$ which provides the mean number of bytes generated per second within the DL\@. It should be noted that this includes the parameters for all sub-detections as well.
+We can provide estimated bounds on the DL with an estimated data rate $\mu DR$ which provides the mean number of bytes generated per second within the DL\@. It should be noted that this includes the parameters for all sub-detections as well. The calculation for the mean size of the DL is given in Equation~\ref{eq:dl:mu_s_dl}.
 
-\begin{equation}
+\begin{equation}\label{eq:dl:mu_s_dl}
 	\mu S_{DL} = \mu DR * T \pm \delta S_{DL}
 \end{equation}
 
+The errors for the mean size of the DL are given in Equations~\ref{eq:dl:e0} and~\ref{eq:dl:e1}.
+
 \begin{align}
-	\delta DR = \frac{\sigma DR}{\sqrt{T}} \\
-	\delta S_{DL} = \delta {DR} * |T|
+	\delta DR = \frac{\sigma DR}{\sqrt{T}} \label{eq:dl:e0} \\
+	\delta S_{DL} = \delta {DR} * |T| \label{eq:dl:e1}
 \end{align}
+
+Let's next compare the estimated sizes of the DL for the OPQ and Lokahi networks using statistics gathered for these networks.
+
+\begin{table}[H]
+	\centering
+	\caption{Estimated $DR$}
+	\begin{tabularx}{\textwidth}{lll}
+		\toprule
+		\textbf{Network} & $\bm{\mu DR}$ & $\bm{\sigma DR}$ \\
+		\midrule
+		OPQ & 13064.9 & 200712.1 \\
+		Lokahi & 0.0 & 0.0 \\
+		\bottomrule
+	\end{tabularx}
+	\label{table:estimated_mu_dr}
+\end{table}
 
 \paragraph{IL Requirements}
 The Incidents Level provides added context on top of the DL in the form of signal of interest classifications. This level is structured similarly to the DL in that it contains trimmed down IML samples from one or more sensors over a varying time window and added context in the form of metadata. Due to these similarities, the bounds calculations are also quite similar.
@@ -306,15 +330,17 @@ Then, computing the size of the entire IL can be done with a simple summation as
 	S_{IL} = \sum_{i=0}^{S_{I_{n}}} S_{I_{i}}
 \end{equation}
 
-We can provide estimated bounds on the IL assuming a mean incident rate in bytes per second $\mu IR$.
+We can provide estimated bounds on the IL assuming a mean incident rate in bytes per second $\mu IR$ as shown in Equation~\ref{eq:il:mu_s_il}.
 
-\begin{equation}
+\begin{equation}\label{eq:il:mu_s_il}
  \mu S_{IL} = \mu IR * T \pm \delta S_{IL}
 \end{equation}
 
+Equations~\ref{eq:il:e0} and~\ref{eq:il:e1} provide error bounds on the estimated size of the IL\@.
+
 \begin{align}
-	\delta IR &= \frac{\sigma IR}{\sqrt{T}} \\
-	\delta S_{IL} = \delta IR * |T|
+	\delta IR &= \frac{\sigma IR}{\sqrt{T}} \label{eq:il:e0} \\
+	\delta S_{IL} &= \delta IR * |T| \label{eq:il:e1}
 \end{align}
 
 \paragraph{PL Requirements}
@@ -330,17 +356,17 @@ Equation~\ref{eq:pl} calculates the size of the PL $S_{PL}$ by summing the size 
 
 Now that we can compute the bounds for different levels within the Laha hierarchy, let's examine how the requirements compare between each level given data that resembles the OPQ and Lokahi DSNs.
 
-Analytically, when all parameters are known, the size of the entire DSN $S_{DSN}$ can be computed as shown in Equation.
+Analytically, when all parameters are known, the size of the entire DSN $S_{DSN}$ can be computed as shown in Equation~\ref{eq:s_dsn}.
 
-\begin{equation}
+\begin{equation}\label{eq:s_dsn}
 	S_{DSN} = S_{IML} + S_{AML} + S_{DL} + S_{IL} + S_{P}
 \end{equation}
 
-Statistically speaking, the mean size of the DSN os provided by Equations.
+Statistically speaking, the mean size and error of the entire DSN are provided by Equations~\ref{eq:dsn:mu_s_dsn} and~\ref{eq:dsn:e} respectively.
 
 \begin{align}
-	\delta S_{DSN} &= \sqrt{(\delta S_{IML})^2 + (\delta S_{AML})^2 + (\delta S_{DL})^2 + (\delta S_{IL})^2 + (\delta S_{P})^2} \\
-	\mu S_{DSN} &= \mu S_{IML} + \mu S_{AML} + \mu S_{DL} + \mu S_{IL} + \mu S_{P} \pm \delta S_{DSN}
+	\delta S_{DSN} &= \sqrt{(\delta S_{IML})^2 + (\delta S_{AML})^2 + (\delta S_{DL})^2 + (\delta S_{IL})^2 + (\delta S_{P})^2} \label{eq:dsn:e} \\
+	\mu S_{DSN} &= \mu S_{IML} + \mu S_{AML} + \mu S_{DL} + \mu S_{IL} + \mu S_{P} \pm \delta S_{DSN} \label{eq:dsn:mu_s_dsn}
 \end{align}
 
 \subsubsection{Evaluation of TTL}

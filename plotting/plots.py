@@ -341,6 +341,28 @@ def plot_iml_avg_opq():
 def plot_dl_lokahi():
     pass
 
+def plot_iml_average():
+    plt.figure(figsize=(12, 5))
+    s_samp = 2
+    sr = 12_000
+    mu_n_sen = 9.9
+    sigma_n_sen = 0.7
+    x_values = np.arange(S_IN_YEAR, step=S_IN_DAY)
+    y_values = s_samp * sr * mu_n_sen * x_values
+    e_values = (sigma_n_sen / np.sqrt(x_values)) * np.abs(s_samp * sr * x_values)
+
+    for i in range(len(x_values)):
+        print(x_values[i], y_values[i], e_values[i])
+
+    plt.errorbar(x_values, y_values, yerr=e_values)
+
+    plt.title("AML Estimated Size Growth: SR=12000, Size Sample=2, T=1yr, ")
+    plt.xlabel("Time (S)")
+    plt.ylabel("Bytes")
+
+    plt.legend()
+    plt.savefig("../src/figures/plot_dl_opq_err.png")
+    plt.show()
 
 if __name__ == "__main__":
     # sample_sizes = [1, 2, 4, 8, 16]
@@ -356,4 +378,4 @@ if __name__ == "__main__":
     # plot_iml_level_lokahi()
     # plot_dl_opq_no_err()
     # plot_dl_opq_err()
-    plot_iml_avg_opq()
+    plot_iml_average()

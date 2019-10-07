@@ -1,0 +1,7 @@
+event total_bytes 39428778888.0
+event total_s 3018325.013
+event mean_dr 13063.132273091627
+event sigma_dr 200698.7023013211
+incident total_bytes 148084419.421875
+incident mean_dr 49.06178717801157
+incident sigma_dr 1942.4922482680722
