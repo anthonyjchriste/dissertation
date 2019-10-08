@@ -268,11 +268,11 @@ The detections level contains metadata and associated sampled high fidelity data
 
 Similarly to the AML level, we assume that the metadata for each detection remains a constant or close to constant size and we focus on the raw data which dominates the storage requirements in the DL.
 
-I make the assumption that the window lengths for each high-fidelitiy stream within a single detection are equally sized. In reality, it's possible that a sensor encounters an error and does not return data for the entire requested time window.
+I make the assumption that the window lengths for each high-fidelity stream within a single detection are equally sized. In reality, it's possible that a sensor encounters an error and does not return data for the entire requested time window.
 
 Calculating the bounds of this collection is further complicated by the fact that Detections are not generated at a constant rate and the window length of the detections can be highly variable. Further, the number of sensors that return data for any given detection is also variable. Therefore, I provide statistical calculations for these bounds.
 
-First, let's examine calculating the bounds when all parameters are known for a sub-detection. A sub-detection is data returned from a single sensor within a detection. The bounds for each sub-dection is similar to the bounds for a single sensor in the IML, because this level contains the IML data plus some close to constant sized metadata providing context to the IML data.
+First, let's examine calculating the bounds when all parameters are known for a sub-detection. A sub-detection is data returned from a single sensor within a detection. The bounds for each sub-detection is similar to the bounds for a single sensor in the IML, because this level contains the IML data plus some close to constant sized metadata providing context to the IML data.
 
 Equation~\ref{eq:dl:ssd} computes the size of a sub-detection $S_{SD}$ using a given sensor sampling rate in Hz $SR$, the length of the detection in seconds $T$, and the size of the sub-detection metadata $S_{SDM}$.
 
@@ -284,7 +284,7 @@ Equation~\ref{eq:dl:ssd} computes the size of a sub-detection $S_{SD}$ using a g
 	S_{DL} = \sum_{i=0}^{S_{D_{n}}} S_{D_{i}}
 \end{equation}
 
-There is a clear upper bound on the size of the DL for a single sensor in the pathological case that the entire data set recorded by a single sensor is one long single Detection. In this pathological case, the upper bounds of the DL is equal to the upper bounds of the IML plus some constant metadata size. The pathological case isn't incredibly useful, so, let's look at this from a statistical standpoint.
+There is a clear upper bound on the size of the DL for a single sensor in the pathological case that the entire data set recorded by a single sensor is one long single Detection. In this pathological case, the upper bounds of the DL is equal to the upper bounds of the IML plus some constant metadata size. The pathological case is not incredibly useful, so, let's look at this from a statistical standpoint.
 
 We can provide estimated bounds on the DL with an estimated data rate $\mu DR$ which provides the mean number of bytes generated per second within the DL\@. It should be noted that this includes the parameters for all sub-detections as well. The calculation for the mean size of the DL is given in Equation~\ref{eq:dl:mu_s_dl}.
 
@@ -341,7 +341,7 @@ Then, computing the size of the entire IL can be done with a simple summation as
 	S_{IL} = \sum_{i=0}^{S_{I_{n}}} S_{I_{i}}
 \end{equation}
 
-There is a clear upper bound on the size of the IL for a single sensor in the pathological case that the entire data set recorded by a single sensor is one long single Incident. In this pathological case, the upper bounds of the IL is equal to the upper bounds of the IML plus some constant metadata size. The pathological case isn't incredibly useful, so, let's look at this from a statistical standpoint.
+There is a clear upper bound on the size of the IL for a single sensor in the pathological case that the entire data set recorded by a single sensor is one long single Incident. In this pathological case, the upper bounds of the IL is equal to the upper bounds of the IML plus some constant metadata size. The pathological case is not incredibly useful, so, let us look at this from a statistical standpoint.
 
 We can provide estimated bounds on the IL assuming a mean Incident rate in bytes per second $\mu IR$ as shown in Equation~\ref{eq:il:mu_s_il}.
 
@@ -356,7 +356,7 @@ Equations~\ref{eq:il:e0} and~\ref{eq:il:e1} provide error bounds on the estimate
 	\delta S_{IL} &= \delta IR * |T| \label{eq:il:e1}
 \end{align}
 
-Let's next compare the estimated sizes of the IL for the OPQ and Lokahi networks using statistics gathered for these networks. Table~\ref{table:estimated_mu_ir} provides the parameters used for these comparisons.
+Let us next compare the estimated sizes of the IL for the OPQ and Lokahi networks using statistics gathered for these networks. Table~\ref{table:estimated_mu_ir} provides the parameters used for these comparisons.
 
 \begin{table}[H]
 	\centering
