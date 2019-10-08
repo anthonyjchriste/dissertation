@@ -210,7 +210,7 @@ Equations~\ref{eq:iml:e1} and~\ref{eq:iml:e2} provide the error bounds for calcu
 \paragraph{AML Requirements}
 Aggregate measurements provide rolled-up feature extracted values generated from the IML layer. These often include multiple features (i.e. Voltage, Frequency, THD) and descriptive statistics of each feature (i.e. minimum, maximum, average, variance). It's worth noting that the theoretical bounds may differ from the actual bounds in practice due to the way the underlying storage engine persists the values. These differences will be examined in the results section.
 
-Laha allows for multiple sub-levels within the AML level. For instance, the OPQ DSN has both measurements and trends AMLs which summarize data at different window lengths. We need to take this into consideration when generating bounds for the AML level.
+Laha allows for multiple sub-levels within the AML. For instance, the OPQ DSN has both measurements and trends AMLs which summarize data at different window lengths. We need to take this into consideration when generating bounds for the AML.
 
 To simplify calculating the bounds on the AML level, we make an assumption that the variance of the size of each AML value is close to 0. The actual metrics for each AML value remain constant sized while the metadata associated with each AML may differ in size. Since each AML value contains similar metadata, the variance on the size of the metadata should remain small.
 
@@ -255,7 +255,7 @@ Similar to what was done for the IML, we can estimate bounds assuming the number
 	\mu S_{AML} &= \sum_{i=1}^{S_{\mu SL_{n}}} \mu S_{SL_{i}} \pm \delta S_{AML} \label{eq:aml:mu_s_aml}
 \end{align}
 
-Equations~\ref{eq:aml:e0}, \ref{eq:aml:e1}, and \ref{eq:aml:e2} provide the error on mean calculations for the AML\@.
+Equations~\ref{eq:aml:e0},~\ref{eq:aml:e1}, and~\ref{eq:aml:e2} provide the error on mean calculations for the AML\@.
 
 \begin{align}
 	\delta B &= \frac{\sigma B}{\sqrt{T}} \label{eq:aml:e0} \\
@@ -315,7 +315,7 @@ Let's next compare the estimated sizes of the DL for the OPQ and Lokahi networks
 	\label{table:estimated_mu_dr}
 \end{table}
 
-Figure~\ref{fig:plot_dl_opq_avg} shows the estimated size for the DL on the OPQ network. The errors are small enough that they are not discernible in this plot. Over a period of one year, the DL is expected to grow to 412 gigabytes $\pm$ 1.13 gigabytes.
+Figure~\ref{fig:plot_dl_opq_avg} shows the estimated size for the DL on the OPQ network. The errors are small enough that they are not discernible in this plot. Over a period of one year, the DL is expected to grow to 383 gigabytes $\pm$ 1.05 gigabytes.
 
 \begin{figure}[H]
 	\centering
@@ -372,7 +372,7 @@ Let's next compare the estimated sizes of the IL for the OPQ and Lokahi networks
 	\label{table:estimated_mu_ir}
 \end{table}
 
-Figure~\ref{fig:plot_il_opq_avg} shows the estimated size for the DL on the OPQ network. The errors are small enough that they are not discernible in this plot. Over a period of one year, the IL is expected to grow to 1.55 gigabytes $\pm$ 11 megabytes.
+Figure~\ref{fig:plot_il_opq_avg} shows the estimated size for the IL on the OPQ network. The errors are small enough that they are not discernible in this plot. Over a period of one year, the IL is expected to grow to 1.44 gigabytes $\pm$ 0.01 gigabytes.
 
 \begin{figure}[H]
 	\centering
@@ -418,8 +418,13 @@ First, let's look at the size of Laha with parameters estimated from OPQ. The es
 		\midrule
 		$S_{SAMP}$ & 2 & 0.0 \\
 		$SR$ & 12000 & 0.0 \\
+		$S_{MEASUREMENT}$ & 145 & 0.0 \\
+		$R_{MEASUREMENT}$ & 1 & 0.0 \\
+		$S_{TREND}$ & 324 & 0.0 \\
+		$R_{TREND}$ & $\frac{1}{60}$ & 0.0 \\
 		$\mu N_{SEN}$ & 9.9 & 0.7 \\
-
+		$\mu DR$ & 13064.0 & 200712.1 \\
+		$\mu IR$ & 49.1 & 1942.5 \\
 		\bottomrule
 	\end{tabularx}
 	\label{table:estimated_laha_opq}
@@ -440,7 +445,7 @@ By representing the data as a pie chart (Figure~\ref{fig:plot_lala_opq_pie}), we
 
 By removing the IML from the results, the second pie chart (right most) shows how the other levels compare to each other. From this, we can gather that the DL is the next largest. This makes sense because the DL represents windows of samples that may or may not include Incidents, and therefore the DL should always be larger than the IL which is essentially the DL with further filtering and classification.
 
-We see that the size of the AML also takes up the next largest percentage of space. This is mainly due to the fact that OPQ collects aggregate measurements once per second. Left unbounded, this collection can become quite sizable. 
+We also observe that the size of the AML also takes up the next largest percentage of space. This is mainly due to the fact that OPQ collects aggregate measurements once per second. Left unbounded, this collection can become quite sizable.
 
 \begin{figure}[H]
 	\centering
@@ -470,8 +475,6 @@ Finally, we summarize the results in Table~\ref{table:summarized_laha_results_op
 	\end{tabularx}
 	\label{table:summarized_laha_results_opq}
 \end{table}
-
-But do these results make sense? They certainly do!
 
 \subsubsection{Evaluation of TTL}
 

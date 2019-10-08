@@ -370,7 +370,7 @@ def plot_dl_opq_avg():
     mu_dr = 13064.9
     sigma_dr = 200712.1
 
-    x_values = np.arange(S_IN_YEAR, step=S_IN_DAY)
+    x_values = np.arange(1, S_IN_YEAR, step=S_IN_DAY)
     y_values = mu_dr * x_values
     e_values = (sigma_dr / np.sqrt(x_values)) * np.abs(x_values)
 
@@ -378,8 +378,6 @@ def plot_dl_opq_avg():
         print(x_values[i], y_values[i], e_values[i])
 
     plt.errorbar(x_values, y_values, yerr=e_values)
-    # plt.plot(x_values, y_values)
-    # plt.plot(x_values, y_values + e_values)
 
     plt.title("DL (OPQ) $\mu DR$=13064.9 T=1yr")
     plt.xlabel("Time (S)")
@@ -600,6 +598,7 @@ if __name__ == "__main__":
     # plot_dl_opq_err()
     # plot_iml_average()
     # plot_dl_opq_avg()
-    # plot_laha_opq()
+    plot_il_opq_avg()
+    plot_laha_opq()
     # plot_laha_opq_no_iml()
-    plot_laha_opq_pie()
+    # plot_laha_opq_pie()
