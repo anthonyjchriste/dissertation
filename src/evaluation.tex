@@ -284,6 +284,8 @@ Equation~\ref{eq:dl:ssd} computes the size of a sub-detection $S_{SD}$ using a g
 	S_{DL} = \sum_{i=0}^{S_{D_{n}}} S_{D_{i}}
 \end{equation}
 
+There is a clear upper bound on the size of the DL for a single sensor in the pathological case that the entire data set recorded by a single sensor is one long single Detection. In this pathological case, the upper bounds of the DL is equal to the upper bounds of the IML plus some constant metadata size. The pathological case isn't incredibly useful, so, let's look at this from a statistical standpoint.
+
 We can provide estimated bounds on the DL with an estimated data rate $\mu DR$ which provides the mean number of bytes generated per second within the DL\@. It should be noted that this includes the parameters for all sub-detections as well. The calculation for the mean size of the DL is given in Equation~\ref{eq:dl:mu_s_dl}.
 
 \begin{equation}\label{eq:dl:mu_s_dl}
@@ -297,7 +299,7 @@ The errors for the mean size of the DL are given in Equations~\ref{eq:dl:e0} and
 	\delta S_{DL} = \delta {DR} * |T| \label{eq:dl:e1}
 \end{align}
 
-Let's next compare the estimated sizes of the DL for the OPQ and Lokahi networks using statistics gathered for these networks.
+Let's next compare the estimated sizes of the DL for the OPQ and Lokahi networks using statistics gathered for these networks. Table~\ref{table:estimated_mu_dr} provides the parameters used for these comparisons.
 
 \begin{table}[H]
 	\centering
@@ -312,6 +314,15 @@ Let's next compare the estimated sizes of the DL for the OPQ and Lokahi networks
 	\end{tabularx}
 	\label{table:estimated_mu_dr}
 \end{table}
+
+Figure~\ref{fig:plot_dl_opq_avg} shows the estimated size for the DL on the OPQ network. The errors are small enough that they are not discernible in this plot. Over a period of one year, the DL is expected to grow to 412 gigabytes $\pm$ 1.13 gigabytes.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{figures/plot_dl_opq_avg.png}
+	\caption{Estimated OPQ DL}
+	\label{fig:plot_dl_opq_avg}
+\end{figure}
 
 \paragraph{IL Requirements}
 The Incidents Level provides added context on top of the DL in the form of signal of interest classifications. This level is structured similarly to the DL in that it contains trimmed down IML samples from one or more sensors over a varying time window and added context in the form of metadata. Due to these similarities, the bounds calculations are also quite similar.
@@ -330,7 +341,9 @@ Then, computing the size of the entire IL can be done with a simple summation as
 	S_{IL} = \sum_{i=0}^{S_{I_{n}}} S_{I_{i}}
 \end{equation}
 
-We can provide estimated bounds on the IL assuming a mean incident rate in bytes per second $\mu IR$ as shown in Equation~\ref{eq:il:mu_s_il}.
+There is a clear upper bound on the size of the IL for a single sensor in the pathological case that the entire data set recorded by a single sensor is one long single Incident. In this pathological case, the upper bounds of the IL is equal to the upper bounds of the IML plus some constant metadata size. The pathological case isn't incredibly useful, so, let's look at this from a statistical standpoint.
+
+We can provide estimated bounds on the IL assuming a mean Incident rate in bytes per second $\mu IR$ as shown in Equation~\ref{eq:il:mu_s_il}.
 
 \begin{equation}\label{eq:il:mu_s_il}
  \mu S_{IL} = \mu IR * T \pm \delta S_{IL}
@@ -342,6 +355,31 @@ Equations~\ref{eq:il:e0} and~\ref{eq:il:e1} provide error bounds on the estimate
 	\delta IR &= \frac{\sigma IR}{\sqrt{T}} \label{eq:il:e0} \\
 	\delta S_{IL} &= \delta IR * |T| \label{eq:il:e1}
 \end{align}
+
+Let's next compare the estimated sizes of the IL for the OPQ and Lokahi networks using statistics gathered for these networks. Table~\ref{table:estimated_mu_ir} provides the parameters used for these comparisons.
+
+\begin{table}[H]
+	\centering
+	\caption{Estimated $IR$}
+	\begin{tabularx}{\textwidth}{lll}
+		\toprule
+		\textbf{Network} & $\bm{\mu DR}$ & $\bm{\sigma DR}$ \\
+		\midrule
+		OPQ & 49.1 & 1942.5 \\
+		Lokahi & 0.0 & 0.0 \\
+		\bottomrule
+	\end{tabularx}
+	\label{table:estimated_mu_ir}
+\end{table}
+
+Figure~\ref{fig:plot_il_opq_avg} shows the estimated size for the DL on the OPQ network. The errors are small enough that they are not discernible in this plot. Over a period of one year, the IL is expected to grow to 1.55 gigabytes $\pm$ 11 megabytes.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{figures/plot_il_opq_avg.png}
+	\caption{Estimated OPQ IL}
+	\label{fig:plot_il_opq_avg}
+\end{figure}
 
 \paragraph{PL Requirements}
 The Phenomena Level provides actionable insights and context beyond what is provided in the IL. Examples of added context include predictive analysis, Annotations, or similarity metrics between Incidents. The Phenomena level consists mainly of metadata describing the Phenomena. Different types of Phenomena require varying amounts of metadata.
@@ -368,6 +406,72 @@ Statistically speaking, the mean size and error of the entire DSN are provided b
 	\delta S_{DSN} &= \sqrt{(\delta S_{IML})^2 + (\delta S_{AML})^2 + (\delta S_{DL})^2 + (\delta S_{IL})^2 + (\delta S_{P})^2} \label{eq:dsn:e} \\
 	\mu S_{DSN} &= \mu S_{IML} + \mu S_{AML} + \mu S_{DL} + \mu S_{IL} + \mu S_{P} \pm \delta S_{DSN} \label{eq:dsn:mu_s_dsn}
 \end{align}
+
+First, let's look at the size of Laha with parameters estimated from OPQ. The estimated parameters for this scenario are given in Table~\ref{table:estimated_laha_opq}.
+
+\begin{table}[H]
+	\centering
+	\caption{OPQ Estimated Parameters}
+	\begin{tabularx}{\textwidth}{lll}
+		\toprule
+		\textbf{Field} & \textbf{Mean} & \textbf{Stddev} \\
+		\midrule
+		$S_{SAMP}$ & 2 & 0.0 \\
+		$SR$ & 12000 & 0.0 \\
+		$\mu N_{SEN}$ & 9.9 & 0.7 \\
+
+		\bottomrule
+	\end{tabularx}
+	\label{table:estimated_laha_opq}
+\end{table}
+
+Figure~\ref{fig:plot_lala_opq} shows the bounds of the entire network.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{figures/plot_laha_opq.png}
+	\caption{Estimated Laha (OPQ)}
+	\label{fig:plot_lala_opq}
+\end{figure}
+
+We can gather that the bounds on the entire OPQ network given estimated parameters from the network are 7953 gigabytes $\pm$ 1.1 gigabytes per year. It's clear that the IML provides most of this data. We can also see that over time, the DL dominates all other levels except the IML.
+
+By representing the data as a pie chart (Figure~\ref{fig:plot_lala_opq_pie}), we can gain a better understanding of how these levels compare at the end of a year. The first (left most) pie chart shows that the IML dominates the overall data size. This makes sense because this level represents raw samples which is always going to be the largest set of data.
+
+By removing the IML from the results, the second pie chart (right most) shows how the other levels compare to each other. From this, we can gather that the DL is the next largest. This makes sense because the DL represents windows of samples that may or may not include Incidents, and therefore the DL should always be larger than the IL which is essentially the DL with further filtering and classification.
+
+We see that the size of the AML also takes up the next largest percentage of space. This is mainly due to the fact that OPQ collects aggregate measurements once per second. Left unbounded, this collection can become quite sizable. 
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{figures/plot_laha_opq_pie.png}
+	\caption{Estimated Laha (OPQ)}
+	\label{fig:plot_lala_opq_pie}
+\end{figure}
+
+Finally, we summarize the results in Table~\ref{table:summarized_laha_results_opq}.
+
+\begin{table}[H]
+	\centering
+	\caption{Summarized Laha Results (OPQ)}
+	\begin{tabularx}{\textwidth}{lll}
+		\toprule
+		\textbf{Laha Level} & \bm{$\mu Size$} \textbf{GB} & \bm{$\delta Size$} \textbf{GB} \\
+		\midrule
+		IML & 6978.36 & 0.08 \\
+		AML (Measurements) & 42.16 & 0.0005 \\
+		AML (Trends) & 1.57 & 0.00002 \\
+		AML (Total) & 43.73 & 0.0005 \\
+		DL & 383.69 & 1.05 \\
+		IL & 1.44 & 0.01 \\
+		PL & NA & NA \\
+		Laha (Total) & 7407.22 & 1.05 \\
+		\bottomrule
+	\end{tabularx}
+	\label{table:summarized_laha_results_opq}
+\end{table}
+
+But do these results make sense? They certainly do!
 
 \subsubsection{Evaluation of TTL}
 

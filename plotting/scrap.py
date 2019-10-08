@@ -1,8 +1,8 @@
 import numpy as np
 
 if __name__ == "__main__":
-    n_sen = np.array([10, 10, 10, 10, 10, 10, 10, 10, 8, 11])
-    n_sen_mean = n_sen.mean()
-    n_sen_std = n_sen.std()
+    a = np.array([1, 2, 3])
+    b = np.array([4, 5, 6])
 
-    print(n_sen_mean, n_sen_std)
+    print(np.sqrt(a**2 + b**2))
+    print(np.sqrt(17))
