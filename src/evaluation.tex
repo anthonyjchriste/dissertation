@@ -171,6 +171,21 @@ Next, we can calculate the IML size for the entire network $S_{IML}$ by summing 
 	S_{IML} = \sum_{i=1}^{B_{n}} S_{SEN_{i}}
 \end{equation}
 
+We can estimate upper and lower bounds when the number of sensors recording data to the IML varies over time by examining the mean number of sensors that recorded data $\mu N_{SEN}$ over a time period in seconds $T$.
+
+Equation~\ref{eq:iml:mu_size_iml} provides the calculations for finding the mean size of the IML with varying amounts of sensors.
+
+\begin{equation}\label{eq:iml:mu_size_iml}
+\mu S_{IML} = S_{SAMP} * SR * \mu N_{SEN} * T \pm \delta S_{IML}
+\end{equation}
+
+Equations~\ref{eq:iml:e1} and~\ref{eq:iml:e2} provide the error bounds for calculating the mean IML size.
+
+\begin{align}
+	\delta N_{SEN} &= \frac{\sigma N_{SEN}}{\sqrt{T}} \label{eq:iml:e1} \\
+	\delta S_{IML} &= \delta N_{SEN} * |S_{SAMP} * SR * T| \label{eq:iml:e2}
+\end{align}
+
 Each sample in this level is generally stored using built in machine types that generally take 1, 2, 4, or 8 bytes. Further, depending on the network requirements, each sample may or may not have an associated timestamp. Each timestamp generally adds between 4 and 8 bytes to each sample.
 
 Table~\ref{table:iml_size} provides the expected size of the IML layer for the OPQ and Lokahi networks over time periods of one day, one week, and one year.
@@ -191,22 +206,7 @@ Table~\ref{table:iml_size} provides the expected size of the IML layer for the O
 	\label{table:iml_size}
 \end{table}
 
-It's evident that the IML layer produces a signifcant amount of data, most of which is noise.
-
-We can estimate upper and lower bounds when the number of sensors recording data to the IML varies over time by examining the mean number of sensors that recorded data $\mu N_{SEN}$ over a time period in seconds $T$.
-
-Equation~\ref{eq:iml:mu_size_iml} provides the calculations for finding the mean size of the IML with varying amounts of sensors.
-
-\begin{equation}\label{eq:iml:mu_size_iml}
-	\mu S_{IML} = S_{SAMP} * SR * \mu N_{SEN} * T \pm \delta S_{IML}
-\end{equation}
-
-Equations~\ref{eq:iml:e1} and~\ref{eq:iml:e2} provide the error bounds for calculating the mean IML size.
-
-\begin{align}
-	\delta N_{SEN} &= \frac{\sigma N_{SEN}}{\sqrt{T}} \label{eq:iml:e1} \\
-	\delta S_{IML} &= \delta N_{SEN} * |S_{SAMP} * SR * T| \label{eq:iml:e2}
-\end{align}
+It's evident that the IML layer produces a significant amount of data, most of which is noise. Left unbounded an OPQ network with 15 Boxes can easily grow beyond 11 terabytes per year and a Lokahi network with 15 sensors at the maximum sampling rate can grow to over 15 terabytes per year!
 
 \paragraph{AML Requirements}
 Aggregate measurements provide rolled-up feature extracted values generated from the IML layer. These often include multiple features (i.e. Voltage, Frequency, THD) and descriptive statistics of each feature (i.e. minimum, maximum, average, variance). It's worth noting that the theoretical bounds may differ from the actual bounds in practice due to the way the underlying storage engine persists the values. These differences will be examined in the results section.
@@ -227,29 +227,29 @@ Equation~\ref{eq:aml} shows the size of the AML $S_{AML}$ including all sub-leve
 	S_{AML} = \sum_{i=1}^{S_{SL_{n}}} S_{SL_{i}}
 \end{equation}
 
-Figure~\ref{fig:plot_aml_level_opq_single} examines the growth of the AML level using OPQ as a basis over a time period of one year for a single sensor. We can see that measurements which have a size of 144 bytes and a rate of 1 Hz dominates the data growth which is what we would expect since measurements send at a higher rate. Trends data growth (orange series) on the other hand appears to be almost flat. Finally, the green series represents the total size of the two sub-levels and the sum data storage of the AML for a single sensor.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=\linewidth]{figures/plot_aml_level_opq_single.png}
-	\caption{OPQ AML Growth with Sub-Levels}
-	\label{fig:plot_aml_level_opq_single}
-\end{figure}
-
-We can see from this figure that left unbounded, the AML can grow to near 5GB a year per sensor in the OPQ network.
-
-Figure~\ref{fig:plot_aml_level_lokahi_single} examines data growth of the AML using Lokahi as a basis over a time period of one year for a single sensor. In this sensor network, the size of each Aggregate Measurement remains constant over each sub-level and only the AML rate varies. We can see that none of the sub-levels tend to dominate.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=\linewidth]{figures/plot_aml_level_lokahi_single.png}
-	\caption{Lokahi AML Growth with Sub-Levels}
-	\label{fig:plot_aml_level_lokahi_single}
-\end{figure}
-
-From this figure, we can conclude that the AML can grow to a maximum bounds of near 3GB a year per sensor at the maximum sampling rate in the Lokahi network if the data remains unbounded and a minimum of near 2 gigabytes per year per sensor at the lowest sampling rate.
-
-Similar to what was done for the IML, we can estimate bounds assuming the number of sensors sending data is not constant. Equations~\ref{eq:aml:mu_s_sl} and~\ref{eq:aml:mu_s_aml} provide the calculations for mean sub-AML level size and the mean size of the AML respectively.
+%Figure~\ref{fig:plot_aml_level_opq_single} examines the growth of the AML level using OPQ as a basis over a time period of one year for a single sensor. We can see that measurements which have a size of 144 bytes and a rate of 1 Hz dominates the data growth which is what we would expect since measurements send at a higher rate. Trends data growth (orange series) on the other hand appears to be almost flat. Finally, the green series represents the total size of the two sub-levels and the sum data storage of the AML for a single sensor.
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[width=\linewidth]{figures/plot_aml_level_opq_single.png}
+%	\caption{OPQ AML Growth with Sub-Levels}
+%	\label{fig:plot_aml_level_opq_single}
+%\end{figure}
+%
+%We can see from this figure that left unbounded, the AML can grow to near 5GB a year per sensor in the OPQ network.
+%
+%Figure~\ref{fig:plot_aml_level_lokahi_single} examines data growth of the AML using Lokahi as a basis over a time period of one year for a single sensor. In this sensor network, the size of each Aggregate Measurement remains constant over each sub-level and only the AML rate varies. We can see that none of the sub-levels tend to dominate.
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[width=\linewidth]{figures/plot_aml_level_lokahi_single.png}
+%	\caption{Lokahi AML Growth with Sub-Levels}
+%	\label{fig:plot_aml_level_lokahi_single}
+%\end{figure}
+%
+%From this figure, we can conclude that the AML can grow to a maximum bounds of near 3GB a year per sensor at the maximum sampling rate in the Lokahi network if the data remains unbounded and a minimum of near 2 gigabytes per year per sensor at the lowest sampling rate.
+%
+%Similar to what was done for the IML, we can estimate bounds assuming the number of sensors sending data is not constant. Equations~\ref{eq:aml:mu_s_sl} and~\ref{eq:aml:mu_s_aml} provide the calculations for mean sub-AML level size and the mean size of the AML respectively.
 
 \begin{align}
 	\mu S_{SL} &= S_{V} * SR * T * \mu B \pm \delta S_{SL} \label{eq:aml:mu_s_sl} \\
