@@ -173,23 +173,25 @@ Next, we can calculate the IML size for the entire network $S_{IML}$ by summing 
 
 Each sample in this level is generally stored using built in machine types that generally take 1, 2, 4, or 8 bytes. Further, depending on the network requirements, each sample may or may not have an associated timestamp. Each timestamp generally adds between 4 and 8 bytes to each sample.
 
-Figure~\ref{fig:iml_growth_opq} shows IML growth for a single sensor modeled after the OPQ DSN\@. It's evident that the IML produces a significant amount of data. In the case of OPQ, it produces around 700 gigabytes of data per year per device or on the order of 2 gigabytes of data per day.
+Table~\ref{table:iml_size} provides the expected size of the IML layer for the OPQ and Lokahi networks over time periods of one day, one week, and one year.
 
-\begin{figure}[H]
+\begin{table}[H]
 	\centering
-	\includegraphics[width=\linewidth]{figures/plot_iml_level_opq.png}
-	\caption{IML Growth OPQ}
-	\label{fig:iml_growth_opq}
-\end{figure}
+	\caption{IML Constraints}
+	\begin{tabularx}{\textwidth}{Xllll}
+		\toprule
+		\textbf{Description} & \textbf{Sample Rate} & \textbf{Sample Size Bytes} & \textbf{Data (Day/Week/Year)} \\
+		\midrule
+		OPQ Box & 12 kHz & 2 & 2.07 GB / 14.51 GB / 756.86 GB \\
+		Lokahi Sensor & 80 Hz & 4 & 0.03 GB / 0.19 GB / 10.10 GB \\
+		Lokahi Sensor & 800 Hz & 4 & 0.28 GB / 1.94 GB / 100.92 GB \\
+		Lokahi Sensor & 8 kHz & 4 & 2.76 GB / 19.35 GB / 1009.15 GB \\
+		\bottomrule
+	\end{tabularx}
+	\label{table:iml_size}
+\end{table}
 
-Figure~\ref{fig:iml_growth_lokahi} shows the IML growth for a single sensor modeled after the Lokahi DSN\@. The Lokahi DSN produces 10 gigabytes of data at 80Hz, 100 gigabytes at 800Hz, and 1000 gigabytes of data at 8000Hz over the course of a year for a single sensor.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=\linewidth]{figures/plot_iml_level_lokahi.png}
-	\caption{IML Growth Lokahi}
-	\label{fig:iml_growth_lokahi}
-\end{figure}
+It's evident that the IML layer produces a signifcant amount of data, most of which is noise.
 
 We can estimate upper and lower bounds when the number of sensors recording data to the IML varies over time by examining the mean number of sensors that recorded data $\mu N_{SEN}$ over a time period in seconds $T$.
 
