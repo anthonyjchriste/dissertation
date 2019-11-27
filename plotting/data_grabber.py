@@ -15,8 +15,6 @@ if __name__ == "__main__":
     stats = db.command("collstats", "trends")
     print(f"trends mean size={stats['avgObjSize']}")
 
-    sys.exit(0)
-
     # Events
     events = db.events.find({"target_event_start_timestamp_ms": {"$gt": 0},
                              "target_event_end_timestamp_ms": {"$gt": 0}},

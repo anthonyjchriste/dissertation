@@ -323,30 +323,30 @@ The errors for the mean size of the DL are given in Equations~\ref{eq:dl:e0} and
 	\delta S_{DL} = \delta {DR} * |T| \label{eq:dl:e1}
 \end{align}
 
-Let's next compare the estimated sizes of the DL for the OPQ and Lokahi networks using statistics gathered for these networks. Table~\ref{table:estimated_mu_dr} provides the parameters used for these comparisons.
+Let's next compare the estimated sizes of the DL for the OPQ and Lokahi networks using statistics gathered for these networks. These values were obtained from actual data collected during deployments of the OPQ and Lokahi networks. Table~\ref{table:estimated_mu_dr} provides the parameters used for these comparisons.
 
 \begin{table}[H]
 	\centering
 	\caption{Estimated $DR$}
-	\begin{tabularx}{\textwidth}{lll}
+	\begin{tabularx}{\textwidth}{llllll}
 		\toprule
-		\textbf{Network} & $\bm{\mu DR}$ & $\bm{\sigma DR}$ \\
+		\textbf{Network} & $\bm{\mu DR}$ & $\bm{\sigma DR}$ & Data/Day $ \\
 		\midrule
-		OPQ & 13064.9 & 200712.1 \\
+		OPQ & 8211.7 & 185544.8 \\
 		Lokahi & 0.0 & 0.0 \\
 		\bottomrule
 	\end{tabularx}
 	\label{table:estimated_mu_dr}
 \end{table}
 
-Figure~\ref{fig:plot_dl_opq_avg} shows the estimated size for the DL on the OPQ network. The errors are small enough that they are not discernible in this plot. Over a period of one year, the DL is expected to grow to 383 gigabytes $\pm$ 1.05 gigabytes.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=\linewidth]{figures/plot_dl_opq_avg.png}
-	\caption{Estimated OPQ DL}
-	\label{fig:plot_dl_opq_avg}
-\end{figure}
+%Figure~\ref{fig:plot_dl_opq_avg} shows the estimated size for the DL on the OPQ network. The errors are small enough that they are not discernible in this plot. Over a period of one year, the DL is expected to grow to 383 gigabytes $\pm$ 1.05 gigabytes.
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[width=\linewidth]{figures/plot_dl_opq_avg.png}
+%	\caption{Estimated OPQ DL}
+%	\label{fig:plot_dl_opq_avg}
+%\end{figure}
 
 \paragraph{IL Requirements}
 The Incidents Level provides added context on top of the DL in the form of signal of interest classifications. This level is structured similarly to the DL in that it contains trimmed down IML samples from one or more sensors over a varying time window and added context in the form of metadata. Due to these similarities, the bounds calculations are also quite similar.
