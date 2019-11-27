@@ -188,19 +188,19 @@ Equations~\ref{eq:iml:e1} and~\ref{eq:iml:e2} provide the error bounds for calcu
 
 Each sample in this level is generally stored using built in machine types that generally take 1, 2, 4, or 8 bytes. Further, depending on the network requirements, each sample may or may not have an associated timestamp. Each timestamp generally adds between 4 and 8 bytes to each sample.
 
-Table~\ref{table:iml_size} provides the expected size of the IML layer for the OPQ and Lokahi networks over time periods of one day, one week, and one year.
+Table~\ref{table:iml_size} provides the expected size of the IML layer for the OPQ and Lokahi networks over time periods of one day, one week, and one year. These values are constant for all OPQ and Lokahi networks independent of deployment because they only rely on constant values defined by the sensors themselves.
 
 \begin{table}[H]
 	\centering
-	\caption{IML Constraints}
-	\begin{tabularx}{\textwidth}{Xllll}
+	\caption{IML Constraints per Sensor}
+	\begin{tabularx}{\textwidth}{Xlllll}
 		\toprule
-		\textbf{Description} & \textbf{Sample Rate} & \textbf{Sample Size Bytes} & \textbf{Data (Day/Week/Year)} \\
+		\textbf{Description} & \textbf{Rate} & \textbf{Size} & \textbf{Data/Day} & \textbf{Data/Week} & \textbf{Data/Year} \\
 		\midrule
-		OPQ Box & 12 kHz & 2 & 2.07 GB / 14.51 GB / 756.86 GB \\
-		Lokahi Sensor & 80 Hz & 4 & 0.03 GB / 0.19 GB / 10.10 GB \\
-		Lokahi Sensor & 800 Hz & 4 & 0.28 GB / 1.94 GB / 100.92 GB \\
-		Lokahi Sensor & 8 kHz & 4 & 2.76 GB / 19.35 GB / 1009.15 GB \\
+		OPQ Box & 12 kHz & 2 & 2.07 GB & 14.51 GB & 756.86 GB \\
+		Lokahi Sensor & 80 Hz & 4 & 0.03 GB & 0.19 GB & 10.10 GB \\
+		Lokahi Sensor & 800 Hz & 4 & 0.28 GB & 1.94 GB & 100.92 GB \\
+		Lokahi Sensor & 8 kHz & 4 & 2.76 GB & 19.35 GB & 1009.15 GB \\
 		\bottomrule
 	\end{tabularx}
 	\label{table:iml_size}
@@ -264,6 +264,28 @@ Equations~\ref{eq:aml:e0},~\ref{eq:aml:e1}, and~\ref{eq:aml:e2} provide the erro
 	\delta S_{SL} &= \delta B * |S_{V} * SR * T| \label{eq:aml:e1} \\
 	\delta S_{AML} &= \sqrt{\sum_{i=1}^{\delta S_{SL_{n}}}} (\delta S_{SL_{i}}) ^ 2  \label{eq:aml:e2}
 \end{align}
+
+Table~\ref{table:aml_size} contains the theoretical bounds of the AML layer without any optimization for OPQ and Lokahi networks. These values provide the upper bounds per sensor for periods of one day, one week, and one year. The OPQ DSN utilizes two sub-levels (one for measurements and one for trends). The Lokahi network contains only one level, but each sampling rate has its own IML rate. We provide the upper bounds for each possible sampling rate that Lokahi utilizes. These values are constant for all OPQ and Lokahi networks independent of deployment because they only rely on constant values defined by the sensors themselves.
+
+\begin{table}[H]
+	\centering
+	\caption{AML Constraints per Sensor}
+	\begin{tabularx}{\textwidth}{Xlllll}
+		\toprule
+		\textbf{Description} & \textbf{Rate} & \textbf{Size} & \textbf{Data/Day} & \textbf{Data/Week} & \textbf{Data/Year} \\
+		\midrule
+		OPQ $AML_{Measurements}$ 	& 1 Hz 					& 145 			& 12.52 MB 	& 87.69 MB 	& 4.6 GB 	\\
+		OPQ $AML_{Trends}$ 			& $\frac{1}{60}$ Hz 	& 325 			& 0.47 MB 	& 3.72 MB  	& 170.82 MB \\
+		OPQ $AML_{Total}$ 			&   					&   			& 12.99 MB 	& 91.41 MB 	& 4.77 GB 	\\
+		Lokahi $AML_{80Hz}$			& $\frac{1}{51.200}$ Hz	& 16384 		& 27.65 MB 	& 193.54 MB & 10.09 GB	\\
+		Lokahi $AML_{800Hz}$		& $\frac{1}{40.960}$ Hz	& 131072		& 276.48 MB & 1.94 GB 	& 100.92 GB \\
+		Lokahi $AML_{8000Hz}$		& $\frac{1}{32.768}$ Hz	& 1048576		& 2.76 GB 	& 19.35 GB 	& 1.01 TB 	\\
+		\bottomrule
+	\end{tabularx}
+	\label{table:aml_size}
+\end{table}
+
+Left un-optimized and taken over the course of a year for a typical OPQ or Lokahi deployment with 15 sensors, we would expect an upper bound of 71.55 GB collected from the OPQ network and 15 TB of data to be collected from the Lokahi network. Why is the AML so much larger in Lokahi as compared to OPQ? It's due to a requirement of the Lokahi network to store raw data along with it's AML windows. Not only do Lokahi AML windows contained the feature extracted features of the stream, but they also contain the raw data associated with that window.
 
 \paragraph{DL Requirements}
 The detections level contains metadata and associated sampled high fidelity data that was returned from sensors for a given time window. A single detection can contain samples from multiple data streams for a single event of interest.

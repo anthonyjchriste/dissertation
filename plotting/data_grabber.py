@@ -1,9 +1,21 @@
 import numpy as np
 import pymongo
+import pymongo.database
+import sys
 
 if __name__ == "__main__":
-    mongo_client = pymongo.MongoClient()
-    db = mongo_client.opq
+    mongo_client: pymongo.MongoClient = pymongo.MongoClient()
+    db: pymongo.database.Database = mongo_client.opq
+
+    # Measurements
+    stats = db.command("collstats", "measurements")
+    print(f"measurements mean size={stats['avgObjSize']}")
+
+    # Trends
+    stats = db.command("collstats", "trends")
+    print(f"trends mean size={stats['avgObjSize']}")
+
+    sys.exit(0)
 
     # Events
     events = db.events.find({"target_event_start_timestamp_ms": {"$gt": 0},
