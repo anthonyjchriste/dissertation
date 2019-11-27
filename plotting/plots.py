@@ -367,8 +367,8 @@ def plot_iml_average():
 def plot_dl_opq_avg():
     plt.figure(figsize=(12, 5))
 
-    mu_dr = 13064.9
-    sigma_dr = 200712.1
+    mu_dr = 8211.7
+    sigma_dr = 185544.8
 
     x_values = np.arange(1, S_IN_YEAR, step=S_IN_DAY)
     y_values = mu_dr * x_values
@@ -390,8 +390,8 @@ def plot_dl_opq_avg():
 def plot_il_opq_avg():
     plt.figure(figsize=(12, 5))
 
-    mu_dr = 49.06178717801157
-    sigma_dr = 1942.4922482680722
+    mu_dr = 438.58
+    sigma_dr = 6288.48
 
     x_values = np.arange(S_IN_YEAR, step=S_IN_DAY)
     y_values = mu_dr * x_values
@@ -445,16 +445,16 @@ def plot_laha_opq():
     plt.errorbar(x_values, aml_size_total, yerr=aml_size_e, label="AML")
 
     # DL
-    mu_dr = 13064.0
-    sigma_dr = 200712.1
+    mu_dr = 8211.741437354178
+    sigma_dr = 185544.81743550362
 
     dl_size = mu_dr * x_values
     dl_size_e = (sigma_dr / np.sqrt(x_values)) * np.abs(x_values)
     plt.errorbar(x_values, dl_size, yerr=dl_size_e, label="DL")
 
     # IL
-    mu_il = 49.1
-    sigma_il = 1942.5
+    mu_il = 438.57850995956863
+    sigma_il = 6288.484706127778
 
     il_size = mu_il * x_values
     il_size_e = (sigma_il / np.sqrt(x_values)) * np.abs(x_values)
@@ -508,16 +508,16 @@ def plot_laha_opq_no_iml():
     plt.errorbar(x_values, aml_size_total, yerr=aml_size_e, label="AML")
 
     # DL
-    mu_dr = 13064.0
-    sigma_dr = 200712.1
+    mu_dr = 8211.741437354178
+    sigma_dr = 185544.81743550362
 
     dl_size = mu_dr * x_values
     dl_size_e = (sigma_dr / np.sqrt(x_values)) * np.abs(x_values)
     plt.errorbar(x_values, dl_size, yerr=dl_size_e, label="DL")
 
     # IL
-    mu_il = 49.1
-    sigma_il = 1942.5
+    mu_il = 438.57850995956863
+    sigma_il = 6288.484706127778
 
     il_size = mu_il * x_values
     il_size_e = (sigma_il / np.sqrt(x_values)) * np.abs(x_values)
@@ -557,10 +557,10 @@ def plot_laha_opq_pie():
     aml_size_trend = s_trend * r_trend * mu_n_sens * x_values
 
     # DL
-    mu_dr = 13064.0
+    mu_dr = 8211.741437354178
     dl_size = mu_dr * x_values
     # IL
-    mu_il = 49.1
+    mu_il = 438.57850995956863
     il_size = mu_il * x_values
 
     plt.subplot(1, 2, 1)
@@ -597,8 +597,8 @@ if __name__ == "__main__":
     # plot_dl_opq_no_err()
     # plot_dl_opq_err()
     # plot_iml_average()
-    # plot_dl_opq_avg()
+    plot_dl_opq_avg()
     plot_il_opq_avg()
     plot_laha_opq()
-    # plot_laha_opq_no_iml()
-    # plot_laha_opq_pie()
+    plot_laha_opq_no_iml()
+    plot_laha_opq_pie()

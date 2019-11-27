@@ -330,10 +330,10 @@ Let's next compare the estimated sizes of the DL for the OPQ and Lokahi networks
 	\caption{Estimated $DR$}
 	\begin{tabularx}{\textwidth}{llllll}
 		\toprule
-		\textbf{Network} & $\bm{\mu DR}$ & $\bm{\sigma DR}$ & Data/Day $ \\
+		\textbf{Network} & $\bm{\mu DR}$ & $\bm{\sigma DR}$ & \textbf{Data/Day} & \textbf{Data/Week} & \textbf{Data/Year} \\
 		\midrule
-		OPQ & 8211.7 & 185544.8 \\
-		Lokahi & 0.0 & 0.0 \\
+		OPQ & 8211.7 & 185544.8 & 0.71 GB & 4.97 GB & 258.96 GB \\
+		Lokahi & 0.0 & 0.0 & & &  \\
 		\bottomrule
 	\end{tabularx}
 	\label{table:estimated_mu_dr}
@@ -380,30 +380,30 @@ Equations~\ref{eq:il:e0} and~\ref{eq:il:e1} provide error bounds on the estimate
 	\delta S_{IL} &= \delta IR * |T| \label{eq:il:e1}
 \end{align}
 
-Let us next compare the estimated sizes of the IL for the OPQ and Lokahi networks using statistics gathered for these networks. Table~\ref{table:estimated_mu_ir} provides the parameters used for these comparisons.
+Let us next compare the estimated sizes of the IL for the OPQ and Lokahi networks using statistics gathered for these networks. These values were obtained directly from data collected during OPQ and Lokai deployments. Table~\ref{table:estimated_mu_ir} provides the parameters used for these comparisons.
 
 \begin{table}[H]
 	\centering
 	\caption{Estimated $IR$}
-	\begin{tabularx}{\textwidth}{lll}
+	\begin{tabularx}{\textwidth}{llllll}
 		\toprule
-		\textbf{Network} & $\bm{\mu DR}$ & $\bm{\sigma DR}$ \\
+		\textbf{Network} & $\bm{\mu DR}$ & $\bm{\sigma DR}$ & \textbf{Data/Day} & \textbf{Data/Week} & \textbf{Data/Year} \\
 		\midrule
-		OPQ & 49.1 & 1942.5 \\
-		Lokahi & 0.0 & 0.0 \\
+		OPQ & 438.58 & 6288.48 & 0.04 GB & 0.27 GB & 13.83 GB \\
+		Lokahi & 0.0 & 0.0 & & & \\
 		\bottomrule
 	\end{tabularx}
 	\label{table:estimated_mu_ir}
 \end{table}
 
-Figure~\ref{fig:plot_il_opq_avg} shows the estimated size for the IL on the OPQ network. The errors are small enough that they are not discernible in this plot. Over a period of one year, the IL is expected to grow to 1.44 gigabytes $\pm$ 0.01 gigabytes.
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=\linewidth]{figures/plot_il_opq_avg.png}
-	\caption{Estimated OPQ IL}
-	\label{fig:plot_il_opq_avg}
-\end{figure}
+%Figure~\ref{fig:plot_il_opq_avg} shows the estimated size for the IL on the OPQ network. The errors are small enough that they are not discernible in this plot. Over a period of one year, the IL is expected to grow to 1.44 gigabytes $\pm$ 0.01 gigabytes.
+%
+%\begin{figure}[H]
+%	\centering
+%	\includegraphics[width=\linewidth]{figures/plot_il_opq_avg.png}
+%	\caption{Estimated OPQ IL}
+%	\label{fig:plot_il_opq_avg}
+%\end{figure}
 
 \paragraph{PL Requirements}
 The Phenomena Level provides actionable insights and context beyond what is provided in the IL. Examples of added context include predictive analysis, Annotations, or similarity metrics between Incidents. The Phenomena level consists mainly of metadata describing the Phenomena. Different types of Phenomena require varying amounts of metadata.
@@ -447,8 +447,8 @@ First, let's look at the size of Laha with parameters estimated from OPQ. The es
 		$S_{TREND}$ & 324 & 0.0 \\
 		$R_{TREND}$ & $\frac{1}{60}$ & 0.0 \\
 		$\mu N_{SEN}$ & 9.9 & 0.7 \\
-		$\mu DR$ & 13064.0 & 200712.1 \\
-		$\mu IR$ & 49.1 & 1942.5 \\
+		$\mu DR$ & 8211.7 & 185544.8 \\
+		$\mu IR$ & 438.5 & 6288.4 \\
 		\bottomrule
 	\end{tabularx}
 	\label{table:estimated_laha_opq}
