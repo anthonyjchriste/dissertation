@@ -1,0 +1,21 @@
+Total events: 1645
+Event durations sum: 3307751
+Event durations mean: 2010.7908814589666
+Event durations std: 1264.1233761262497
+Event bytes sum: 21232605729.0
+Event bytes mean: 12907359.105775077
+Event bytes std: 15895031.895760648
+Event bytes sem: 391902.87780722615
+Event DR/s: 406.4760580045769
+Event DR/s sem: 2199.2633713247947
+
+Total incidents: 41
+Incident durations sum: 138960
+Incident durations mean: 3389.268292682927
+Incident durations std: 13217.736124052872
+Incident bytes sum: 1892959407.0
+Incident bytes mean: 46169741.63414634
+Incident bytes std: 85727404.3195229
+Incident bytes sem: 13388371.229525428
+Incident DR/s: 37.11652361890925
+Incident DR/s sem: 12004.184732882764
