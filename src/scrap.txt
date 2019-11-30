@@ -1,0 +1,1 @@
+size(IML) = SR * size(sample) * TTL(IML) + mean(DL_IML/4weeks) + mean(IL_IML/1yr)

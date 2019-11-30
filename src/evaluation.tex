@@ -501,6 +501,110 @@ Finally, we summarize the results in Table~\ref{table:summarized_laha_results_op
 \end{table}
 
 \subsubsection{Evaluation of TTL}
+In the previous section, I examined the data requirements for Laha with the assumption that data is never discarded. In practice, this approach is unsustainable and will quickly lead to network degradation in terms of storage, memory, and processing requirements. To address this issue, Laha provides the concept of TTL (Time-to-Live) which is the amount of time that data is stored before it is garbage collected.
+
+Each level within the Laha hierarchy provides a dynamic and configurable TTL. Data is garbage collected when it becomes older than its TTL. The TTL for data is adjusted when higher levels in the hierarchy identity something of interest. For instance, if a Detection is identified in the DL, then all data in the IML and AML that were used in the creation of the Detection are given a TTL that matches the TTL of the Detection. Similarly, if an Incident is identified in the IL, then all data in the IML, AML, and DL are given TTLs that match that of the Incident. This process continues recursively throughout all levels of the Laha hierarchy.
+
+Table~\ref{table:ttl_summary} reviews the default TTLs provided at each level of the Laha hierarchy.
+
+\begin{table}[H]
+	\centering
+	\caption{Default Laha TTL}
+	\begin{tabularx}{\textwidth}{ll}
+		\toprule
+		\textbf{Laha Level} & \textbf{Default TTL} \\
+		\midrule
+		IML & 15 Minutes \\
+		AML (Measurements) & 1 Day \\
+		AML (Trends) & 2 Weeks \\
+		DL & 1 Month \\
+		IL & 1 Year \\
+		PL & 2 Years \\
+		\bottomrule
+	\end{tabularx}
+	\label{table:ttl_summary}
+\end{table}
+
+\paragraph{Evaluation of IML with TTL}
+The IML (Instantaneous Measurements Level) stores raw samples from the DSN. Traditionally, this is the largest and most noisy data set produced by the DSN and thus has a very short TTL (which is often limited by the amount of on-board sensor memory). I showed in the previous section that without TTL, this level grows very rapidly.
+
+If we don't take into account saving IML data from higher levels, calculating upper bounds of the IML for a single device can be accomplished by simply bounding its growth by its TTL\@. This is provided in equation~\ref{eq:s_iml_ttl}.
+
+\begin{equation}\label{eq:s_iml_ttl}
+	IML_{TTL} = SR * S_{SAMP} * TTL_{IML}
+\end{equation}
+
+Plugging in values from OPQ and Lokahi nets the following bounds assuming a 15 minute TTL for IML data.
+
+\begin{table}[H]
+	\centering
+	\caption{IML/Sensor with 15 Min. TTL without Data Saving}
+	\begin{tabularx}{\textwidth}{Xlll}
+		\toprule
+		\textbf{Description} & \textbf{Sample Rate Hz} & \textbf{Sample Size Bytes} & \textbf{Max. IML Bounds} \\
+		\midrule
+		OPQ & 12000 & 2 & 21.6 MB \\
+		Lokahi & 80 & 4 & 0.29 MB \\
+		Lokahi & 800 & 4 & 2.88 MB \\
+		Lokahi & 8000 & 4 & 28.8 MB \\
+		\bottomrule
+	\end{tabularx}
+	\label{table:ttl_a_iml}
+\end{table}
+
+However, data is not only just discarded when it reaches its TTL, but it can have its TTL adjusted when that data is used in identifying a feature of a higher Laha level. When a higher (DL, IL, or PL) uses data from the IML, that data will be adjusted to live for as long as the highest level that it was used in. This must be taken into consideration when calculating the bounds of the IML. To find these numbers, I've taken data directly from the OPQ and Lokahi deployments to determine on average how often IML data is saved.
+
+Equation~\ref{eq:s_iml_ttl_full} provides the calculation for obtaining the full estimated bounds of the IML where $\mu DL_{IML}$ is the average amount of IML data saved by the DL within its TTL of 1 month, $\mu IL_{IML}$ is the average amount of IML data saved by the IL within its TTL of 1 year, and $\mu PL_{IML}$ is the average amount of IML data saved by the PL within its TTL of 2 years.
+
+\begin{equation}\label{eq:s_iml_ttl_full}
+	IML_{TTL} = SR * S_{SAMP} * TTL_{IML} + \mu DL_{IML} + \mu IL_{IML} + \mu PL_{IML}
+\end{equation}
+
+Table~\ref{table:ttl_iml_params} provides the estimated parameters for the OPQ and Lokahi networks required for determining the IML bounds with TTL.
+
+\begin{table}[H]
+	\centering
+	\caption{Estimated IML Data Saved by Level}
+	\begin{tabularx}{\textwidth}{Xlll}
+		\toprule
+		\textbf{Level} & \textbf{OPQ} & \textbf{Lokahi} \\
+		\midrule
+		$\mu DL_{IML}$ & 94.84 GB & 0.0 \\
+		$\mu IL_{IML}$ & 308.96 GB & 0.0 \\
+		$\mu PL_{IML}$ & 0.0 & 0.0 \\
+		\bottomrule
+	\end{tabularx}
+	\label{table:ttl_iml_params}
+\end{table}
+
+Table provides the maximum bounds of the IML layer for the OPQ and Lokahi networks using estimated parameters from deployments of those networks.
+
+\begin{table}[H]
+	\centering
+	\caption{Estimated IML Bounds}
+	\begin{tabularx}{\textwidth}{Xlll}
+		\toprule
+		\textbf{Level} & \textbf{OPQ} & \textbf{Lokahi} \\
+		\midrule
+		$\mu DL_{IML}$ & 94.84 GB & 0.0 \\
+		$\mu IL_{IML}$ & 308.96 GB & 0.0 \\
+		$\mu PL_{IML}$ & 0.0 & 0.0 \\
+		\bottomrule
+	\end{tabularx}
+	\label{table:ttl_iml}
+\end{table}
+
+\paragraph{Evaluation of AML with TTL}
+
+\paragraph{Evaluation of DL with TTL}
+
+\paragraph{Evaluation of IL with TTL}
+
+\paragraph{Evaluation of PL with TTL}
+
+\paragraph{Evaluation of Laha with TTL}
+
+\paragraph{Comparing Laha with and without TTL}
 
 During the acquisition and curating of data, metrics were collected and stored about how much data is saved (in bytes) versus how much data is discarded at each level within the Laha data hierarchy. These numbers were compared against data storage as if the OPQ and Lokahi frameworks were to take a ``store everything" approach. Evaluation metrics provided include percentage of data storage saved per data hierarchy level as well as an estimate of overall decrease in data storage requirements for the entire DSN. A positive result from these metrics would show significant reduction in storage requirements for each level in the framework compared against a ``store everything approach" and other state-of-the-art data storage solutions.
 
