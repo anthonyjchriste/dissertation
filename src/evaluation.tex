@@ -9,7 +9,7 @@ Both the OPQ and Lokahi reference implementations were deployed to test sites wh
 \subsection{OPQ Reference Deployment}\label{subsec:opq-reference-deployment}
 Fifteen Laha-compliant OPQ Boxes were deployed over the UH Manoa microgrid during the Summer of 2019.
 
-The placement strategy I utilized aimed to maximize collecting distributed PQ events by placing sensors on the same electrical lines. We also considered placing Boxes in locations co-located with sensitive or demanding electrical equipment in the hopes of seeing PQ events generated from this equipment. Finally, we considered data access in terms of network availability and ground truth availability. Working with my colleagues and the Office of Energy Management, I selected the locations for the campus wide deployment. Table \ref{table:OpqDeployment} displays the details of the UH Manoa campus deployment and justifications for choosing those locations.
+The placement strategy I utilized aimed to maximize collecting distributed PQ events by placing sensors on the same electrical lines. We also considered placing Boxes in locations co-located with sensitive or demanding electrical equipment in the hopes of seeing PQ events generated from this equipment. Finally, we considered data access in terms of network availability and ground truth availability. Working with my colleagues and the Office of Energy Management, I selected the locations for the campus wide deployment. Table~\ref{table:OpqDeployment} displays the details of the UH Manoa campus deployment and justifications for choosing those locations.
 
 \begin{table}[H]
 	\centering
@@ -47,7 +47,7 @@ Determination of electrical lines was aided by the UH Manoa electrical blueprint
 	\label{fig:UhGridTopo}
 \end{figure}
 
-A graphical representation showing the complete coverage of Boxes on the UH Manoa microgrid is displayed in Figure \ref{fig:UhDeploy}.
+A graphical representation showing the complete coverage of Boxes on the UH Manoa microgrid is displayed in Figure~\ref{fig:UhDeploy}.
 
 \begin{figure}
 	\centering
@@ -87,7 +87,7 @@ Each deployment requires different techniques for performing evaluation.
 
 In the OPQ deployment, OPQBoxes are deployed and co-located with industry standard, calibrated, reference sensors. Each of these sensors cost thousands to obtain and install, collect all the data all the time, and can only be connected to the power main as it enters a building. These sensors provide a means for verifying signals received or not received by OPQ, as well as confirming long term trend data. I have been provided access to these sensors and stored data via the Office of Energy Management at UH Manoa. The data is accessible via an HTTP API. The Office of Energy Management at UH Manoa has also provided the full schematics for the UH power grid. This was used as a ground truth for topology estimates and distributed signal analysis. OPQBoxes are placed in strategic locations on the UH Manoa campus specifically in order to evaluate the distributed nature of PQ signals. For example, OPQBoxes are placed on the same electrical lines as well as separate electrical lines to observe how PQ signals travel through an electrical grid.
 
-In the Lokahi deployment, I had the opportunity to generate infrasound signals using a calibrated infrasound source \cite{park2009rotary}.. The source can be tuned to produce infrasound at configurable frequencies and amplitudes. The source works by attaching a variable pitch propeller to an electric motor that can be driven by a waveform generator. The source can generate signals that can be observed at large stand off distances, over tens of kilometers. Similar to the OPQ deployment, sensors within the Lokahi deployment were co-located with industry standard, calibrated, infrasound sensors. These sensors can provide a metric of signals that were correctly observed, incorrectly observed, or not observed at all by the Lokahi deployment. Further, infrasound itself is characterized quite well by various geophysical equations. These equations can be used to predict if sensors deployed in the Lokahi deployment are likely to observe generated infrasound signals.
+In the Lokahi deployment, I had the opportunity to generate infrasound signals using a calibrated infrasound source~\cite{park2009rotary}.. The source can be tuned to produce infrasound at configurable frequencies and amplitudes. The source works by attaching a variable pitch propeller to an electric motor that can be driven by a waveform generator. The source can generate signals that can be observed at large stand off distances, over tens of kilometers. Similar to the OPQ deployment, sensors within the Lokahi deployment were co-located with industry standard, calibrated, infrasound sensors. These sensors can provide a metric of signals that were correctly observed, incorrectly observed, or not observed at all by the Lokahi deployment. Further, infrasound itself is characterized quite well by various geophysical equations. These equations can be used to predict if sensors deployed in the Lokahi deployment are likely to observe generated infrasound signals.
 
 Evaluation of the main goals of this network are provided in the following sections.
 
@@ -98,7 +98,7 @@ To evaluate the generality of the Laha design, I provided metrics for whether or
 
 I expect the PQ network, OPQ, to be able to detect and classify common PQ issues. I expect OPQ to observe voltage dips, voltages swells, frequency dips, frequency swells, transients, and high levels of THD. A count of these signals were kept and compared against industry standard PQ meters co-located with each sensor. By comparing these signals to the ground truth, we were able to tabulate a number of false positives and false negatives. In order to be considered effective, I would expect to be able to classify each of these common PQ signals, collect a set of each of the PQ signals while maintaining a low number of false positives and false negatives as compared to the industry standard sensors. In general, a negative result here would be not being able to detect PQ signals of a specific type or having a high number of false positives or false negatives.
 
-Further, another stated goal of OPQ is to detect and classify distributed PQ incidents. That is, PQ signals that are observed by more than one sensor in situations where OPQ sensors are not co-located. First, I evaluated if OPQ is capable of detecting distributed PQ signals. I expect OPQ to at least observe one distributed signal during the test deployment, but would not be surprised to see many. By working with the Office for Energy Management at UH Manoa, I used a list of known PQ source events along with signals collected by OPQ and the industry standard sensors to provide a list of false positives and false negatives for the number of distributed PQ incidents observed by OPQ.
+Further, another stated goal of OPQ is to detect and classify distributed PQ incidents. That is, PQ signals that are observed by more than one sensor in situations where OPQ sensors are not co-located. First, I evaluated if OPQ is capable of detecting distributed PQ signals. I expect OPQ to at least observe one distributed signal during the test deployment, but would not be surprised to see many. By working with the Office for Energy Management at UH Manoa, I used a list of known PQ source events along with signals collected by OPQ and the industry standard sensors to provide a list of false positives and false negatives for the number of distributed PQ incidents observed by OPQ\@.
 
 I expect the infrasound network, Lokahi, to be able to securely detect and report on infrasound incidents from a large collection of heterogeneous smartphone based infrasound sensors. This network prioritizes availability and security even in the face of network issues or no network at all. I claim that Laha is a useful framework for a DSN such as this and evaluated if Laha is able to meet the goals of this network.
 
@@ -108,9 +108,9 @@ Then, for each sensor, I calculated the number of false positives and false nega
 
 Further, as availability is a major priority of this network, network outages must be handled without signal loss. To evaluate this goal, I measured the amount of false negatives (or missed signals) due to Laha's data management and the interplay with network outages. I would expect that if Lokahi implements it correctly, we should not see a rise in false negatives. A less great result would be an increase in false negatives.
 
-Finally, backed by the metrics for both deployments, I provide a critical discussion on what types of DSNs Laha is well suited for and what types of DSNs Laha is not well suited for. This includes a discussion on which parts of the Laha design are useful or a detriment to a given goal of the DSN.
+Finally, backed by the metrics for both deployments, I provide a critical discussion on what types of DSNs Laha is well suited for and what types of DSNs Laha is not well suited for. This includes a discussion on which parts of the Laha design are useful or a detriment to a given goal of the DSN\@.
 
-The following sections continue to discuss the evaluation strategies required to show that Laha is a generally useful representation for a DSN.
+The following sections continue to discuss the evaluation strategies required to show that Laha is a generally useful representation for a DSN\@.
 
 \subsection{Evaluation of Converting Primitive Data into Actionable Insights}\label{subsec:evaluation-of-converting-primitive-data-into-actionable-insights}
 An important goal of any DSN is to convert primitive sensor data into actionable insights. This is generally accomplished by adding some kind of context associated with the data such as classifications of a signal or linking the data with other data by comparing similarities in time, space, or other physical features.
@@ -141,7 +141,7 @@ A positive result would be to see the correct context applied to incidents more 
 
 I expect to see contextualization work better in DSNs where signals provide more measures for discrimination. For example, PQ networks contain many different types of classified PQ signals, however there is a small subset of causes attributed to each type of PQ signal classification.This decreases Laha's search space and in theory should make it easier to provide context.
 
-\subsection{Evaluation of Tiered Management of Big Data}\label{eval-big-data}
+\subsection{Evaluation of Tiered Management of Big Data}\label{subsec:eval-big-data}
 The goal of tiered management of Big Data is to add a mechanism that provides a maximum bounds on storage requirements of sensor data at each level in the Laha hierarchy while simultaneously reducing sensor noise as Laha Actors move ``interesting" data upwards. This in turn should decrease the amount of false positives since forwarded data is more likely to include signals of interest and less likely to be sensor noise.
 
 Other approaches to Big Data management include compression\cite{tang2004compression} or storage systems where the goal is to have a distributed file system and move data close to where it is being processed, such as the Hadoop Distributed File System\cite{warrier2007much}. Other systems such as NiFi\cite{hughes2016survey} provide a nice interface for ingestion and movement of data between Big Data tools while also providing data provenance, but do not go far enough in focusing on data reduction and graceful degradation. Carney et al.\cite{carney2002monitoring} discuss how monitoring applications require management and clean up of stale sensor data.
@@ -209,9 +209,9 @@ Table~\ref{table:iml_size} provides the expected size of the IML layer for the O
 It's evident that the IML layer produces a significant amount of data, most of which is noise. Left unbounded an OPQ network with 15 Boxes can easily grow beyond 11 terabytes per year and a Lokahi network with 15 sensors at the maximum sampling rate can grow to over 15 terabytes per year!
 
 \paragraph{AML Requirements}
-Aggregate measurements provide rolled-up feature extracted values generated from the IML layer. These often include multiple features (i.e. Voltage, Frequency, THD) and descriptive statistics of each feature (i.e. minimum, maximum, average, variance). It's worth noting that the theoretical bounds may differ from the actual bounds in practice due to the way the underlying storage engine persists the values. These differences will be examined in the results section.
+Aggregate measurements provide rolled-up feature extracted values generated from the IML layer. These often include multiple features (i.e.\ Voltage, Frequency, THD) and descriptive statistics of each feature (i.e.\ minimum, maximum, average, variance). It's worth noting that the theoretical bounds may differ from the actual bounds in practice due to the way the underlying storage engine persists the values. These differences will be examined in the results section.
 
-Laha allows for multiple sub-levels within the AML. For instance, the OPQ DSN has both measurements and trends AMLs which summarize data at different window lengths. We need to take this into consideration when generating bounds for the AML.
+Laha allows for multiple sub-levels within the AML. For instance, the OPQ DSN has both measurements and trends AMLs which summarize data at different window lengths. We need to take this into consideration when generating bounds for the AML\@.
 
 To simplify calculating the bounds on the AML level, we make an assumption that the variance of the size of each AML value is close to 0. The actual metrics for each AML value remain constant sized while the metadata associated with each AML may differ in size. Since each AML value contains similar metadata, the variance on the size of the metadata should remain small.
 
@@ -290,7 +290,7 @@ Left un-optimized and taken over the course of a year for a typical OPQ or Lokah
 \paragraph{DL Requirements}
 The detections level contains metadata and associated sampled high fidelity data that was returned from sensors for a given time window. A single detection can contain samples from multiple data streams for a single event of interest.
 
-Similarly to the AML level, we assume that the metadata for each detection remains a constant or close to constant size and we focus on the raw data which dominates the storage requirements in the DL.
+Similarly to the AML level, we assume that the metadata for each detection remains a constant or close to constant size and we focus on the raw data which dominates the storage requirements in the DL\@.
 
 I make the assumption that the window lengths for each high-fidelity stream within a single detection are equally sized. In reality, it's possible that a sensor encounters an error and does not return data for the entire requested time window.
 
@@ -463,7 +463,7 @@ Figure~\ref{fig:plot_lala_opq} shows the bounds of the entire network.
 	\label{fig:plot_lala_opq}
 \end{figure}
 
-We can gather that the bounds on the entire OPQ network given estimated parameters from the network are 7953 gigabytes $\pm$ 1.1 gigabytes per year. It's clear that the IML provides most of this data. We can also see that over time, the DL dominates all other levels except the IML.
+We can gather that the bounds on the entire OPQ network given estimated parameters from the network are 7953 gigabytes $\pm$ 1.1 gigabytes per year. It's clear that the IML provides most of this data. We can also see that over time, the DL dominates all other levels except the IML\@.
 
 By representing the data as a pie chart (Figure~\ref{fig:plot_lala_opq_pie}), we can gain a better understanding of how these levels compare at the end of a year. The first (left most) pie chart shows that the IML dominates the overall data size. This makes sense because this level represents raw samples which is always going to be the largest set of data.
 
@@ -558,7 +558,7 @@ Equation~\ref{eq:s_iml_ttl_full} provides the calculation for obtaining the maxi
 
 Where $S_{IML}$ is calculated from~\ref{eq:iml:mu_size_iml} and $T$ is substituted with the number of seconds in the IML TTL (15 minutes).
 
-Table~\ref{table:ttl_iml_params} provides the estimated parameters for the OPQ and Lokahi networks required for determining the IML bounds with TTL. These parameters are the estimated amount of data saved from the IML by higher levels in the hierarchy (DL, IL, and PL). This data was estimated from the OPQ and Lokahi deployment by taking the ratio of data received over the course of the deployment and adjusting it to the duration of the particular level's TTL.
+Table~\ref{table:ttl_iml_params} provides the estimated parameters for the OPQ and Lokahi networks required for determining the IML bounds with TTL. These parameters are the estimated amount of data saved from the IML by higher levels in the hierarchy (DL, IL, and PL). This data was estimated from the OPQ and Lokahi deployment by taking the ratio of data received over the course of the deployment and adjusting it to the duration of the particular level's TTL\@.
 
 \begin{table}[H]
 	\centering
@@ -591,24 +591,43 @@ Table~\ref{table:ttl_iml_max} provides the maximum bounds of the IML layer for t
 \end{table}
 
 \paragraph{Evaluation of AML with TTL}
-The AML (Aggregate Measurement Level) collects windowed features estimated from the IML data. The OPQ network provides two AMLs, Measurements which are rolled into one second windows and Trends which are rolled into one minute windows. The Lokahi network provides a single AML with windows that vary depending on the sample sensor rate. The previous section evaluated the growth of this level without TTL. This section will add TTL into the evaluation.
+The AML (Aggregate Measurement Level) collects windowed features estimated from the IML data. The OPQ network provides two AMLs, Measurements which are rolled into one second windows and Trends which are rolled into one minute windows. The Lokahi network provides a single AML with windows that vary depending on the sensor sample rate. The previous section evaluated the growth of this level without TTL. This section will add TTL into the evaluation.
 
-The following table displays default TTL values for the OPQ and Lokahi networks.
+Table~\ref{table:ttls_aml} displays default TTL values for the OPQ and Lokahi networks.
 
 \begin{table}[H]
 	\centering
-	\caption{Estimated IML Bounds}
-	\begin{tabularx}{\textwidth}{Xlll}
+	\caption{Default AML TTLs}
+	\begin{tabularx}{\textwidth}{Xl}
 		\toprule
-		\textbf{Level} & \textbf{OPQ} & \textbf{Lokahi} \\
+		\textbf{Network} & \textbf{TTL} \\
 		\midrule
-		$\mu DL_{IML}$ & 94.84 GB & 0.0 \\
-		$\mu IL_{IML}$ & 308.96 GB & 0.0 \\
-		$\mu PL_{IML}$ & 0.0 & 0.0 \\
+		OPQ (Measurements) & 1 Day \\
+        OPQ (Trends) & 2 Weeks \\
+        Lokahi & 2 Weeks \\
 		\bottomrule
 	\end{tabularx}
-	\label{table:ttl_iml}
+	\label{table:ttls_aml}
 \end{table}
+
+The minimum bounds of the AML with TTL can be found by using Equations~\ref{eq:aml:mu_s_sl} and~\ref{eq:aml:mu_s_aml} and substituting the AML's TTL for $T$. Table~\ref{table:ttls_aml_min} provides the minimum bounds of the AML for a single sensor for the OPQ and Lokahi networks using parameters obtained from OPQ and Lokahi deployments. The minimum bounds can only occur if data from the AML is not saved and used by higher levels with in the Laha hierarchy.
+
+\begin{table}[H]
+	\centering
+	\caption{AML Minimum Bounds}
+	\begin{tabularx}{\textwidth}{Xl}
+		\toprule
+		\textbf{Network} & \textbf{TTL} \\
+		\midrule
+		OPQ (Measurements) & 1 Day \\
+		OPQ (Trends) & 2 Weeks \\
+		Lokahi & 2 Weeks \\
+		\bottomrule
+	\end{tabularx}
+	\label{table:ttls_aml_min}
+\end{table}
+
+Next, I examine the upper bounds of the AML by looking at the estimated amount of AML data that is saved by higher levels in the hierarchy.
 
 \paragraph{Evaluation of DL with TTL}
 
@@ -641,7 +660,7 @@ Triggering is the act of observing a feature extracted data stream for interesti
 
 Adaptive triggering is only useful in networks that utilize triggering. Specifically, this technique can not be applied to DSNs that take a collect everything all the time approach.
 
-Triggering can also have significant impacts on overall sensor power requirements and DSN bandwidth requirements. Many of the optimizing triggering algorithms present in the literature exist to minimize sensor energy requirements and bandwidth requirements. This is addressed in great detail in the literature review by Anastasi et al. \cite{anastasi_energy_2009}. This is accomplished by reducing communications between sensor nodes and the sink. It's argued in \cite{pottie2000wireless} that the cost of transmitting a single bit of information from a sensor cost approximately the same as running 1000 operations on that sensor now. However, there is some contention on this topic as \cite{alippi_adaptive_2010} argues that in some modern sensors computational requirements can equal or eclipse those of  sensor communication.
+Triggering can also have significant impacts on overall sensor power requirements and DSN bandwidth requirements. Many of the optimizing triggering algorithms present in the literature exist to minimize sensor energy requirements and bandwidth requirements. This is addressed in great detail in the literature review by Anastasi et al~\cite{anastasi_energy_2009}. This is accomplished by reducing communications between sensor nodes and the sink. It's argued in~\cite{pottie2000wireless} that the cost of transmitting a single bit of information from a sensor cost approximately the same as running 1000 operations on that sensor now. However, there is some contention on this topic as~\cite{alippi_adaptive_2010} argues that in some modern sensors computational requirements can equal or eclipse those of  sensor communication.
 
 Even if a DSN utilizes triggering, it's not clear that adaptive triggering even takes place. The first question I evaluated is, does adaptive optimization of triggering take place at all given the domain of the DSN? That is, does the nature of the underlying sensor field contribute to optimization of triggering? I compared if and how optimizations take place in the two reference networks for the domains of PQ and infrasound.
 
@@ -670,10 +689,10 @@ I collected and evaluated the number of false positives and false negatives for 
 
 I also calculated the signal-to-noise ratio in Detections to determine if optimization of detections is working. A positive outcome is an increase in the signal-to-noise ration and a negative outcome would be similar or a decrease in signal-to-noise ratio.
 
-\subsection{Evaluation of Model of Underlying Sensor Field Topology}
+\subsection{Evaluation of Model of Underlying Sensor Field Topology}\label{subsec:evaluation-of-model-of-underlying-sensor-field-topology}
 Laha should be able to build a model of the underlying sensing field topology. This is not the topology of the physical layout of the sensors (this is generally already known a priori or by collecting location information), but rather the topology by which signals travel. For example, in a PQ network the topology is the physical power grid and switches that PQ signals travel through. In an infrasound network, the topology is the atmosphere through which sound waves travel. Laha aims to build a statistical model of the distances between sensors according to the topology of the sensing field by observing recurrent incidents over time. This can perhaps shed some light on understanding the topology of a sensing field without knowing anything about it before hand.
 
-Much of the literature on topology management is written to decrease sensor energy requirements by exploiting the density of sensors within a sensing field topology. For example, the ASCENT\cite{cerpa2004ascent} framework provides adaptive self configuring sensors that exploit topology denseness to decrease sensor energy usage. Several other frameworks have been designed with the same goal of reducing energy usage by exploiting topology\cite{schurgers2002stem},\cite{schurgers2002topology}.
+Much of the literature on topology management is written to decrease sensor energy requirements by exploiting the density of sensors within a sensing field topology. For example, the ASCENT\cite{cerpa2004ascent} framework provides adaptive self configuring sensors that exploit topology denseness to decrease sensor energy usage. Several other frameworks have been designed with the same goal of reducing energy usage by exploiting topology\cite{schurgers2002stem,schurgers2002topology}.
 
 To evaluate the model of the sensing field topology, I took two different approaches for each Laha deployment. In both deployment, the sensing field topology is known beforehand to provide a ground truth. I then compared Laha's computed signal distance between sensors to the actual signal distance between sensors as provided by the ground truths.
 
@@ -685,4 +704,4 @@ A positive outcome would be to show that there is high correlation between the L
 
 Assuming high correlation and a statistical model of the sensing field, I evaluated if Laha is able to use this information to optimize triggering, classification, or predictive analytics. In order to evaluate this, I collected the number of false positives and false negatives at all levels in the Laha hierarchy while optimizing from topology and without optimizing from topology. I expect to see less false positives and less false negatives when utilizing topology optimizations. A negative result would be a larger number of false positives or false negatives.
 
-I expect to only see results in networks where signals travel fast enough to create a statistical difference between arrival times at the various sensors. In sensing fields where signals travel slowly and uniformly (i.e. a temperature collection DSN), it may be more difficult or impossible to actually determine the sensing field topology.
+I expect to only see results in networks where signals travel fast enough to create a statistical difference between arrival times at the various sensors. In sensing fields where signals travel slowly and uniformly (i.e.\ a temperature collection DSN), it may be more difficult or impossible to actually determine the sensing field topology.
