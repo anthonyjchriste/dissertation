@@ -8,6 +8,7 @@ Event bytes std: 15895031.895760648
 Event bytes sem: 391902.87780722615
 Event DR/s: 406.4760580045769
 Event DR/s sem: 2199.2633713247947
+Event data per month: 983346879.5246724
 
 Total incidents: 41
 Incident durations sum: 138960
@@ -19,3 +20,4 @@ Incident bytes std: 85727404.3195229
 Incident bytes sem: 13388371.229525428
 Incident DR/s: 37.11652361890925
 Incident DR/s sem: 12004.184732882764
+Incident data per month: 1077507527.266383

@@ -525,16 +525,12 @@ Table~\ref{table:ttl_summary} reviews the default TTLs provided at each level of
 	\label{table:ttl_summary}
 \end{table}
 
+In the following sub-sections, I will look at the minimum and maximum bounds for each level in the Laha hierarchy with TTL enabled. The minimumum bounds will always be the data bounded by TTL without any data being saved by events further up the hierarchy. The maximum bounds will be calculated using estimated parameters that quantify the amount of data in each level that is preserved by upper levels.
+
 \paragraph{Evaluation of IML with TTL}
 The IML (Instantaneous Measurements Level) stores raw samples from the DSN. Traditionally, this is the largest and most noisy data set produced by the DSN and thus has a very short TTL (which is often limited by the amount of on-board sensor memory). I showed in the previous section that without TTL, this level grows very rapidly.
 
-If we don't take into account saving IML data from higher levels, calculating upper bounds of the IML for a single device can be accomplished by simply bounding its growth by its TTL\@. This is provided in equation~\ref{eq:s_iml_ttl}.
-
-\begin{equation}\label{eq:s_iml_ttl}
-	IML_{TTL} = SR * S_{SAMP} * TTL_{IML}
-\end{equation}
-
-Plugging in values from OPQ and Lokahi nets the following bounds assuming a 15 minute TTL for IML data.
+If we don't take into account saving IML data from higher levels, calculating lower bounds of the IML for a network can be accomplished by simply bounding its growth by its TTL\@. By substituting $T$ in Equations~\ref{iml:SSEN} and~\ref{eq:iml:mu_size_iml} with the the number of seconds in the IML TTL (15 minutes), we can calculate the minimum bounds of the IML as shown in Table~\ref{table:ttl_a_iml}.
 
 \begin{table}[H]
 	\centering
@@ -554,30 +550,50 @@ Plugging in values from OPQ and Lokahi nets the following bounds assuming a 15 m
 
 However, data is not only just discarded when it reaches its TTL, but it can have its TTL adjusted when that data is used in identifying a feature of a higher Laha level. When a higher (DL, IL, or PL) uses data from the IML, that data will be adjusted to live for as long as the highest level that it was used in. This must be taken into consideration when calculating the bounds of the IML. To find these numbers, I've taken data directly from the OPQ and Lokahi deployments to determine on average how often IML data is saved.
 
-Equation~\ref{eq:s_iml_ttl_full} provides the calculation for obtaining the full estimated bounds of the IML where $\mu DL_{IML}$ is the average amount of IML data saved by the DL within its TTL of 1 month, $\mu IL_{IML}$ is the average amount of IML data saved by the IL within its TTL of 1 year, and $\mu PL_{IML}$ is the average amount of IML data saved by the PL within its TTL of 2 years.
+Equation~\ref{eq:s_iml_ttl_full} provides the calculation for obtaining the maximum estimated bounds of the IML where $\mu DL_{IML}$ is the average amount of IML data saved by the DL within its TTL of 1 month, $\mu IL_{IML}$ is the average amount of IML data saved by the IL within its TTL of 1 year, and $\mu PL_{IML}$ is the average amount of IML data saved by the PL within its TTL of 2 years.
 
 \begin{equation}\label{eq:s_iml_ttl_full}
-	IML_{TTL} = SR * S_{SAMP} * TTL_{IML} + \mu DL_{IML} + \mu IL_{IML} + \mu PL_{IML}
+	S_{IML\_TLL} = \mu S_{IML} + \mu DL_{IML} + \mu IL_{IML} + \mu PL_{IML}
 \end{equation}
 
-Table~\ref{table:ttl_iml_params} provides the estimated parameters for the OPQ and Lokahi networks required for determining the IML bounds with TTL.
+Where $S_{IML}$ is calculated from~\ref{eq:iml:mu_size_iml} and $T$ is substituted with the number of seconds in the IML TTL (15 minutes).
+
+Table~\ref{table:ttl_iml_params} provides the estimated parameters for the OPQ and Lokahi networks required for determining the IML bounds with TTL. These parameters are the estimated amount of data saved from the IML by higher levels in the hierarchy (DL, IL, and PL). This data was estimated from the OPQ and Lokahi deployment by taking the ratio of data received over the course of the deployment and adjusting it to the duration of the particular level's TTL.
 
 \begin{table}[H]
 	\centering
 	\caption{Estimated IML Data Saved by Level}
-	\begin{tabularx}{\textwidth}{Xlll}
+	\begin{tabularx}{\textwidth}{Xllll}
 		\toprule
-		\textbf{Level} & \textbf{OPQ} & \textbf{Lokahi} \\
+		\textbf{Network} & \boldmath{$\mu DL_{IML}$} & \boldmath{$\mu IL_{IML}$} & \boldmath{$\mu PL_{IML}$} & \boldmath{$\mu N$} \\
 		\midrule
-		$\mu DL_{IML}$ & 94.84 GB & 0.0 \\
-		$\mu IL_{IML}$ & 308.96 GB & 0.0 \\
-		$\mu PL_{IML}$ & 0.0 & 0.0 \\
+		OPQ & 94.83 GB & 308.93 GB & n/a & 15 \\
+		Lokahi & 0.98 GB & 1.10 GB & n/a & 60 \\
 		\bottomrule
 	\end{tabularx}
 	\label{table:ttl_iml_params}
 \end{table}
 
-Table provides the maximum bounds of the IML layer for the OPQ and Lokahi networks using estimated parameters from deployments of those networks.
+Table~\ref{table:ttl_iml_max} provides the maximum bounds of the IML layer for the OPQ and Lokahi networks using estimated parameters from deployments of those networks.
+
+\begin{table}[H]
+	\centering
+	\caption{Estimated IML Bounds}
+	\begin{tabularx}{\textwidth}{Xl}
+		\toprule
+		\textbf{Network} & \textbf{Maximum IML Bounds} \\
+		\midrule
+		OPQ & 404.08 GB \\
+		Lokahi & 3.81 GB \\
+		\bottomrule
+	\end{tabularx}
+	\label{table:ttl_iml_max}
+\end{table}
+
+\paragraph{Evaluation of AML with TTL}
+The AML (Aggregate Measurement Level) collects windowed features estimated from the IML data. The OPQ network provides two AMLs, Measurements which are rolled into one second windows and Trends which are rolled into one minute windows. The Lokahi network provides a single AML with windows that vary depending on the sample sensor rate. The previous section evaluated the growth of this level without TTL. This section will add TTL into the evaluation.
+
+The following table displays default TTL values for the OPQ and Lokahi networks.
 
 \begin{table}[H]
 	\centering
@@ -593,8 +609,6 @@ Table provides the maximum bounds of the IML layer for the OPQ and Lokahi networ
 	\end{tabularx}
 	\label{table:ttl_iml}
 \end{table}
-
-\paragraph{Evaluation of AML with TTL}
 
 \paragraph{Evaluation of DL with TTL}
 
