@@ -529,7 +529,7 @@ Table~\ref{table:ttl_summary} reviews the default TTLs provided at each level of
 	\label{table:ttl_summary}
 \end{table}
 
-In the following sub-sections, I will look at the minimum and maximum bounds for each level in the Laha hierarchy with TTL enabled. The minimumum bounds will always be the data bounded by TTL without any data being saved by events further up the hierarchy. The maximum bounds will be calculated using estimated parameters that quantify the amount of data in each level that is preserved by upper levels.
+In the following sub-sections, I will look at the minimum, estimated, and maximum bounds for each level in the Laha hierarchy with TTL enabled. The minimumum bounds will always be the data bounded by TTL without any data being saved by events further up the hierarchy. The estimated bounds will be calculated using estimated parameters that quantify the amount of data in each level that is preserved by upper levels. The maximum bounds will be discussed in terms of pathological cases where all data is preserved and no data is discarded. The maximum bounds for all levels is equivalent to the bound of those levels without TTL optimization.
 
 \paragraph{Evaluation of IML with TTL}
 The IML (Instantaneous Measurements Level) stores raw samples from the DSN. Traditionally, this is the largest and most noisy data set produced by the DSN and thus has a very short TTL (which is often limited by the amount of on-board sensor memory). I showed in the previous section that without TTL, this level grows very rapidly.
@@ -561,6 +561,10 @@ Equation~\ref{eq:s_iml_ttl_full} provides the calculation for obtaining the esti
 \end{equation}
 
 Where $S_{IML}$ is calculated from~\ref{eq:iml:mu_size_iml} and $T$ is substituted with the number of seconds in the IML TTL (15 minutes).
+
+It should be noted that IML data within OPQ is only preserved when Detections, Incidents, or Phenomena that use that data are created. Further, the IML data lives on the OPQ Boxes themselves, so preserving IML data isn't as simple as just updating its TTL, but rather IML data is copied into Detections, Incidents, and Phenomena and is garbage collected when those Detection, Incidents, or Phenomena are garbage collected.
+
+The Lokahi network works slightly differently and the IML data is collected from all sensors and stored in the database allowing the IML data in Lokahi to have its TTL updated directly rather than copied into the system like OPQ\@.
 
 Table~\ref{table:ttl_iml_params} provides the estimated parameters for the OPQ and Lokahi networks required for determining the estimated IML bounds with TTL. These parameters are the estimated amount of data saved from the IML by higher levels in the hierarchy (DL, IL, and PL). This data was estimated from the OPQ and Lokahi deployment by taking the ratio of data received over the course of the deployment and adjusting it to the duration of the particular level's TTL\@.
 
