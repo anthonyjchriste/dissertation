@@ -267,6 +267,10 @@ Equations~\ref{eq:aml:e0},~\ref{eq:aml:e1}, and~\ref{eq:aml:e2} provide the erro
 
 Table~\ref{table:aml_size} contains the theoretical bounds of the AML layer without any optimization for OPQ and Lokahi networks. These values provide the upper bounds per sensor for periods of one day, one week, and one year. The OPQ DSN utilizes two sub-levels (one for measurements and one for trends). The Lokahi network contains only one level, but each sampling rate has its own IML rate. We provide the upper bounds for each possible sampling rate that Lokahi utilizes. These values are constant for all OPQ and Lokahi networks independent of deployment because they only rely on constant values defined by the sensors themselves.
 
+% TODO Fix AML constraints for Lokahi and regenerate plots at a size of 2546 bytes, also remove stuff about AML including raw data because that isn't really true
+% TODO look at the summaries and make sure they still make sense with the most recent computed numbers
+% TODO change upper bounds to estimated bounds and add an actual upper bounds section that calculates the pathlological case of all the data being saved
+% TODO either convert everything to be per network or per device but not both
 \begin{table}[H]
 	\centering
 	\caption{AML Constraints per Sensor}
@@ -277,9 +281,9 @@ Table~\ref{table:aml_size} contains the theoretical bounds of the AML layer with
 		OPQ $AML_{Measurements}$ 	& 1 Hz 					& 145 			& 12.52 MB 	& 87.69 MB 	& 4.6 GB 	\\
 		OPQ $AML_{Trends}$ 			& $\frac{1}{60}$ Hz 	& 325 			& 0.47 MB 	& 3.72 MB  	& 170.82 MB \\
 		OPQ $AML_{Total}$ 			&   					&   			& 12.99 MB 	& 91.41 MB 	& 4.77 GB 	\\
-		Lokahi $AML_{80Hz}$			& $\frac{1}{51.200}$ Hz	& 16384 		& 27.65 MB 	& 193.54 MB & 10.09 GB	\\
-		Lokahi $AML_{800Hz}$		& $\frac{1}{40.960}$ Hz	& 131072		& 276.48 MB & 1.94 GB 	& 100.92 GB \\
-		Lokahi $AML_{8000Hz}$		& $\frac{1}{32.768}$ Hz	& 1048576		& 2.76 GB 	& 19.35 GB 	& 1.01 TB 	\\
+		Lokahi $AML_{80Hz}$			& $\frac{1}{51.200}$ Hz	& 2546  		& 27.65 MB 	& 193.54 MB & 10.09 GB	\\
+		Lokahi $AML_{800Hz}$		& $\frac{1}{40.960}$ Hz	& 2546		& 276.48 MB & 1.94 GB 	& 100.92 GB \\
+		Lokahi $AML_{8000Hz}$		& $\frac{1}{32.768}$ Hz	& 2546		& 2.76 GB 	& 19.35 GB 	& 1.01 TB 	\\
 		\bottomrule
 	\end{tabularx}
 	\label{table:aml_size}
@@ -530,14 +534,14 @@ In the following sub-sections, I will look at the minimum and maximum bounds for
 \paragraph{Evaluation of IML with TTL}
 The IML (Instantaneous Measurements Level) stores raw samples from the DSN. Traditionally, this is the largest and most noisy data set produced by the DSN and thus has a very short TTL (which is often limited by the amount of on-board sensor memory). I showed in the previous section that without TTL, this level grows very rapidly.
 
-If we don't take into account saving IML data from higher levels, calculating lower bounds of the IML for a network can be accomplished by simply bounding its growth by its TTL\@. By substituting $T$ in Equations~\ref{iml:SSEN} and~\ref{eq:iml:mu_size_iml} with the the number of seconds in the IML TTL (15 minutes), we can calculate the minimum bounds of the IML as shown in Table~\ref{table:ttl_a_iml}.
+If we don't take into account saving IML data from higher levels, calculating lower bounds of the IML for a network can be accomplished by simply bounding its growth by its TTL\@. By substituting $T$ in Equations~\ref{iml:SSEN} and~\ref{eq:iml:mu_size_iml} with the the number of seconds in the IML TTL (15 minutes), we can calculate the minimum bounds of the IML for a single sensor as shown in Table~\ref{table:ttl_a_iml}.
 
 \begin{table}[H]
 	\centering
-	\caption{IML/Sensor with 15 Min. TTL without Data Saving}
+	\caption{Estimated IML Lower Bounds}
 	\begin{tabularx}{\textwidth}{Xlll}
 		\toprule
-		\textbf{Description} & \textbf{Sample Rate Hz} & \textbf{Sample Size Bytes} & \textbf{Max. IML Bounds} \\
+		\textbf{Description} & \textbf{Sample Rate Hz} & \textbf{Sample Size Bytes} & \textbf{Lower IML Bounds} \\
 		\midrule
 		OPQ & 12000 & 2 & 21.6 MB \\
 		Lokahi & 80 & 4 & 0.29 MB \\
@@ -550,7 +554,7 @@ If we don't take into account saving IML data from higher levels, calculating lo
 
 However, data is not only just discarded when it reaches its TTL, but it can have its TTL adjusted when that data is used in identifying a feature of a higher Laha level. When a higher (DL, IL, or PL) uses data from the IML, that data will be adjusted to live for as long as the highest level that it was used in. This must be taken into consideration when calculating the bounds of the IML. To find these numbers, I've taken data directly from the OPQ and Lokahi deployments to determine on average how often IML data is saved.
 
-Equation~\ref{eq:s_iml_ttl_full} provides the calculation for obtaining the maximum estimated bounds of the IML where $\mu DL_{IML}$ is the average amount of IML data saved by the DL within its TTL of 1 month, $\mu IL_{IML}$ is the average amount of IML data saved by the IL within its TTL of 1 year, and $\mu PL_{IML}$ is the average amount of IML data saved by the PL within its TTL of 2 years.
+Equation~\ref{eq:s_iml_ttl_full} provides the calculation for obtaining the estimated bounds of the IML where $\mu DL_{IML}$ is the average amount of IML data saved by the DL within its TTL of 1 month, $\mu IL_{IML}$ is the average amount of IML data saved by the IL within its TTL of 1 year, and $\mu PL_{IML}$ is the average amount of IML data saved by the PL within its TTL of 2 years.
 
 \begin{equation}\label{eq:s_iml_ttl_full}
 	S_{IML\_TLL} = \mu S_{IML} + \mu DL_{IML} + \mu IL_{IML} + \mu PL_{IML}
@@ -558,7 +562,7 @@ Equation~\ref{eq:s_iml_ttl_full} provides the calculation for obtaining the maxi
 
 Where $S_{IML}$ is calculated from~\ref{eq:iml:mu_size_iml} and $T$ is substituted with the number of seconds in the IML TTL (15 minutes).
 
-Table~\ref{table:ttl_iml_params} provides the estimated parameters for the OPQ and Lokahi networks required for determining the IML bounds with TTL. These parameters are the estimated amount of data saved from the IML by higher levels in the hierarchy (DL, IL, and PL). This data was estimated from the OPQ and Lokahi deployment by taking the ratio of data received over the course of the deployment and adjusting it to the duration of the particular level's TTL\@.
+Table~\ref{table:ttl_iml_params} provides the estimated parameters for the OPQ and Lokahi networks required for determining the estimated IML bounds with TTL. These parameters are the estimated amount of data saved from the IML by higher levels in the hierarchy (DL, IL, and PL). This data was estimated from the OPQ and Lokahi deployment by taking the ratio of data received over the course of the deployment and adjusting it to the duration of the particular level's TTL\@.
 
 \begin{table}[H]
 	\centering
@@ -574,17 +578,35 @@ Table~\ref{table:ttl_iml_params} provides the estimated parameters for the OPQ a
 	\label{table:ttl_iml_params}
 \end{table}
 
-Table~\ref{table:ttl_iml_max} provides the maximum bounds of the IML layer for the OPQ and Lokahi networks using estimated parameters from deployments of those networks.
+Table~\ref{table:ttl_iml_est} provides the estimated bounds of the IML layer for the OPQ and Lokahi networks using estimated parameters from deployments of those networks.
 
 \begin{table}[H]
 	\centering
 	\caption{Estimated IML Bounds}
 	\begin{tabularx}{\textwidth}{Xl}
 		\toprule
-		\textbf{Network} & \textbf{Maximum IML Bounds} \\
+		\textbf{Network} & \textbf{Estimated IML Bounds} \\
 		\midrule
 		OPQ & 404.08 GB \\
 		Lokahi & 3.81 GB \\
+		\bottomrule
+	\end{tabularx}
+	\label{table:ttl_iml_est}
+\end{table}
+
+Finally, the upper bounds of the IML level can be calculated by examining a couple of pathological cases. The first case is where all data is saved by Phenomena that do not expire. In this case, the IML data data will remain unbounded because all IML data is referenced by Phenomena that does not expire. This extreme case is unlikely to happen in practice.
+
+The other more likely (yet still rare) pathological case is that all IML data is saved by Phenomena that expires within the default Phenomena TTL of two years. In this case, the IML data will take two years to expire and the upper bounds of the IML with TTL can be found by substituting the number of seconds in two years for $T$ is Equation~\ref{eq:iml:mu_size_iml}. The estimated upper bound are provided in Table~\ref{table:ttl_iml_max}.
+
+\begin{table}[H]
+	\centering
+	\caption{Estimated IML Upper Bounds}
+	\begin{tabularx}{\textwidth}{Xll}
+		\toprule
+		\textbf{Network} & \textbf{Max IML Bounds/Device} & \textbf{Max IML Bounds/Network} \\
+		\midrule
+		OPQ & & 22.72 TB \\
+		Lokahi & & 121.18 TB \\
 		\bottomrule
 	\end{tabularx}
 	\label{table:ttl_iml_max}
@@ -610,24 +632,103 @@ Table~\ref{table:ttls_aml} displays default TTL values for the OPQ and Lokahi ne
 	\label{table:ttls_aml}
 \end{table}
 
-The minimum bounds of the AML with TTL can be found by using Equations~\ref{eq:aml:mu_s_sl} and~\ref{eq:aml:mu_s_aml} and substituting the AML's TTL for $T$. Table~\ref{table:ttls_aml_min} provides the minimum bounds of the AML for a single sensor for the OPQ and Lokahi networks using parameters obtained from OPQ and Lokahi deployments. The minimum bounds can only occur if data from the AML is not saved and used by higher levels with in the Laha hierarchy.
+The minimum bounds of the AML with TTL can be found by using Equations~\ref{eq:aml:mu_s_sl} and~\ref{eq:aml:mu_s_aml} and substituting $T$ for the AML's TTL.
+
+Table~\ref{table:ttls_aml_min} provides the minimum bounds of the AML for a single sensor for the OPQ and Lokahi networks using parameters obtained from OPQ and Lokahi deployments. The minimum bounds can only occur if data from the AML is not saved and used by higher levels with in the Laha hierarchy.
 
 \begin{table}[H]
 	\centering
 	\caption{AML Minimum Bounds}
-	\begin{tabularx}{\textwidth}{Xl}
+	\begin{tabularx}{\textwidth}{Xll}
 		\toprule
-		\textbf{Network} & \textbf{TTL} \\
+		\textbf{Network} & \textbf{Min AML Bounds Single Device} & \textbf{Min AML Bounds Network} \\
 		\midrule
-		OPQ (Measurements) & 1 Day \\
-		OPQ (Trends) & 2 Weeks \\
-		Lokahi & 2 Weeks \\
+		OPQ (Measurements) & 12.53 MB & 187.92 MB \\
+		OPQ (Trends) & 6.55 MB & 98.28 MB \\
+		OPQ (Total) & 18.58 MB & 286.2 MB \\
+		Lokahi & 60.15 MB & 3.61 GB \\
 		\bottomrule
 	\end{tabularx}
 	\label{table:ttls_aml_min}
 \end{table}
 
-Next, I examine the upper bounds of the AML by looking at the estimated amount of AML data that is saved by higher levels in the hierarchy.
+Next, I examine the estimated bounds of the AML by looking at the estimated amount of AML data that is saved by higher levels in the hierarchy.
+
+Calculation of the upper bounds can be found by Equation~\ref{eq:s_aml_ttl_full}.
+
+\begin{equation}\label{eq:s_aml_ttl_full}
+	S_{AML\_TLL} = \mu S_{AML} + \mu DL_{AML} + \mu IL_{AML} + \mu PL_{AML}
+\end{equation}
+
+Where $\mu S_{AML}$ is calculated from Equation~\ref{eq:aml:mu_s_aml} and $T$ is substituted with the appropriate TTL for a given AML and $\mu DL_{AML}$ is the estimated amount of AML data saved by the DL, $\mu IL_{AML}$ is the estimated amount of AML data saved by the IL, and $\mu PL_{AML}$ is the estimated amount of AML data saved by the PL\@.
+
+ Unlike IML data which is copied when a Detection, Incident, or Phenomena is created, AML data simply has its TTL modified to match the TTL of either the Detection, Incident, or Phenomena being created. This is true of all other upper levels as well. What this means analytically is that AML data will live for as long as the highest level that that AML data reached within the Laha hierarchy. For instance, if a Detection is observed, the AML data will first receive the same TTL as the Detection. However, if an Incident is later generated from that Detection, then the AML data will receive TTLs equal to the TTL of the Incident. This must be taken into account so that AML data is not included multiple times in the calculations.
+
+Table~\ref{table:ttls_aml_params} provides the estimated AML saved data parameters obtained from the OPQ and Lokahi deployments. These parameters were found by examining the mean duration of Detections, Incidents, and Phenomena within their TTL bin and by also taking into consideration the highest level within Laha that the AML data reached.
+
+\begin{table}[H]
+	\centering
+	\caption{Estimated Parameters for Calculating AML Data Saved per Level}
+	\begin{tabularx}{\textwidth}{Xllll}
+		\toprule
+		\textbf{Description} & \textbf{Sample Size} & \textbf{Duration S/TTL} & \textbf{Rate} & \textbf{Saved Size} \\
+		\midrule
+		OPQ DL (Measurements) 	& 145 	& 1968.40 s/mo 		& 1 Hz 					& 0.29 MB 	\\
+		OPQ DL (Trends) 		& 325 	& 1968.40 s/mo 		& $\frac{1}{60}$ Hz 	& 0.01 MB 	\\
+		OPQ DL (Total)			& 	  	&                 	&                   	& 0.30 MB 	\\
+		OPQ IL (Measurements) 	& 145 	& 206624.08 s/yr 	& 1 Hz 					& 29.96 MB 	\\
+		OPQ IL (Trends) 		& 325 	& 206624.08 s/yr	& $\frac{1}{60}$ Hz 	& 1.12 MB 	\\
+		OPQ IL (Total)			&     	&                 	&                   	& 31.08 MB 	\\
+		OPQ PL (Measurements) 	& 145 	&                	& 1 Hz 					& 		 	\\
+		OPQ PL (Trends) 		& 325 	&               	& $\frac{1}{60}$ Hz 	& 		 	\\
+		OPQ PL (Total)			&     	&                 	&                   	& 		 	\\
+		OPQ (Total)				&     	&                 	&                   	& 32.2 MB 	\\
+		Lokahi DL	            & 2546  & 152310.38 s/mo	& $\frac{1}{40.96}$ Hz 	& 9.47 MB	\\
+		Lokahi IL	            & 2546  & 79098.60 s/yr 	& $\frac{1}{40.96}$ Hz 	& 4.92 MB 	\\
+		Lokahi PL	            &       &               	&                      	& 		 	\\
+		Lokahi (Total)          &       &               	&                      	& 14.29 MB 	\\
+		\bottomrule
+	\end{tabularx}
+	\label{table:ttls_aml_params}
+\end{table}
+
+Plugging the above values into Equation~\ref{eq:s_aml_ttl_full} allows us to find the estimated size of the AML with TTL using parameters from the deployed OPQ and Lokahi networks. These results are shown in Table
+
+\begin{align}
+	\mu S_{SL}OPQ\_Measurements &= S_{V} * SR * T * \mu B 										\\
+	                            &= 145 * \frac{1}{1} * 86400 * 15 								\\
+								&= 187.92 MB 													\\
+	\mu S_{SL}OPQ\_Trends       &= S_{V} * SR * T * \mu B  										\\
+								&= 325 * \frac{1}{60} * 1209600 * 15 							\\
+								&= 98.28 MB 													\\
+	\mu S_{AML}OPQ 				&= \mu S_{SL}OPQ\_Measurements + \mu S_{SL}OPQ\_Trends  		\\
+								&= 286.2 MB 													\\
+	\mu S_{AML\_TLL}OPQ 		&= \mu S_{AML} + \mu DL_{AML} + \mu IL_{AML} + \mu PL_{AML}  	\\
+								&= 286.2 + 0.30 + 31.08											\\
+								&= 317.58 MB													\\
+	\mu S_{AML}Lokahi  			&= S_{V} * SR * T * \mu B 				    					\\
+								&= 2546 * \frac{1}{40.96} * 1209600 * 60 						\\
+								&= 4.51 GB														\\
+	\mu S_{AML\_TLL}Lokahi 		&= \mu S_{AML} + \mu DL_{AML} + \mu IL_{AML} + \mu PL_{AML}  	\\
+								&= 4.51GB + 9.47MB + 4.92MB										\\
+								&= 4.52 GB
+\end{align}
+
+\begin{table}[H]
+	\centering
+	\caption{Estimated Size AML}
+	\begin{tabularx}{\textwidth}{Xl}
+		\toprule
+		\textbf{Description} & \textbf{Size} \\
+		\midrule
+		OPQ (Measurements) 	& 5.29 GB   \\
+		OPQ (Trends) 		& 2.56 GB \\
+		OPQ (Total) 		& 7.85 GB   \\
+		Lokahi & \\
+		\bottomrule
+	\end{tabularx}
+	\label{table:ttls_aml_est}
+\end{table}
 
 \paragraph{Evaluation of DL with TTL}
 

@@ -188,6 +188,8 @@ def get_stats(reports: List[RedvoxReport]) -> None:
     seconds_per_year: float = seconds_per_month * 12
     event_data_month: float = (event_bytes.sum() * seconds_per_month) / (emax_t - emin_t)
     print(f"Event data per month: {event_data_month}")
+    data_dur_per_month = (events_durations.sum() * seconds_per_month) / (emax_t - emin_t)
+    print(f"Event data duration per month: {data_dur_per_month}")
 
     print()
     print(f"Total incidents: {len(incidents)}")
@@ -202,7 +204,9 @@ def get_stats(reports: List[RedvoxReport]) -> None:
     print(f"Incident DR/s sem: {i_dr_sem}")
 
     incident_data_year: float = (incident_bytes.sum() * seconds_per_year) / (imax_t - imin_t)
-    print(f"Incident data per month: {incident_data_year}")
+    print(f"Incident data per year: {incident_data_year}")
+    data_dur_per_year = (incident_durations.sum() * seconds_per_year) / (imax_t - imin_t)
+    print(f"Incident data duration per year: {data_dur_per_year}")
 
 
 if __name__ == "__main__":
