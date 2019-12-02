@@ -1,6 +1,7 @@
 use rand;
 use rand::Rng;
 use std::cmp::Ordering;
+use test::bench::iter;
 
 const SECONDS_PER_MINUTE: usize = 60;
 const SECONDS_PER_FIFTEEN_MINUTES: usize = SECONDS_PER_MINUTE * 15;
@@ -77,16 +78,29 @@ impl Storage {
         self.time += 1
     }
 
-    pub fn adjust_measurements_ttl_for_event(&mut self, prev_measurements: usize, ttl: usize) {}
+    pub fn adjust_measurements_ttl_for_event(&mut self, prev_measurements: usize, ttl: usize) {
+        for i in 0..prev_measurements {
+            let last_idx = self.measurements.len() - 1;
+            self.measurements[last_idx - i].ttl = ttl;
+            self.measurements[last_idx - i].is_event = true;
+        }
+        self.measurements.sort();
+    }
 
     pub fn gc(&mut self) {
-        match self
+        //        match self
+        //            .measurements
+        //            .binary_search(&Measurement::from_ttl(self.time))
+        //        {
+        //            Ok(idx) => self.measurements.drain(0..=idx),
+        //            Err(idx) => self.measurements.drain(0..idx),
+        //        };
+        self.measurements = self
             .measurements
-            .binary_search(&Measurement::from_ttl(self.time))
-        {
-            Ok(idx) => self.measurements.drain(0..=idx),
-            Err(idx) => self.measurements.drain(0..idx),
-        };
+            .iter()
+            .to_owned()
+            .filter(|measurement| self.time > measurement.ttl)
+            .collect();
     }
 }
 
@@ -103,7 +117,20 @@ fn main() {
         }
 
         if i % 100_000 == 0 {
-            println!("{}, {}", i, storage.measurements.len())
+            let event_measurements = storage
+                .measurements
+                .iter()
+                .filter(|measurement| measurement.is_event)
+                .count();
+            let non_event_measurements = storage.measurements.len() - event_measurements;
+            println!(
+                "time={} #meas={} #meas_no_event={} #meas_event={} %meas_event={}",
+                i,
+                storage.measurements.len(),
+                non_event_measurements,
+                event_measurements,
+                event_measurements as f64 / non_event_measurements as f64 * 100.0
+            )
         }
     }
 }
