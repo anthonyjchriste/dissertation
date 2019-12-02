@@ -3,14 +3,15 @@ from typing import List
 import bisect
 import random
 
-SECONDS_IN_YEAR = 86400 * 365
+SECONDS_IN_YEAR = 86400 * 28
 
 
 @total_ordering
 class Measurement:
-    def __init__(self, ts: int, ttl: int):
+    def __init__(self, ts: int, ttl: int, is_event: bool = False):
         self.ts = ts
         self.ttl = ttl
+        self.is_event = is_event
 
     def __eq__(self, other):
         return self.ttl == other.ttl
@@ -43,6 +44,7 @@ class Storage:
     def adjust_measurements_ttl(self, prev_measurements: int, ttl: int):
         for measurement in self.measurements[-prev_measurements:]:
             measurement.ttl = ttl
+            measurement.is_event = True
         self.measurements.sort()
 
 
@@ -62,15 +64,21 @@ if __name__ == "__main__":
     mean_incident_duration_s = 1
 
     is_event = False
+    event_measurements = 0
     for i in range(SECONDS_IN_YEAR):
         measurement = Measurement(i, i + measurement_ttl)
         storage.add(measurement)
 
         if random.random() < 0.00009221688:
             storage.adjust_measurements_ttl(mean_event_duration_s, i + event_ttl)
+            event_measurements += mean_event_duration_s
 
         if i % 100000 == 0:
-            print(i, len(storage.measurements))
+            events_cnt = len(list(filter(lambda measurement: measurement.is_event, storage.measurements)))
+            measurements_cnt = len(storage.measurements) - events_cnt
+            print(i, len(storage.measurements), measurements_cnt, events_cnt, events_cnt / float(measurements_cnt) * 100.0)
+
+    print(event_measurements / SECONDS_IN_YEAR)
     # ms = [
     #     Measurement(1, 5),
     #     Measurement(2, 6),
