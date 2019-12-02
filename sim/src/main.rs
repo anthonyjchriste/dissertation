@@ -1,7 +1,8 @@
+use crate::storage::Measurement;
 use rand;
 use rand::Rng;
-use std::cmp::Ordering;
-use test::bench::iter;
+
+pub mod storage;
 
 const SECONDS_PER_MINUTE: usize = 60;
 const SECONDS_PER_FIFTEEN_MINUTES: usize = SECONDS_PER_MINUTE * 15;
@@ -17,103 +18,37 @@ const TRENDS_TTL: usize = SECONDS_PER_TWO_WEEKS;
 const EVENTS_TTL: usize = SECONDS_PER_MONTH;
 const INCIDENTS_TTL: usize = SECONDS_PER_YEAR;
 
-struct Measurement {
-    pub ts: usize,
-    pub ttl: usize,
-    pub is_event: bool,
-}
+const MEAN_EVENTS_PER_SECOND: f64 = 0.00009221688;
+const MEAN_EVENT_LEN_S: usize = 12;
 
-impl Measurement {
-    pub fn new(ts: usize, ttl: usize) -> Measurement {
-        Measurement {
-            ts,
-            ttl,
-            is_event: false,
-        }
-    }
-
-    pub fn from_ttl(ttl: usize) -> Measurement {
-        Measurement::new(0, ttl)
-    }
-}
-
-impl PartialOrd for Measurement {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        self.ttl.partial_cmp(&other.ttl)
-    }
-}
-
-impl PartialEq for Measurement {
-    fn eq(&self, other: &Self) -> bool {
-        self.ttl == other.ttl
-    }
-}
-
-impl Ord for Measurement {
-    fn cmp(&self, other: &Self) -> Ordering {
-        self.ttl.cmp(&other.ttl)
-    }
-}
-
-impl Eq for Measurement {}
-
-struct Storage {
-    pub measurements: Vec<Measurement>,
-    pub time: usize,
-}
-
-impl Storage {
-    pub fn new() -> Storage {
-        Storage {
-            measurements: vec![],
-            time: 0,
-        }
-    }
-
-    pub fn add(&mut self, measurement: Measurement) {
-        self.measurements.push(measurement);
-        if self.time % 60 == 0 {
-            self.gc()
-        }
-        self.time += 1
-    }
-
-    pub fn adjust_measurements_ttl_for_event(&mut self, prev_measurements: usize, ttl: usize) {
-        for i in 0..prev_measurements {
-            let last_idx = self.measurements.len() - 1;
-            self.measurements[last_idx - i].ttl = ttl;
-            self.measurements[last_idx - i].is_event = true;
-        }
-        self.measurements.sort();
-    }
-
-    pub fn gc(&mut self) {
-        //        match self
-        //            .measurements
-        //            .binary_search(&Measurement::from_ttl(self.time))
-        //        {
-        //            Ok(idx) => self.measurements.drain(0..=idx),
-        //            Err(idx) => self.measurements.drain(0..idx),
-        //        };
-        self.measurements = self
-            .measurements
-            .iter()
-            .to_owned()
-            .filter(|measurement| self.time > measurement.ttl)
-            .collect();
-    }
-}
+const BYTES_PER_MEASUREMENT: usize = 145;
+const BYTES_PER_TREND: usize = 365;
 
 fn main() {
     let mut rng = rand::thread_rng();
-    let mut storage = Storage::new();
+    let mut storage = storage::Storage::new();
+    let mut total_event_measurements: usize = 0;
 
     for i in 0..SECONDS_PER_YEAR {
-        let measurement = Measurement::new(i, i + MEASUREMENT_TTL);
-        storage.add(measurement);
+        //        let measurement = storage::Measurement::new(i, i + MEASUREMENT_TTL);
+        //        storage.add(measurement);
+        //
+        //        if rng.gen_range(0.0, 1.0) < MEAN_EVENTS_PER_SECOND {
+        //            storage.adjust_measurements_ttl_for_event(i - MEAN_EVENT_LEN_S, i, i + EVENTS_TTL);
+        //            total_event_measurements += MEAN_EVENT_LEN_S;
+        //        }
 
-        if rng.gen_range(0.0, 1.0) < 0.00009221688 {
-            storage.adjust_measurements_ttl_for_event(12, i + EVENTS_TTL)
+        // Probability of this measurement belonging to an event
+        if rng.gen_range(0.0, 1.0) < 0.0011 {
+            // Measurement belongs to an event
+            // Probability of this measurement also belonging to an incident
+            let mut measurement = Measurement::new(i, i + EVENTS_TTL);
+            measurement.is_event = true;
+            storage.add(measurement);
+            total_event_measurements += 1;
+        } else {
+            // Measurement does not belong to an event
+            storage.add(Measurement::new(i, i + MEASUREMENT_TTL))
         }
 
         if i % 100_000 == 0 {
@@ -122,15 +57,36 @@ fn main() {
                 .iter()
                 .filter(|measurement| measurement.is_event)
                 .count();
-            let non_event_measurements = storage.measurements.len() - event_measurements;
+            let stored_measurements = storage.measurements.len();
+            let non_event_measurements = stored_measurements - event_measurements;
+
             println!(
-                "time={} #meas={} #meas_no_event={} #meas_event={} %meas_event={}",
+                "time={} #meas={}({:.*} MB) #meas_no_event={}({:.*} MB) #meas_event={}({:.*} MB) %meas_event={}",
                 i,
-                storage.measurements.len(),
+                stored_measurements,
+                2,
+                (stored_measurements * BYTES_PER_MEASUREMENT) as f64 / 1_000_000.0,
                 non_event_measurements,
+                2,
+                (non_event_measurements * BYTES_PER_MEASUREMENT) as f64 / 1_000_000.0,
                 event_measurements,
-                event_measurements as f64 / non_event_measurements as f64 * 100.0
+                2,
+                (event_measurements * BYTES_PER_MEASUREMENT) as f64 / 1_000_000.0,
+                event_measurements as f64 / non_event_measurements as f64 * 100.0,
             )
         }
     }
+
+    let percent_event_measurements =
+        total_event_measurements as f64 / SECONDS_PER_YEAR as f64 * 100.0;
+    let percent_non_event_measurements = 100.0 - percent_event_measurements;
+    println!(
+        "event_measurements={}({:.*}%) total_measurements={}({:.*}%)",
+        total_event_measurements,
+        2,
+        percent_event_measurements,
+        SECONDS_PER_YEAR,
+        2,
+        percent_non_event_measurements
+    )
 }
