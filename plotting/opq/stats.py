@@ -140,7 +140,8 @@ def ttl_aml_stats(events: List[Dict], incidents: List[Dict]) -> List[Dict]:
 
     print(f"aml mean data duration per month {data_dur_per_month}")
 
-    return events_without_an_incident
+    events_with_an_incident = len(events) - len(events_without_an_incident)
+    print(f"aml percent event to incident {float(events_with_an_incident) / len(events)}")
 
 
 if __name__ == "__main__":

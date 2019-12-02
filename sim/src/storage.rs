@@ -13,6 +13,7 @@ pub struct Measurement {
     pub ts: usize,
     pub ttl: usize,
     pub is_event: bool,
+    pub is_incident: bool,
 }
 
 impl Measurement {
@@ -21,6 +22,7 @@ impl Measurement {
             ts,
             ttl,
             is_event: false,
+            is_incident: false,
         }
     }
 
@@ -95,11 +97,5 @@ impl Storage {
             Ok(idx) => self.measurements.drain(0..=idx),
             Err(idx) => self.measurements.drain(0..idx),
         };
-        //        self.measurements = self
-        //            .measurements
-        //            .iter()
-        //            .to_owned()
-        //            .filter(|measurement| self.time > measurement.ttl)
-        //            .collect();
     }
 }

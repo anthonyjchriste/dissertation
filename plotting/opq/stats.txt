@@ -1,26 +1,27 @@
-total events 145264
-mean boxes received 1.288082387928186, 1.5816270987775152
-total duration s 1575243018.681
-total data duration s 1761798.697
-percent data duration 0.11184297762990303
-mean data duration s, std 12.12825405468664, 15.623950863808998
-total data 62617634448000.0
-mean data, std 431060926.6439035, 1258241485.0150974
-mean data per second 39751.0947234235
-mean events per second 9.221688226978087e-05
-mean data per month 96165848354.90613
-mean data duration per month 2705.705314822614
+total events 148091
+mean boxes received 1.2837174440040247, 1.5698232652936313
+total duration s 1575326948.551
+total data duration s 1786643.51
+percent data duration 0.11341413994367142
+mean data duration s, std 12.064497572438569, 15.578322391908712
+total data 63236971896000.0
+mean data, std 427014281.0569177, 1247369173.9647503
+mean data per second 40142.12538810812
+mean events per second 9.400651727326535e-05
+mean data per month 97111829738.91116
+mean data duration per month 2743.714873517299
 
-total incidents 312317
-total duration s 22619904.487333495
-total data duration s 160997.33229565425
-percent data duration 0.711750716656687
-mean data duration s, std 0.515493336243798, 1.3158913606321312
-total data 3863935975.095703
-mean data, std 12371.840069851154, 31581.392655171152
-mean data per second 170.82017199760492
-mean events per second 0.013807175895675804
-mean data per year 4958977921.15927
-mean data duration per year 206624.0800483029
+total incidents 321061
+total duration s 22704872.319000244
+total data duration s 168460.99874584956
+percent data duration 0.7419596832741288
+mean data duration s, std 0.5247009096272969, 1.3266780406548881
+total data 4043063969.9003906
+mean data, std 12592.82183105513, 31840.272975717315
+mean data per second 178.07032398579096
+mean events per second 0.01414062125032629
+mean data per year 5169452733.437106
+mean data duration per year 215393.8638932127
 
-aml mean data duration per month 1968.4023979149088
+aml mean data duration per month 2007.3016004200144
+aml percent event to incident 0.4438284568272211
