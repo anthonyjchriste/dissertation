@@ -8,4 +8,5 @@ pub struct Config {
     pub events_ttl: usize,
     pub incidents_ttl: usize,
     pub phenomena_ttl: usize,
+    pub num_sensors: usize,
 }
