@@ -1,6 +1,7 @@
 use crate::constants;
 use std::cmp::Ordering;
 
+#[inline]
 fn find_index<T: Ord>(v: &Vec<T>, val: &T) -> usize {
     match v.binary_search(val) {
         Ok(idx) => idx + 1,
@@ -13,7 +14,7 @@ pub enum StorageType {
     Sample(usize),
     Measurement(usize),
     Trend(usize),
-    Detection(usize),
+    Event(usize),
     Incident(usize),
     Phenomena(usize),
 }
@@ -101,6 +102,36 @@ impl StorageItem {
     ) -> StorageItem {
         StorageItem::new(
             StorageType::Trend(constants::ESTIMATED_BYTES_PER_TREND),
+            ts,
+            ttl,
+            is_event,
+            is_incident,
+        )
+    }
+
+    pub fn new_event(
+        ts: usize,
+        ttl: usize,
+        is_event: Option<bool>,
+        is_incident: Option<bool>,
+    ) -> StorageItem {
+        StorageItem::new(
+            StorageType::Event(constants::ESTIMATED_BYTES_PER_EVENT),
+            ts,
+            ttl,
+            is_event,
+            is_incident,
+        )
+    }
+
+    pub fn new_incident(
+        ts: usize,
+        ttl: usize,
+        is_event: Option<bool>,
+        is_incident: Option<bool>,
+    ) -> StorageItem {
+        StorageItem::new(
+            StorageType::Incident(constants::ESTIMATED_BYTES_PER_INCIDENT),
             ts,
             ttl,
             is_event,
@@ -215,7 +246,7 @@ impl Storage {
                 StorageType::Sample(bytes) => bytes,
                 StorageType::Measurement(bytes) => bytes,
                 StorageType::Trend(bytes) => bytes,
-                StorageType::Detection(bytes) => bytes,
+                StorageType::Event(bytes) => bytes,
                 StorageType::Incident(bytes) => bytes,
                 StorageType::Phenomena(bytes) => bytes,
             })
