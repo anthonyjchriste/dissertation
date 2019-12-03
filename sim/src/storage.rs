@@ -9,6 +9,7 @@ fn find_index<T: Ord>(v: &Vec<T>, val: &T) -> usize {
     }
 }
 
+#[derive(PartialEq)]
 pub enum StorageType {
     Sample,
     Measurement,

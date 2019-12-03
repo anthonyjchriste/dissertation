@@ -1,3 +1,4 @@
+use crate::storage::StorageItem;
 use rand;
 use rand::prelude::ThreadRng;
 use rand::Rng;
@@ -14,8 +15,13 @@ fn percent_chance(chance: f64, rng: &mut ThreadRng) -> bool {
 fn run_sim(conf: &config::Config) {
     let mut rng = rand::thread_rng();
     let mut storage = storage::Storage::new();
+
+    let mut total_measurements: usize = 0;
+    let mut total_orphaned_measurements: usize = 0;
     let mut total_event_measurements: usize = 0;
     let mut total_incident_measurements: usize = 0;
+    let mut total_storage_items: usize = 0;
+
     let mut storage_items_per_tick: Vec<storage::StorageItem> = vec![];
 
     for i in 0..conf.ticks {
@@ -26,7 +32,7 @@ fn run_sim(conf: &config::Config) {
                 // Measurement belongs to an event
                 // Probability of this measurement also belonging to an incident
                 if percent_chance(conf.percent_event_to_incident, &mut rng) {
-                    let mut measurement = storage::StorageItem::new_measurement(
+                    let measurement = storage::StorageItem::new_measurement(
                         i,
                         i + conf.incidents_ttl,
                         None,
@@ -34,8 +40,10 @@ fn run_sim(conf: &config::Config) {
                     );
                     storage_items_per_tick.push(measurement);
                     total_incident_measurements += 1;
+                    total_measurements += 1;
+                    total_storage_items += 1;
                 } else {
-                    let mut measurement = storage::StorageItem::new_measurement(
+                    let measurement = storage::StorageItem::new_measurement(
                         i,
                         i + conf.events_ttl,
                         Some(true),
@@ -43,14 +51,20 @@ fn run_sim(conf: &config::Config) {
                     );
                     storage_items_per_tick.push(measurement);
                     total_event_measurements += 1;
+                    total_measurements += 1;
+                    total_storage_items += 1;
                 }
             } else {
                 // Measurement does not belong to an event
                 let measurement =
                     storage::StorageItem::new_measurement(i, i + conf.measurements_ttl, None, None);
                 storage_items_per_tick.push(measurement);
+                total_orphaned_measurements += 1;
+                total_measurements += 1;
+                total_storage_items += 1;
             }
         }
+
         storage.add_many(&mut storage_items_per_tick);
 
         //        storage.add(Measurement::new(i, i + conf.measurements_ttl));
@@ -86,12 +100,8 @@ fn run_sim(conf: &config::Config) {
         }
     }
 
-    let total_measurements = conf.ticks;
-    let orphaned_measurements =
-        total_measurements - total_event_measurements - total_incident_measurements;
-
     let percent_orphaned_measurements =
-        orphaned_measurements as f64 / total_measurements as f64 * 100.0;
+        total_orphaned_measurements as f64 / total_measurements as f64 * 100.0;
     let percent_event_measurements =
         total_event_measurements as f64 / total_measurements as f64 * 100.0;
     let percent_incident_measurements =
@@ -100,8 +110,8 @@ fn run_sim(conf: &config::Config) {
         100.0 - percent_event_measurements - percent_incident_measurements;
     println!(
         "total_measurements={} (100%) orphaned_measurements={} ({:.*}%) event_measurements={} ({:.*}%) incident_measurements={} ({:.*}%)",
-        conf.ticks,
-        orphaned_measurements,
+        total_measurements,
+        total_orphaned_measurements,
         2, percent_orphaned_measurements,
         total_event_measurements,
         2, percent_event_measurements,
