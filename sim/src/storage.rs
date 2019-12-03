@@ -1,8 +1,5 @@
-use std::any::Any;
+use crate::constants;
 use std::cmp::Ordering;
-use std::iter::Filter;
-
-const GC_INTERVAL: usize = 600;
 
 fn find_index<T: Ord>(v: &Vec<T>, val: &T) -> usize {
     match v.binary_search(val) {
@@ -66,6 +63,21 @@ impl StorageItem {
         StorageItem::new_measurement(0, ttl, None, None)
     }
 
+    pub fn new_sample(
+        ts: usize,
+        ttl: usize,
+        is_event: Option<bool>,
+        is_incident: Option<bool>,
+    ) -> StorageItem {
+        StorageItem::new(
+            StorageType::Sample(constants::ESTIMATED_BYTES_PER_META_SAMPLE),
+            ts,
+            ttl,
+            is_event,
+            is_incident,
+        )
+    }
+
     pub fn new_measurement(
         ts: usize,
         ttl: usize,
@@ -73,7 +85,7 @@ impl StorageItem {
         is_incident: Option<bool>,
     ) -> StorageItem {
         StorageItem::new(
-            StorageType::Measurement(145),
+            StorageType::Measurement(constants::ESTIMATED_BYTES_PER_MEASUREMENT),
             ts,
             ttl,
             is_event,
@@ -87,7 +99,13 @@ impl StorageItem {
         is_event: Option<bool>,
         is_incident: Option<bool>,
     ) -> StorageItem {
-        StorageItem::new(StorageType::Trend(365), ts, ttl, is_event, is_incident)
+        StorageItem::new(
+            StorageType::Trend(constants::ESTIMATED_BYTES_PER_TREND),
+            ts,
+            ttl,
+            is_event,
+            is_incident,
+        )
     }
 }
 
@@ -123,7 +141,7 @@ impl Storage {
     }
 
     fn check_gc(&mut self, time: usize) {
-        if time % GC_INTERVAL == 0 {
+        if time % constants::DEFAULT_GC_INTERVAL == 0 {
             self.gc(time);
         }
     }

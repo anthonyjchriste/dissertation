@@ -9,13 +9,19 @@ fn main() {
         percent_event_duration: constants::ESTIMATED_PERCENT_DATA_DURATION,
         percent_event_to_incident: constants::ESTIMATED_PERCENT_EVENT_TO_INCIDENT,
         mean_event_len: constants::ESTIMATED_EVENT_LEN_S,
+        samples_ttl: constants::SECONDS_PER_FIFTEEN_MINUTES,
         measurements_ttl: constants::DEFAULT_MEASUREMENT_TTL,
         trends_ttl: constants::DEFAULT_TRENDS_TTL,
         events_ttl: constants::DEFAULT_EVENTS_TTL,
         incidents_ttl: constants::DEFAULT_INCIDENTS_TTL,
         phenomena_ttl: constants::DEFAULT_PHENOMENA_TTL,
         num_sensors: 1,
+        bytes_per_sample: constants::ESTIMATED_BYTES_PER_META_SAMPLE,
+        bytes_per_measurement: constants::ESTIMATED_BYTES_PER_MEASUREMENT,
+        bytes_per_trend: constants::ESTIMATED_BYTES_PER_TREND,
+        bytes_per_event: constants::ESTIMATED_BYTES_PER_EVENT,
+        bytes_per_incident: constants::ESTIMATED_BYTES_PER_INCIDENT,
     };
     let mut simulation = sim::Simulation::new(conf);
-    simulation.run_simulation()
+    simulation.run_simulation();
 }
