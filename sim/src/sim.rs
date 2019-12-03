@@ -16,6 +16,11 @@ pub fn fmt_size_mb(total_bytes: usize) -> String {
     format!("{:.*}MB", 2, total_bytes as f64 / 1_000_000.0)
 }
 
+#[inline]
+pub fn fmt_percent(percent: f64) -> String {
+    format!("{:.*}%", 2, percent * 100.0)
+}
+
 pub struct Simulation {
     rng: ThreadRng,
     storage: Storage,
@@ -327,49 +332,51 @@ impl Simulation {
         );
 
         println!(
-            "\ttotal_laha={} total_iml={} total_aml={}",
+            "\ttotal_laha={} total_iml={} total_aml={} total_dl={} total_il={}",
             storage_stats.fmt_size_mb(),
             sample_stats.fmt_size_mb(),
-            fmt_size_mb(measurement_stats.total_bytes + trends_stats.total_bytes)
+            fmt_size_mb(measurement_stats.total_bytes + trends_stats.total_bytes),
+            event_stats.fmt_size_mb(),
+            incident_stats.fmt_size_mb()
         );
     }
 
     fn display_summary(&self) {
-        let percent_orphaned_measurements =
-            self.total_orphaned_measurements as f64 / self.total_measurements as f64 * 100.0;
-        let percent_event_measurements =
-            self.total_event_measurements as f64 / self.total_measurements as f64 * 100.0;
-        let percent_incident_measurements =
-            self.total_incident_measurements as f64 / self.total_measurements as f64 * 100.0;
-
+        let total_samples = self.total_samples * constants::SAMPLES_PER_SECOND;
         println!(
-            "total_measurements={} (100%) orphaned_measurements={} ({:.*}%) event_measurements={} ({:.*}%) incident_measurements={} ({:.*}%)",
-            self.total_measurements,
-            self.total_orphaned_measurements,
-            2, percent_orphaned_measurements,
-            self.total_event_measurements,
-            2, percent_event_measurements,
-            self.total_incident_measurements,
-            2, percent_incident_measurements
+            "total_samples={} {}",
+            total_samples,
+            fmt_size_mb(total_samples * constants::BYTES_PER_SAMPLE)
         );
 
-        let percent_orphaned_trends =
-            self.total_orphaned_trends as f64 / self.total_trends as f64 * 100.0;
-        let percent_event_trends =
-            self.total_event_trends as f64 / self.total_trends as f64 * 100.0;
-        let percent_incident_trends =
-            self.total_incident_trends as f64 / self.total_trends as f64 * 100.0;
-        let percent_non_event_trends = 100.0 - percent_event_trends - percent_incident_trends;
+        println!(
+            "total_measurements={} {} orphaned_measurements={} {} {} event_measurements={} {} {} incident_measurements={} {} {}",
+            self.total_measurements,
+            fmt_size_mb(self.total_measurements * constants::ESTIMATED_BYTES_PER_MEASUREMENT),
+            self.total_orphaned_measurements,
+            fmt_percent(self.total_orphaned_measurements as f64 / self.total_measurements as f64),
+            fmt_size_mb(self.total_orphaned_measurements * constants::ESTIMATED_BYTES_PER_MEASUREMENT),
+            self.total_event_measurements,
+            fmt_percent(self.total_event_measurements as f64 / self.total_measurements as f64),
+            fmt_size_mb(self.total_event_measurements * constants::ESTIMATED_BYTES_PER_MEASUREMENT),
+            self.total_incident_measurements,
+            fmt_percent(self.total_incident_measurements as f64 / self.total_measurements as f64),
+            fmt_size_mb(self.total_incident_measurements * constants::ESTIMATED_BYTES_PER_MEASUREMENT),
+        );
 
         println!(
-            "total_trends={} (100%) orphaned_trends={} ({:.*}%) event_trends={} ({:.*}%) incident_trends={} ({:.*}%)",
+            "total_trends={} {} orphaned_trends={} {} {} event_trends={} {} {} incident_trends={} {} {}",
             self.total_trends,
+            fmt_size_mb(self.total_trends * constants::ESTIMATED_BYTES_PER_TREND),
             self.total_orphaned_trends,
-            2, percent_orphaned_trends,
+            fmt_percent(self.total_orphaned_trends as f64 / self.total_trends as f64),
+            fmt_size_mb(self.total_orphaned_trends * constants::ESTIMATED_BYTES_PER_TREND),
             self.total_event_trends,
-            2, percent_event_trends,
+            fmt_percent(self.total_event_trends as f64 / self.total_trends as f64),
+            fmt_size_mb(self.total_event_trends * constants::ESTIMATED_BYTES_PER_TREND),
             self.total_incident_trends,
-            2, percent_incident_trends
+            fmt_percent(self.total_incident_trends as f64 / self.total_trends as f64),
+            fmt_size_mb(self.total_incident_trends * constants::ESTIMATED_BYTES_PER_TREND),
         );
 
         println!("total_storage_items={}", self.total_storage_items);

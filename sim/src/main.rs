@@ -5,7 +5,7 @@ pub mod storage;
 
 fn main() {
     let conf = config::Config {
-        ticks: constants::SECONDS_PER_YEAR * 3,
+        ticks: constants::SECONDS_PER_YEAR * 1,
         percent_event_duration: constants::ESTIMATED_PERCENT_DATA_DURATION,
         percent_event_to_incident: constants::ESTIMATED_PERCENT_EVENT_TO_INCIDENT,
         mean_event_len: constants::ESTIMATED_EVENT_LEN_S,
