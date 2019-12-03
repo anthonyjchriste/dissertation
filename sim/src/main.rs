@@ -1,4 +1,3 @@
-use crate::storage::StorageItem;
 use rand;
 use rand::prelude::ThreadRng;
 use rand::Rng;
@@ -20,6 +19,10 @@ fn run_sim(conf: &config::Config) {
     let mut total_orphaned_measurements: usize = 0;
     let mut total_event_measurements: usize = 0;
     let mut total_incident_measurements: usize = 0;
+    let mut total_trends: usize = 0;
+    let mut total_orphaned_trends: usize = 0;
+    let mut total_event_trends: usize = 0;
+    let mut total_incident_trends: usize = 0;
     let mut total_storage_items: usize = 0;
 
     let mut storage_items_per_tick: Vec<storage::StorageItem> = vec![];
@@ -28,6 +31,8 @@ fn run_sim(conf: &config::Config) {
         storage_items_per_tick.clear();
         for _ in 0..conf.num_sensors {
             //         Probability of this measurement belonging to an event
+            let make_trend = i % 60 == 0;
+            //            let make_trend = false;
             if percent_chance(conf.percent_event_duration, &mut rng) {
                 // Measurement belongs to an event
                 // Probability of this measurement also belonging to an incident
@@ -42,6 +47,18 @@ fn run_sim(conf: &config::Config) {
                     total_incident_measurements += 1;
                     total_measurements += 1;
                     total_storage_items += 1;
+                    if make_trend {
+                        let trend = storage::StorageItem::new_trend(
+                            i,
+                            i + conf.incidents_ttl,
+                            None,
+                            Some(true),
+                        );
+                        storage_items_per_tick.push(trend);
+                        total_incident_trends += 1;
+                        total_trends += 1;
+                        total_storage_items += 1;
+                    }
                 } else {
                     let measurement = storage::StorageItem::new_measurement(
                         i,
@@ -53,6 +70,18 @@ fn run_sim(conf: &config::Config) {
                     total_event_measurements += 1;
                     total_measurements += 1;
                     total_storage_items += 1;
+                    if make_trend {
+                        let trend = storage::StorageItem::new_trend(
+                            i,
+                            i + conf.events_ttl,
+                            Some(true),
+                            None,
+                        );
+                        storage_items_per_tick.push(trend);
+                        total_event_trends += 1;
+                        total_trends += 1;
+                        total_storage_items += 1;
+                    }
                 }
             } else {
                 // Measurement does not belong to an event
@@ -62,41 +91,84 @@ fn run_sim(conf: &config::Config) {
                 total_orphaned_measurements += 1;
                 total_measurements += 1;
                 total_storage_items += 1;
+                if make_trend {
+                    let trend = storage::StorageItem::new_trend(i, i + conf.trends_ttl, None, None);
+                    storage_items_per_tick.push(trend);
+                    total_orphaned_trends += 1;
+                    total_trends += 1;
+                    total_storage_items += 1;
+                }
             }
         }
 
-        storage.add_many(&mut storage_items_per_tick);
+        storage.add_many(&mut storage_items_per_tick, i);
 
-        //        storage.add(Measurement::new(i, i + conf.measurements_ttl));
         if i % 100_000 == 0 {
-            let event_measurements = storage
-                .storage_items
-                .iter()
-                .filter(|measurement| measurement.is_event)
-                .count();
-            let incident_measurements = storage
-                .storage_items
-                .iter()
-                .filter(|measurement| measurement.is_incident)
-                .count();
-            let stored_measurements = storage.storage_items.len();
-            let non_event_measurements =
-                stored_measurements - event_measurements - incident_measurements;
-
+            let measurement_stats = storage.stat_storage_items(
+                Some(storage::StorageType::Measurement(145)),
+                None,
+                None,
+            );
+            let measurement_orphaned_stats = storage.stat_storage_items(
+                Some(storage::StorageType::Measurement(145)),
+                Some(false),
+                Some(false),
+            );
+            let measurement_event_stats = storage.stat_storage_items(
+                Some(storage::StorageType::Measurement(145)),
+                Some(true),
+                Some(false),
+            );
+            let measurement_incident_stats = storage.stat_storage_items(
+                Some(storage::StorageType::Measurement(145)),
+                Some(false),
+                Some(true),
+            );
+            let trends_stats =
+                storage.stat_storage_items(Some(storage::StorageType::Trend(365)), None, None);
+            let trends_orphaned_stats = storage.stat_storage_items(
+                Some(storage::StorageType::Trend(365)),
+                Some(false),
+                Some(false),
+            );
+            let trends_event_stats = storage.stat_storage_items(
+                Some(storage::StorageType::Trend(365)),
+                Some(true),
+                Some(false),
+            );
+            let trends_incident_stats = storage.stat_storage_items(
+                Some(storage::StorageType::Trend(365)),
+                Some(false),
+                Some(true),
+            );
             println!(
-                "time={} #meas_total={} ({:.*}MB) #meas_orphan={} ({:.*}% {:.*}MB) #meas_event={} ({:.*}% {:.*}MB) #meas_incident={} ({:.*}% {:.*}MB)",
+                "time={}/{} ({:.*}%) m_t={} ({}) m_o={} ({} {}) m_e={} ({} {}) m_i={} ({} {}) t_t={} ({}) t_o={} ({} {}) t_e={} ({} {}) t_i={} ({} {})",
                 i,
-                stored_measurements,
-                2, (stored_measurements * constants::ESTIMATED_BYTES_PER_MEASUREMENT) as f64 / 1_000_000.0,
-                non_event_measurements,
-                2, non_event_measurements as f64 / stored_measurements as f64 * 100.0,
-                2, (non_event_measurements * constants::ESTIMATED_BYTES_PER_MEASUREMENT) as f64 / 1_000_000.0,
-                event_measurements,
-                2, event_measurements as f64 / stored_measurements as f64 * 100.0,
-                2, (event_measurements * constants::ESTIMATED_BYTES_PER_MEASUREMENT) as f64 / 1_000_000.0,
-                incident_measurements,
-                2, incident_measurements as f64 / stored_measurements as f64 * 100.0,
-                2, (incident_measurements * constants::ESTIMATED_BYTES_PER_MEASUREMENT) as f64 / 1_000_000.0)
+                conf.ticks,
+                2, i as f64 / conf.ticks as f64 * 100.0,
+                measurement_stats.items,
+                measurement_stats.fmt_size_mb(),
+                measurement_orphaned_stats.items,
+                measurement_orphaned_stats.fmt_percent(),
+                measurement_orphaned_stats.fmt_size_mb(),
+                measurement_event_stats.items,
+                measurement_event_stats.fmt_percent(),
+                measurement_event_stats.fmt_size_mb(),
+                measurement_incident_stats.items,
+                measurement_incident_stats.fmt_percent(),
+                measurement_incident_stats.fmt_size_mb(),
+                trends_stats.items,
+                trends_stats.fmt_size_mb(),
+                trends_orphaned_stats.items,
+                trends_orphaned_stats.fmt_percent(),
+                trends_orphaned_stats.fmt_size_mb(),
+                trends_event_stats.items,
+                trends_event_stats.fmt_percent(),
+                trends_event_stats.fmt_size_mb(),
+                trends_incident_stats.items,
+                trends_incident_stats.fmt_percent(),
+                trends_incident_stats.fmt_size_mb(),
+            );
         }
     }
 
@@ -108,6 +180,7 @@ fn run_sim(conf: &config::Config) {
         total_incident_measurements as f64 / total_measurements as f64 * 100.0;
     let percent_non_event_measurements =
         100.0 - percent_event_measurements - percent_incident_measurements;
+
     println!(
         "total_measurements={} (100%) orphaned_measurements={} ({:.*}%) event_measurements={} ({:.*}%) incident_measurements={} ({:.*}%)",
         total_measurements,
@@ -117,7 +190,25 @@ fn run_sim(conf: &config::Config) {
         2, percent_event_measurements,
         total_incident_measurements,
         2, percent_incident_measurements
-    )
+    );
+
+    let percent_orphaned_trends = total_orphaned_trends as f64 / total_trends as f64 * 100.0;
+    let percent_event_trends = total_event_trends as f64 / total_trends as f64 * 100.0;
+    let percent_incident_trends = total_incident_trends as f64 / total_trends as f64 * 100.0;
+    let percent_non_event_trends = 100.0 - percent_event_trends - percent_incident_trends;
+
+    println!(
+        "total_trends={} (100%) orphaned_trends={} ({:.*}%) event_trends={} ({:.*}%) incident_trends={} ({:.*}%)",
+        total_trends,
+        total_orphaned_trends,
+        2, percent_orphaned_trends,
+        total_event_trends,
+        2, percent_event_trends,
+        total_incident_trends,
+        2, percent_incident_trends
+    );
+
+    println!("total_storage_items={}", total_storage_items);
 }
 
 fn main() {
