@@ -1,27 +1,20 @@
-total events 148091
-mean boxes received 1.2837174440040247, 1.5698232652936313
-total duration s 1575326948.551
-total data duration s 1786643.51
-percent data duration 0.11341413994367142
-mean data duration s, std 12.064497572438569, 15.578322391908712
-total data 63236971896000.0
-mean data, std 427014281.0569177, 1247369173.9647503
-mean data per second 40142.12538810812
-mean events per second 9.400651727326535e-05
-mean data per month 97111829738.91116
-mean data duration per month 2743.714873517299
+total events 151490
+total duration s 1575423312.654
+total data duration s 2670564.22
+percent data duration 0.0016951407272887797
+mean data duration s, std 13.788538930194136
+total data 64093541280.0
+mean data, std 330924.93432465923
+mean data per second 40.68337745493071
+mean events per second 0.00012293838642880148
+percent events to incident 0.5578255990494422
 
-total incidents 321061
-total duration s 22704872.319000244
-total data duration s 168460.99874584956
-percent data duration 0.7419596832741288
-mean data duration s, std 0.5247009096272969, 1.3266780406548881
-total data 4043063969.9003906
-mean data, std 12592.82183105513, 31840.272975717315
-mean data per second 178.07032398579096
-mean events per second 0.01414062125032629
-mean data per year 5169452733.437106
-mean data duration per year 215393.8638932127
-
-aml mean data duration per month 2007.3016004200144
-aml percent event to incident 0.4438284568272211
+total incidents 332405
+total duration s 1575423312.654
+total data duration s 2670564.22
+percent data duration 0.0016951407272887797
+mean data duration s, std 13.788538930194136
+total data 64093541280.0
+mean data, std 330924.93432465923
+mean data per second 40.68337745493071
+mean incidents per second 0.00012293838642880148
