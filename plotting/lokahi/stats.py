@@ -176,37 +176,30 @@ def get_stats(reports: List[RedvoxReport]) -> None:
     print(f"Event durations sum: {events_durations.sum()}")
     print(f"Event durations mean: {events_durations.mean()}")
     print(f"Event durations std: {events_durations.std()}")
+    print(f"Percent event data duration: {events_durations.sum() / e_d}")
     print(f"Event bytes sum: {event_bytes.sum()}")
     print(f"Event bytes mean: {event_bytes.mean()}")
     print(f"Event bytes std: {event_bytes.std()}")
     print(f"Event bytes sem: {event_bytes.std() / np.sqrt(len(event_bytes))}")
+    print(f"mean events per second {len(events) / e_d}")
     print(f"Event DR/s: {e_dr}")
     print(f"Event DR/s sem: {e_dr_sem}")
 
-    seconds_per_week: float = 604800.0
-    seconds_per_month: float = seconds_per_week * 4
-    seconds_per_year: float = seconds_per_month * 12
-    event_data_month: float = (event_bytes.sum() * seconds_per_month) / (emax_t - emin_t)
-    print(f"Event data per month: {event_data_month}")
-    data_dur_per_month = (events_durations.sum() * seconds_per_month) / (emax_t - emin_t)
-    print(f"Event data duration per month: {data_dur_per_month}")
 
     print()
     print(f"Total incidents: {len(incidents)}")
     print(f"Incident durations sum: {incident_durations.sum()}")
     print(f"Incident durations mean: {incident_durations.mean()}")
     print(f"Incident durations std: {incident_durations.std()}")
+    print(f"Percent incident data duration: {incident_durations.sum() / i_d}")
     print(f"Incident bytes sum: {incident_bytes.sum()}")
     print(f"Incident bytes mean: {incident_bytes.mean()}")
     print(f"Incident bytes std: {incident_bytes.std()}")
     print(f"Incident bytes sem: {incident_bytes.std() / np.sqrt(len(incident_bytes))}")
+    print(f"mean incidents per second {len(incidents) / i_d}")
     print(f"Incident DR/s: {i_dr}")
     print(f"Incident DR/s sem: {i_dr_sem}")
 
-    incident_data_year: float = (incident_bytes.sum() * seconds_per_year) / (imax_t - imin_t)
-    print(f"Incident data per year: {incident_data_year}")
-    data_dur_per_year = (incident_durations.sum() * seconds_per_year) / (imax_t - imin_t)
-    print(f"Incident data duration per year: {data_dur_per_year}")
 
 
 if __name__ == "__main__":
