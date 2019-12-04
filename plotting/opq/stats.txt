@@ -18,3 +18,10 @@ total data 4204851565.1953125
 mean data, std 12647.121032243966
 mean data per second 184.41168117508303
 mean incidents per second 0.014581317021077251
+
+total_samples=1119744000000 2239488.00MB
+total_measurements=93312000 13530.24MB orphaned_measurements=93154047 99.83% 13507.34MB event_measurements=70017 0.08% 10.15MB incident_measurements=87936 0.09% 12.75MB
+total_trends=1555200 567.65MB orphaned_trends=1552560 99.83% 566.68MB event_trends=1180 0.08% 0.43MB incident_trends=1460 0.09% 0.53MB
+total_events=11702 3931.87MB orphaned_events=5116 43.72% 1718.98MB incident_events=6586 56.28% 2212.90MB
+total_incidents=1360693 17208.68MB
+total_storage_items=189551595

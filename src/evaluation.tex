@@ -531,6 +531,28 @@ Table~\ref{table:ttl_summary} reviews the default TTLs provided at each level of
 
 In the following sub-sections, I will look at the minimum, estimated, and maximum bounds for each level in the Laha hierarchy with TTL enabled. The minimumum bounds will always be the data bounded by TTL without any data being saved by events further up the hierarchy. The estimated bounds will be calculated using estimated parameters that quantify the amount of data in each level that is preserved by upper levels. The maximum bounds will be discussed in terms of pathological cases where all data is preserved and no data is discarded. The maximum bounds for all levels is equivalent to the bound of those levels without TTL optimization.
 
+\paragraph{Simulating Laha}
+
+I desperately tried and failed to find an analytical solution for finding the Laha bounds with TTL included. I tried several different approaches, none of which fit our data particularly well. Since TTL removes data over time, I first looked at exponential decay functions. This somewhat fit the data if we assume that data only has a single TTL and is never saved by higher levels in hierarchy, however it is complicated by the fact that a certain percentage of data at lower levels is saved by higher levels. I was not able to model this property well playing with exponential decay functions. I next tried looking for inspiration from biology and  such as population growth models. These models estimate population given a birth rate and death rate. Again, I was not able to get these models to fit our data well.
+
+I finally decided to simulate Laha using parameters gathered from the OPQ and Lokahi networks. These simulations provide estimated bounds of data on each level of the Laha hierarchy. The simulation runs at a granularity of a second and simulates the IML (raw samples), AML (Measurements and Trends), DL (Events), IL (Incidents), and PL Phenomena. The simulation maintains an in-memory database of simulated data that is sorted by TTL. Items are discarded from the database when their TTL expires. Higher levels save data from the lower levels at a similar rate as observed in the OPQ and Lokahi networks.
+
+The following is a description of how the simulation works for the OPQ network.
+
+At each time step:
+\begin{enumerate}
+	\item 12000 samples are produced with a TTL of 15 minutes
+	\item 1 Measurement is produced with a TTL of 24 hours, 1 month, 1 year, or 2 years depending on $P_{ORPHAN}(measurement)$, $P_{EVENT}(measurement)$, $P_{INCIDENT}(measurement)$, $P_{PHENOMENA}(measurement)$
+	\item 1 Trend is produced if the time step if divisible by 60 with a TTL of 2 weeks, 1 month, 1 year, or 2 years depending on $P_{ORPHAN}(trend)$, $P_{EVENT}(trend)$, $P_{INCIDENT}(trend)$, $P_{PHENOMENA}(trend)$
+	\item 1 Event is produced if $P_{EVENT\_STEP}$ with a TTL of 1 month, 1 year, or 2 years depending on $P_{ORPHAN}(event)$, $P_{INCIDENT}(event)$, $P_{PHENOMENA}(event)$
+	\item 1 Incident is produced if $P_{INCIDENT\_STEP}$ with a TTL of 1 year or 2 years dependings on $P_{ORPHAN}(incident)$, $P_{PHENOMENA}(incident)$
+	\item 1 Phenomena is produced if $P_{PHENOMENA\_STEP}$ with a TTL of 2 years
+	\item Garbage collection is performed if the time step is divisible by 600 ticks (10 minutes)
+	\item Total items and size for each level are written to file every $N$ time steps
+\end{enumerate}
+
+Where $P_{ORPHAN}(data)$ is the probability that the referenced data does not belong to a higher level, $P_{EVENT}(data)$ is the probability that the referenced data was saved by an Detection (Event), $P_{INCIDENT}(data)$ is the probability that the referenced data was saved by an Incident, $P_{PHENOMENA}(data)$ is the probability that the referenced data was saved by a Phenomena, $P_{EVENT\_STEP}$ is the probability that an Event will be produced for any given time step, $P_{INCIDENT\_STEP}$ is the probability that an Incident will be produced for a given time step, and $P_{PHENOMENA\_STEP}$ is the probability that a Phenomena will be produced for a given time step.
+
 \paragraph{Evaluation of IML with TTL}
 The IML (Instantaneous Measurements Level) stores raw samples from the DSN. Traditionally, this is the largest and most noisy data set produced by the DSN and thus has a very short TTL (which is often limited by the amount of on-board sensor memory). I showed in the previous section that without TTL, this level grows very rapidly.
 
@@ -562,59 +584,11 @@ Equation~\ref{eq:s_iml_ttl_full} provides the calculation for obtaining the esti
 
 Where $S_{IML}$ is calculated from~\ref{eq:iml:mu_size_iml} and $T$ is substituted with the number of seconds in the IML TTL (15 minutes).
 
-It should be noted that IML data within OPQ is only preserved when Detections, Incidents, or Phenomena that use that data are created. Further, the IML data lives on the OPQ Boxes themselves, so preserving IML data isn't as simple as just updating its TTL, but rather IML data is copied into Detections, Incidents, and Phenomena and is garbage collected when those Detection, Incidents, or Phenomena are garbage collected.
+It should be noted that IML data within OPQ is only preserved when Detections, Incidents, or Phenomena that use that data are created. This means that for OPQ, the IML bounds are equal to the minimum bounds. Further, the IML data lives on the OPQ Boxes themselves, so preserving IML data isn't as simple as just updating its TTL, but rather IML data is copied into Detections, Incidents, and Phenomena and is garbage collected when those Detection, Incidents, or Phenomena are garbage collected.
 
 The Lokahi network works slightly differently and the IML data is collected from all sensors and stored in the database allowing the IML data in Lokahi to have its TTL updated directly rather than copied into the system like OPQ\@.
 
-Table~\ref{table:ttl_iml_params} provides the estimated parameters for the OPQ and Lokahi networks required for determining the estimated IML bounds with TTL. These parameters are the estimated amount of data saved from the IML by higher levels in the hierarchy (DL, IL, and PL). This data was estimated from the OPQ and Lokahi deployment by taking the ratio of data received over the course of the deployment and adjusting it to the duration of the particular level's TTL\@.
 
-\begin{table}[H]
-	\centering
-	\caption{Estimated IML Data Saved by Level}
-	\begin{tabularx}{\textwidth}{Xllll}
-		\toprule
-		\textbf{Network} & \boldmath{$\mu DL_{IML}$} & \boldmath{$\mu IL_{IML}$} & \boldmath{$\mu PL_{IML}$} & \boldmath{$\mu N$} \\
-		\midrule
-		OPQ & 94.83 GB & 308.93 GB & n/a & 15 \\
-		Lokahi & 0.98 GB & 1.10 GB & n/a & 60 \\
-		\bottomrule
-	\end{tabularx}
-	\label{table:ttl_iml_params}
-\end{table}
-
-Table~\ref{table:ttl_iml_est} provides the estimated bounds of the IML layer for the OPQ and Lokahi networks using estimated parameters from deployments of those networks.
-
-\begin{table}[H]
-	\centering
-	\caption{Estimated IML Bounds}
-	\begin{tabularx}{\textwidth}{Xl}
-		\toprule
-		\textbf{Network} & \textbf{Estimated IML Bounds} \\
-		\midrule
-		OPQ & 404.08 GB \\
-		Lokahi & 3.81 GB \\
-		\bottomrule
-	\end{tabularx}
-	\label{table:ttl_iml_est}
-\end{table}
-
-Finally, the upper bounds of the IML level can be calculated by examining a couple of pathological cases. The first case is where all data is saved by Phenomena that do not expire. In this case, the IML data data will remain unbounded because all IML data is referenced by Phenomena that does not expire. This extreme case is unlikely to happen in practice.
-
-The other more likely (yet still rare) pathological case is that all IML data is saved by Phenomena that expires within the default Phenomena TTL of two years. In this case, the IML data will take two years to expire and the upper bounds of the IML with TTL can be found by substituting the number of seconds in two years for $T$ is Equation~\ref{eq:iml:mu_size_iml}. The estimated upper bound are provided in Table~\ref{table:ttl_iml_max}.
-
-\begin{table}[H]
-	\centering
-	\caption{Estimated IML Upper Bounds}
-	\begin{tabularx}{\textwidth}{Xll}
-		\toprule
-		\textbf{Network} & \textbf{Max IML Bounds/Device} & \textbf{Max IML Bounds/Network} \\
-		\midrule
-		OPQ & & 22.72 TB \\
-		Lokahi & & 121.18 TB \\
-		\bottomrule
-	\end{tabularx}
-	\label{table:ttl_iml_max}
-\end{table}
 
 \paragraph{Evaluation of AML with TTL}
 The AML (Aggregate Measurement Level) collects windowed features estimated from the IML data. The OPQ network provides two AMLs, Measurements which are rolled into one second windows and Trends which are rolled into one minute windows. The Lokahi network provides a single AML with windows that vary depending on the sensor sample rate. The previous section evaluated the growth of this level without TTL. This section will add TTL into the evaluation.
