@@ -29,24 +29,23 @@ avg trend size bytes = 2471
 80
 total_samples=146371840 585.49MB
 total_measurements=0 0.00MB orphaned_measurements=0 NaN% 0.00MB event_measurements=0 NaN% 0.00MB incident_measurements=0 NaN% 0.00MB
-total_trends=1829648 4521.06MB orphaned_trends=1607453 87.86% 3972.02MB event_trends=114341 6.25% 282.54MB incident_trends=107854 5.89% 266.51MB
-total_events=2967 38344.78MB orphaned_events=2967 100.00% 38344.78MB incident_events=0 0.00% 0.00MB
-total_incidents=72 3324.22MB
-total_storage_items=3662335
+total_trends=1829648 4521.06MB orphaned_trends=1607403 87.85% 3971.89MB event_trends=114361 6.25% 282.59MB incident_trends=107884 5.90% 266.58MB
+total_events=2945 1894.22MB orphaned_events=2945 100.00% 1894.22MB incident_events=0 0.00% 0.00MB
+total_incidents=78 84.59MB
+total_storage_items=3662319
 
 800
 total_samples=1820722400 7282.89MB
 total_measurements=0 0.00MB orphaned_measurements=0 NaN% 0.00MB event_measurements=0 NaN% 0.00MB incident_measurements=0 NaN% 0.00MB
-total_trends=2275903 5623.76MB orphaned_trends=2000142 87.88% 4942.35MB event_trends=142386 6.26% 351.84MB incident_trends=133375 5.86% 329.57MB
-total_events=2870 37091.17MB orphaned_events=2870 100.00% 37091.17MB incident_events=0 0.00% 0.00MB
-total_incidents=81 3739.75MB
-total_storage_items=4554757
+total_trends=2275903 5623.76MB orphaned_trends=1999646 87.86% 4941.13MB event_trends=142319 6.25% 351.67MB incident_trends=133938 5.89% 330.96MB
+total_events=2835 18234.72MB orphaned_events=2835 100.00% 18234.72MB incident_events=0 0.00% 0.00MB
+total_incidents=69 748.29MB
+total_storage_items=4554710
 
 8000
 total_samples=22621096000 90484.38MB
 total_measurements=0 0.00MB orphaned_measurements=0 NaN% 0.00MB event_measurements=0 NaN% 0.00MB incident_measurements=0 NaN% 0.00MB
-total_trends=2827637 6987.09MB orphaned_trends=2485454 87.90% 6141.56MB event_trends=176231 6.23% 435.47MB incident_trends=165952 5.87% 410.07MB
-total_events=2934 37918.29MB orphaned_events=2934 100.00% 37918.29MB incident_events=0 0.00% 0.00MB
-total_incidents=95 4386.13MB
-total_storage_items=5658303
-
+total_trends=2827637 6987.09MB orphaned_trends=2484447 87.86% 6139.07MB event_trends=177355 6.27% 438.24MB incident_trends=165835 5.86% 409.78MB
+total_events=2801 180160.32MB orphaned_events=2801 100.00% 180160.32MB incident_events=0 0.00% 0.00MB
+total_incidents=86 9326.53MB
+total_storage_items=5658161

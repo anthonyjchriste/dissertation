@@ -71,7 +71,7 @@ impl StorageItem {
         is_incident: Option<bool>,
     ) -> StorageItem {
         StorageItem::new(
-            StorageType::MetaSample(constants::ESTIMATED_BYTES_PER_META_SAMPLE_8000),
+            StorageType::MetaSample(constants::ESTIMATED_BYTES_PER_META_SAMPLE_80),
             ts,
             ttl,
             is_event,
@@ -116,7 +116,7 @@ impl StorageItem {
         is_incident: Option<bool>,
     ) -> StorageItem {
         StorageItem::new(
-            StorageType::Event(constants::ESTIMATED_BYTES_PER_EVENT),
+            StorageType::Event(constants::ESTIMATED_BYTES_PER_EVENT_80),
             ts,
             ttl,
             is_event,
@@ -131,7 +131,7 @@ impl StorageItem {
         is_incident: Option<bool>,
     ) -> StorageItem {
         StorageItem::new(
-            StorageType::Incident(constants::ESTIMATED_BYTES_PER_INCIDENT),
+            StorageType::Incident(constants::ESTIMATED_BYTES_PER_INCIDENT_80),
             ts,
             ttl,
             is_event,

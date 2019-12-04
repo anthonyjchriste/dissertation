@@ -184,7 +184,7 @@ impl Simulation {
         let storage_stats = self.storage.stat_storage_items(None, None, None);
         let sample_stats = self.storage.stat_storage_items(
             Some(storage::StorageType::MetaSample(
-                constants::ESTIMATED_BYTES_PER_META_SAMPLE_8000,
+                constants::ESTIMATED_BYTES_PER_META_SAMPLE_80,
             )),
             None,
             None,
@@ -247,28 +247,28 @@ impl Simulation {
         );
         let event_stats = self.storage.stat_storage_items(
             Some(storage::StorageType::Event(
-                constants::ESTIMATED_BYTES_PER_EVENT,
+                constants::ESTIMATED_BYTES_PER_EVENT_80,
             )),
             None,
             None,
         );
         let event_orphaned_stats = self.storage.stat_storage_items(
             Some(storage::StorageType::Event(
-                constants::ESTIMATED_BYTES_PER_EVENT,
+                constants::ESTIMATED_BYTES_PER_EVENT_80,
             )),
             Some(false),
             Some(false),
         );
         let event_incident_stats = self.storage.stat_storage_items(
             Some(storage::StorageType::Event(
-                constants::ESTIMATED_BYTES_PER_EVENT,
+                constants::ESTIMATED_BYTES_PER_EVENT_80,
             )),
             Some(false),
             Some(true),
         );
         let incident_stats = self.storage.stat_storage_items(
             Some(storage::StorageType::Incident(
-                constants::ESTIMATED_BYTES_PER_INCIDENT,
+                constants::ESTIMATED_BYTES_PER_INCIDENT_80,
             )),
             Some(false),
             Some(false),
@@ -276,7 +276,7 @@ impl Simulation {
 
         let items: Vec<usize> = vec![
             time,
-            sample_stats.items * constants::SAMPLES_PER_SECOND_8000,
+            sample_stats.items * constants::SAMPLES_PER_SECOND_80,
             sample_stats.total_bytes,
             measurement_stats.items,
             measurement_stats.total_bytes,
@@ -317,28 +317,28 @@ impl Simulation {
         let storage_stats = self.storage.stat_storage_items(None, None, None);
         let sample_stats = self.storage.stat_storage_items(
             Some(storage::StorageType::MetaSample(
-                constants::ESTIMATED_BYTES_PER_META_SAMPLE_8000,
+                constants::ESTIMATED_BYTES_PER_META_SAMPLE_80,
             )),
             None,
             None,
         );
         let sample_orphaned_stats = self.storage.stat_storage_items(
             Some(storage::StorageType::MetaSample(
-                constants::ESTIMATED_BYTES_PER_META_SAMPLE_8000,
+                constants::ESTIMATED_BYTES_PER_META_SAMPLE_80,
             )),
             Some(false),
             Some(false),
         );
         let sample_event_stats = self.storage.stat_storage_items(
             Some(storage::StorageType::MetaSample(
-                constants::ESTIMATED_BYTES_PER_META_SAMPLE_8000,
+                constants::ESTIMATED_BYTES_PER_META_SAMPLE_80,
             )),
             Some(true),
             Some(false),
         );
         let sample_incident_stats = self.storage.stat_storage_items(
             Some(storage::StorageType::MetaSample(
-                constants::ESTIMATED_BYTES_PER_META_SAMPLE_8000,
+                constants::ESTIMATED_BYTES_PER_META_SAMPLE_80,
             )),
             Some(false),
             Some(true),
@@ -401,28 +401,28 @@ impl Simulation {
         );
         let event_stats = self.storage.stat_storage_items(
             Some(storage::StorageType::Event(
-                constants::ESTIMATED_BYTES_PER_EVENT,
+                constants::ESTIMATED_BYTES_PER_EVENT_80,
             )),
             None,
             None,
         );
         let event_orphaned_stats = self.storage.stat_storage_items(
             Some(storage::StorageType::Event(
-                constants::ESTIMATED_BYTES_PER_EVENT,
+                constants::ESTIMATED_BYTES_PER_EVENT_80,
             )),
             Some(false),
             Some(false),
         );
         let event_incident_stats = self.storage.stat_storage_items(
             Some(storage::StorageType::Event(
-                constants::ESTIMATED_BYTES_PER_EVENT,
+                constants::ESTIMATED_BYTES_PER_EVENT_80,
             )),
             Some(false),
             Some(true),
         );
         let incident_stats = self.storage.stat_storage_items(
             Some(storage::StorageType::Incident(
-                constants::ESTIMATED_BYTES_PER_INCIDENT,
+                constants::ESTIMATED_BYTES_PER_INCIDENT_80,
             )),
             Some(false),
             Some(false),
@@ -438,15 +438,15 @@ impl Simulation {
 
         println!(
             "\ttotal_samples={} {} orphaned_samples={} {} {} event_samples={} {} {} incident_samples={} {} {}",
-            sample_stats.items * constants::SAMPLES_PER_SECOND_8000,
+            sample_stats.items * constants::SAMPLES_PER_SECOND_80,
             sample_stats.fmt_size_mb(),
-            sample_orphaned_stats.items * constants::SAMPLES_PER_SECOND_8000,
+            sample_orphaned_stats.items * constants::SAMPLES_PER_SECOND_80,
             sample_orphaned_stats.fmt_percent(),
             sample_orphaned_stats.fmt_size_mb(),
-            sample_event_stats.items * constants::SAMPLES_PER_SECOND_8000,
+            sample_event_stats.items * constants::SAMPLES_PER_SECOND_80,
             sample_event_stats.fmt_percent(),
             sample_event_stats.fmt_size_mb(),
-            sample_incident_stats.items * constants::SAMPLES_PER_SECOND_8000,
+            sample_incident_stats.items * constants::SAMPLES_PER_SECOND_80,
             sample_incident_stats.fmt_percent(),
             sample_incident_stats.fmt_size_mb(),
 
@@ -511,7 +511,7 @@ impl Simulation {
     }
 
     fn display_summary(&self) {
-        let total_samples = self.total_samples * constants::SAMPLES_PER_SECOND_8000;
+        let total_samples = self.total_samples * constants::SAMPLES_PER_SECOND_80;
         println!(
             "total_samples={} {}",
             total_samples,
@@ -551,19 +551,19 @@ impl Simulation {
         println!(
             "total_events={} {} orphaned_events={} {} {} incident_events={} {} {}",
             self.total_events,
-            fmt_size_mb(self.total_events * constants::ESTIMATED_BYTES_PER_EVENT),
+            fmt_size_mb(self.total_events * constants::ESTIMATED_BYTES_PER_EVENT_80),
             self.total_orphaned_events,
             fmt_percent(self.total_orphaned_events as f64 / self.total_events as f64),
-            fmt_size_mb(self.total_orphaned_events * constants::ESTIMATED_BYTES_PER_EVENT),
+            fmt_size_mb(self.total_orphaned_events * constants::ESTIMATED_BYTES_PER_EVENT_80),
             self.total_incident_events,
             fmt_percent(self.total_incident_events as f64 / self.total_events as f64),
-            fmt_size_mb(self.total_incident_events * constants::ESTIMATED_BYTES_PER_EVENT)
+            fmt_size_mb(self.total_incident_events * constants::ESTIMATED_BYTES_PER_EVENT_80)
         );
 
         println!(
             "total_incidents={} {}",
             self.total_incidents,
-            fmt_size_mb(self.total_incidents * constants::ESTIMATED_BYTES_PER_INCIDENT)
+            fmt_size_mb(self.total_incidents * constants::ESTIMATED_BYTES_PER_INCIDENT_80)
         );
 
         println!("total_storage_items={}", self.total_storage_items);
@@ -576,7 +576,7 @@ impl Simulation {
             storage_items_per_tick.clear();
 
             // Chance of producing samples and trends
-            if i % constants::META_SAMPLE_8000_LEN == 0 {
+            if i % constants::META_SAMPLE_80_LEN == 0 {
                 storage_items_per_tick.push(self.make_sample(i, false, false));
                 if percent_chance(
                     constants::ESTIMATED_PERCENT_EVENT_DATA_DURATION,
