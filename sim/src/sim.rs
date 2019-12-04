@@ -379,6 +379,18 @@ impl Simulation {
             fmt_size_mb(self.total_incident_trends * constants::ESTIMATED_BYTES_PER_TREND),
         );
 
+        println!(
+            "total_events={} {} orphaned_events={} {} {} incident_events={} {} {}",
+            self.total_events,
+            fmt_size_mb(self.total_events * constants::ESTIMATED_BYTES_PER_EVENT),
+            self.total_orphaned_events,
+            fmt_percent(self.total_orphaned_events as f64 / self.total_events as f64),
+            fmt_size_mb(self.total_orphaned_events * constants::ESTIMATED_BYTES_PER_EVENT),
+            self.total_incident_events,
+            fmt_percent(self.total_incident_events as f64 / self.total_events as f64),
+            fmt_size_mb(self.total_incident_events * constants::ESTIMATED_BYTES_PER_EVENT)
+        );
+
         println!("total_storage_items={}", self.total_storage_items);
     }
 
