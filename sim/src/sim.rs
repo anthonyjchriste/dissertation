@@ -544,17 +544,23 @@ impl Simulation {
         for i in 0..self.conf.ticks {
             storage_items_per_tick.clear();
 
-            // Events, Incidents
+            // Events
             for _ in 0..self.conf.num_sensors {
                 if percent_chance(constants::ESTIMATED_EVENTS_PER_SECOND, &mut self.rng) {
                     if percent_chance(self.conf.percent_event_to_incident, &mut self.rng) {
-                        // Create an event owned by incident and create an incident
+                        // Create an event owned by incident
                         storage_items_per_tick.push(self.make_event(i, true));
-                        storage_items_per_tick.push(self.make_incident(i));
                     } else {
                         // Create an orphaned event
                         storage_items_per_tick.push(self.make_event(i, false));
                     }
+                }
+            }
+
+            // Incidents
+            for _ in 0..self.conf.num_sensors {
+                if percent_chance(constants::ESTIMATED_INCIDENTS_PER_SECOND, &mut self.rng) {
+                    storage_items_per_tick.push(self.make_incident(i));
                 }
             }
 
