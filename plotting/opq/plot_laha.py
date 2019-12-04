@@ -161,7 +161,7 @@ def plot_aml(data: List[Data]) -> None:
     measurement_ax.legend()
 
     measurement_mb_ax: plt.Axes = measurement_ax.twinx()
-    measurement_mb_ax.plot(x, total_measurements_mb)
+    measurement_mb_ax.plot(x, total_measurements_mb, visible=False)
     measurement_mb_ax.set_ylabel("Size MB")
 
     # Trends
@@ -179,7 +179,7 @@ def plot_aml(data: List[Data]) -> None:
     trend_ax.legend()
 
     trend_mb_ax: plt.Axes = trend_ax.twinx()
-    trend_mb_ax.plot(x, total_trends_mb)
+    trend_mb_ax.plot(x, total_trends_mb, visible=False)
     trend_mb_ax.set_ylabel("Size MB")
 
     # AML
@@ -198,7 +198,7 @@ def plot_aml(data: List[Data]) -> None:
     aml_ax.legend()
 
     aml_mb_ax: plt.Axes = aml_ax.twinx()
-    aml_mb_ax.plot(x, total_measurements_mb + total_trends_mb)
+    aml_mb_ax.plot(x, total_measurements_mb + total_trends_mb, visible=False)
     aml_mb_ax.set_ylabel("Size MB")
     aml_mb_ax.set_xscale("log")
     fig.show()
