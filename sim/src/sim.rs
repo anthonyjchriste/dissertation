@@ -391,6 +391,12 @@ impl Simulation {
             fmt_size_mb(self.total_incident_events * constants::ESTIMATED_BYTES_PER_EVENT)
         );
 
+        println!(
+            "total_incidents={} {}",
+            self.total_incidents,
+            fmt_size_mb(self.total_incidents * constants::ESTIMATED_BYTES_PER_INCIDENT)
+        );
+
         println!("total_storage_items={}", self.total_storage_items);
     }
 
