@@ -9,6 +9,7 @@ seconds_in_month = seconds_in_day * 30.4167
 seconds_in_year = seconds_in_month * 12
 seconds_in_2_years = seconds_in_year * 2
 
+
 class Data:
     def __init__(self,
                  time: int,
@@ -89,7 +90,7 @@ def parse_file(path: str) -> List[Data]:
         return list(map(lambda line: Data.from_line(line), lines))
 
 
-def plot_iml(data: List[Data]) -> None:
+def plot_iml(data: List[Data], out_dir: str) -> None:
     fig, ax = plt.subplots(1, 1, figsize=(16, 9))
     fig: plt.Figure = fig
     ax: plt.Axes = ax
@@ -111,9 +112,10 @@ def plot_iml(data: List[Data]) -> None:
     ax_size.set_ylabel("IML Size MB")
 
     ax.legend()
-    fig.show()
+    fig.savefig(f"{out_dir}/sim_iml_opq.png")
 
-def plot_aml(data: List[Data]) -> None:
+
+def plot_aml(data: List[Data], out_dir: str) -> None:
     fig, ax = plt.subplots(3, 1, figsize=(16, 9), sharex="all")
     fig: plt.Figure = fig
     ax: List[plt.Axes] = ax
@@ -145,17 +147,22 @@ def plot_aml(data: List[Data]) -> None:
     total_incident_trends_b = np.array(list(map(lambda d: d.total_incident_trends_b, data)))
     total_incident_trends_mb = total_incident_trends_b / 1_000_000.0
 
+    fig.suptitle("OPQ AML Single Device Data Growth 3 Years")
+
     # Measurements
     measurement_ax = ax[0]
     measurement_ax.plot(x, total_orphaned_measurements, label="Orphaned Measurements")
     measurement_ax.plot(x, total_event_measurements, label="Event Measurements")
     measurement_ax.plot(x, total_incident_measurements, label="Incident Measurements")
     measurement_ax.plot(x, total_measurements, label="Total Measurements")
-    measurement_ax.axvline(seconds_in_day, 0, total_measurements.max(), color="red", linestyle="--", label="Measurements TTL (1 Day)")
-    measurement_ax.axvline(seconds_in_month, 0, total_measurements.max(), color="green", linestyle="--", label="Events TTL (1 Month)")
-    measurement_ax.axvline(seconds_in_year, 0, total_measurements.max(), color="blue", linestyle="--", label="Incidents TTL (1 Year)")
+    measurement_ax.axvline(seconds_in_day, 0, total_measurements.max(), color="red", linestyle="--",
+                           label="Measurements TTL (1 Day)")
+    measurement_ax.axvline(seconds_in_month, 0, total_measurements.max(), color="green", linestyle="--",
+                           label="Events TTL (1 Month)")
+    measurement_ax.axvline(seconds_in_year, 0, total_measurements.max(), color="blue", linestyle="--",
+                           label="Incidents TTL (1 Year)")
 
-    measurement_ax.set_title("OPQ AML Single Device Measurements")
+    measurement_ax.set_title("Measurements")
     measurement_ax.set_ylabel("# Measurements")
     measurement_ax.legend()
 
@@ -169,11 +176,14 @@ def plot_aml(data: List[Data]) -> None:
     trend_ax.plot(x, total_event_trends, label="Event Trends")
     trend_ax.plot(x, total_incident_trends, label="Incident Trends")
     trend_ax.plot(x, total_trends, label="Total Trends")
-    trend_ax.axvline(seconds_in_two_weeks, 0, total_trends.max(), color="black", linestyle="--", label="Trends TTL (2 Weeks)")
-    trend_ax.axvline(seconds_in_month, 0, total_trends.max(), color="green", linestyle="--", label="Events TTL (1 Month)")
-    trend_ax.axvline(seconds_in_year, 0, total_trends.max(), color="blue", linestyle="--", label="Incidents TTL (1 Year)")
+    trend_ax.axvline(seconds_in_two_weeks, 0, total_trends.max(), color="black", linestyle="--",
+                     label="Trends TTL (2 Weeks)")
+    trend_ax.axvline(seconds_in_month, 0, total_trends.max(), color="green", linestyle="--",
+                     label="Events TTL (1 Month)")
+    trend_ax.axvline(seconds_in_year, 0, total_trends.max(), color="blue", linestyle="--",
+                     label="Incidents TTL (1 Year)")
 
-    trend_ax.set_title("OPQ AML Single Device Trends")
+    trend_ax.set_title("Trends")
     trend_ax.set_ylabel("# Trends")
     trend_ax.legend()
 
@@ -186,12 +196,16 @@ def plot_aml(data: List[Data]) -> None:
     aml_ax.plot(x, total_measurements, label="AML Measurements")
     aml_ax.plot(x, total_trends, label="AML Trends")
     aml_ax.plot(x, total_measurements + total_trends, label="AML", color="red")
-    aml_ax.axvline(seconds_in_day, 0, total_measurements.max() + total_trends.max(), color="red", linestyle="--", label="Measurements TTL (1 Day)")
-    aml_ax.axvline(seconds_in_two_weeks, 0, total_measurements.max() + total_trends.max(), color="black", linestyle="--", label="Trends TTL (2 Weeks)")
-    aml_ax.axvline(seconds_in_month, 0, total_measurements.max() + total_trends.max(), color="green", linestyle="--", label="Events TTL (1 Month)")
-    aml_ax.axvline(seconds_in_year, 0, total_measurements.max() + total_trends.max(), color="blue", linestyle="--", label="Incidents TTL (1 Year)")
+    aml_ax.axvline(seconds_in_day, 0, total_measurements.max() + total_trends.max(), color="red", linestyle="--",
+                   label="Measurements TTL (1 Day)")
+    aml_ax.axvline(seconds_in_two_weeks, 0, total_measurements.max() + total_trends.max(), color="black",
+                   linestyle="--", label="Trends TTL (2 Weeks)")
+    aml_ax.axvline(seconds_in_month, 0, total_measurements.max() + total_trends.max(), color="green", linestyle="--",
+                   label="Events TTL (1 Month)")
+    aml_ax.axvline(seconds_in_year, 0, total_measurements.max() + total_trends.max(), color="blue", linestyle="--",
+                   label="Incidents TTL (1 Year)")
 
-    aml_ax.set_title("OPQ AML Single Device")
+    aml_ax.set_title("AML")
     aml_ax.set_ylabel("# AML Items")
     aml_ax.set_xlabel("Seconds")
     aml_ax.legend()
@@ -200,10 +214,11 @@ def plot_aml(data: List[Data]) -> None:
     aml_mb_ax.plot(x, total_measurements_mb + total_trends_mb, visible=False)
     aml_mb_ax.set_ylabel("Size MB")
     aml_mb_ax.set_xscale("log")
-    fig.show()
+
+    fig.savefig(f"{out_dir}/sim_aml_opq.png")
 
 
-def plot_dl(data: List[Data]) -> None:
+def plot_dl(data: List[Data], out_dir: str) -> None:
     fig, ax = plt.subplots(1, 1, figsize=(16, 9), sharex="all")
     fig: plt.Figure = fig
     ax: plt.Axes = ax
@@ -226,16 +241,16 @@ def plot_dl(data: List[Data]) -> None:
     ax_mb.plot(x, total_events_mb, visible=False)
     ax_mb.set_ylabel("Size MB")
 
-    ax.set_title("OPQ DL Single Device")
+    ax.set_title("OPQ DL Single Device Data Growth 3 Years")
     ax.set_xlabel("Seconds")
     ax.set_ylabel("# Events")
     ax.set_xscale("log")
     ax.legend()
 
-    fig.show()
+    fig.savefig(f"{out_dir}/sim_dl_opq.png")
 
 
-def plot_il(data: List[Data]) -> None:
+def plot_il(data: List[Data], out_dir: str) -> None:
     fig, ax = plt.subplots(1, 1, figsize=(16, 9), sharex="all")
     fig: plt.Figure = fig
     ax: plt.Axes = ax
@@ -247,7 +262,7 @@ def plot_il(data: List[Data]) -> None:
     ax.plot(x, total_incidents, label="Total Incidents")
     ax.axvline(seconds_in_year, 0, total_incidents.max(), color="blue", linestyle="--", label="Incidents TTL (1 Year)")
 
-    ax.set_title("OPQ IL Single Device")
+    ax.set_title("OPQ IL Single Device Data Growth 3 Years")
     ax.set_ylabel("# Incidents")
     ax.set_xlabel("Seconds")
     ax.set_xscale("log")
@@ -258,8 +273,41 @@ def plot_il(data: List[Data]) -> None:
 
     ax.legend()
 
-    fig.show()
+    fig.savefig(f"{out_dir}/sim_il_opq.png")
 
+
+def plot_laha(data: List[Data], out_dir: str) -> None:
+    fig, ax = plt.subplots(1, 1, figsize=(16, 9), sharex="all")
+    fig: plt.Figure = fig
+    ax: plt.Axes = ax
+
+    x = np.array(list(map(lambda d: d.time, data)))
+    total_laha_mb = np.array(list(map(lambda d: d.total_laha_b, data))) / 1_000_000.0
+    total_iml_mb = np.array(list(map(lambda d: d.total_iml_b, data))) / 1_000_000.0
+    total_aml_mb = np.array(list(map(lambda d: d.total_aml_b, data))) / 1_000_000.0
+    total_dl_mb = np.array(list(map(lambda d: d.total_dl_b, data))) / 1_000_000.0
+    total_il_mb = np.array(list(map(lambda d: d.total_il_b, data))) / 1_000_000.0
+
+    ax.plot(x, total_laha_mb, label="Total Laha")
+    ax.plot(x, total_iml_mb, label="IML")
+    ax.plot(x, total_aml_mb, label="AML")
+    ax.plot(x, total_dl_mb, label="DL")
+    ax.plot(x, total_il_mb, label="IL")
+
+    ax.axvline(seconds_in_day, 0, total_laha_mb.max(), color="red", linestyle="--", label="Measurements TTL (1 Day)")
+    ax.axvline(seconds_in_two_weeks, 0, total_laha_mb.max(), color="black", linestyle="--",
+               label="Trends TTL (2 Weeks)")
+    ax.axvline(seconds_in_month, 0, total_laha_mb.max(), color="green", linestyle="--", label="Events TTL (1 Month)")
+    ax.axvline(seconds_in_year, 0, total_laha_mb.max(), color="blue", linestyle="--", label="Incidents TTL (1 Year)")
+
+    ax.set_title("OPQ Laha Single Device Data Growth 3 Years")
+    ax.set_ylabel("Size MB")
+    ax.set_xlabel("Seconds")
+    ax.set_xscale("log")
+    # ax.set_yscale("log")
+    ax.legend()
+
+    fig.savefig(f"{out_dir}/sim_laha_opq.png")
 
 
 if __name__ == "__main__":
@@ -269,7 +317,10 @@ if __name__ == "__main__":
     print(f"len(iml_data)={len(iml_data)}")
     print(f"len(data)={len(data)}")
 
-    # plot_iml(iml_data)
-    # plot_aml(data)
-    # plot_dl(data)
-    plot_il(data)
+    out_dir = "/Users/anthony/Development/dissertation/src/figures"
+
+    plot_iml(iml_data, out_dir)
+    plot_aml(data, out_dir)
+    plot_dl(data, out_dir)
+    plot_il(data, out_dir)
+    plot_laha(data, out_dir)
