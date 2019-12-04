@@ -5,6 +5,7 @@ use crate::{config, storage};
 use rand;
 use rand::prelude::ThreadRng;
 use rand::Rng;
+use std::io::{BufWriter, Write};
 
 #[inline]
 fn percent_chance(chance: f64, rng: &mut ThreadRng) -> bool {
@@ -24,6 +25,7 @@ pub fn fmt_percent(percent: f64) -> String {
 pub struct Simulation {
     rng: ThreadRng,
     storage: Storage,
+    buf_writer: BufWriter<std::fs::File>,
     conf: Config,
 
     total_storage_items: usize,
@@ -53,9 +55,12 @@ pub struct Simulation {
 
 impl Simulation {
     pub fn new(conf: Config) -> Simulation {
+        let file = std::fs::File::create(conf.out_file.clone()).unwrap();
+        let buf_writer = BufWriter::new(file);
         Simulation {
             rng: rand::thread_rng(),
             storage: Storage::new(),
+            buf_writer,
             conf,
             total_storage_items: 0,
             total_samples: 0,
@@ -173,6 +178,139 @@ impl Simulation {
             Some(false),
             Some(false),
         )
+    }
+
+    fn write_to_file(&mut self, time: usize) {
+        let storage_stats = self.storage.stat_storage_items(None, None, None);
+        let sample_stats = self.storage.stat_storage_items(
+            Some(storage::StorageType::Sample(
+                constants::ESTIMATED_BYTES_PER_META_SAMPLE,
+            )),
+            None,
+            None,
+        );
+        let measurement_stats = self.storage.stat_storage_items(
+            Some(storage::StorageType::Measurement(
+                constants::ESTIMATED_BYTES_PER_MEASUREMENT,
+            )),
+            None,
+            None,
+        );
+        let measurement_orphaned_stats = self.storage.stat_storage_items(
+            Some(storage::StorageType::Measurement(
+                constants::ESTIMATED_BYTES_PER_MEASUREMENT,
+            )),
+            Some(false),
+            Some(false),
+        );
+        let measurement_event_stats = self.storage.stat_storage_items(
+            Some(storage::StorageType::Measurement(
+                constants::ESTIMATED_BYTES_PER_MEASUREMENT,
+            )),
+            Some(true),
+            Some(false),
+        );
+        let measurement_incident_stats = self.storage.stat_storage_items(
+            Some(storage::StorageType::Measurement(
+                constants::ESTIMATED_BYTES_PER_MEASUREMENT,
+            )),
+            Some(false),
+            Some(true),
+        );
+        let trends_stats = self.storage.stat_storage_items(
+            Some(storage::StorageType::Trend(
+                constants::ESTIMATED_BYTES_PER_TREND,
+            )),
+            None,
+            None,
+        );
+        let trends_orphaned_stats = self.storage.stat_storage_items(
+            Some(storage::StorageType::Trend(
+                constants::ESTIMATED_BYTES_PER_TREND,
+            )),
+            Some(false),
+            Some(false),
+        );
+        let trends_event_stats = self.storage.stat_storage_items(
+            Some(storage::StorageType::Trend(
+                constants::ESTIMATED_BYTES_PER_TREND,
+            )),
+            Some(true),
+            Some(false),
+        );
+        let trends_incident_stats = self.storage.stat_storage_items(
+            Some(storage::StorageType::Trend(
+                constants::ESTIMATED_BYTES_PER_TREND,
+            )),
+            Some(false),
+            Some(true),
+        );
+        let event_stats = self.storage.stat_storage_items(
+            Some(storage::StorageType::Event(
+                constants::ESTIMATED_BYTES_PER_EVENT,
+            )),
+            None,
+            None,
+        );
+        let event_orphaned_stats = self.storage.stat_storage_items(
+            Some(storage::StorageType::Event(
+                constants::ESTIMATED_BYTES_PER_EVENT,
+            )),
+            Some(false),
+            Some(false),
+        );
+        let event_incident_stats = self.storage.stat_storage_items(
+            Some(storage::StorageType::Event(
+                constants::ESTIMATED_BYTES_PER_EVENT,
+            )),
+            Some(false),
+            Some(true),
+        );
+        let incident_stats = self.storage.stat_storage_items(
+            Some(storage::StorageType::Incident(
+                constants::ESTIMATED_BYTES_PER_INCIDENT,
+            )),
+            Some(false),
+            Some(false),
+        );
+
+        let items: Vec<usize> = vec![
+            time,
+            sample_stats.items * constants::SAMPLES_PER_SECOND,
+            sample_stats.total_bytes,
+            measurement_stats.items,
+            measurement_stats.total_bytes,
+            measurement_orphaned_stats.items,
+            measurement_orphaned_stats.total_bytes,
+            measurement_event_stats.items,
+            measurement_event_stats.total_bytes,
+            measurement_incident_stats.items,
+            measurement_incident_stats.total_bytes,
+            trends_stats.items,
+            trends_stats.total_bytes,
+            trends_orphaned_stats.items,
+            trends_orphaned_stats.total_bytes,
+            trends_event_stats.items,
+            trends_event_stats.total_bytes,
+            trends_incident_stats.items,
+            trends_incident_stats.total_bytes,
+            event_stats.items,
+            event_stats.total_bytes,
+            event_orphaned_stats.items,
+            event_orphaned_stats.total_bytes,
+            event_incident_stats.items,
+            event_incident_stats.total_bytes,
+            incident_stats.items,
+            incident_stats.total_bytes,
+            storage_stats.total_bytes,
+            sample_stats.total_bytes,
+            measurement_stats.total_bytes + trends_stats.total_bytes,
+            event_stats.total_bytes,
+            incident_stats.total_bytes,
+        ];
+        let items: Vec<String> = items.iter().map(|i| i.to_string()).collect();
+        let line: String = format!("{}\n", items.join(","));
+        let res = self.buf_writer.write(line.as_bytes()).unwrap();
     }
 
     fn display_info(&mut self, time: usize) {
@@ -455,11 +593,16 @@ impl Simulation {
 
             self.storage.add_many(&mut storage_items_per_tick, i);
 
-            if i % 100_000 == 0 {
+            if i % self.conf.print_info_every_n_ticks == 0 {
                 self.display_info(i);
+            }
+
+            if i % self.conf.write_info_every_n_ticks == 0 {
+                self.write_to_file(i);
             }
         }
 
         self.display_summary();
+        self.buf_writer.flush().unwrap();
     }
 }

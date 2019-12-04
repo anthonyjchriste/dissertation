@@ -15,4 +15,7 @@ pub struct Config {
     pub bytes_per_trend: usize,
     pub bytes_per_event: usize,
     pub bytes_per_incident: usize,
+    pub print_info_every_n_ticks: usize,
+    pub write_info_every_n_ticks: usize,
+    pub out_file: String,
 }
