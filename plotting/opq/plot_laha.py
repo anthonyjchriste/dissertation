@@ -3,6 +3,11 @@ from typing import *
 import matplotlib.pyplot as plt
 import numpy as np
 
+seconds_in_day = 86400
+seconds_in_two_weeks = seconds_in_day * 14
+seconds_in_month = seconds_in_day * 30.4167
+seconds_in_year = seconds_in_month * 12
+seconds_in_2_years = seconds_in_year * 2
 
 class Data:
     def __init__(self,
@@ -140,12 +145,6 @@ def plot_aml(data: List[Data]) -> None:
     total_incident_trends_b = np.array(list(map(lambda d: d.total_incident_trends_b, data)))
     total_incident_trends_mb = total_incident_trends_b / 1_000_000.0
 
-    seconds_in_day = 86400
-    seconds_in_two_weeks = seconds_in_day * 14
-    seconds_in_month = seconds_in_day * 30.4167
-    seconds_in_year = seconds_in_month * 12
-    seconds_in_2_years = seconds_in_year * 2
-
     # Measurements
     measurement_ax = ax[0]
     measurement_ax.plot(x, total_orphaned_measurements, label="Orphaned Measurements")
@@ -186,7 +185,7 @@ def plot_aml(data: List[Data]) -> None:
     aml_ax = ax[2]
     aml_ax.plot(x, total_measurements, label="AML Measurements")
     aml_ax.plot(x, total_trends, label="AML Trends")
-    aml_ax.plot(x, total_measurements + total_trends, label="AML")
+    aml_ax.plot(x, total_measurements + total_trends, label="AML", color="red")
     aml_ax.axvline(seconds_in_day, 0, total_measurements.max() + total_trends.max(), color="red", linestyle="--", label="Measurements TTL (1 Day)")
     aml_ax.axvline(seconds_in_two_weeks, 0, total_measurements.max() + total_trends.max(), color="black", linestyle="--", label="Trends TTL (2 Weeks)")
     aml_ax.axvline(seconds_in_month, 0, total_measurements.max() + total_trends.max(), color="green", linestyle="--", label="Events TTL (1 Month)")
@@ -204,6 +203,65 @@ def plot_aml(data: List[Data]) -> None:
     fig.show()
 
 
+def plot_dl(data: List[Data]) -> None:
+    fig, ax = plt.subplots(1, 1, figsize=(16, 9), sharex="all")
+    fig: plt.Figure = fig
+    ax: plt.Axes = ax
+
+    x = np.array(list(map(lambda d: d.time, data)))
+    total_events = np.array(list(map(lambda d: d.total_events, data)))
+    total_events_mb = np.array(list(map(lambda d: d.total_events_b, data))) / 1_000_000.0
+    total_orphaned_events = np.array(list(map(lambda d: d.total_orphaned_events, data)))
+    total_orphaned_events_mb = np.array(list(map(lambda d: d.total_orphaned_events_b, data))) / 1_000_000.0
+    total_incident_events = np.array(list(map(lambda d: d.total_incident_events, data)))
+    total_incident_events_mb = np.array(list(map(lambda d: d.total_incident_events_b, data))) / 1_000_000.0
+
+    ax.plot(x, total_events, label="Total Events")
+    ax.plot(x, total_orphaned_events, label="Orphaned Events")
+    ax.plot(x, total_incident_events, label="Incident Events")
+    ax.axvline(seconds_in_month, 0, total_events.max(), color="green", linestyle="--", label="Events TTL (1 Month)")
+    ax.axvline(seconds_in_year, 0, total_events.max(), color="blue", linestyle="--", label="Incidents TTL (1 Year)")
+
+    ax_mb: plt.Axes = ax.twinx()
+    ax_mb.plot(x, total_events_mb, visible=False)
+    ax_mb.set_ylabel("Size MB")
+
+    ax.set_title("OPQ DL Single Device")
+    ax.set_xlabel("Seconds")
+    ax.set_ylabel("# Events")
+    ax.set_xscale("log")
+    ax.legend()
+
+    fig.show()
+
+
+def plot_il(data: List[Data]) -> None:
+    fig, ax = plt.subplots(1, 1, figsize=(16, 9), sharex="all")
+    fig: plt.Figure = fig
+    ax: plt.Axes = ax
+
+    x = np.array(list(map(lambda d: d.time, data)))
+    total_incidents = np.array(list(map(lambda d: d.total_incidents, data)))
+    total_incidents_mb = np.array(list(map(lambda d: d.total_incidents_b, data))) / 1_000_000.0
+
+    ax.plot(x, total_incidents, label="Total Incidents")
+    ax.axvline(seconds_in_year, 0, total_incidents.max(), color="blue", linestyle="--", label="Incidents TTL (1 Year)")
+
+    ax.set_title("OPQ IL Single Device")
+    ax.set_ylabel("# Incidents")
+    ax.set_xlabel("Seconds")
+    ax.set_xscale("log")
+
+    ax_mb: plt.Axes = ax.twinx()
+    ax_mb.plot(x, total_incidents_mb, visible=False)
+    ax_mb.set_ylabel("Size MB")
+
+    ax.legend()
+
+    fig.show()
+
+
+
 if __name__ == "__main__":
     iml_data = parse_file("./sim_data_iml.txt")
     data = parse_file('./sim_data.txt')
@@ -212,4 +270,6 @@ if __name__ == "__main__":
     print(f"len(data)={len(data)}")
 
     # plot_iml(iml_data)
-    plot_aml(data)
+    # plot_aml(data)
+    # plot_dl(data)
+    plot_il(data)
