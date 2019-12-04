@@ -183,8 +183,8 @@ impl Simulation {
     fn write_to_file(&mut self, time: usize) {
         let storage_stats = self.storage.stat_storage_items(None, None, None);
         let sample_stats = self.storage.stat_storage_items(
-            Some(storage::StorageType::Sample(
-                constants::ESTIMATED_BYTES_PER_META_SAMPLE,
+            Some(storage::StorageType::MetaSample(
+                constants::ESTIMATED_BYTES_PER_META_SAMPLE_80,
             )),
             None,
             None,
@@ -276,7 +276,7 @@ impl Simulation {
 
         let items: Vec<usize> = vec![
             time,
-            sample_stats.items * constants::SAMPLES_PER_SECOND,
+            sample_stats.items * constants::SAMPLES_PER_SECOND_80,
             sample_stats.total_bytes,
             measurement_stats.items,
             measurement_stats.total_bytes,
@@ -316,8 +316,8 @@ impl Simulation {
     fn display_info(&mut self, time: usize) {
         let storage_stats = self.storage.stat_storage_items(None, None, None);
         let sample_stats = self.storage.stat_storage_items(
-            Some(storage::StorageType::Sample(
-                constants::ESTIMATED_BYTES_PER_META_SAMPLE,
+            Some(storage::StorageType::MetaSample(
+                constants::ESTIMATED_BYTES_PER_META_SAMPLE_80,
             )),
             None,
             None,
@@ -417,7 +417,7 @@ impl Simulation {
 
         println!(
             "\ttotal_samples={} {}",
-            sample_stats.items * 12_000,
+            sample_stats.items * constants::SAMPLES_PER_SECOND_80,
             sample_stats.fmt_size_mb()
         );
 
@@ -480,7 +480,7 @@ impl Simulation {
     }
 
     fn display_summary(&self) {
-        let total_samples = self.total_samples * constants::SAMPLES_PER_SECOND;
+        let total_samples = self.total_samples * constants::SAMPLES_PER_SECOND_80;
         println!(
             "total_samples={} {}",
             total_samples,
@@ -544,57 +544,39 @@ impl Simulation {
         for i in 0..self.conf.ticks {
             storage_items_per_tick.clear();
 
-            // Events
-            for _ in 0..self.conf.num_sensors {
-                if percent_chance(constants::ESTIMATED_EVENTS_PER_SECOND, &mut self.rng) {
-                    if percent_chance(self.conf.percent_event_to_incident, &mut self.rng) {
-                        // Create an event owned by incident
-                        storage_items_per_tick.push(self.make_event(i, true));
-                    } else {
-                        // Create an orphaned event
-                        storage_items_per_tick.push(self.make_event(i, false));
-                    }
-                }
-            }
-
-            // Incidents
-            for _ in 0..self.conf.num_sensors {
-                if percent_chance(constants::ESTIMATED_INCIDENTS_PER_SECOND, &mut self.rng) {
-                    storage_items_per_tick.push(self.make_incident(i));
-                }
-            }
-
-            // Samples, measurements, trends
-            for _ in 0..self.conf.num_sensors {
-                // Store meta-sample
+            // Chance of producing samples and trends
+            if i % constants::META_SAMPLE_80_LEN == 0 {
                 storage_items_per_tick.push(self.make_sample(i, false, false));
-                let make_trend = i % 60 == 0;
-                // Probability of belonging to an event
-                if percent_chance(self.conf.percent_event_duration, &mut self.rng) {
-                    // Probability of also belonging to an incident
-                    if percent_chance(self.conf.percent_event_to_incident, &mut self.rng) {
-                        // Store measurement saved by incident
-                        storage_items_per_tick.push(self.make_measurement(i, false, true));
-                        if make_trend {
-                            // Store trend saved by incident
-                            storage_items_per_tick.push(self.make_trend(i, false, true));
-                        }
-                    } else {
-                        // Store measurement saved by event
-                        storage_items_per_tick.push(self.make_measurement(i, true, false));
-                        if make_trend {
-                            // Store trend saved by event
-                            storage_items_per_tick.push(self.make_trend(i, true, false));
-                        }
-                    }
+                if percent_chance(
+                    constants::ESTIMATED_PERCENT_EVENT_DATA_DURATION,
+                    &mut self.rng,
+                ) {
+                    //                    storage_items_per_tick.push(self.make_sample(i, false, false));
+                    storage_items_per_tick.push(self.make_trend(i, true, false));
+                } else if percent_chance(
+                    constants::ESTIMATED_PERCENT_EVENT_DATA_DURATION,
+                    &mut self.rng,
+                ) {
+                    //                    storage_items_per_tick.push(self.make_sample(i, false, false));
+                    storage_items_per_tick.push(self.make_trend(i, false, true));
                 } else {
-                    // Store orphaned measurement
-                    storage_items_per_tick.push(self.make_measurement(i, false, false));
-                    if make_trend {
-                        // Store orphaned trend
-                        storage_items_per_tick.push(self.make_trend(i, false, false));
-                    }
+                    //                    storage_items_per_tick.push(self.make_sample(i, false, false));
+                    storage_items_per_tick.push(self.make_trend(i, false, false));
                 }
+            }
+
+            if i % constants::META_SAMPLE_800_LEN == 0 {}
+
+            if i % constants::META_SAMPLE_8000_LEN == 0 {}
+
+            // Chance of producing an event
+            if percent_chance(constants::ESTIMATED_EVENTS_PER_SECOND, &mut self.rng) {
+                storage_items_per_tick.push(self.make_event(i, false));
+            }
+
+            // Chance of producing an incident
+            if percent_chance(constants::ESTIMATED_INCIDENTS_PER_SECOND, &mut self.rng) {
+                storage_items_per_tick.push(self.make_incident(i));
             }
 
             self.storage.add_many(&mut storage_items_per_tick, i);

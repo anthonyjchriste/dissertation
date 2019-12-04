@@ -1,25 +1,27 @@
-Total events: 1646
-Event durations sum: 3310451
-Event durations mean: 2011.2095990279465
-Event durations std: 1263.8534232692164
-Event bytes sum: 21235520364.0
-Event bytes mean: 12901288.19198056
-Event bytes std: 15892110.386037452
-Event bytes sem: 391711.8027384635
-Event DR/s: 403.86243856225605
-Event DR/s sem: 2191.6280531260168
-Event data per month: 977024011.3698099
-Event data duration per month: 152310.37714274108
+Total events: 1648
+Event durations sum: 3311651
+Event durations mean: 2009.4969660194174
+Event durations std: 1264.0847076240766
+Percent event data duration: 0.06263335103845011
+Event bytes sum: 21298346800.0
+Event bytes mean: 12923754.126213592
+Event bytes std: 15901090.780444184
+Event bytes sem: 391695.25751799915
+mean events per second 3.116867161164198e-05
+Event DR/s: 402.81624834955454
+Event DR/s sem: 2186.7919171970652
 
 Total incidents: 41
 Incident durations sum: 138960
 Incident durations mean: 3389.268292682927
 Incident durations std: 13217.736124052872
+Percent incident data duration: 0.002724681841042579
 Incident bytes sum: 1892959407.0
 Incident bytes mean: 46169741.63414634
 Incident bytes std: 85727404.3195229
 Incident bytes sem: 13388371.229525428
+mean incidents per second 8.03914475264434e-07
 Incident DR/s: 37.11652361890925
 Incident DR/s sem: 12004.184732882764
-Incident data per year: 1077507527.266383
-Incident data duration per year: 79098.60371820249
+
+avg trend size bytes = 2471

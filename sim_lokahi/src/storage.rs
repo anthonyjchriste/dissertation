@@ -11,7 +11,7 @@ fn find_index<T: Ord>(v: &Vec<T>, val: &T) -> usize {
 
 #[derive(PartialEq, Clone)]
 pub enum StorageType {
-    Sample(usize),
+    MetaSample(usize),
     Measurement(usize),
     Trend(usize),
     Event(usize),
@@ -71,7 +71,7 @@ impl StorageItem {
         is_incident: Option<bool>,
     ) -> StorageItem {
         StorageItem::new(
-            StorageType::Sample(constants::ESTIMATED_BYTES_PER_META_SAMPLE),
+            StorageType::MetaSample(constants::ESTIMATED_BYTES_PER_META_SAMPLE_80),
             ts,
             ttl,
             is_event,
@@ -243,7 +243,7 @@ impl Storage {
         let total_bytes: usize = filtered_storage_items
             .iter()
             .map(|storage_item| match storage_item.storage_type {
-                StorageType::Sample(bytes) => bytes,
+                StorageType::MetaSample(bytes) => bytes,
                 StorageType::Measurement(bytes) => bytes,
                 StorageType::Trend(bytes) => bytes,
                 StorageType::Event(bytes) => bytes,
