@@ -588,7 +588,7 @@ It should be noted that IML data within OPQ is only preserved when Detections, I
 
 The Lokahi network works slightly differently and the IML data is collected from all sensors and stored in the database allowing the IML data in Lokahi to have its TTL updated directly rather than copied into the system like OPQ\@.
 
-
+Figure displays the simulated IML bounds for the OPQ network. Table provides the IML parameters used in the simulation.
 
 \paragraph{Evaluation of AML with TTL}
 The AML (Aggregate Measurement Level) collects windowed features estimated from the IML data. The OPQ network provides two AMLs, Measurements which are rolled into one second windows and Trends which are rolled into one minute windows. The Lokahi network provides a single AML with windows that vary depending on the sensor sample rate. The previous section evaluated the growth of this level without TTL. This section will add TTL into the evaluation.
