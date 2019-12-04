@@ -184,7 +184,7 @@ impl Simulation {
         let storage_stats = self.storage.stat_storage_items(None, None, None);
         let sample_stats = self.storage.stat_storage_items(
             Some(storage::StorageType::MetaSample(
-                constants::ESTIMATED_BYTES_PER_META_SAMPLE_80,
+                constants::ESTIMATED_BYTES_PER_META_SAMPLE_8000,
             )),
             None,
             None,
@@ -276,7 +276,7 @@ impl Simulation {
 
         let items: Vec<usize> = vec![
             time,
-            sample_stats.items * constants::SAMPLES_PER_SECOND_80,
+            sample_stats.items * constants::SAMPLES_PER_SECOND_8000,
             sample_stats.total_bytes,
             measurement_stats.items,
             measurement_stats.total_bytes,
@@ -317,10 +317,31 @@ impl Simulation {
         let storage_stats = self.storage.stat_storage_items(None, None, None);
         let sample_stats = self.storage.stat_storage_items(
             Some(storage::StorageType::MetaSample(
-                constants::ESTIMATED_BYTES_PER_META_SAMPLE_80,
+                constants::ESTIMATED_BYTES_PER_META_SAMPLE_8000,
             )),
             None,
             None,
+        );
+        let sample_orphaned_stats = self.storage.stat_storage_items(
+            Some(storage::StorageType::MetaSample(
+                constants::ESTIMATED_BYTES_PER_META_SAMPLE_8000,
+            )),
+            Some(false),
+            Some(false),
+        );
+        let sample_event_stats = self.storage.stat_storage_items(
+            Some(storage::StorageType::MetaSample(
+                constants::ESTIMATED_BYTES_PER_META_SAMPLE_8000,
+            )),
+            Some(true),
+            Some(false),
+        );
+        let sample_incident_stats = self.storage.stat_storage_items(
+            Some(storage::StorageType::MetaSample(
+                constants::ESTIMATED_BYTES_PER_META_SAMPLE_8000,
+            )),
+            Some(false),
+            Some(true),
         );
         let measurement_stats = self.storage.stat_storage_items(
             Some(storage::StorageType::Measurement(
@@ -416,9 +437,19 @@ impl Simulation {
         );
 
         println!(
-            "\ttotal_samples={} {}",
-            sample_stats.items * constants::SAMPLES_PER_SECOND_80,
-            sample_stats.fmt_size_mb()
+            "\ttotal_samples={} {} orphaned_samples={} {} {} event_samples={} {} {} incident_samples={} {} {}",
+            sample_stats.items * constants::SAMPLES_PER_SECOND_8000,
+            sample_stats.fmt_size_mb(),
+            sample_orphaned_stats.items * constants::SAMPLES_PER_SECOND_8000,
+            sample_orphaned_stats.fmt_percent(),
+            sample_orphaned_stats.fmt_size_mb(),
+            sample_event_stats.items * constants::SAMPLES_PER_SECOND_8000,
+            sample_event_stats.fmt_percent(),
+            sample_event_stats.fmt_size_mb(),
+            sample_incident_stats.items * constants::SAMPLES_PER_SECOND_8000,
+            sample_incident_stats.fmt_percent(),
+            sample_incident_stats.fmt_size_mb(),
+
         );
 
         println!(
@@ -480,7 +511,7 @@ impl Simulation {
     }
 
     fn display_summary(&self) {
-        let total_samples = self.total_samples * constants::SAMPLES_PER_SECOND_80;
+        let total_samples = self.total_samples * constants::SAMPLES_PER_SECOND_8000;
         println!(
             "total_samples={} {}",
             total_samples,
@@ -545,7 +576,7 @@ impl Simulation {
             storage_items_per_tick.clear();
 
             // Chance of producing samples and trends
-            if i % constants::META_SAMPLE_80_LEN == 0 {
+            if i % constants::META_SAMPLE_8000_LEN == 0 {
                 storage_items_per_tick.push(self.make_sample(i, false, false));
                 if percent_chance(
                     constants::ESTIMATED_PERCENT_EVENT_DATA_DURATION,
@@ -564,10 +595,6 @@ impl Simulation {
                     storage_items_per_tick.push(self.make_trend(i, false, false));
                 }
             }
-
-            if i % constants::META_SAMPLE_800_LEN == 0 {}
-
-            if i % constants::META_SAMPLE_8000_LEN == 0 {}
 
             // Chance of producing an event
             if percent_chance(constants::ESTIMATED_EVENTS_PER_SECOND, &mut self.rng) {

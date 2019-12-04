@@ -6,6 +6,7 @@ pub mod storage;
 fn main() {
     let conf = config::Config {
         ticks: constants::SECONDS_PER_YEAR * 3,
+        //        ticks: constants::SECONDS_PER_DAY,
         percent_event_duration: constants::ESTIMATED_PERCENT_EVENT_DATA_DURATION,
         percent_event_to_incident: 0.0,
         mean_event_len: constants::ESTIMATED_EVENT_LEN_S,
@@ -16,14 +17,15 @@ fn main() {
         incidents_ttl: constants::DEFAULT_INCIDENTS_TTL,
         phenomena_ttl: constants::DEFAULT_PHENOMENA_TTL,
         num_sensors: 1,
-        bytes_per_sample: constants::ESTIMATED_BYTES_PER_META_SAMPLE_80,
+        bytes_per_sample: constants::ESTIMATED_BYTES_PER_META_SAMPLE_8000,
         bytes_per_measurement: constants::ESTIMATED_BYTES_PER_MEASUREMENT,
         bytes_per_trend: constants::ESTIMATED_BYTES_PER_TREND,
         bytes_per_event: constants::ESTIMATED_BYTES_PER_EVENT,
         bytes_per_incident: constants::ESTIMATED_BYTES_PER_INCIDENT,
         print_info_every_n_ticks: 500_000,
         write_info_every_n_ticks: 3600,
-        out_file: "/home/opq/Documents/anthony/dissertation/plotting/lokahi/sim_data_80.txt"
+        //        write_info_every_n_ticks: 300,
+        out_file: "/home/opq/Documents/anthony/dissertation/plotting/lokahi/sim_data_8000.txt"
             .to_string(),
     };
     let mut simulation = sim::Simulation::new(conf);

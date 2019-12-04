@@ -1,5 +1,5 @@
 [package]
-name = "sim"
+name = "sim_lokahi"
 version = "0.1.0"
 authors = ["anthonyjchriste <achriste@hawaii.edu>"]
 edition = "2018"
