@@ -1,20 +1,20 @@
-total events 151490
-total duration s 1575423312.654
-total data duration s 2670564.22
-percent data duration 0.0016951407272887797
-mean data duration s, std 13.788538930194136
-total data 64093541280.0
-mean data, std 330924.93432465923
-mean data per second 40.68337745493071
-mean events per second 0.00012293838642880148
-percent events to incident 0.5578255990494422
+total events 151516
+total duration s 1575423519.721
+total data duration s 2670727.5250000004
+percent data duration 0.001695244162327203
+mean data duration s, std 13.787246528315524
+total data 64097460600.0
+mean data, std 330893.91667957255
+mean data per second 40.685859895852865
+mean events per second 0.0001229574127687932
+percent events to incident 0.5578222761952533
 
-total incidents 332405
-total duration s 1575423312.654
-total data duration s 2670564.22
-percent data duration 0.0016951407272887797
-mean data duration s, std 13.788538930194136
-total data 64093541280.0
-mean data, std 330924.93432465923
-mean data per second 40.68337745493071
-mean incidents per second 0.00012293838642880148
+total incidents 332475
+total duration s 22801438.273333497
+total data duration s 175202.14854980464
+percent data duration 0.00011120955499054127
+mean data duration s, std 0.5269633763434984
+total data 4204851565.1953125
+mean data, std 12647.121032243966
+mean data per second 184.41168117508303
+mean incidents per second 0.014581317021077251

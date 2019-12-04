@@ -15,7 +15,7 @@ fn main() {
         events_ttl: constants::DEFAULT_EVENTS_TTL,
         incidents_ttl: constants::DEFAULT_INCIDENTS_TTL,
         phenomena_ttl: constants::DEFAULT_PHENOMENA_TTL,
-        num_sensors: 1,
+        num_sensors: 17,
         bytes_per_sample: constants::ESTIMATED_BYTES_PER_META_SAMPLE,
         bytes_per_measurement: constants::ESTIMATED_BYTES_PER_MEASUREMENT,
         bytes_per_trend: constants::ESTIMATED_BYTES_PER_TREND,
