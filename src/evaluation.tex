@@ -309,12 +309,12 @@ Let's next compare the estimated sizes of the DL for the OPQ and Lokahi networks
 \begin{table}[H]
 	\centering
 	\caption{Estimated $DR$}
-	\begin{tabularx}{\textwidth}{llllll}
+	\begin{tabularx}{\textwidth}{lllll}
 		\toprule
-		\textbf{Network} & $\bm{\mu DR}$ & $\bm{\sigma DR}$ & \textbf{Data/Day} & \textbf{Data/Week} & \textbf{Data/Year} \\
+		\textbf{Network} & $\bm{\mu DR}$ & \textbf{Data/Day} & \textbf{Data/Week} & \textbf{Data/Year} \\
 		\midrule
-		OPQ & 8211.7 & 185544.8 & 0.71 GB & 4.97 GB & 258.96 GB \\
-		Lokahi & 406.48 & 2199.26 & 25.11 MB & 245.84 & 12.82 GB \\
+		OPQ & 40.69 & 3.51 MB & 24.77 MB & 1.29 GB \\
+		Lokahi & 402.82 & 34.80 MB & 243.63 MB & 12.70 GB \\
 		\bottomrule
 	\end{tabularx}
 	\label{table:estimated_mu_dr}
@@ -359,10 +359,10 @@ Let us next compare the estimated sizes of the IL for the OPQ and Lokahi network
 	\caption{Estimated $IR$}
 	\begin{tabularx}{\textwidth}{llllll}
 		\toprule
-		\textbf{Network} & $\bm{\mu DR}$ & $\bm{\sigma DR}$ & \textbf{Data/Day} & \textbf{Data/Week} & \textbf{Data/Year} \\
+		\textbf{Network} & $\bm{\mu DR}$ & \textbf{Data/Day} & \textbf{Data/Week} & \textbf{Data/Year} \\
 		\midrule
-		OPQ & 438.58 & 6288.48 & 0.04 GB & 0.27 GB & 13.83 GB \\
-		Lokahi & 37.12 & 12004.18 & 3.21 MB & 22.45 MB & 1.17 GB \\
+		OPQ & 184.41 & 15.93 MB & 111.53 MB & 5.82 GB \\
+		Lokahi & 37.12 & 3.21 MB & 22.45 MB & 1.17 GB \\
 		\bottomrule
 	\end{tabularx}
 	\label{table:estimated_mu_ir}
@@ -399,19 +399,19 @@ First, let's look at the size of Laha with parameters estimated from OPQ. The es
 \begin{table}[H]
 	\centering
 	\caption{OPQ Estimated Parameters}
-	\begin{tabularx}{\textwidth}{lll}
+	\begin{tabularx}{\textwidth}{ll}
 		\toprule
-		\textbf{Field} & \textbf{Mean} & \textbf{Stddev} \\
+		\textbf{Field} & \textbf{Mean} \\
 		\midrule
-		$S_{SAMP}$ & 2 & 0.0 \\
-		$SR$ & 12000 & 0.0 \\
-		$S_{MEASUREMENT}$ & 145 & 0.0 \\
-		$R_{MEASUREMENT}$ & 1 & 0.0 \\
-		$S_{TREND}$ & 324 & 0.0 \\
-		$R_{TREND}$ & $\frac{1}{60}$ & 0.0 \\
-		$\mu N_{SEN}$ & 9.9 & 0.7 \\
-		$\mu DR$ & 8211.7 & 185544.8 \\
-		$\mu IR$ & 438.5 & 6288.4 \\
+		$S_{SAMP}$ & 2 \\
+		$SR$ & 12000 \\
+		$S_{MEASUREMENT}$ & 145 \\
+		$R_{MEASUREMENT}$ & $\frac{1}{1}$ \\
+		$S_{TREND}$ & 365  \\
+		$R_{TREND}$ & $\frac{1}{60}$  \\
+		$\mu N_{SEN}$ & 1  \\
+		$\mu DR$ & 40.69  \\
+		$\mu IR$ & 184.41 \\
 		\bottomrule
 	\end{tabularx}
 	\label{table:estimated_laha_opq}
@@ -446,21 +446,80 @@ Finally, we summarize the results in Table~\ref{table:summarized_laha_results_op
 \begin{table}[H]
 	\centering
 	\caption{Summarized Laha Results (OPQ)}
-	\begin{tabularx}{\textwidth}{lll}
+	\begin{tabularx}{\textwidth}{ll}
 		\toprule
-		\textbf{Laha Level} & \bm{$\mu Size$} \textbf{GB} & \bm{$\delta Size$} \textbf{GB} \\
+		\textbf{Laha Level} & \bm{$\mu Size$} \textbf{GB} \\
 		\midrule
-		IML & 6978.36 & 0.08 \\
-		AML (Measurements) & 42.16 & 0.0005 \\
-		AML (Trends) & 1.57 & 0.00002 \\
-		AML (Total) & 43.73 & 0.0005 \\
-		DL & 383.69 & 1.05 \\
-		IL & 1.44 & 0.01 \\
-		PL & NA & NA \\
-		Laha (Total) & 7407.22 & 1.05 \\
+		IML & 2114.65 \\
+		AML (Measurements) & 12.78 \\
+		AML (Trends) & 0.54  \\
+		AML (Total) & 13.31  \\
+		DL & 3.58  \\
+		IL & 16.25  \\
+		PL & NA  \\
+		Laha (Total) & 2147.8  \\
 		\bottomrule
 	\end{tabularx}
 	\label{table:summarized_laha_results_opq}
+\end{table}
+
+Let's next perform the same evaluation, but for the Lokahi network. Table~\ref{table:estimated_laha_lokahi} provides the estimated parameters gathered from the Lokahi deployment. Since we're examining upper bounds, we will only use one of Lokahi's sampling rates (the highest 8000 Hz) in the evaluation.
+
+\begin{table}[H]
+	\centering
+	\caption{Lokahi Estimated Parameters}
+	\begin{tabularx}{\textwidth}{ll}
+		\toprule
+		\textbf{Field} & \textbf{Mean} \\
+		\midrule
+		$S_{SAMP}$ & 4 \\
+		$SR$ & 8000 \\
+		$S_{TREND}$ & 2471  \\
+		$R_{TREND}$ & $\frac{1}{32.768}$  \\
+		$\mu N_{SEN}$ & 1  \\
+		$\mu DR$ & 402.82  \\
+		$\mu IR$ & 37.11 \\
+		\bottomrule
+	\end{tabularx}
+	\label{table:estimated_laha_lokahi}
+\end{table}
+
+Figure~\ref{fig:plot_lala_lokahi} shows the estimated unbounded Laha growth for Lokahi.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{figures/plot_laha_lokahi.png}
+	\caption{Estimated Laha (Lokahi)}
+	\label{fig:plot_lala_lokahi}
+\end{figure}
+
+Figure~\ref{fig:plot_lala_lokahi_pie} shows the makeup of unbounded data within Laha for Lokahi.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{figures/plot_laha_lokahi_pie.png}
+	\caption{Estimated Laha (Lokahi)}
+	\label{fig:plot_lala_lokahi_pie}
+\end{figure}
+
+Finally, we summarize the results in Table~\ref{table:summarized_laha_results_lokahi}.
+
+\begin{table}[H]
+	\centering
+	\caption{Summarized Laha Results (OPQ)}
+	\begin{tabularx}{\textwidth}{ll}
+		\toprule
+		\textbf{Laha Level} & \bm{$\mu Size$} \textbf{GB} \\
+		\midrule
+		IML & 2819.54 \\
+		AML (Total) & 6.64  \\
+		DL & 35.49  \\
+		IL & 3.27  \\
+		PL & NA  \\
+		Laha (Total) & 2864.95  \\
+		\bottomrule
+	\end{tabularx}
+	\label{table:summarized_laha_results_lokahi}
 \end{table}
 
 \subsubsection{Evaluation of TTL}
