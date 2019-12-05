@@ -227,29 +227,6 @@ Equation~\ref{eq:aml} shows the size of the AML $S_{AML}$ including all sub-leve
 	S_{AML} = \sum_{i=1}^{S_{SL_{n}}} S_{SL_{i}}
 \end{equation}
 
-%Figure~\ref{fig:plot_aml_level_opq_single} examines the growth of the AML level using OPQ as a basis over a time period of one year for a single sensor. We can see that measurements which have a size of 144 bytes and a rate of 1 Hz dominates the data growth which is what we would expect since measurements send at a higher rate. Trends data growth (orange series) on the other hand appears to be almost flat. Finally, the green series represents the total size of the two sub-levels and the sum data storage of the AML for a single sensor.
-%
-%\begin{figure}[H]
-%	\centering
-%	\includegraphics[width=\linewidth]{figures/plot_aml_level_opq_single.png}
-%	\caption{OPQ AML Growth with Sub-Levels}
-%	\label{fig:plot_aml_level_opq_single}
-%\end{figure}
-%
-%We can see from this figure that left unbounded, the AML can grow to near 5GB a year per sensor in the OPQ network.
-%
-%Figure~\ref{fig:plot_aml_level_lokahi_single} examines data growth of the AML using Lokahi as a basis over a time period of one year for a single sensor. In this sensor network, the size of each Aggregate Measurement remains constant over each sub-level and only the AML rate varies. We can see that none of the sub-levels tend to dominate.
-%
-%\begin{figure}[H]
-%	\centering
-%	\includegraphics[width=\linewidth]{figures/plot_aml_level_lokahi_single.png}
-%	\caption{Lokahi AML Growth with Sub-Levels}
-%	\label{fig:plot_aml_level_lokahi_single}
-%\end{figure}
-%
-%From this figure, we can conclude that the AML can grow to a maximum bounds of near 3GB a year per sensor at the maximum sampling rate in the Lokahi network if the data remains unbounded and a minimum of near 2 gigabytes per year per sensor at the lowest sampling rate.
-%
-
 Similar to what was done for the IML, we can estimate bounds assuming the number of sensors sending data is not constant. Equations~\ref{eq:aml:mu_s_sl} and~\ref{eq:aml:mu_s_aml} provide the calculations for mean sub-AML level size and the mean size of the AML respectively.
 
 \begin{align}
@@ -343,15 +320,6 @@ Let's next compare the estimated sizes of the DL for the OPQ and Lokahi networks
 	\label{table:estimated_mu_dr}
 \end{table}
 
-%Figure~\ref{fig:plot_dl_opq_avg} shows the estimated size for the DL on the OPQ network. The errors are small enough that they are not discernible in this plot. Over a period of one year, the DL is expected to grow to 383 gigabytes $\pm$ 1.05 gigabytes.
-%
-%\begin{figure}[H]
-%	\centering
-%	\includegraphics[width=\linewidth]{figures/plot_dl_opq_avg.png}
-%	\caption{Estimated OPQ DL}
-%	\label{fig:plot_dl_opq_avg}
-%\end{figure}
-
 \paragraph{IL Requirements}
 The Incidents Level provides added context on top of the DL in the form of signal of interest classifications. This level is structured similarly to the DL in that it contains trimmed down IML samples from one or more sensors over a varying time window and added context in the form of metadata. Due to these similarities, the bounds calculations are also quite similar.
 
@@ -399,15 +367,6 @@ Let us next compare the estimated sizes of the IL for the OPQ and Lokahi network
 	\end{tabularx}
 	\label{table:estimated_mu_ir}
 \end{table}
-
-%Figure~\ref{fig:plot_il_opq_avg} shows the estimated size for the IL on the OPQ network. The errors are small enough that they are not discernible in this plot. Over a period of one year, the IL is expected to grow to 1.44 gigabytes $\pm$ 0.01 gigabytes.
-%
-%\begin{figure}[H]
-%	\centering
-%	\includegraphics[width=\linewidth]{figures/plot_il_opq_avg.png}
-%	\caption{Estimated OPQ IL}
-%	\label{fig:plot_il_opq_avg}
-%\end{figure}
 
 \paragraph{PL Requirements}
 The Phenomena Level provides actionable insights and context beyond what is provided in the IL. Examples of added context include predictive analysis, Annotations, or similarity metrics between Incidents. The Phenomena level consists mainly of metadata describing the Phenomena. Different types of Phenomena require varying amounts of metadata.
@@ -595,7 +554,7 @@ Figure~\ref{fig:sim_iml_lokahi} shows the simulated IML data growth for a single
 \paragraph{Evaluation of AML with TTL}
 The AML (Aggregate Measurement Level) collects windowed features estimated from the IML data. The OPQ network provides two AMLs, Measurements which are rolled into one second windows and Trends which are rolled into one minute windows. The Lokahi network provides a single AML (Trends) with windows that vary depending on the sensor sample rate.
 
-Table~\ref{table:ttls_aml} displays default TTL values for the OPQ and Lokahi networks.
+Table~\ref{table:ttls_aml} displays default AML TTL values for the OPQ and Lokahi networks.
 
 \begin{table}[H]
 	\centering
@@ -621,12 +580,12 @@ Table~\ref{table:ttls_aml_min} provides the minimum bounds of the AML for a sing
 	\caption{AML Minimum Bounds}
 	\begin{tabularx}{\textwidth}{Xll}
 		\toprule
-		\textbf{Network} & \textbf{Min AML Bounds Single Device} & \textbf{Min AML Bounds Network} \\
+		\textbf{Network} & \textbf{Min AML Bounds Single Device} \\
 		\midrule
-		OPQ (Measurements) & 12.53 MB & 187.92 MB \\
-		OPQ (Trends) & 6.55 MB & 98.28 MB \\
-		OPQ (Total) & 18.58 MB & 286.2 MB \\
-		Lokahi & 60.15 MB & 3.61 GB \\
+		OPQ (Measurements) & 12.53 MB \\
+		OPQ (Trends) & 6.55 MB \\
+		OPQ (Total) & 18.58 MB \\
+		Lokahi & 60.15 MB \\
 		\bottomrule
 	\end{tabularx}
 	\label{table:ttls_aml_min}
@@ -637,7 +596,7 @@ Next, I examine the estimated bounds of the AML by looking at the estimated amou
 Calculation of the estimated bounds can be found by Equation~\ref{eq:s_aml_ttl_full}.
 
 \begin{equation}\label{eq:s_aml_ttl_full}
-	S_{AML\_TLL} = \mu S_{AML} + \mu DL_{AML} + \mu IL_{AML} + \mu PL_{AML}
+	\mu S_{AML\_TLL} = \mu S_{AML} + \mu DL_{AML} + \mu IL_{AML} + \mu PL_{AML}
 \end{equation}
 
 Where $\mu S_{AML}$ is calculated from Equation~\ref{eq:aml:mu_s_aml} and $T$ is substituted with the appropriate TTL for a given AML and $\mu DL_{AML}$ is the estimated amount of AML data saved by the DL, $\mu IL_{AML}$ is the estimated amount of AML data saved by the IL, and $\mu PL_{AML}$ is the estimated amount of AML data saved by the PL\@.
@@ -695,6 +654,12 @@ Table provides the estimated lower bounds of the DL for the OPQ and Lokahi netwo
 
 % TODO make me
 
+The estimated bounds can be found with Equation~\ref{eq:s_dl_ttl_full} where $\mu S_{DL}$ can be found by Equation~\ref{eq:dl:mu_s_dl}, $\mu IL_{DL}$ is the size of the DL saved by the IL, and $\mu PL_{DL}$ is the size of the DL saved by the PL.
+
+\begin{equation}\label{eq:s_dl_ttl_full}
+	\mu S_{DL\_TLL} = \mu S_{DL} + \mu IL_{DL} + \mu PL_{DL}
+\end{equation}
+
 Figure~\ref{fig:sim_dl_opq} shows the simulated DL for OPQ over the course of 3 years. In OPQ Detections can be orphaned or they can be saved by Incidents. The amount of Orphaned Detections converged to near 60 MB while the bulk of Detection data is due to Detections being saved by Incidents (a whopping ~700 MB of data) bringing the total DL bounds to near 800 MB\@.
 
 \begin{figure}[H]
@@ -724,6 +689,12 @@ The minimum bounds of the IL occur when IL data is strictly bounded by its TTL. 
 Table shows the minimum estimated bounds for the OPQ and Lokahi networks.
 
 % TODO make da table
+
+The estimated bounds can be found with Equation~\ref{eq:s_il_ttl_full} where $\mu S_{IL}$ can be found by Equation~\ref{eq:il:mu_s_il} and $\mu PL_{IL}$ is the mean amount of IL data saved by the PL.
+
+\begin{equation}\label{eq:s_il_ttl_full}
+	\mu S_{IL\_TLL} = \mu S_{IL}  + \mu PL_{IL}
+\end{equation}
 
 Figure~\ref{fig:sim_il_opq} shows the simulated IL for the OPQ network over the course of 3 years. The IL converges after 1 year to near 5800 MB for a single simulated OPQ sensor.
 
