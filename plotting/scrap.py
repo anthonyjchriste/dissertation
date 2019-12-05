@@ -1,8 +1,8 @@
 import numpy as np
 
-if __name__ == "__main__":
-    a = np.array([1, 2, 3])
-    b = np.array([4, 5, 6])
+def percent_diff(larger: float, smaller: float) -> None:
+    p_of = 100.0 - (smaller / larger * 100.0)
+    print(f"{larger - smaller}/-{p_of}%")
 
-    print(np.sqrt(a**2 + b**2))
-    print(np.sqrt(17))
+if __name__ == "__main__":
+    percent_diff(286957, 8255)

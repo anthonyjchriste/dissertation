@@ -244,10 +244,6 @@ Equations~\ref{eq:aml:e0},~\ref{eq:aml:e1}, and~\ref{eq:aml:e2} provide the erro
 
 Table~\ref{table:aml_size} contains the theoretical bounds of the AML layer without any optimization for OPQ and Lokahi networks. These values provide the upper bounds per sensor for periods of one day, one week, and one year. The OPQ DSN utilizes two sub-levels (one for measurements and one for trends). The Lokahi network contains only one level, but each sampling rate has its own IML rate. We provide the upper bounds for each possible sampling rate that Lokahi utilizes. These values are constant for all OPQ and Lokahi networks independent of deployment because they only rely on constant values defined by the sensors themselves.
 
-% TODO Fix AML constraints for Lokahi and regenerate plots at a size of 2546 bytes, also remove stuff about AML including raw data because that isn't really true
-% TODO look at the summaries and make sure they still make sense with the most recent computed numbers
-% TODO change upper bounds to estimated bounds and add an actual upper bounds section that calculates the pathlological case of all the data being saved
-% TODO either convert everything to be per network or per device but not both
 \begin{table}[H]
 	\centering
 	\caption{AML Constraints per Sensor}
@@ -547,7 +543,7 @@ Table~\ref{table:ttl_summary} reviews the default TTLs provided at each level of
 	\label{table:ttl_summary}
 \end{table}
 
-In the following sub-sections, I will look at the minimum, estimated, and maximum bounds for each level in the Laha hierarchy with TTL enabled. The minimumum bounds will always be the data bounded by TTL without any data being saved by events further up the hierarchy. The estimated bounds will be calculated using estimated parameters that quantify the amount of data in each level that is preserved by upper levels. The maximum bounds will be discussed in terms of pathological cases where all data is preserved and no data is discarded. The maximum bounds for all levels is equivalent to the bound of those levels without TTL optimization.
+In the following sub-sections, I will look at the minimum, estimated, and maximum bounds for each level in the Laha hierarchy with TTL enabled. The minimum bounds will always be the data bounded by TTL without any data being saved by events further up the hierarchy. The estimated bounds will be calculated using estimated parameters that quantify the amount of data in each level that is preserved by upper levels. The maximum bounds will be discussed in terms of pathological cases where all data is preserved and no data is discarded. The maximum bounds for all levels is equivalent to the bound of those levels without TTL optimization.
 
 \paragraph{Simulating Laha}
 
@@ -555,7 +551,7 @@ I desperately tried and failed to find an analytical solution for finding the La
 
 I finally decided to simulate Laha using parameters gathered from the OPQ and Lokahi networks. These simulations provide estimated bounds of data on each level of the Laha hierarchy. The simulation runs at a granularity of a second and simulates the IML (raw samples), AML (Measurements and Trends), DL (Events), IL (Incidents), and PL Phenomena. The simulation maintains an in-memory database of simulated data that is sorted by TTL. Items are discarded from the database when their TTL expires. Higher levels save data from the lower levels at a similar rate as observed in the OPQ and Lokahi networks.
 
-The following is a description of how the simulation works for the OPQ network.
+The following is a description of how the simulation works for the OPQ network. The simulator for the Lokahi network works similarly, but with a different estimated parameter set.
 
 At each time step:
 \begin{enumerate}
@@ -571,26 +567,44 @@ At each time step:
 
 Where $P_{ORPHAN}(data)$ is the probability that the referenced data does not belong to a higher level, $P_{EVENT}(data)$ is the probability that the referenced data was saved by an Detection (Event), $P_{INCIDENT}(data)$ is the probability that the referenced data was saved by an Incident, $P_{PHENOMENA}(data)$ is the probability that the referenced data was saved by a Phenomena, $P_{EVENT\_STEP}$ is the probability that an Event will be produced for any given time step, $P_{INCIDENT\_STEP}$ is the probability that an Incident will be produced for a given time step, and $P_{PHENOMENA\_STEP}$ is the probability that a Phenomena will be produced for a given time step.
 
-\paragraph{Evaluation of IML with TTL}
-The IML (Instantaneous Measurements Level) stores raw samples from the DSN. Traditionally, this is the largest and most noisy data set produced by the DSN and thus has a very short TTL (which is often limited by the amount of on-board sensor memory). I showed in the previous section that without TTL, this level grows very rapidly. The IML is unique in that it is the only level that does not grow beyond its TTL. Instead, when Detections, Incidents, or Phenomena are identified, data is coped from the IML into either the DL, IL, or PL. This simplifies calculating the bounds of this level.
-
-Calculating lower bounds of the IML for a network can be accomplished by simply bounding its growth by its TTL\@. By substituting $T$ in Equations~\ref{iml:SSEN} and~\ref{eq:iml:mu_size_iml} with the the number of seconds in the IML TTL (15 minutes), we can calculate the minimum bounds of the IML for a single sensor as shown in Table~\ref{table:ttl_a_iml}, and since the IML is strictly bounded by its TTL, the lower bounds are also the maximum bounds.
+Table~\ref{table:sim_params} provides the estimated parameters used to run the OPQ and Lokahi simulations.
 
 \begin{table}[H]
 	\centering
-	\caption{Estimated IML Lower Bounds}
-	\begin{tabularx}{\textwidth}{Xlll}
+	\caption{Simulation Parameters}
+	\begin{tabularx}{\textwidth}{Xll}
 		\toprule
-		\textbf{Description} & \textbf{Sample Rate Hz} & \textbf{Sample Size Bytes} & \textbf{Lower IML Bounds} \\
+		\textbf{Parameter} & \textbf{OPQ} & \textbf{Lokahi} \\
 		\midrule
-		OPQ & 12000 & 2 & 21.6 MB \\
-		Lokahi & 80 & 4 & 0.29 MB \\
-		Lokahi & 800 & 4 & 2.88 MB \\
-		Lokahi & 8000 & 4 & 28.8 MB \\
+		Sample Rate Hz & 12000 & 80, 800, 8000 \\
+		Sample Size Bytes & 2 & 4 \\
+		Measurement Rate & $\frac{1}{1}$ & N/A \\
+		Measurement Size Bytes & 145 & N/A \\
+		Trend Rate & $\frac{1}{1}$ & $\frac{1}{51.2}$, $\frac{1}{40.96}$, $\frac{1}{32.768}$ \\
+		Trend Size Bytes & 365 & 2471 \\
+		\% Data in Events & 0.16 & 6.26 \\
+		\% Detections in Incidents & 55.78 & N/A \\
+		Mean Event Len Seconds & 13.79 & 2010 \\
+		Mean Incident Len Seconds & 0.53 & 3389 \\
+		Mean Event Size Bytes & 330893 & 12923754 \\
+		Mean Incident Size Bytes & 12647 & 46169741 \\
+		Event DR/second & 40.66 &  0.000031 \\
+		Incident DR/second & 184.41 &  0.0000008 \\
+		Simulation Tick Granularity & 1 second & 1 second \\
+		Simulation Ticks & seconds/3 years, seconds/3 years, \\
+		Simulation GC Interval & seconds/10 minutes, seconds/10 minutes \\
+		Simulation Write Data Ticks & seconds/hour, seconds/hour \\
 		\bottomrule
 	\end{tabularx}
-	\label{table:ttl_a_iml}
+	\label{table:sim_params}
 \end{table}
+
+The full statistics can be found in the appendix in section~\ref{appendix:simulation_parameters}.
+
+\paragraph{Evaluation of IML with TTL}
+The IML (Instantaneous Measurements Level) stores raw samples from the DSN. Traditionally, this is the largest and most noisy data set produced by the DSN and thus has a very short TTL (which is often limited by the amount of on-board sensor memory). I showed in the previous section that without TTL, this level grows very rapidly. The IML is unique in that it is the only level that does not grow beyond its TTL. Instead, when Detections, Incidents, or Phenomena are identified, data is coped from the IML into either the DL, IL, or PL. This simplifies calculating the bounds of this level.
+
+Calculating lower bounds of the IML for a network can be accomplished by simply bounding its growth by its TTL\@. By substituting $T$ in Equations~\ref{iml:SSEN} and~\ref{eq:iml:mu_size_iml} with the the number of seconds in the IML TTL (15 minutes).
 
 Figure~\ref{fig:sim_iml_opq} shows the simulated IML data growth for a single sensor from the OPQ network over the period of one day. We can observe that the IML converges to 25 MB after 15 minutes. The spikes once the data converges is the delta added by a garbage collector that only runs once every 10 minutes.
 
@@ -630,25 +644,7 @@ Table~\ref{table:ttls_aml} displays default AML TTL values for the OPQ and Lokah
 	\label{table:ttls_aml}
 \end{table}
 
-The minimum bounds of the AML with TTL can be found by using Equations~\ref{eq:aml:mu_s_sl} and~\ref{eq:aml:mu_s_aml} and substituting $T$ for the AML's TTL.
-
-Table~\ref{table:ttls_aml_min} provides the minimum bounds of the AML for a single sensor for the OPQ and Lokahi networks using parameters obtained from OPQ and Lokahi deployments. The minimum bounds can only occur if data from the AML is not saved and used by higher levels with in the Laha hierarchy.
-
-\begin{table}[H]
-	\centering
-	\caption{AML Minimum Bounds}
-	\begin{tabularx}{\textwidth}{Xll}
-		\toprule
-		\textbf{Network} & \textbf{Min AML Bounds Single Device} \\
-		\midrule
-		OPQ (Measurements) & 12.53 MB \\
-		OPQ (Trends) & 6.55 MB \\
-		OPQ (Total) & 18.58 MB \\
-		Lokahi & 60.15 MB \\
-		\bottomrule
-	\end{tabularx}
-	\label{table:ttls_aml_min}
-\end{table}
+The minimum bounds of the AML with TTL can be found by using Equations~\ref{eq:aml:mu_s_sl} and~\ref{eq:aml:mu_s_aml} and substituting $T$ for the AML's TTL\@.
 
 Next, I examine the estimated bounds of the AML by looking at the estimated amount of AML data that is saved by higher levels in the hierarchy.
 
@@ -668,7 +664,7 @@ I had to create a long simulation to observe how data saved by Detections, Incid
 
 Further, the simulation tracks the amount of data at each level that is ``saved" by a higher level. If data is not ``saved" by a higher level then it retains its default TTL and I call it ``orphaned data". If data is saved by a higher lever, it gains the TTL of the highest level it is saved in and I refer to the data as ``highest\_level data". For example, ``Orphaned Measurements" refers to Measurements that have not been saved by a higher level and ``Incident Measurements" refer to Measurements that have been saved by an Incident. I will continue to use these terms to discuss the TTL bounds for the rest of the TTL evaluation.
 
-Figure~\ref{fig:sim_aml_opq} shows the size of the AML as simulated for the OPQ network over the course of three years. This figure shows the AML bounds for both Measurements and Trends separately and shows the bounds of the entire AML in the bottom panel. The figure shows how Measurements and Trends grow until they hit the TTL they were given. A single simulated device on the OPQ network converges to near 17 MB for measurements and 7 MB for Trends giving a total estimated bounds of near 25 MB.
+Figure~\ref{fig:sim_aml_opq} shows the size of the AML as simulated for the OPQ network over the course of three years. This figure shows the AML bounds for both Measurements and Trends separately and shows the bounds of the entire AML in the bottom panel. The figure shows how Measurements and Trends grow until they hit the TTL they were given. A single simulated device on the OPQ network converges to near 17 MB for measurements and 7 MB for Trends giving a total estimated bounds of near 25 MB\@.
 
 \begin{figure}[H]
 	\centering
@@ -709,11 +705,7 @@ The DL (Detections Level) contains metadata and windows of raw samples that may 
 
 The lower bounds of the DL can be found by bounding the level by its TTL and assuming that no Detections are saved by Incidents or Phenomena. This can be accomplished by substituting $T$ in Equation~\ref{eq:dl:mu_s_dl} with the Detection's TTL (1 month).
 
-Table provides the estimated lower bounds of the DL for the OPQ and Lokahi networks.
-
-% TODO make me
-
-The estimated bounds can be found with Equation~\ref{eq:s_dl_ttl_full} where $\mu S_{DL}$ can be found by Equation~\ref{eq:dl:mu_s_dl}, $\mu IL_{DL}$ is the size of the DL saved by the IL, and $\mu PL_{DL}$ is the size of the DL saved by the PL.
+The estimated bounds can be found with Equation~\ref{eq:s_dl_ttl_full} where $\mu S_{DL}$ can be found by Equation~\ref{eq:dl:mu_s_dl}, $\mu IL_{DL}$ is the size of the DL saved by the IL, and $\mu PL_{DL}$ is the size of the DL saved by the PL\@.
 
 \begin{equation}\label{eq:s_dl_ttl_full}
 	\mu S_{DL\_TLL} = \mu S_{DL} + \mu IL_{DL} + \mu PL_{DL}
@@ -745,11 +737,7 @@ The IL (Incident Level) contains metadata and windows of raw samples over classi
 
 The minimum bounds of the IL occur when IL data is strictly bounded by its TTL. This can be found by substituting $T$ in Equation~\ref{eq:il:mu_s_il} with the IL's TTL (1 year).
 
-Table shows the minimum estimated bounds for the OPQ and Lokahi networks.
-
-% TODO make da table
-
-The estimated bounds can be found with Equation~\ref{eq:s_il_ttl_full} where $\mu S_{IL}$ can be found by Equation~\ref{eq:il:mu_s_il} and $\mu PL_{IL}$ is the mean amount of IL data saved by the PL.
+The estimated bounds can be found with Equation~\ref{eq:s_il_ttl_full} where $\mu S_{IL}$ can be found by Equation~\ref{eq:il:mu_s_il} and $\mu PL_{IL}$ is the mean amount of IL data saved by the PL\@.
 
 \begin{equation}\label{eq:s_il_ttl_full}
 	\mu S_{IL\_TLL} = \mu S_{IL}  + \mu PL_{IL}
@@ -785,11 +773,7 @@ This is left as an exercise to the reader. Just kidding, we only have one Phenom
 
 The Laha hierarchy contains the levels IML, AML, DL, IL, and PL as discussed in the previous sections. This section evaluates the bounds on the entirety of Laha by looking at all the levels in summation.
 
-Interestingly enough, the minimum bounds of Laha can be found by summing the minimum bounds of the IML and AML. IML and AML values are always produced, but if no Events, Incidents, or Phenomena are identified, data will never be saved from IML or AML.
-
-The minimum estimated bounds of OPQ and Lokahi are provided in Table.
-
-% TODO make me!
+Interestingly enough, the minimum bounds of Laha can be found by summing the minimum bounds of the IML and AML. IML and AML values are always produced, but if no Events, Incidents, or Phenomena are identified, data will never be saved from IML or AML\@.
 
 Figure~\ref{fig:sim_laha_opq} shows the simulated Laha bounds for OPQ over the course of 3 years. The figure shows that Laha for OPQ converges to near 6.5 GB per device after 1 year.
 
@@ -812,14 +796,53 @@ Figure~\ref{fig:sim_laha_lokahi} shows the simulated Laha bounds for OPQ over th
 
 \paragraph{Comparing Laha with and without TTL}
 
-During the acquisition and curating of data, metrics were collected and stored about how much data is saved (in bytes) versus how much data is discarded at each level within the Laha data hierarchy. These numbers were compared against data storage as if the OPQ and Lokahi frameworks were to take a ``store everything" approach. Evaluation metrics provided include percentage of data storage saved per data hierarchy level as well as an estimate of overall decrease in data storage requirements for the entire DSN. A positive result from these metrics would show significant reduction in storage requirements for each level in the framework compared against a ``store everything approach" and other state-of-the-art data storage solutions.
+Let's first examine OPQ\@.
 
-I also provide metrics on ``continuous storage pressure" which is a measure of the average amount of data storage required at each level given the current state of the network. That is, since data at all lower levels of the framework assigns a TTL to the data within the collection, the collection will exhibit a constant data pressure during sensor data collection. For example, at the lowest level, the IML collects raw data from all sensors all the time. Given the sample rate per sensor, the size per sample, the number of sensors, and a known TTL for this level, I can estimate the maximum bounds of data management requirements that the IML requires. We can develop similar estimation strategies with higher levels of the framework. I computed the statistical error between the predicted storage pressure and the actual storage pressure recorded during the experiments. A positive outcome would show strong correlation between the predicted storage pressure and the actual storage pressure. A negative outcome would show weak correlation between the predicted and actual values.
+Table~\ref{table:opq_laha_comparison} shows three features. The total number of data ran through the simulation at each level, the total number of data within Laha utilizing TTL, and the delta. As can be observed (and hopefully expected), we see large estimated data savings when utilizing TTL versus not utilizing TTL\@.
 
-\subsubsection{Combined Evaluation of Tiered Data Management}
-Finally, I provided an evaluation that weighs the results of all three metrics against each other. For example, if I see positive results for data storage reduction and negative results for false positives, do the benefits of the data storage reduction outweigh the negatives of increased false positives?
+\begin{table}[H]
+	\centering
+	\caption{OPQ Laha Comparison}
+	\begin{tabularx}{\textwidth}{Xlll}
+		\toprule
+		\textbf{Laha Level} & \textbf{Without TTL (MB)} & \textbf{With TTL (MB)} & \textbf{Delta (MB/\%)} \\
+		\midrule
+		IML & 2239488 & 35 & 2239453/-99.99 \\
+		AML & 14097 & 25 & 14072/-99.82\\
+		DL & 3931 & 750 & 3181/-80.92 \\
+		IL & 17208 & 5700 & 11508/-66.87 \\
+		PL & NA & NA & NA \\
+		Total & 2274724 & 6510 & 2268214/-99.71 \\
+		\bottomrule
+	\end{tabularx}
+	\label{table:opq_laha_comparison}
+\end{table}
 
-I expect that DSNs that have a lower signal-to-noise ratio will see greater benefits from tiered data management than DSNs that already have a decent signal-to-noise ratio.
+The OPQ simulation showed that of all of the Measurements and Trends, about 99.83\% of them were orphaned, 0.08\% were saved by Events, and 0.09\% of them were saved by Incidents. Of the Events, about 43.72\% were orphaned and about 56.28\% were saved by Incidents.
+
+Let's next examine Lokahi with and without TTL. Table~\ref{table:lokahi_laha_comparison} shows three features. The total number of data ran through the simulation at each level, the total number of data within Laha utilizing TTL, and the delta. It should be noted that this example only looks at Lokahi's highest sampling rate of 8000 Hz.
+
+\begin{table}[H]
+	\centering
+	\caption{Lokahi Laha Comparison}
+	\begin{tabularx}{\textwidth}{Xlll}
+		\toprule
+		\textbf{Laha Level} & \textbf{Without TTL} & \textbf{With TTL} & \textbf{Delta (MB/\%)} \\
+		\midrule
+		IML & 90484 & 35 & 90449/-99.96 \\
+		AML & 6987 & 220 & 6767/-96.85 \\
+		DL & 180160 & 5000 & 175160/-97.22 \\
+		IL & 9326 & 3000 & 6362/-67.95 \\
+		PL & NA & NA & NA  \\
+		Total & 286957 & 8255 & 278702/-97.12 \\
+		\bottomrule
+	\end{tabularx}
+	\label{table:lokahi_laha_comparison}
+\end{table}
+
+The Lokahi simulation showed that of all the Trends, about 87.86\% of them were orphaned, 6.27\% of them were saved by an Event, and about 5.86\% of them were saved by an Incident.
+
+In this section, we evaluated the data storage requirements with and without TTL. We showed significant data savings when using TTL as compared to when TTL was not used. Parameters for these evaluations were found both by the physical properties of the sensors as well as the rate at which data is moved between Laha levels.
 
 \section{Evaluation of Tertiary Goals}\label{sec:evaluation-of-tertiary-goals}
 In order to achieve the main goals of this framework, I claim that either all or a subset of the following tertiary goals must be fulfilled. Optimization of triggering, detection, classification, sensor energy usage, bandwidth, predictive analytics, and the ability to derive models of the underlying sensing field topology.
