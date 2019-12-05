@@ -262,7 +262,7 @@ Table~\ref{table:aml_size} contains the theoretical bounds of the AML layer with
 	\label{table:aml_size}
 \end{table}
 
-Left un-optimized and taken over the course of a year for a typical OPQ or Lokahi deployment with 15 sensors, we would expect an upper bound of 71.55 GB collected from the OPQ network and 15 TB of data to be collected from the Lokahi network. Why is the AML so much larger in Lokahi as compared to OPQ? It's due to a requirement of the Lokahi network to store raw data along with it's AML windows. Not only do Lokahi AML windows contained the feature extracted features of the stream, but they also contain the raw data associated with that window.
+Left unoptimized and taken over the course of a year for a typical OPQ or Lokahi deployment with 15 sensors, we would expect an upper bound of 71.55 GB collected from the OPQ network and 15 TB of data to be collected from the Lokahi network. Why is the AML so much larger in Lokahi as compared to OPQ? It's due to a requirement of the Lokahi network to store raw data along with it's AML windows. Not only do Lokahi AML windows contained the feature extracted features of the stream, but they also contain the raw data associated with that window.
 
 \paragraph{DL Requirements}
 The detections level contains metadata and associated sampled high fidelity data that was returned from sensors for a given time window. A single detection can contain samples from multiple data streams for a single event of interest.
@@ -348,7 +348,7 @@ Equations~\ref{eq:il:e0} and~\ref{eq:il:e1} provide error bounds on the estimate
 	\delta S_{IL} &= \delta IR * |T| \label{eq:il:e1}
 \end{align}
 
-Let us next compare the estimated sizes of the IL for the OPQ and Lokahi networks using statistics gathered for these networks. These values were obtained directly from data collected during OPQ and Lokai deployments. Table~\ref{table:estimated_mu_ir} provides the parameters used for these comparisons.
+Let us next compare the estimated sizes of the IL for the OPQ and Lokahi networks using statistics gathered for these networks. These values were obtained directly from data collected during OPQ and Lokahi deployments. Table~\ref{table:estimated_mu_ir} provides the parameters used for these comparisons.
 
 \begin{table}[H]
 	\centering
@@ -559,7 +559,7 @@ At each time step:
 	\item 1 Measurement is produced with a TTL of 24 hours, 1 month, 1 year, or 2 years depending on $P_{ORPHAN}(measurement)$, $P_{EVENT}(measurement)$, $P_{INCIDENT}(measurement)$, $P_{PHENOMENA}(measurement)$
 	\item 1 Trend is produced if the time step if divisible by 60 with a TTL of 2 weeks, 1 month, 1 year, or 2 years depending on $P_{ORPHAN}(trend)$, $P_{EVENT}(trend)$, $P_{INCIDENT}(trend)$, $P_{PHENOMENA}(trend)$
 	\item 1 Event is produced if $P_{EVENT\_STEP}$ with a TTL of 1 month, 1 year, or 2 years depending on $P_{ORPHAN}(event)$, $P_{INCIDENT}(event)$, $P_{PHENOMENA}(event)$
-	\item 1 Incident is produced if $P_{INCIDENT\_STEP}$ with a TTL of 1 year or 2 years dependings on $P_{ORPHAN}(incident)$, $P_{PHENOMENA}(incident)$
+	\item 1 Incident is produced if $P_{INCIDENT\_STEP}$ with a TTL of 1 year or 2 years depending on $P_{ORPHAN}(incident)$, $P_{PHENOMENA}(incident)$
 	\item 1 Phenomena is produced if $P_{PHENOMENA\_STEP}$ with a TTL of 2 years
 	\item Garbage collection is performed if the time step is divisible by 600 ticks (10 minutes)
 	\item Total items and size for each level are written to file every $N$ time steps
@@ -644,7 +644,7 @@ Table~\ref{table:ttls_aml} displays default AML TTL values for the OPQ and Lokah
 	\label{table:ttls_aml}
 \end{table}
 
-The minimum bounds of the AML with TTL can be found by using Equations~\ref{eq:aml:mu_s_sl} and~\ref{eq:aml:mu_s_aml} and substituting $T$ for the AML's TTL\@.
+The minimum bounds of the AML with TTL can be found by using Equations~\ref{eq:aml:mu_s_sl} and~\ref{eq:aml:mu_s_aml} and substituting $T$ for the AML TTL\@.
 
 Next, I examine the estimated bounds of the AML by looking at the estimated amount of AML data that is saved by higher levels in the hierarchy.
 
@@ -733,9 +733,9 @@ What does affect the size of the DL in Lokahi is the sampling rate. Even if a si
 
 \paragraph{Evaluation of IL with TTL}
 
-The IL (Incident Level) contains metadata and windows of raw samples over classified signals of interest. Incidents are created when classification algorithms find signals of interst in Detection windows. The default TTL of the IL is one year.
+The IL (Incident Level) contains metadata and windows of raw samples over classified signals of interest. Incidents are created when classification algorithms find signals of interest in Detection windows. The default TTL of the IL is one year.
 
-The minimum bounds of the IL occur when IL data is strictly bounded by its TTL. This can be found by substituting $T$ in Equation~\ref{eq:il:mu_s_il} with the IL's TTL (1 year).
+The minimum bounds of the IL occur when IL data is strictly bounded by its TTL. This can be found by substituting $T$ in Equation~\ref{eq:il:mu_s_il} with the IL TTL (1 year).
 
 The estimated bounds can be found with Equation~\ref{eq:s_il_ttl_full} where $\mu S_{IL}$ can be found by Equation~\ref{eq:il:mu_s_il} and $\mu PL_{IL}$ is the mean amount of IL data saved by the PL\@.
 
