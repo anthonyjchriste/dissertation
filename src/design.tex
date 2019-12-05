@@ -331,9 +331,9 @@ This service lives within Makai and was written in Rust.
 \subsubsection{Event Id Service}
 Event Ids are used to uniquely identify events produced by either Makai or Mauka. We need to ensure that Event Ids are unique between services and monotonically increasing. This restraint requires that a single source of truth provide the Event Ids to avoid race conditions between Makai and Mauka. The EventId Service is a service written in Rust that resides in Makai's Event Broker.
 
-The service wraps an atomic integer and provides thread-safe access to this integer. The service allows anyone to peak at the current highest event id and to also increment and get the next highest available event id. When this service is initialized, it queries the MongoDB for the highest event id in the database. All other requests to this service will increment the atomic integer and use that value for the next event id. In this way, the database only needs to be queried once on initialization and all other operations are on the atomic integer.
+The service wraps an atomic integer and provides thread-safe access to this integer. The service allows anyone to peak at the current highest event Id and to also increment and get the next highest available event id. When this service is initialized, it queries the MongoDB for the highest event Id in the database. All other requests to this service will increment the atomic integer and use that value for the next event id. In this way, the database only needs to be queried once on initialization and all other operations are on the atomic integer.
 
-This service can be passed directly into Makai's Event Broker using automatic reference counting (ARC). To enable Mauka to access this service, the same service is passed into a ZMQ thread using ARC. The ZMQ thread provides a ZMQ REP endpoint for requesting atomic Event Ids from this service. An example of Mauka requesting the event id from Makai is described in section~\ref{sec:trigger_plugin}.
+This service can be passed directly into Makai's Event Broker using automatic reference counting (ARC). To enable Mauka to access this service, the same service is passed into a ZMQ thread using ARC. The ZMQ thread provides a ZMQ REP endpoint for requesting atomic Event Ids from this service. An example of Mauka requesting the event Id from Makai is described in section~\ref{sec:trigger_plugin}.
 
 A high level overview of the Event Id Service is provided in Figure~\ref{fig:eid_service}.
 
@@ -364,7 +364,7 @@ The push/pull model on the other hand provides unidirectional message flow from 
 
 To facilitate communication between Mauka and Makai and between Mauka plugins, two communications brokers are provided. Brokers are separate processes whose only jobs are to manage moving typed messages from a source destination to multiple target destinations.
 
-The first broker, the Makai Event Bridge broker, is responsible for subscribing to a ZeroMQ endpoint provided by Makai. This bridge is used to pass Event Ids created by Makai into Mauka, alerting Mauka to the presence of new data in the database to analyze. When the message is received by the broker, it is transformed into a Mauka Message and published to the second broker, the Mauka Pub Sub Broker, and then broadcast to any subscribing plugins. Mauka plugins that subscribe to Event Ids then use the event id to look up the associated raw waveforms in the database to perform analysis.
+The first broker, the Makai Event Bridge broker, is responsible for subscribing to a ZeroMQ endpoint provided by Makai. This bridge is used to pass Event Ids created by Makai into Mauka, alerting Mauka to the presence of new data in the database to analyze. When the message is received by the broker, it is transformed into a Mauka Message and published to the second broker, the Mauka Pub Sub Broker, and then broadcast to any subscribing plugins. Mauka plugins that subscribe to Event Ids then use the event Id to look up the associated raw waveforms in the database to perform analysis.
 
 The second broker, the Mauka Pub Sub broker facilitates message passing between all other parts of the Mauka ecosystem. All messages in this system are published to this broker, and all plugins subscribe to topics provided by this broker. In essence, this broker is used to route type safe messages between distributed components of this system. By using pub/sub and a broker, the plugins only need to worry about one communication endpoint instead of knowing exactly where each plugin lives in the network and how to address it individually.
 
@@ -586,7 +586,7 @@ A ``GcUpdate" (Table~\ref{table:GcUpdate}) variant is a message that informs the
 		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
 		\midrule
 		from\_domain & GcDomain & The GcDomain from which this update originated. All collections under this domain are also updated.  \\
-		id & uint32 & The id of the document that should have its TTL updated. \\
+		Id & uint32 & The Id of the document that should have its TTL updated. \\
 		\bottomrule
 	\end{tabularx}
 	\label{table:GcUpdate}
@@ -642,7 +642,7 @@ A ``ThresholdOptimizationRequest" (Table~\ref{table:ThresholdOptimziationRequest
 		default\_threshold\_percent\_v\_low & f64 & Default voltage percent low threshold \\
 		default\_threshold\_percent\_v\_high & f64 & Default voltage percent high threshold \\
 		default\_threshold\_percent\_thd\_high & f64 & Default THD percent high threshold \\
-		box\_id & str & Override Box id \\
+		box\_id & str & Override Box Id \\
 		ref\_f & f64 & Override reference frequency \\
 		ref\_v & f64 & Override reference voltage \\
 		threshold\_percent\_f\_low & f64 & Override frequency percent low threshold \\
@@ -664,7 +664,7 @@ A ``RateOptimizationRequest" (Table~\ref{table:RateOptimizationRequest}) variant
 		\toprule
 		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
 		\midrule
-		box\_id & str & The id of the Box to change the receive rate for \\
+		box\_id & str & The Id of the Box to change the receive rate for \\
 		measurements\_hz & f32 & Measurements per second \\
 		\bottomrule
 	\end{tabularx}
@@ -712,7 +712,7 @@ The ``Command" message (Table~\ref{table:Command}) is the base message used for 
 		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
 		\midrule
 		seq & uint32 & The command sequence number \\
-		box\_id & int32 & The Box id this command references \\
+		box\_id & int32 & The Box Id this command references \\
 		timestamp\_ms & uint64 & The timestamp of this command \\
 		identity & str & The formatted identity for this command \\
 		command & oneof(GetInfoCommand, GetDataCommand, SetMeasurementRateCommand, SendCommandToPlugin) & Command variant \\
@@ -804,7 +804,7 @@ The measurements collection contains instantaneous measurements produced by Maka
 		\toprule
 		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
 		\midrule
-		box\_id & str & OPQBox id \\
+		box\_id & str & OPQBox Id \\
 		timestamp\_ms & int & Timestamp of the measurement in milliseconds \\
 		expire\_at & int & The timestamp in seconds that this document should be garbage collected \\
 		frequency & float & The instantaneous frequency measurement in Hz \\
@@ -827,7 +827,7 @@ The trends collection provides summary statistics of frequency, voltage, and THD
 		min\_(thd, frequency, voltage) & float & Minimum values for THD, frequency, and voltage \\
 		max\_(thd, frequency, voltage) & float & Maximum values for THD, frequency, and voltage \\
 		average\_(thd, frequency, voltage) & float & Mean values for THD, frequency, and voltage \\
-		box\_id & str & OPQBox id \\
+		box\_id & str & OPQBox Id \\
 		timestamp\_ms & int & Timestamp of end of trend in milliseconds \\
 		location & str & Location slug from the location that this trend originated from \\
 		expire\_at & int & Timestamp in seconds that this document should expire after \\
@@ -976,7 +976,7 @@ The ``makai\_config" collection contains default and Box override thresholds use
 		\toprule
 		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
 		\midrule
-		box\_id & str & Override Box id \\
+		box\_id & str & Override Box Id \\
 		ref\_f & f64 & Override reference frequency \\
 		ref\_v & f64 & Override reference voltage \\
 		threshold\_percent\_f\_low & f64 & Override frequency percent low threshold \\
