@@ -262,9 +262,10 @@ Table~\ref{table:aml_size} contains the theoretical bounds of the AML layer with
 	\label{table:aml_size}
 \end{table}
 
-Left unoptimized and taken over the course of a year for a typical OPQ or Lokahi deployment with 15 sensors, we would expect an upper bound of 71.55 GB collected from the OPQ network and 15 TB of data to be collected from the Lokahi network. Why is the AML so much larger in Lokahi as compared to OPQ? It's due to a requirement of the Lokahi network to store raw data along with it's AML windows. Not only do Lokahi AML windows contained the feature extracted features of the stream, but they also contain the raw data associated with that window.
+Left unoptimized and taken over the course of a year for a typical OPQ or Lokahi deployment with 15 sensors, we would expect an upper bound of 71.55 GB collected from the OPQ network and 15 TB of data to be collected from the Lokahi network. Why is the AML so much larger in Lokahi as compared to OPQ? It's due to a requirement of the Lokahi network to store raw data along with its AML windows. Not only do Lokahi AML windows contained the feature extracted features of the stream, but they also contain the raw data associated with that window.
 
 \paragraph{DL Requirements}
+The detections level contains metadata and associated sampled high fidelity data that was returned from sensors for a given time window. A single detection can contain samples from multiple data streams for a single event of interest.
 The detections level contains metadata and associated sampled high fidelity data that was returned from sensors for a given time window. A single detection can contain samples from multiple data streams for a single event of interest.
 
 Similarly to the AML level, we assume that the metadata for each detection remains a constant or close to constant size and we focus on the raw data which dominates the storage requirements in the DL\@.
@@ -413,7 +414,7 @@ First, let's look at the size of Laha with parameters estimated from OPQ. The es
 	\label{table:estimated_laha_opq}
 \end{table}
 
-Figure~\ref{fig:plot_lala_opq} shows the bounds of the entire network.
+Figure~\ref{fig:plot_lala_opq} shows the bounds of the entire network over the course of three years (note the x-axis values are multiplied by 1E8).
 
 \begin{figure}[H]
 	\centering
@@ -547,9 +548,7 @@ In the following sub-sections, I will look at the minimum, estimated, and maximu
 
 \paragraph{Simulating Laha}
 
-I desperately tried and failed to find an analytical solution for finding the Laha bounds with TTL included. I tried several different approaches, none of which fit our data particularly well. Since TTL removes data over time, I first looked at exponential decay functions. This somewhat fit the data if we assume that data only has a single TTL and is never saved by higher levels in hierarchy, however it is complicated by the fact that a certain percentage of data at lower levels is saved by higher levels. I was not able to model this property well playing with exponential decay functions. I next tried looking for inspiration from biology and  such as population growth models. These models estimate population given a birth rate and death rate. Again, I was not able to get these models to fit our data well.
-
-I finally decided to simulate Laha using parameters gathered from the OPQ and Lokahi networks. These simulations provide estimated bounds of data on each level of the Laha hierarchy. The simulation runs at a granularity of a second and simulates the IML (raw samples), AML (Measurements and Trends), DL (Events), IL (Incidents), and PL Phenomena. The simulation maintains an in-memory database of simulated data that is sorted by TTL. Items are discarded from the database when their TTL expires. Higher levels save data from the lower levels at a similar rate as observed in the OPQ and Lokahi networks.
+I decided to simulate Laha using parameters gathered from the OPQ and Lokahi networks to gain insights into data storage requirements. These simulations provide estimated bounds of data on each level of the Laha hierarchy. The simulation runs at a granularity of a second and simulates the IML (raw samples), AML (Measurements and Trends), DL (Events), IL (Incidents), and PL Phenomena. The simulation maintains an in-memory database of simulated data that is sorted by TTL. Items are discarded from the database when their TTL expires. Higher levels save data from the lower levels at a similar rate as observed in the OPQ and Lokahi networks.
 
 The following is a description of how the simulation works for the OPQ network. The simulator for the Lokahi network works similarly, but with a different estimated parameter set.
 
