@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import datetime
 from typing import Any, Dict, List, Optional, Tuple, Union
 import pickle
+import laha.dl as dl
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -10,6 +11,9 @@ import pymongo.database
 
 DB: str = "opq"
 COLL: str = "laha_stats"
+
+S_IN_DAY = 86_400
+S_IN_YEAR = 31_540_000
 
 
 @dataclass
@@ -23,11 +27,11 @@ class PluginStat:
     @staticmethod
     def from_doc(name: str, doc: Dict[str, int]) -> 'PluginStat':
         return PluginStat(
-                name,
-                doc["messages_received"],
-                doc["messages_published"],
-                doc["bytes_received"],
-                doc["bytes_published"]
+            name,
+            doc["messages_received"],
+            doc["messages_published"],
+            doc["bytes_received"],
+            doc["bytes_published"]
         )
 
 
@@ -44,13 +48,13 @@ class SystemStat:
     @staticmethod
     def from_doc(doc: Dict[str, Union[float, int]]) -> 'SystemStat':
         return SystemStat(
-                doc["min"],
-                doc["max"],
-                doc["mean"],
-                doc["var"],
-                doc["cnt"],
-                doc["start_timestamp_s"],
-                doc["end_timestamp_s"]
+            doc["min"],
+            doc["max"],
+            doc["mean"],
+            doc["var"],
+            doc["cnt"],
+            doc["start_timestamp_s"],
+            doc["end_timestamp_s"]
         )
 
 
@@ -63,9 +67,9 @@ class SystemStats:
     @staticmethod
     def from_doc(doc: Dict[str, Dict[str, Union[float, int]]]) -> 'SystemStats':
         return SystemStats(
-                SystemStat.from_doc(doc["cpu_load_percent"]),
-                SystemStat.from_doc(doc["memory_use_bytes"]),
-                SystemStat.from_doc(doc["disk_use_bytes"])
+            SystemStat.from_doc(doc["cpu_load_percent"]),
+            SystemStat.from_doc(doc["memory_use_bytes"]),
+            SystemStat.from_doc(doc["disk_use_bytes"])
         )
 
 
@@ -79,10 +83,10 @@ class LahaMetric:
     @staticmethod
     def from_doc(name: str, doc: Dict[str, int]) -> 'LahaMetric':
         return LahaMetric(
-                name,
-                doc["ttl"] if "ttl" in doc else -1,
-                doc["count"] if "count" in doc else -1,
-                doc["size_bytes"] if "size_bytes" in doc else -1
+            name,
+            doc["ttl"] if "ttl" in doc else -1,
+            doc["count"] if "count" in doc else -1,
+            doc["size_bytes"] if "size_bytes" in doc else -1
         )
 
 
@@ -98,12 +102,12 @@ class GcStats:
     @staticmethod
     def from_doc(doc: Dict[str, int]) -> 'GcStats':
         return GcStats(
-                doc["samples"],
-                doc["measurements"],
-                doc["trends"],
-                doc["events"],
-                doc["incidents"],
-                0
+            doc["samples"],
+            doc["measurements"],
+            doc["trends"],
+            doc["events"],
+            doc["incidents"],
+            0
         )
 
 
@@ -121,14 +125,14 @@ class BoxTriggeringThreshold:
     @staticmethod
     def from_doc(doc: Dict[str, Union[str, int, float]]) -> 'BoxTriggeringThreshold':
         return BoxTriggeringThreshold(
-                doc["box_id"],
-                doc["ref_f"],
-                doc["ref_v"],
-                doc["threshold_percent_f_low"],
-                doc["threshold_percent_f_high"],
-                doc["threshold_percent_v_low"],
-                doc["threshold_percent_v_high"],
-                doc["threshold_percent_thd_high"]
+            doc["box_id"],
+            doc["ref_f"],
+            doc["ref_v"],
+            doc["threshold_percent_f_low"],
+            doc["threshold_percent_f_high"],
+            doc["threshold_percent_v_low"],
+            doc["threshold_percent_v_high"],
+            doc["threshold_percent_thd_high"]
         )
 
 
@@ -140,8 +144,8 @@ class BoxMeasurementRate:
     @staticmethod
     def from_doc(doc: Dict[str, Union[str, int]]) -> 'BoxMeasurementRate':
         return BoxMeasurementRate(
-                doc["box_id"],
-                doc["measurement_rate"]
+            doc["box_id"],
+            doc["measurement_rate"]
         )
 
 
@@ -175,11 +179,11 @@ class LahaStats:
             box_measurement_rates.append(BoxMeasurementRate.from_doc(box_measurement_rate))
 
         return LahaStats(
-                laha_metrics,
-                gc_stats,
-                active_devices,
-                box_triggering_thresholds,
-                box_measurement_rates
+            laha_metrics,
+            gc_stats,
+            active_devices,
+            box_triggering_thresholds,
+            box_measurement_rates
         )
 
 
@@ -668,19 +672,266 @@ def plot_system_resources(laha_stats: List[LahaStat], out_dir: str):
     fig.savefig(f"{out_dir}/actual_system_opq.png")
 
 
+def plot_iml_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
+    # Actual Data
+    timestamps_s: np.ndarray = np.array(list(map(lambda laha_stat: laha_stat.timestamp_s, laha_stats)))
+    dts: List[datetime.datetime] = list(map(datetime.datetime.utcfromtimestamp, timestamps_s))
+    active_devices: np.ndarray = np.array(list(map(lambda laha_stat: laha_stat.laha_stats.active_devices, laha_stats)))
+    iml_actual: np.ndarray = active_devices * 12_000 * 2 * 60 * 15 / 1_000_000.0
+    iml_actual = iml_actual - iml_actual[0]
+
+    # Estimated Data
+    s_samp = 2
+    sr = 12_000
+    mu_n_sen = 15
+    sigma_n_sen = 0.7
+    x_values = timestamps_s - timestamps_s[0]
+    y_values = s_samp * sr * mu_n_sen * x_values / 1_000_000.0
+
+    # Plot
+    fig, ax = plt.subplots(3, 1, figsize=(16, 9), sharex="all", constrained_layout=True)
+    fig: plt.Figure = fig
+    ax: List[plt.Axes] = ax
+
+    fig.suptitle("Actual IML vs IML w/o TTL (OPQ)")
+
+    # Estimated
+    ax_estimated = ax[0]
+    ax_estimated.plot(dts, y_values)
+
+    ax_estimated.set_title("Estimated Unbounded IML with 15 Sensors")
+    ax_estimated.set_ylabel("Size MB")
+
+    # Actual
+    ax_actual = ax[1]
+    ax_actual.plot(dts, iml_actual)
+
+    ax_actual.set_title("Actual IML")
+    ax_actual.set_ylabel("Size MB")
+
+    # Estimated - Actual
+    ax_diff = ax[2]
+    ax_diff.plot(dts, y_values - iml_actual)
+
+    ax_diff.set_title("Difference (Estimated IML - Actual IML)")
+    ax_diff.set_ylabel("Size MB")
+    ax_diff.set_xlabel("Time (UTC)")
+
+    # fig.show()
+    fig.savefig(f"{out_dir}/actual_iml_vs_unbounded_opq.png")
+
+
+def plot_aml_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
+    # Actual Data
+    timestamps_s: np.ndarray = np.array(list(map(lambda laha_stat: laha_stat.timestamp_s, laha_stats)))
+    dts: List[datetime.datetime] = list(map(datetime.datetime.utcfromtimestamp, timestamps_s))
+
+    def map_laha_metric(laha_stat: LahaStat, name: str) -> Optional[LahaMetric]:
+        for laha_metric in laha_stat.laha_stats.laha_metrics:
+            if laha_metric.name == name:
+                return laha_metric
+
+        return None
+
+    measurements: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "measurements"), laha_stats))
+    measurement_cnt: np.ndarray = np.array(list(map(lambda measurement: measurement.count, measurements)))
+    measurement_bytes: np.ndarray = np.array(list(map(lambda measurement: measurement.size_bytes, measurements)))
+    measurement_gb: np.ndarray = measurement_bytes / 1_000_000_000.0
+
+    trends: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "trends"), laha_stats))
+    trends_cnt: np.ndarray = np.array(list(map(lambda trend: trend.count, trends)))
+    trends_bytes: np.ndarray = np.array(list(map(lambda trend: trend.size_bytes, trends)))
+    trends_gb: np.ndarray = trends_bytes / 1_000_000_000.0
+
+    total_gb = trends_gb + measurement_gb
+    total_cnt = trends_cnt + measurement_cnt
+
+    total_gb = total_gb - total_gb[0]
+
+    # Estimated Data
+    sub_levels = ["measurements", "trends"]
+
+    sl_to_size = {
+        "measurements": 144,
+        "trends": 323
+    }
+
+    sl_to_rate = {
+        "measurements": 1,
+        "trends": 60
+    }
+
+    x_values = timestamps_s - timestamps_s[0]
+
+    total_y = np.zeros(len(x_values))
+    for sl in sub_levels:
+        size = sl_to_size[sl]
+        rate = sl_to_rate[sl]
+        y_values = x_values * size * 1.0 / rate * 15
+        total_y += y_values
+        # plt.plot(x_values, y_values, label="Sub-Level=%s, Size Bytes=%d, Rate Hz=1/%d" % (sl, size, rate))
+
+    total_y = total_y / 1_000_000_000.0
+
+    # Plot
+    fig, ax = plt.subplots(3, 1, figsize=(16, 9), sharex="all", constrained_layout=True, sharey="all")
+    fig: plt.Figure = fig
+    ax: List[plt.Axes] = ax
+
+    fig.suptitle("Actual AML vs AML w/o TTL (OPQ)")
+
+    # Estimated
+    ax_estimated = ax[0]
+    ax_estimated.plot(dts, total_y)
+
+    ax_estimated.set_title("Estimated Unbounded AML with 15 Sensors")
+    ax_estimated.set_ylabel("Size GB")
+
+    # Actual
+    ax_actual = ax[1]
+    ax_actual.plot(dts, total_gb)
+
+    ax_actual.set_title("Actual AML")
+    ax_actual.set_ylabel("Size GB")
+
+    # Estimated - Actual
+    ax_diff = ax[2]
+    diff = total_y - total_gb
+    ax_diff.plot(dts, diff)
+
+    ax_diff.set_title("Difference (Estimated AML - Actual AML)")
+    ax_diff.set_ylabel("Size GB")
+    ax_diff.set_xlabel("Time (UTC)")
+
+    # fig.show()
+    fig.savefig(f"{out_dir}/actual_aml_vs_unbounded_opq.png")
+
+
+def plot_dl_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
+    # Actual Data
+    timestamps_s: np.ndarray = np.array(list(map(lambda laha_stat: laha_stat.timestamp_s, laha_stats)))
+    dts: List[datetime.datetime] = list(map(datetime.datetime.utcfromtimestamp, timestamps_s))
+
+    def map_laha_metric(laha_stat: LahaStat, name: str) -> Optional[LahaMetric]:
+        for laha_metric in laha_stat.laha_stats.laha_metrics:
+            if laha_metric.name == name:
+                return laha_metric
+
+        return None
+
+    events: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "events"), laha_stats))
+    events_cnt: np.ndarray = np.array(list(map(lambda event: event.count, events)))
+    events_bytes: np.ndarray = np.array(list(map(lambda event: event.size_bytes, events)))
+    events_gb: np.ndarray = events_bytes / 1_000_000_000.0
+    events_gb = events_gb - events_gb[0]
+
+    # Estimated Data
+    mu_dr = 8211.7
+    sigma_dr = 185544.8
+
+    x_values = timestamps_s - timestamps_s[0]
+    y_values = mu_dr * x_values / 1_000_000_000.0
+    e_values = (sigma_dr / np.sqrt(x_values)) * np.abs(x_values)
+
+    # Plot
+    fig, ax = plt.subplots(3, 1, figsize=(16, 9), sharex="all", constrained_layout=True, sharey="all")
+    fig: plt.Figure = fig
+    ax: List[plt.Axes] = ax
+
+    fig.suptitle("Actual DL vs DL w/o TTL (OPQ)")
+
+    # Estimated
+    ax_estimated = ax[0]
+    ax_estimated.plot(dts, y_values)
+
+    ax_estimated.set_title("Estimated Unbounded DL with 15 Sensors")
+    ax_estimated.set_ylabel("Size GB")
+
+    # Actual
+    ax_actual = ax[1]
+    ax_actual.plot(dts, events_gb)
+
+    ax_actual.set_title("Actual DL")
+    ax_actual.set_ylabel("Size GB")
+
+    # Estimated - Actual
+    ax_diff = ax[2]
+    diff = y_values - events_gb
+    ax_diff.plot(dts, diff)
+
+    ax_diff.set_title("Difference (Estimated DL - Actual DL)")
+    ax_diff.set_ylabel("Size GB")
+    ax_diff.set_xlabel("Time (UTC)")
+
+    # fig.show()
+    fig.savefig(f"{out_dir}/actual_dl_vs_unbounded_opq.png")
+
+
+def plot_il_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
+    # Actual Data
+    timestamps_s: np.ndarray = np.array(list(map(lambda laha_stat: laha_stat.timestamp_s, laha_stats)))
+    dts: List[datetime.datetime] = list(map(datetime.datetime.utcfromtimestamp, timestamps_s))
+
+    def map_laha_metric(laha_stat: LahaStat, name: str) -> Optional[LahaMetric]:
+        for laha_metric in laha_stat.laha_stats.laha_metrics:
+            if laha_metric.name == name:
+                return laha_metric
+
+        return None
+
+    incidents: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "incidents"), laha_stats))
+    incidents_cnt: np.ndarray = np.array(list(map(lambda incident: incident.count, incidents)))
+    incidents_bytes: np.ndarray = np.array(list(map(lambda incident: incident.size_bytes, incidents)))
+    incidents_gb: np.ndarray = incidents_bytes / 1_000_000_000.0
+    incidents_gb = incidents_gb - incidents_gb[0]
+
+    # Estimated Data
+    mu_dr = 438.58
+    sigma_dr = 6288.48
+
+    x_values = timestamps_s - timestamps_s[0]
+    y_values = mu_dr * x_values / 1_000_000_000.0
+
+    # Plot
+    fig, ax = plt.subplots(3, 1, figsize=(16, 9), sharex="all", constrained_layout=True, sharey="all")
+    fig: plt.Figure = fig
+    ax: List[plt.Axes] = ax
+
+    fig.suptitle("Actual IL vs IL w/o TTL (OPQ)")
+
+    # Estimated
+    ax_estimated = ax[0]
+    ax_estimated.plot(dts, y_values)
+
+    ax_estimated.set_title("Estimated Unbounded IL with 15 Sensors")
+    ax_estimated.set_ylabel("Size GB")
+
+    # Actual
+    ax_actual = ax[1]
+    ax_actual.plot(dts, incidents_gb)
+
+    ax_actual.set_title("Actual IL")
+    ax_actual.set_ylabel("Size GB")
+
+    # Estimated - Actual
+    ax_diff = ax[2]
+    diff = y_values - incidents_gb
+    ax_diff.plot(dts, diff)
+
+    ax_diff.set_title("Difference (Estimated IL - Actual IL)")
+    ax_diff.set_ylabel("Size GB")
+    ax_diff.set_xlabel("Time (UTC)")
+
+    # fig.show()
+    fig.savefig(f"{out_dir}/actual_il_vs_unbounded_opq.png")
+
+
 if __name__ == "__main__":
     # mongo_client: pymongo.MongoClient = pymongo.MongoClient()
-    #
     # laha_stats: List[LahaStat] = get_laha_stats(mongo_client)
-    #
-    # # for laha_stat in laha_stats:
-    # #     print(laha_stat)
-    #
     # save_laha_stats(laha_stats, "laha_stats.pickle.db")
 
     laha_stats: List[LahaStat] = load_laha_stats("laha_stats.pickle.db")
-
-    # print(len(laha_stats))
 
     # plot_iml(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
     # plot_aml(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
@@ -688,5 +939,8 @@ if __name__ == "__main__":
     # plot_il(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
     # plot_laha(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
 
-    # print(laha_stats[0])
-    plot_system_resources(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+    # plot_system_resources(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+    plot_iml_vs_no_tll(laha_stats, "/home/opq/Documents/anthony/dissertation/src/figures")
+    plot_aml_vs_no_tll(laha_stats, "/home/opq/Documents/anthony/dissertation/src/figures")
+    plot_dl_vs_no_tll(laha_stats, "/home/opq/Documents/anthony/dissertation/src/figures")
+    plot_il_vs_no_tll(laha_stats, "/home/opq/Documents/anthony/dissertation/src/figures")

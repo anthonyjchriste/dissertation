@@ -116,9 +116,72 @@ The IL starts out small, but as Incidents are identified, the IL surpasses the I
 
 Now that I've shown the results for the actual DSN storage requirements, I will next compare these results to the estimated storage requirements with and without TTL\@.
 
-Let's first compare the results to the estimated storage requirements without TTL.
+Let's first compare the results to the estimated storage requirements without TTL found in Section~\ref{sssec:eval_of_dsn_system_requirements}. This might feel a bit contrived, but the purpose of these results is to show how OPQ compares to a similar system that would collect everything.
 
-Now I will compare the results to the estimated storage requirements with TTL.
+There was already data in the database before we started collected enhanced metrics. This is true for the AML, DL, IL, and PL. In order to accurately compare data growths from zero, the first value at each level is subtracted from the entire data set at each level. This essentially ``forces" the data set to start at 0 so that we can compare it directly to the estimates.
+
+The Instantaneous Measurements Level (IML) consists of raw samples from sensors. Figure~\ref{fig:actual_iml_vs_unbounded_opq} shows the actual IML vs unbounded IML\@.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/actual_iml_vs_unbounded_opq.png}
+    \caption{Actual IML vs Unbounded IML for OPQ}
+    \label{fig:actual_iml_vs_unbounded_opq}
+\end{figure}
+
+This plot is a little uninteresting. The difference is lost by the shear imbalance between magnitudes. With the IML producing the most data consisting of raw samples, without a TTL of 15 minutes the unbounded IML grows very quickly. By having bounds on the data, OPQ saves over 2.5 TB worth of data storage.
+
+Figure~\ref{fig:actual_aml_vs_unbounded_opq} shows the actual AML vs unbounded AML. The AML level contains aggregate measurements which are rolled up summary statistics extracted from the IML\@.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/actual_aml_vs_unbounded_opq.png}
+    \caption{Actual AML vs Unbounded AML for OPQ}
+    \label{fig:actual_aml_vs_unbounded_opq}
+\end{figure}
+
+We can see that over the same time period, AML with TTL saved us about 14.6 GB worth of data versus a store everything approach.
+
+Figure~\ref{fig:actual_dl_vs_unbounded_opq} shows the actual DL vs unbounded DL. The Detection Level contains metadata and data bounded by a window which may or may not include signals of interest.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/actual_dl_vs_unbounded_opq.png}
+    \caption{Actual DL vs Unbounded DL for OPQ}
+    \label{fig:actual_dl_vs_unbounded_opq}
+\end{figure}
+
+Figure shows the actual IL vs unbounded IL. The Incident Level contains metadata and data over window that contains classified signals of interest.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/actual_il_vs_unbounded_opq.png}
+    \caption{Actual IL vs Unbounded IL for OPQ}
+    \label{fig:actual_il_vs_unbounded_opq}
+\end{figure}
+
+Here we can see that the actual size of the IL tracks pretty closely to the estimated maximum bounds. This is expected as the IL has a TLL of one year. Since we only have actual data for two and a half months, none of the generated IL have been garbage collected. Since I am comparing the actual data to estimated data without TTL, I expect these two values to trend in a similar fashion. At the end of the data collection period, OPQ collected about 2GB more worth of data than what was projected. This tells me that the estimation parameter for Incident data per second is likely slightly underestimated.
+
+Figure shows the actual PL vs unbounded PL.
+
+% TODO
+TODO
+
+Figure shows the actual Laha vs unbounded Laha. Finally, I examine the total size of Laha and compare it to the estimated upper bounds of Laha without TTL. This takes into account all levels within the Laha hierarchy.
+
+Now I will compare the results to the estimated (simulated) storage requirements with TTL.
+
+Figure shows the actual IML vs estimated IML.
+
+Figure shows the actual AML vs estimated AML.
+
+Figure shows the actual DL vs estimated DL.
+
+Figure shows the actual IL vs estimated IL.
+
+Figure shows the actual PL vs estimated PL.
+
+Figure shows the actual Laha vs estimated Laha.
 
 \subsubsection{DSN System Requirements OPQ: CPU, Memory, and Disk Utilization}
 
