@@ -1,3 +1,113 @@
-\chapter{Results}
+\chapter{Results}\label{ch:results}
 
+\section{DSN System Requirements}\label{sec:dsn-system-requirements}
+
+In the Evaluation chapter I examined the theoretical bounds of DSN system requirements both with TTL (Section~\ref{sssec:evaluation_of_ttl}) and without TTL (Section~\ref{sssec:eval_of_dsn_system_requirements}) for the OPQ and Lokahi networks.
+
+This section will focus on examining the actual DSN system requirements for the OPQ and Lokahi networks.
+
+All results in this section were gathered directly from the OPQ and Lokahi networks and no estimated parameters or simulations were used.
+
+\subsection{DSN System Requirements: OPQ}\label{subsec:dsn-system-requirements:-opq}
+
+System utilization metrics were collected during the deployment of the OPQ DSN. The metrics that were collected are provided in the description of the SystemStatsPlugin (Section~\ref{lbl:SystemStatsPlugin}). In summary, I collected metrics on plugin utilization, system resource utilization, garbage collection, tunable Laha parameters, and storage requirements for each level within the Laha hierarchy.
+
+There were several schema changes to the stored metric data, with the most significant change taking place on September 20, 2019. For these results, I only used metrics collected after this date as they contain the most useful data.
+
+Further, the astute reader will notice that there are often times more than 15 Boxes in the metric data when only 15 Boxes were deployed for the UHM deployment. This is attributed to the fact that several Boxes were sent to the Electric Power Research Institute (EPRI) to evaluate if our Boxes could be used as a test bed for their power quality analysis needs. The metrics collected by Laha are collected for the total set of all Boxes sending to OPQ, and thus, also sometimes include metrics from the Boxes that EPRI are evaluating.
+
+First I will examine the storage requirements at each level within the hierarchy. Then I will compare the levels to each other to get an idea of the requirements for the entire network. Finally, I will compare these values to the theoretical bounds found in previous sections.
+
+\subsubsection{DSN System Requirements OPQ: IML}
+
+The Instantaneous Measurements Level (IML) contains a window of raw samples from sensors. In the case OPQ, these consist of the samples of data stored in the main memory of each OPQ Box. The IML has a TTL of 15 minutes which is determined by the available storage capacity of each OPQ Box.
+
+The IML is unique in that data from the IML is never ``saved" by higher levels in the hierarchy. Instead, IML data is copied into Detections, Incidents, and Phenomena. Because of this, the size of the IML over time is function of the number of OPQ Boxes sending data at any particular time. Figure~\ref{fig:actual_iml_opq} shows the actual OPQ IML data growth over the deployment period. As can be observed, the AML size is a simple function of the number of OPQ Boxes sending data.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/actual_iml_opq.png}
+    \caption{Actual IML for OPQ}
+    \label{fig:actual_iml_opq}
+\end{figure}
+
+A deployment of 15 OPQ Boxes will consume about 325 MB of IML space.
+
+\subsubsection{DSN System Requirements OPQ: AML}
+
+The Aggregate Measurements Level (AML) contains summary statistics of features extracted from the IML. OPQ contains two sub-levels within the AML (Measurements and Trends). Data within the AML can be saved by higher levels within Laha (DL, IL, and PL). If AML data is saved, it receives the TTL of the highest level that the data was saved by.
+
+I examine the AML data growth for OPQ by looking at the data growth of Measurements, Trends, and the total AML. Figure~\ref{fig:actual_aml_opq} displays the AML growth for the OPQ network as well as statistics about garbage collection.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/actual_aml_opq.png}
+    \caption{Actual AML for OPQ}
+    \label{fig:actual_aml_opq}
+\end{figure}
+
+The top panel displays the AML data growth with size in GB on the left Y-axis and the count of AML items on the right Y-axis. Over a period of two and a half months the AML in OPQ has reached a size of about 1.5 GB containing close to 4 million AML items.
+
+The middle panel displays the number of Measurements and Trends that were garbage collected over time on the left Y-axis and the percentage of items that were garbage collected on the right Y-axis. About 98\% of all AML data was garbage collected. About 2\% of all AML data is either awaiting garbage collection of was ``saved" by a higher level in the Laha hierarchy.
+
+The bottom panel displays the number of active OPQ Boxes over time. It's possible to see how the number of Boxes impacts the size of the AML. For example, the increase in Boxes in September and the decrease of Boxes in mid-November have noticeable impacts on the AML storage size.
+
+\subsubsection{DSN System Requirements OPQ: DL}
+
+The Detections Level (DL) contains metadata and data bounded by a time window that may or may not contain signals of interest. Detections are generated by threshold based triggering algorithms. Detections can be saved by higher levels in the Laha hierarchy (IL and PL) and will receive the same TTL as the highest level the DL data is saved by. The DL contains metadata about the window it examines, but the bulk of data is produced by the raw samples that get copied into the DL when a Detection is created.
+
+Figure~\ref{fig:actual_dl_opq} shows the DL data growth for the OPQ network over time.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/actual_dl_opq.png}
+    \caption{Actual DL for OPQ}
+    \label{fig:actual_dl_opq}
+\end{figure}
+
+The top panel shows the size of the DL over time with the size in GB on the left Y-axis and the count of Detections on the right Y-axis. The size of the DL for the OPQ network has grown to close 70 GB over the period of two and half months containing a total of 160,000 Detections.
+
+The middle panel shows the garbage collection statistics for the DL. Of note is the delayed uptick in garbage collection until October 1, 2019. This is a direct result of the fact that Detections have a TTL of 1 month, and thus, no Detections were garbage collected during the first month of data collection. As of two and a half months of data collection, about 50\% of all Detections generated have been garbage collected while the other 50\% are wither awaiting garbage collection or have been saved by Incidents or Phenomena.
+
+The bottom panel shows the number of active OPQ Boxes sending data over time.
+
+\subsubsection{DSN System Requirements OPQ: IL}
+
+The Incidents Level (IL) contains metadata and data relating to classified signals of interest. Incidents are created when a Mauka plugin classifies a signal of interest from a Detection. Incidents can be saved by Phenomena.
+
+Figure~\ref{fig:actual_il_opq} shows the IL growth for the OPQ network over a period of two and a half months.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/actual_il_opq.png}
+    \caption{Actual IL for OPQ}
+    \label{fig:actual_il_opq}
+\end{figure}
+
+The top panel shows the growth of the IL with the size in GB on the left Y-axis and the number of Incidents on the right Y-axis. Over a period of two and a half months, the IL of OPQ has grown to near 5GB containing about 400,000 Incidents.
+
+The middle panel shows the garbage collection statistics for the IL. You'll note that the GC statistics are flat lining at 0. This is due to the fact that Incidents are given a default TTL of 1 year and this deployment has only been collecting data for 3 months.
+
+The bottom panel shows the number of active OPQ Boxes sending data over time.
+
+\subsubsection{DSN System Requirements OPQ: PL}
+
+% TODO
 TODO
+
+\subsubsection{DSN System Requirements OPQ}
+
+
+\subsubsection{DSN System Requirements OPQ: Comparing Results to Estimates}
+
+\subsection{DSN System Requirements: Lokahi}\label{subsec:dsn-system-requirements:-lokahi}
+
+\subsubsection{DSN System Requirements Lokahi: IML}
+
+\subsubsection{DSN System Requirements Lokahi: AML}
+
+\subsubsection{DSN System Requirements Lokahi: DL}
+
+\subsubsection{DSN System Requirements Lokahi: IL}
+
+\subsubsection{DSN System Requirements Lokahi: PL}

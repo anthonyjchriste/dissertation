@@ -151,7 +151,7 @@ It's possible that Laha threw away data that did contain signals of interest. In
 
 I evaluated the number of false positives and false negatives in detections, classifications, and Phenomena compared against industry standard reference sensors. A positive outcome for this metric would be a reduction in both false positives and false negatives compared to an approach that does not use tiered data management. A negative result would be an increase in either false positives or false negatives.
 
-\subsubsection{Evaluation of DSN System Requirements}
+\subsubsection{Evaluation of DSN System Requirements}\label{sssec:eval_of_dsn_system_requirements}
 I examined theoretical data storage requirements for any DSN that utilizes Laha as an abstract model.
 
 Let us consider the theoretical bounds on storage requirements at each level in the Laha hierarchy. First we will consider the storage bounds when all parameters are known and then we will look at bounds using estimated parameters for each level.
@@ -519,7 +519,7 @@ Finally, we summarize the results in Table~\ref{table:summarized_laha_results_lo
 	\label{table:summarized_laha_results_lokahi}
 \end{table}
 
-\subsubsection{Evaluation of TTL}
+\subsubsection{Evaluation of TTL}\label{sssec:evaluation_of_ttl}
 In the previous section, I examined the data requirements for Laha with the assumption that data is never discarded. In practice, this approach is unsustainable and will quickly lead to network degradation in terms of storage, memory, and processing requirements. To address this issue, Laha provides the concept of TTL (Time-to-Live) which is the amount of time that data is stored before it is garbage collected.
 
 Each level within the Laha hierarchy provides a dynamic and configurable TTL. Data is garbage collected when it becomes older than its TTL. The TTL for data is adjusted when higher levels in the hierarchy identity something of interest. For instance, if a Detection is identified in the DL, then all data in the IML and AML that were used in the creation of the Detection are given a TTL that matches the TTL of the Detection. Similarly, if an Incident is identified in the IL, then all data in the IML, AML, and DL are given TTLs that match that of the Incident. This process continues recursively throughout all levels of the Laha hierarchy.
