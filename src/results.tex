@@ -151,7 +151,7 @@ Figure~\ref{fig:actual_dl_vs_unbounded_opq} shows the actual DL vs unbounded DL.
     \label{fig:actual_dl_vs_unbounded_opq}
 \end{figure}
 
-Figure shows the actual IL vs unbounded IL. The Incident Level contains metadata and data over window that contains classified signals of interest.
+Figure~\ref{fig:actual_il_vs_unbounded_opq} shows the actual IL vs unbounded IL. The Incident Level contains metadata and data over window that contains classified signals of interest.
 
 \begin{figure}[H]
     \centering
@@ -169,7 +169,25 @@ TODO
 
 Figure shows the actual Laha vs unbounded Laha. Finally, I examine the total size of Laha and compare it to the estimated upper bounds of Laha without TTL. This takes into account all levels within the Laha hierarchy.
 
-Now I will compare the results to the estimated (simulated) storage requirements with TTL.
+Now I will compare the results to the estimated (simulated) storage requirements with TTL. Figure~\ref{fig:actual_laha_vs_unbounded_opq} compares the actual bounds of the entire network to the estimated bounds.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/actual_laha_vs_unbounded_opq.png}
+    \caption{Actual Laha vs Unbounded Laha for OPQ}
+    \label{fig:actual_laha_vs_unbounded_opq}
+\end{figure}
+
+This result is a little unsatisfying. The data growth of the IML is pretty much the only feature evident in this plot. To better understand the growth of the entire system, I removed the IML as shown in Figure~\ref{fig:actual_laha_vs_unbounded_no_iml_opq}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/actual_laha_vs_unbounded_no_iml_opq.png}
+    \caption{Actual Laha vs Unbounded Laha for OPQ (No IML)}
+    \label{fig:actual_laha_vs_unbounded_no_iml_opq}
+\end{figure}
+
+Over a time period of 2 and a half months, the OPQ network saved about 20GB of data as compared to a store everything approach (not including the IML which saved about 2.5 TB of data).
 
 Figure shows the actual IML vs estimated IML.
 
