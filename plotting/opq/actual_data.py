@@ -332,7 +332,7 @@ def plot_aml(laha_stats: List[LahaStat], out_dir: str) -> None:
     # Active devices
     active_devices: List[int] = list(map(lambda laha_stat: laha_stat.laha_stats.active_devices, laha_stats))
     ax_active = ax[2]
-    ax_active.plot(dts, active_devices, label="Active Devices")
+    ax_active.plot(dts, active_devices, label="Active Devices", color="blue")
     ax_active.set_ylabel("Active OPQ Boxes")
     ax_active.set_title("Active OPQ Boxes")
     ax_active.set_xlabel("Time (UTC)")
@@ -341,7 +341,7 @@ def plot_aml(laha_stats: List[LahaStat], out_dir: str) -> None:
     fig.savefig(f"{out_dir}/actual_aml_opq.png")
 
 
-def plot_dl(laha_stats: List[LahaStat]) -> None:
+def plot_dl(laha_stats: List[LahaStat], out_dir: str) -> None:
     timestamps_s: List[int] = list(map(lambda laha_stat: laha_stat.timestamp_s, laha_stats))
     dts: List[datetime.datetime] = list(map(datetime.datetime.utcfromtimestamp, timestamps_s))
 
@@ -353,28 +353,140 @@ def plot_dl(laha_stats: List[LahaStat]) -> None:
         return None
 
     events: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "events"), laha_stats))
+    events_cnt: np.ndarray = np.array(list(map(lambda event: event.count, events)))
     events_bytes: np.ndarray = np.array(list(map(lambda event: event.size_bytes, events)))
     events_gb: np.ndarray = events_bytes / 1_000_000_000.0
 
-    fig, ax = plt.subplots(1, 1, figsize=(16, 9), sharex="all")
+    fig, ax = plt.subplots(3, 1, figsize=(16, 9), sharex="all", constrained_layout=True)
     fig: plt.Figure = fig
-    ax: plt.Axes = ax
+    ax: List[plt.Axes] = ax
 
-    ax.plot(dts, events_gb, label="Events Size GB")
-    ax.set_ylabel("Size GB")
-    ax.set_xlabel("Time (UTC)")
+    fig.suptitle("Laha DL (OPQ)")
 
-    fig.suptitle("Actual DL Size (OPQ)")
+    # Size
+    ax_size = ax[0]
+    ax_size.plot(dts, events_gb, label="Events Size GB", color="blue")
+    ax_size.set_ylabel("Size GB")
+    ax_size.set_title("Actual DL Size")
+    ax_size.legend(loc="upper left")
 
-    ax.legend()
+    # cnt
+    ax_cnt = ax_size.twinx()
+    ax_cnt.plot(dts, events_cnt, label="Events Count", color="blue", linestyle="--")
+    ax_cnt.set_ylabel("Count")
+
+    ax_cnt.legend(loc="lower left")
+
+    # GC
+    events_gc: List[int] = list(map(lambda laha_stat: laha_stat.laha_stats.gc_stats.events, laha_stats))
+    corrected_events_gc: np.ndarray = correct_counts(np.array(events_gc))
+
+
+    ax_gc = ax[1]
+    ax_gc.plot(dts[1::], corrected_events_gc, label="Events GC", color="blue")
+
+    ax_gc.set_title("DL Garbage Collection")
+    ax_gc.set_yscale("log")
+
+    ax_gc.set_ylabel("Items Garbage Collected")
+    ax_gc.legend(loc="upper left")
+
+    # % GC
+    ax_gc_p: plt.Axes = ax_gc.twinx()
+
+    total_events: np.ndarray = events_cnt[1::] + corrected_events_gc
+    trends_pct: np.ndarray = corrected_events_gc / total_events * 100.0
+
+    ax_gc_p.plot(dts[1::], trends_pct, label="Percent Events GC", color="blue", linestyle="--")
+
+    ax_gc_p.legend(loc="lower left")
+    ax_gc_p.set_ylabel("Percent Garbage Collected")
 
     # Active devices
-    # active_devices: List[int] = list(map(lambda laha_stat: laha_stat.laha_stats.active_devices, laha_stats))
-    # tax: plt.Axes = ax.twinx()
-    # tax.plot(dts, active_devices, label="Active OPQ Boxes", color="green")
-    # tax.legend()
+    active_devices: List[int] = list(map(lambda laha_stat: laha_stat.laha_stats.active_devices, laha_stats))
+    ax_active = ax[2]
+    ax_active.plot(dts, active_devices, label="Active Devices", color="blue")
+    ax_active.set_ylabel("Active OPQ Boxes")
+    ax_active.set_title("Active OPQ Boxes")
+    ax_active.set_xlabel("Time (UTC)")
+    ax_active.legend(loc="upper left")
 
-    fig.show()
+    # fig.show()
+    fig.savefig(f"{out_dir}/actual_dl_opq.png")
+
+
+def plot_il(laha_stats: List[LahaStat], out_dir: str) -> None:
+    timestamps_s: List[int] = list(map(lambda laha_stat: laha_stat.timestamp_s, laha_stats))
+    dts: List[datetime.datetime] = list(map(datetime.datetime.utcfromtimestamp, timestamps_s))
+
+    def map_laha_metric(laha_stat: LahaStat, name: str) -> Optional[LahaMetric]:
+        for laha_metric in laha_stat.laha_stats.laha_metrics:
+            if laha_metric.name == name:
+                return laha_metric
+
+        return None
+
+    events: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "incidents"), laha_stats))
+    events_cnt: np.ndarray = np.array(list(map(lambda event: event.count, events)))
+    events_bytes: np.ndarray = np.array(list(map(lambda event: event.size_bytes, events)))
+    events_gb: np.ndarray = events_bytes / 1_000_000_000.0
+
+    fig, ax = plt.subplots(3, 1, figsize=(16, 9), sharex="all", constrained_layout=True)
+    fig: plt.Figure = fig
+    ax: List[plt.Axes] = ax
+
+    fig.suptitle("Laha IL (OPQ)")
+
+    # Size
+    ax_size = ax[0]
+    ax_size.plot(dts, events_gb, label="Incidents Size GB", color="blue")
+    ax_size.set_ylabel("Size GB")
+    ax_size.set_title("Actual IL Size")
+    ax_size.legend(loc="upper left")
+
+    # cnt
+    ax_cnt = ax_size.twinx()
+    ax_cnt.plot(dts, events_cnt, label="Incidents Count", color="blue", linestyle="--")
+    ax_cnt.set_ylabel("Count")
+
+    ax_cnt.legend(loc="lower left")
+
+    # GC
+    events_gc: List[int] = list(map(lambda laha_stat: laha_stat.laha_stats.gc_stats.incidents, laha_stats))
+    corrected_events_gc: np.ndarray = correct_counts(np.array(events_gc))
+
+
+    ax_gc = ax[1]
+    ax_gc.plot(dts[1::], corrected_events_gc, label="Incidents GC", color="blue")
+
+    ax_gc.set_title("IL Garbage Collection")
+    ax_gc.set_yscale("log")
+
+    ax_gc.set_ylabel("Items Garbage Collected")
+    ax_gc.legend(loc="upper left")
+
+    # % GC
+    ax_gc_p: plt.Axes = ax_gc.twinx()
+
+    total_events: np.ndarray = events_cnt[1::] + corrected_events_gc
+    trends_pct: np.ndarray = corrected_events_gc / total_events * 100.0
+
+    ax_gc_p.plot(dts[1::], trends_pct, label="Percent Incidents GC", color="blue", linestyle="--")
+
+    ax_gc_p.legend(loc="lower left")
+    ax_gc_p.set_ylabel("Percent Garbage Collected")
+
+    # Active devices
+    active_devices: List[int] = list(map(lambda laha_stat: laha_stat.laha_stats.active_devices, laha_stats))
+    ax_active = ax[2]
+    ax_active.plot(dts, active_devices, label="Active Devices", color="blue")
+    ax_active.set_ylabel("Active OPQ Boxes")
+    ax_active.set_title("Active OPQ Boxes")
+    ax_active.set_xlabel("Time (UTC)")
+    ax_active.legend(loc="upper left")
+
+    # fig.show()
+    fig.savefig(f"{out_dir}/actual_il_opq.png")
 
 
 if __name__ == "__main__":
@@ -392,4 +504,6 @@ if __name__ == "__main__":
     # print(len(laha_stats))
 
     plot_aml(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
-    # plot_dl(laha_stats)
+    plot_dl(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+    plot_il(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+
