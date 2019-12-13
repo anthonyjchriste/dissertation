@@ -381,7 +381,6 @@ def plot_dl(laha_stats: List[LahaStat], out_dir: str) -> None:
     events_gc: List[int] = list(map(lambda laha_stat: laha_stat.laha_stats.gc_stats.events, laha_stats))
     corrected_events_gc: np.ndarray = correct_counts(np.array(events_gc))
 
-
     ax_gc = ax[1]
     ax_gc.plot(dts[1::], corrected_events_gc, label="Events GC", color="blue")
 
@@ -455,7 +454,6 @@ def plot_il(laha_stats: List[LahaStat], out_dir: str) -> None:
     events_gc: List[int] = list(map(lambda laha_stat: laha_stat.laha_stats.gc_stats.incidents, laha_stats))
     corrected_events_gc: np.ndarray = correct_counts(np.array(events_gc))
 
-
     ax_gc = ax[1]
     ax_gc.plot(dts[1::], corrected_events_gc, label="Incidents GC", color="blue")
 
@@ -513,6 +511,7 @@ def plot_iml(laha_stats: List[LahaStat], out_dir: str):
     # fig.show()
     fig.savefig(f"{out_dir}/actual_iml_opq.png")
 
+
 def plot_laha(laha_stats: List[LahaStat], out_dir: str):
     def map_laha_metric(laha_stat: LahaStat, name: str) -> Optional[LahaMetric]:
         for laha_metric in laha_stat.laha_stats.laha_metrics:
@@ -520,7 +519,6 @@ def plot_laha(laha_stats: List[LahaStat], out_dir: str):
                 return laha_metric
 
         return None
-
 
     timestamps_s: List[int] = list(map(lambda laha_stat: laha_stat.timestamp_s, laha_stats))
     dts: List[datetime.datetime] = list(map(datetime.datetime.utcfromtimestamp, timestamps_s))
@@ -591,6 +589,82 @@ def plot_laha(laha_stats: List[LahaStat], out_dir: str):
     fig.savefig(f"{out_dir}/actual_laha_opq.png")
 
 
+def plot_system_resources(laha_stats: List[LahaStat], out_dir: str):
+    timestamps_s: List[int] = list(map(lambda laha_stat: laha_stat.timestamp_s, laha_stats))
+    dts: List[datetime.datetime] = list(map(datetime.datetime.utcfromtimestamp, timestamps_s))
+    active_devices: List[int] = list(map(lambda laha_stat: laha_stat.laha_stats.active_devices, laha_stats))
+    system_stats: List[SystemStats] = list(map(lambda laha_stat: laha_stat.system_stats, laha_stats))
+
+    cpu_load_percent_mins: np.ndarray = np.array(
+        list(map(lambda system_stat: system_stat.cpu_load_percent.min, system_stats)))
+    cpu_load_percent_maxes: np.ndarray = np.array(
+        list(map(lambda system_stat: system_stat.cpu_load_percent.max, system_stats)))
+    cpu_load_percent_means: np.ndarray = np.array(
+        list(map(lambda system_stat: system_stat.cpu_load_percent.mean, system_stats)))
+
+    memory_use_bytes_mins: np.ndarray = np.array(
+        list(map(lambda system_stat: system_stat.memory_use_bytes.min, system_stats)))
+    memory_use_bytes_maxes: np.ndarray = np.array(
+        list(map(lambda system_stat: system_stat.memory_use_bytes.max, system_stats)))
+    memory_use_bytes_means: np.ndarray = np.array(
+        list(map(lambda system_stat: system_stat.memory_use_bytes.mean, system_stats)))
+
+    disk_use_bytes_mins: np.ndarray = np.array(
+        list(map(lambda system_stat: system_stat.disk_use_bytes.min, system_stats)))
+    disk_use_bytes_maxes: np.ndarray = np.array(
+        list(map(lambda system_stat: system_stat.disk_use_bytes.max, system_stats)))
+    disk_use_bytes_means: np.ndarray = np.array(
+        list(map(lambda system_stat: system_stat.disk_use_bytes.mean, system_stats)))
+
+    # Plot
+    fig, ax = plt.subplots(4, 1, figsize=(16, 9), sharex="all", constrained_layout=True)
+    fig: plt.Figure = fig
+    ax: List[plt.Axes] = ax
+
+    fig.suptitle("OPQ Cloud Resource Utilization")
+
+    # CPU
+    ax_cpu = ax[0]
+    ax_cpu.plot(dts, cpu_load_percent_mins, label="Min")
+    ax_cpu.plot(dts, cpu_load_percent_means, label="Mean")
+    ax_cpu.plot(dts, cpu_load_percent_maxes, label="Max", color="red")
+
+    ax_cpu.set_title("CPU Load Percent")
+    ax_cpu.set_ylabel("Percent Load")
+    ax_cpu.legend(loc="upper left")
+
+    # Memory
+    ax_memory = ax[1]
+    ax_memory.plot(dts, memory_use_bytes_mins / 1_000_000., label="Min")
+    ax_memory.plot(dts, memory_use_bytes_means / 1_000_000., label="Mean")
+    ax_memory.plot(dts, memory_use_bytes_maxes / 1_000_000., label="Max", color="red")
+
+    ax_memory.set_title("Memory Used")
+    ax_memory.set_ylabel("Size MB")
+    ax_memory.legend(loc="upper left")
+
+    # Disk
+    ax_disk = ax[2]
+    ax_disk.plot(dts, disk_use_bytes_mins / 1_000_000_000., label="Min")
+    ax_disk.plot(dts, disk_use_bytes_means / 1_000_000_000., label="Mean")
+    ax_disk.plot(dts, disk_use_bytes_maxes / 1_000_000_000., label="Max", color="red")
+
+    ax_disk.set_title("Disk Used")
+    ax_disk.set_ylabel("Size GB")
+    ax_disk.legend(loc="upper left")
+
+    # Active Devices
+    ax_active = ax[3]
+    ax_active.plot(dts, active_devices, label="Active OPQ Boxes", color="blue")
+
+    ax_active.set_title("Active OPQ Boxes")
+    ax_active.set_ylabel("Active OPQ Boxes")
+    ax_active.set_xlabel("Time (UTC)")
+    ax_active.legend(loc="upper left")
+
+    # fig.show()
+    fig.savefig(f"{out_dir}/actual_system_opq.png")
+
 
 if __name__ == "__main__":
     # mongo_client: pymongo.MongoClient = pymongo.MongoClient()
@@ -610,5 +684,7 @@ if __name__ == "__main__":
     # plot_aml(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
     # plot_dl(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
     # plot_il(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
-    plot_laha(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+    # plot_laha(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
 
+    # print(laha_stats[0])
+    plot_system_resources(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
