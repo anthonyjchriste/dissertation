@@ -662,6 +662,8 @@ def plot_system_resources(laha_stats: List[LahaStat], out_dir: str):
     ax_active.set_xlabel("Time (UTC)")
     ax_active.legend(loc="upper left")
 
+    print(np.array(active_devices).std())
+
     # fig.show()
     fig.savefig(f"{out_dir}/actual_system_opq.png")
 

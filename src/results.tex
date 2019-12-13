@@ -116,15 +116,61 @@ The IL starts out small, but as Incidents are identified, the IL surpasses the I
 
 Now that I've shown the results for the actual DSN storage requirements, I will next compare these results to the estimated storage requirements with and without TTL\@.
 
-Let's first compare the results to the estimated storage requirements without TTL
+Let's first compare the results to the estimated storage requirements without TTL.
 
 Now I will compare the results to the estimated storage requirements with TTL.
 
 \subsubsection{DSN System Requirements OPQ: CPU, Memory, and Disk Utilization}
 
-We collected CPU, Memory, and Disc utilization during the deployment of the OPQ network.
+We collected CPU, memory, and disk utilization during the deployment of the OPQ network. It would be prudent to first discuss the details of the system that the OPQ network is running on.
 
-It should be noted that we attempted to collect the same statistics from the Lokahi network, but due to system requirements and a complicated distributed architecture, we were not able to collect metrics for the entire system. For example, many of Lokahi's services use specialized Amazon Web Services (AWS) services which do not expose similar metrics that are exposed by OPQ\@.
+Makai, Mauka, View, MongoDB, and Health are all running on the same virtual server hosted by the University's Information Technology Services. The server is running Red Hat Enterprise Linux Server release 7.7 (Maipo). Due to a configuration error, the server only ran with a single virtual CPU up until October 28, 2019. After that time period, a second virtual CPU was added. Each virtual CPU is an Intel Xeon E5-2687W v3 running at 3.10 GHz. The system has 8 GB of main memory and 8 GB of swap space. The system has 1 TB of hard disk storage.
+
+These system statistics are for the entire virtual server and include loads of all virtualized OPQ services. Mauka is certainly doing the most work of any of the virualized services, but it should be noted that these statistics also include overhead incurred from other OPQ and OS services.
+
+It should be noted that I attempted to collect the same statistics from the Lokahi network, but due to system requirements and a complicated distributed architecture, we were not able to collect metrics for the entire system. For example, many of Lokahi's services use specialized Amazon Web Services (AWS) services which do not expose similar metrics that are exposed by OPQ. For that reason, we will only examine the OPQ network in detail.
+
+Figure~\ref{fig:actual_system_opq} shows the OPQ system resource utilization over a period of two and a half months.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/actual_system_opq.png}
+    \caption{System Utilization for OPQ}
+    \label{fig:actual_system_opq}
+\end{figure}
+
+You'll note a gaps in the data in early and mid October. These were caused by a mix-up in deployed branches where one of the branches did not have collected of system statistics enabled.
+
+The top panel shows the minimum, mean, and maximum CPU load. Each triplet of min, mean, and max values are aggregated over 30 sample points. So even though the CPU hits 100\% utilization quite often, the mean of the CPU utilization is much lower, rarely rising over 40\%. A slight decrease (~5\%) in CPU load can be observed when the second virtual CPU was added to the system.
+
+I expect that we could double the amount of deployed sensors to 30 and still see mean CPU utilization less than 80\%. Beyond that would require either more powerful hardware or distributing OPQ services over multiple servers.
+
+The second panel shows memory utilization. OPQ utilizes on average close to 75\% of the available memory. I dug a little bit deeper into how the memory was being utilized and found a perhaps unsurprising result. Table~\ref{table:mem_utilization} shows the breakdown of largest memory utilization on our system.
+
+\begin{table}[H]
+    \centering
+    \caption{OPQ Large Memory Utilization}
+    \begin{tabularx}{\textwidth}{Xl}
+        \toprule
+        \textbf{Process} & \textbf{\% Memory} \\
+        \midrule
+        MongoDB & 51 \\
+        OPQ Mauka & 8 \\
+        OPQ View & .8 \\
+        OPQ Makai & .3 \\
+        Docker & .3 \\
+        OPQ Box Updater & .1 \\
+        JournalD & .1 \\
+        \bottomrule
+    \end{tabularx}
+    \label{table:mem_utilization}
+\end{table}
+
+MongoDB uses over half of our available memory! This should be somewhat unsurprising because MongoDB aggressively caches data in-memory for efficient queries. No matter how much memory is on our system, MongoDB will use a large chunk of it. All of the OPQ Mauka processes combined only add up to about 8\% memory utilization with 15 sensors. I estimate that on current hardware, Mauka could handle up to about 100 sensors and still remain within 80\% memory utilization (of course this would have an adverse affect on MongoDB caching).
+
+The third panel shows disk usage over time. As of about two and a half months into data collection, the server is storing about 130 GB worth of data. One interesting feature of this plot are the periodic spikes. The periodic spikes are caused by daily database backups. Every day, a backup of the database is performed, compressed, and written to disk. It is then uploaded to cloud storage and on successful upload, deleted locally. There is a large gap of these spike near the end of October and beginning of November. This gap is the result of a Docker bug that inhibited our system from performing daily backups. I changed the backup routine to use a local MongoDB client rather than one provided by Docker and the daily backups resumed.
+
+The bottom panel shows the number of active OPQ Boxes sending over time. There does not appear to be a large correlation between the number of boxes sending and system resource utilization. This is likely due to the fact that the standard deviation between the number of active OPQ Boxes is quite small ($\sigma=1.63$).
 
 \subsection{DSN System Requirements: Lokahi}\label{subsec:dsn-system-requirements:-lokahi}
 
