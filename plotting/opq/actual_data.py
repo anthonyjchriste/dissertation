@@ -426,10 +426,10 @@ def plot_il(laha_stats: List[LahaStat], out_dir: str) -> None:
 
         return None
 
-    events: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "incidents"), laha_stats))
-    events_cnt: np.ndarray = np.array(list(map(lambda event: event.count, events)))
-    events_bytes: np.ndarray = np.array(list(map(lambda event: event.size_bytes, events)))
-    events_gb: np.ndarray = events_bytes / 1_000_000_000.0
+    incidents: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "incidents"), laha_stats))
+    incidents_cnt: np.ndarray = np.array(list(map(lambda incident: incident.count, incidents)))
+    incidents_bytes: np.ndarray = np.array(list(map(lambda incident: incident.size_bytes, incidents)))
+    incidents_gb: np.ndarray = incidents_bytes / 1_000_000_000.0
 
     fig, ax = plt.subplots(3, 1, figsize=(16, 9), sharex="all", constrained_layout=True)
     fig: plt.Figure = fig
@@ -439,14 +439,14 @@ def plot_il(laha_stats: List[LahaStat], out_dir: str) -> None:
 
     # Size
     ax_size = ax[0]
-    ax_size.plot(dts, events_gb, label="Incidents Size GB", color="blue")
+    ax_size.plot(dts, incidents_gb, label="Incidents Size GB", color="blue")
     ax_size.set_ylabel("Size GB")
     ax_size.set_title("Actual IL Size")
     ax_size.legend(loc="upper left")
 
     # cnt
     ax_cnt = ax_size.twinx()
-    ax_cnt.plot(dts, events_cnt, label="Incidents Count", color="blue", linestyle="--")
+    ax_cnt.plot(dts, incidents_cnt, label="Incidents Count", color="blue", linestyle="--")
     ax_cnt.set_ylabel("Count")
 
     ax_cnt.legend(loc="lower left")
@@ -468,7 +468,7 @@ def plot_il(laha_stats: List[LahaStat], out_dir: str) -> None:
     # % GC
     ax_gc_p: plt.Axes = ax_gc.twinx()
 
-    total_events: np.ndarray = events_cnt[1::] + corrected_events_gc
+    total_events: np.ndarray = incidents_cnt[1::] + corrected_events_gc
     trends_pct: np.ndarray = corrected_events_gc / total_events * 100.0
 
     ax_gc_p.plot(dts[1::], trends_pct, label="Percent Incidents GC", color="blue", linestyle="--")
@@ -513,6 +513,85 @@ def plot_iml(laha_stats: List[LahaStat], out_dir: str):
     # fig.show()
     fig.savefig(f"{out_dir}/actual_iml_opq.png")
 
+def plot_laha(laha_stats: List[LahaStat], out_dir: str):
+    def map_laha_metric(laha_stat: LahaStat, name: str) -> Optional[LahaMetric]:
+        for laha_metric in laha_stat.laha_stats.laha_metrics:
+            if laha_metric.name == name:
+                return laha_metric
+
+        return None
+
+
+    timestamps_s: List[int] = list(map(lambda laha_stat: laha_stat.timestamp_s, laha_stats))
+    dts: List[datetime.datetime] = list(map(datetime.datetime.utcfromtimestamp, timestamps_s))
+    active_devices: List[int] = list(map(lambda laha_stat: laha_stat.laha_stats.active_devices, laha_stats))
+
+    # IML
+    iml_gb: np.ndarray = np.array(active_devices) * 12_000 * 2 * 60 * 15 / 1_000_000_000.0
+
+    # AML
+    measurements: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "measurements"), laha_stats))
+    measurement_cnt: np.ndarray = np.array(list(map(lambda measurement: measurement.count, measurements)))
+    measurement_bytes: np.ndarray = np.array(list(map(lambda measurement: measurement.size_bytes, measurements)))
+    measurement_gb: np.ndarray = measurement_bytes / 1_000_000_000.0
+
+    trends: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "trends"), laha_stats))
+    trends_cnt: np.ndarray = np.array(list(map(lambda trend: trend.count, trends)))
+    trends_bytes: np.ndarray = np.array(list(map(lambda trend: trend.size_bytes, trends)))
+    trends_gb: np.ndarray = trends_bytes / 1_000_000_000.0
+
+    aml_total_gb = trends_gb + measurement_gb
+    aml_total_cnt = trends_cnt + measurement_cnt
+
+    # DL
+    events: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "events"), laha_stats))
+    events_cnt: np.ndarray = np.array(list(map(lambda event: event.count, events)))
+    events_bytes: np.ndarray = np.array(list(map(lambda event: event.size_bytes, events)))
+    events_gb: np.ndarray = events_bytes / 1_000_000_000.0
+
+    # IL
+    incidents: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "incidents"), laha_stats))
+    incidents_cnt: np.ndarray = np.array(list(map(lambda incident: incident.count, incidents)))
+    incidents_bytes: np.ndarray = np.array(list(map(lambda incident: incident.size_bytes, incidents)))
+    incidents_gb: np.ndarray = incidents_bytes / 1_000_000_000.0
+
+    # Total
+    total_gb = iml_gb + aml_total_gb + events_gb + incidents_gb
+
+    # Plot
+    fig, ax = plt.subplots(1, 1, figsize=(16, 9), sharex="all", constrained_layout=True)
+    fig: plt.Figure = fig
+    ax: plt.Axes = ax
+
+    fig.suptitle("Laha IL (OPQ)")
+
+    # Size
+    size_ax = ax
+    size_ax.plot(dts, iml_gb, label="IML Total")
+    size_ax.plot(dts, aml_total_gb, label="AML Total")
+    size_ax.plot(dts, events_gb, label="DL Total")
+    size_ax.plot(dts, incidents_gb, label="IL Total")
+    size_ax.plot(dts, total_gb, label="Total")
+
+    size_ax.set_yscale("log")
+    size_ax.set_ylabel("Size GB")
+    size_ax.legend(loc="upper left")
+
+    # GC
+
+    # Active Devices
+    # ax_active = ax[2]
+    # ax_active.plot(dts, active_devices, label="Active Devices", color="blue")
+    # ax_active.set_ylabel("Active OPQ Boxes")
+    # ax_active.set_title("Active OPQ Boxes")
+    # ax_active.set_xlabel("Time (UTC)")
+    # ax_active.legend(loc="upper left")
+
+    # fig.show()
+    fig.savefig(f"{out_dir}/actual_laha_opq.png")
+
+
+
 if __name__ == "__main__":
     # mongo_client: pymongo.MongoClient = pymongo.MongoClient()
     #
@@ -527,8 +606,9 @@ if __name__ == "__main__":
 
     # print(len(laha_stats))
 
-    plot_iml(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+    # plot_iml(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
     # plot_aml(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
     # plot_dl(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
     # plot_il(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+    plot_laha(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
 
