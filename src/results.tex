@@ -97,11 +97,28 @@ TODO
 
 \subsubsection{DSN System Requirements OPQ}
 
-I will now examine the results of combining all Laha levels within OPQ.
+I will now examine the results of combining all Laha levels within OPQ. Figure~\ref{fig:actual_laha_opq} provides the results of data collection for the entire OPQ network over a period of 2 and a half months.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/actual_laha_opq.png}
+    \caption{Actual Laha for OPQ}
+    \label{fig:actual_laha_opq}
+\end{figure}
 
+First, please note that the Y-axis is using a log scale in order to better display the data growth of some of the smaller Laha levels. Next, we observe that the size of the entire network is just under 100 GB over a period of two and a half months with an average of 15 OPQ Boxes.
+
+We can observe that the IML level converges to the smallest of the levels due to its strict 15 minute TTL.
+
+The IL starts out small, but as Incidents are identified, the IL surpasses the IML at about 1 month and surpasses the AML in size at about 2 months. The Detections level is the largest and this makes sense since we treat Detections relatively cheaply and they contain windows of data that are generally larger than the signal of interest if there even is a signal of interest at all.
 
 \subsubsection{DSN System Requirements OPQ: Comparing Results to Estimates}
+
+Now that I've shown the results for the actual DSN storage requirements, I will next compare these results to the estimated storage requirements with and without TTL\@.
+
+Let's first compare the results to the estimated storage requirements without TTL
+
+Now I will compare the results to the estimated storage requirements with TTL.
 
 \subsubsection{DSN System Requirements OPQ: CPU, Memory, and Disk Utilization}
 
