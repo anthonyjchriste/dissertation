@@ -489,6 +489,30 @@ def plot_il(laha_stats: List[LahaStat], out_dir: str) -> None:
     fig.savefig(f"{out_dir}/actual_il_opq.png")
 
 
+def plot_iml(laha_stats: List[LahaStat], out_dir: str):
+    timestamps_s: List[int] = list(map(lambda laha_stat: laha_stat.timestamp_s, laha_stats))
+    dts: List[datetime.datetime] = list(map(datetime.datetime.utcfromtimestamp, timestamps_s))
+    active_devices: List[int] = list(map(lambda laha_stat: laha_stat.laha_stats.active_devices, laha_stats))
+
+    fig, ax = plt.subplots(1, 1, figsize=(16, 9), constrained_layout=True)
+    fig: plt.Figure = fig
+    ax: plt.Axes = ax
+
+    y = np.array(active_devices) * 12_000 * 2 * 60 * 15 / 1_000_000.0
+
+    ax.plot(dts, y, color="blue", label="IML Size")
+    ax.set_ylabel("Size MB")
+    ax.set_xlabel("Time (UTC)")
+    ax.set_title("Actual IML (OPQ)")
+    ax.legend(loc="upper left")
+
+    ax_active = ax.twinx()
+    ax_active.plot(dts, active_devices, visible=False)
+    ax_active.set_ylabel("Active OPQ Boxes")
+
+    # fig.show()
+    fig.savefig(f"{out_dir}/actual_iml_opq.png")
+
 if __name__ == "__main__":
     # mongo_client: pymongo.MongoClient = pymongo.MongoClient()
     #
@@ -503,7 +527,8 @@ if __name__ == "__main__":
 
     # print(len(laha_stats))
 
-    plot_aml(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
-    plot_dl(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
-    plot_il(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+    plot_iml(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+    # plot_aml(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+    # plot_dl(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+    # plot_il(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
 
