@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 import datetime
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union, TypeVar, Callable, Set
 import pickle
 
 import matplotlib.pyplot as plt
@@ -20,6 +20,54 @@ seconds_in_month = seconds_in_day * 30.4167
 seconds_in_year = seconds_in_month * 12
 seconds_in_2_years = seconds_in_year * 2
 
+A = TypeVar("A")
+B = TypeVar("B")
+C = TypeVar("C")
+D = TypeVar("D")
+
+
+def bin_dt_by_min(dt: datetime.datetime) -> datetime.datetime:
+    return datetime.datetime(dt.year, dt.month, dt.day, dt.hour, dt.minute, 0, 0, tzinfo=datetime.timezone.utc)
+
+
+def align_data(series_a: List,
+               series_b: List,
+               dt_func_a: Callable,
+               dt_func_b: Callable,
+               val_func_a: Callable,
+               val_func_b: Callable) -> Tuple[List, List, List, List]:
+    a_dts: List[datetime.datetime] = list(map(dt_func_a, series_a))
+    b_dts: List[datetime.datetime] = list(map(dt_func_b, series_b))
+    a_vals: List = list(map(val_func_a, series_a))
+    b_vals: List = list(map(val_func_b, series_b))
+    a_binned_dts: List[datetime.datetime] = list(map(bin_dt_by_min, a_dts))
+    b_binned_dts: List[datetime.datetime] = list(map(bin_dt_by_min, b_dts))
+
+    intersecting_dts: Set[datetime.datetime] = set(a_binned_dts).intersection(set(b_binned_dts))
+
+    resulting_dts_a: List[datetime.datetime] = []
+    resulting_dts_b: List[datetime.datetime] = []
+    resulting_a_vals: List = []
+    resulting_b_vals: List = []
+
+    already_seen_a_dts: Set[datetime.datetime] = set()
+    already_seen_b_dts: Set[datetime.datetime] = set()
+
+    for i in range(len(series_a)):
+        dt = a_binned_dts[i]
+        if dt in intersecting_dts and dt not in already_seen_a_dts:
+            resulting_dts_a.append(dt)
+            resulting_a_vals.append(a_vals[i])
+            already_seen_a_dts.add(dt)
+
+    for i in range(len(series_b)):
+        dt = b_binned_dts[i]
+        if dt in intersecting_dts and dt not in already_seen_b_dts:
+            resulting_dts_b.append(dt)
+            resulting_b_vals.append(b_vals[i])
+            already_seen_b_dts.add(dt)
+
+    return resulting_dts_a, resulting_a_vals, resulting_dts_b, resulting_b_vals
 
 class Data:
     def __init__(self,
@@ -1292,7 +1340,6 @@ def plot_iml_vs_sim(laha_stats: List[LahaStat], data: List[Data], out_dir: str) 
     iml_actual: np.ndarray = active_devices * 12_000 * 2 * 60 * 15 / 1_000_000.0
     iml_actual = iml_actual - iml_actual[0]
 
-
     # x = np.array(list(map(lambda d: d.time, data)))
     total_samples = np.array(list(map(lambda d: d.total_samples, data)))
     total_bytes = np.array(list(map(lambda d: d.total_samples_b, data)))
@@ -1330,6 +1377,7 @@ def plot_iml_vs_sim(laha_stats: List[LahaStat], data: List[Data], out_dir: str) 
     fig.show()
     # fig.savefig(f"{out_dir}/actual_iml_vs_sim_opq.png")
 
+
 if __name__ == "__main__":
     # mongo_client: pymongo.MongoClient = pymongo.MongoClient()
     # laha_stats: List[LahaStat] = get_laha_stats(mongo_client)
@@ -1350,5 +1398,11 @@ if __name__ == "__main__":
     # plot_il_vs_no_tll(laha_stats, "/home/opq/Documents/anthony/dissertation/src/figures")
     # plot_laha_vs_no_tll(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
     # plot_laha_vs_no_tll_no_iml(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
-    data_iml = parse_file("sim_data_iml.txt")
-    plot_iml_vs_sim(laha_stats, data_iml, "/Users/anthony/Development/dissertation/src/figures")
+
+    # data_iml = parse_file("sim_data_iml.txt")
+    # plot_iml_vs_sim(laha_stats, data_iml, "/Users/anthony/Development/dissertation/src/figures")
+    # print(laha_stats[-2])
+    # print(laha_stats[-1])
+
+    # Ok, metrics are collected from the database once ever 10 minutes...... we need to find a way to bin both sim and
+    # estimated data so that it lines up with time from the metrics.
