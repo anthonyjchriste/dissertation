@@ -2,7 +2,6 @@ from dataclasses import dataclass
 import datetime
 from typing import Any, Dict, List, Optional, Tuple, Union
 import pickle
-import laha.dl as dl
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -14,6 +13,92 @@ COLL: str = "laha_stats"
 
 S_IN_DAY = 86_400
 S_IN_YEAR = 31_540_000
+
+seconds_in_day = 86400
+seconds_in_two_weeks = seconds_in_day * 14
+seconds_in_month = seconds_in_day * 30.4167
+seconds_in_year = seconds_in_month * 12
+seconds_in_2_years = seconds_in_year * 2
+
+
+class Data:
+    def __init__(self,
+                 time: int,
+                 total_samples: int,
+                 total_samples_b: int,
+                 total_measurements: int,
+                 total_measurements_b: int,
+                 total_orphaned_measurements: int,
+                 total_orphaned_measurements_b: int,
+                 total_event_measurements: int,
+                 total_event_measurements_b: int,
+                 total_incident_measurements: int,
+                 total_incident_measurements_b: int,
+                 total_trends: int,
+                 total_trends_b: int,
+                 total_orphaned_trends: int,
+                 total_orphaned_trends_b: int,
+                 total_event_trends: int,
+                 total_event_trends_b: int,
+                 total_incident_trends: int,
+                 total_incident_trends_b: int,
+                 total_events: int,
+                 total_events_b: int,
+                 total_orphaned_events: int,
+                 total_orphaned_events_b: int,
+                 total_incident_events: int,
+                 total_incident_events_b: int,
+                 total_incidents: int,
+                 total_incidents_b: int,
+                 total_laha_b: int,
+                 total_iml_b: int,
+                 total_aml_b: int,
+                 total_dl_b: int,
+                 total_il_b: int):
+        self.time: int = time
+        self.total_samples: int = total_samples
+        self.total_samples_b: int = total_samples_b
+        self.total_measurements: int = total_measurements
+        self.total_measurements_b: int = total_measurements_b
+        self.total_orphaned_measurements: int = total_orphaned_measurements
+        self.total_orphaned_measurements_b: int = total_orphaned_measurements_b
+        self.total_event_measurements: int = total_event_measurements
+        self.total_event_measurements_b: int = total_event_measurements_b
+        self.total_incident_measurements: int = total_incident_measurements
+        self.total_incident_measurements_b: int = total_incident_measurements_b
+        self.total_trends: int = total_trends
+        self.total_trends_b: int = total_trends_b
+        self.total_orphaned_trends: int = total_orphaned_trends
+        self.total_orphaned_trends_b: int = total_orphaned_trends_b
+        self.total_event_trends: int = total_event_trends
+        self.total_event_trends_b: int = total_event_trends_b
+        self.total_incident_trends: int = total_incident_trends
+        self.total_incident_trends_b: int = total_incident_trends_b
+        self.total_events: int = total_events
+        self.total_events_b: int = total_events_b
+        self.total_orphaned_events: int = total_orphaned_events
+        self.total_orphaned_events_b: int = total_orphaned_events_b
+        self.total_incident_events: int = total_incident_events
+        self.total_incident_events_b: int = total_incident_events_b
+        self.total_incidents: int = total_incidents
+        self.total_incidents_b: int = total_incidents_b
+        self.total_laha_b: int = total_laha_b
+        self.total_iml_b: int = total_iml_b
+        self.total_aml_b: int = total_aml_b
+        self.total_dl_b: int = total_dl_b
+        self.total_il_b: int = total_il_b
+
+    @staticmethod
+    def from_line(line: str) -> 'Data':
+        split_line = line.split(",")
+        as_ints = list(map(int, split_line))
+        return Data(*as_ints)
+
+
+def parse_file(path: str) -> List[Data]:
+    with open(path, "r") as fin:
+        lines = list(map(lambda line: line.strip(), fin.readlines()))
+        return list(map(lambda line: Data.from_line(line), lines))
 
 
 @dataclass
@@ -27,11 +112,11 @@ class PluginStat:
     @staticmethod
     def from_doc(name: str, doc: Dict[str, int]) -> 'PluginStat':
         return PluginStat(
-            name,
-            doc["messages_received"],
-            doc["messages_published"],
-            doc["bytes_received"],
-            doc["bytes_published"]
+                name,
+                doc["messages_received"],
+                doc["messages_published"],
+                doc["bytes_received"],
+                doc["bytes_published"]
         )
 
 
@@ -48,13 +133,13 @@ class SystemStat:
     @staticmethod
     def from_doc(doc: Dict[str, Union[float, int]]) -> 'SystemStat':
         return SystemStat(
-            doc["min"],
-            doc["max"],
-            doc["mean"],
-            doc["var"],
-            doc["cnt"],
-            doc["start_timestamp_s"],
-            doc["end_timestamp_s"]
+                doc["min"],
+                doc["max"],
+                doc["mean"],
+                doc["var"],
+                doc["cnt"],
+                doc["start_timestamp_s"],
+                doc["end_timestamp_s"]
         )
 
 
@@ -67,9 +152,9 @@ class SystemStats:
     @staticmethod
     def from_doc(doc: Dict[str, Dict[str, Union[float, int]]]) -> 'SystemStats':
         return SystemStats(
-            SystemStat.from_doc(doc["cpu_load_percent"]),
-            SystemStat.from_doc(doc["memory_use_bytes"]),
-            SystemStat.from_doc(doc["disk_use_bytes"])
+                SystemStat.from_doc(doc["cpu_load_percent"]),
+                SystemStat.from_doc(doc["memory_use_bytes"]),
+                SystemStat.from_doc(doc["disk_use_bytes"])
         )
 
 
@@ -83,10 +168,10 @@ class LahaMetric:
     @staticmethod
     def from_doc(name: str, doc: Dict[str, int]) -> 'LahaMetric':
         return LahaMetric(
-            name,
-            doc["ttl"] if "ttl" in doc else -1,
-            doc["count"] if "count" in doc else -1,
-            doc["size_bytes"] if "size_bytes" in doc else -1
+                name,
+                doc["ttl"] if "ttl" in doc else -1,
+                doc["count"] if "count" in doc else -1,
+                doc["size_bytes"] if "size_bytes" in doc else -1
         )
 
 
@@ -102,12 +187,12 @@ class GcStats:
     @staticmethod
     def from_doc(doc: Dict[str, int]) -> 'GcStats':
         return GcStats(
-            doc["samples"],
-            doc["measurements"],
-            doc["trends"],
-            doc["events"],
-            doc["incidents"],
-            0
+                doc["samples"],
+                doc["measurements"],
+                doc["trends"],
+                doc["events"],
+                doc["incidents"],
+                0
         )
 
 
@@ -125,14 +210,14 @@ class BoxTriggeringThreshold:
     @staticmethod
     def from_doc(doc: Dict[str, Union[str, int, float]]) -> 'BoxTriggeringThreshold':
         return BoxTriggeringThreshold(
-            doc["box_id"],
-            doc["ref_f"],
-            doc["ref_v"],
-            doc["threshold_percent_f_low"],
-            doc["threshold_percent_f_high"],
-            doc["threshold_percent_v_low"],
-            doc["threshold_percent_v_high"],
-            doc["threshold_percent_thd_high"]
+                doc["box_id"],
+                doc["ref_f"],
+                doc["ref_v"],
+                doc["threshold_percent_f_low"],
+                doc["threshold_percent_f_high"],
+                doc["threshold_percent_v_low"],
+                doc["threshold_percent_v_high"],
+                doc["threshold_percent_thd_high"]
         )
 
 
@@ -144,8 +229,8 @@ class BoxMeasurementRate:
     @staticmethod
     def from_doc(doc: Dict[str, Union[str, int]]) -> 'BoxMeasurementRate':
         return BoxMeasurementRate(
-            doc["box_id"],
-            doc["measurement_rate"]
+                doc["box_id"],
+                doc["measurement_rate"]
         )
 
 
@@ -179,11 +264,11 @@ class LahaStats:
             box_measurement_rates.append(BoxMeasurementRate.from_doc(box_measurement_rate))
 
         return LahaStats(
-            laha_metrics,
-            gc_stats,
-            active_devices,
-            box_triggering_thresholds,
-            box_measurement_rates
+                laha_metrics,
+                gc_stats,
+                active_devices,
+                box_triggering_thresholds,
+                box_measurement_rates
         )
 
 
@@ -600,25 +685,25 @@ def plot_system_resources(laha_stats: List[LahaStat], out_dir: str):
     system_stats: List[SystemStats] = list(map(lambda laha_stat: laha_stat.system_stats, laha_stats))
 
     cpu_load_percent_mins: np.ndarray = np.array(
-        list(map(lambda system_stat: system_stat.cpu_load_percent.min, system_stats)))
+            list(map(lambda system_stat: system_stat.cpu_load_percent.min, system_stats)))
     cpu_load_percent_maxes: np.ndarray = np.array(
-        list(map(lambda system_stat: system_stat.cpu_load_percent.max, system_stats)))
+            list(map(lambda system_stat: system_stat.cpu_load_percent.max, system_stats)))
     cpu_load_percent_means: np.ndarray = np.array(
-        list(map(lambda system_stat: system_stat.cpu_load_percent.mean, system_stats)))
+            list(map(lambda system_stat: system_stat.cpu_load_percent.mean, system_stats)))
 
     memory_use_bytes_mins: np.ndarray = np.array(
-        list(map(lambda system_stat: system_stat.memory_use_bytes.min, system_stats)))
+            list(map(lambda system_stat: system_stat.memory_use_bytes.min, system_stats)))
     memory_use_bytes_maxes: np.ndarray = np.array(
-        list(map(lambda system_stat: system_stat.memory_use_bytes.max, system_stats)))
+            list(map(lambda system_stat: system_stat.memory_use_bytes.max, system_stats)))
     memory_use_bytes_means: np.ndarray = np.array(
-        list(map(lambda system_stat: system_stat.memory_use_bytes.mean, system_stats)))
+            list(map(lambda system_stat: system_stat.memory_use_bytes.mean, system_stats)))
 
     disk_use_bytes_mins: np.ndarray = np.array(
-        list(map(lambda system_stat: system_stat.disk_use_bytes.min, system_stats)))
+            list(map(lambda system_stat: system_stat.disk_use_bytes.min, system_stats)))
     disk_use_bytes_maxes: np.ndarray = np.array(
-        list(map(lambda system_stat: system_stat.disk_use_bytes.max, system_stats)))
+            list(map(lambda system_stat: system_stat.disk_use_bytes.max, system_stats)))
     disk_use_bytes_means: np.ndarray = np.array(
-        list(map(lambda system_stat: system_stat.disk_use_bytes.mean, system_stats)))
+            list(map(lambda system_stat: system_stat.disk_use_bytes.mean, system_stats)))
 
     # Plot
     fig, ax = plt.subplots(4, 1, figsize=(16, 9), sharex="all", constrained_layout=True)
@@ -1190,6 +1275,61 @@ def plot_laha_vs_no_tll_no_iml(laha_stats: List[LahaStat], out_dir: str) -> None
     fig.savefig(f"{out_dir}/actual_laha_vs_unbounded_no_iml_opq.png")
 
 
+def plot_iml_vs_sim(laha_stats: List[LahaStat], data: List[Data], out_dir: str) -> None:
+    # Actual Data
+    timestamps_s: np.ndarray = np.array(list(map(lambda laha_stat: laha_stat.timestamp_s, laha_stats)))
+    dts: List[datetime.datetime] = list(map(datetime.datetime.utcfromtimestamp, timestamps_s))
+
+    def map_laha_metric(laha_stat: LahaStat, name: str) -> Optional[LahaMetric]:
+        for laha_metric in laha_stat.laha_stats.laha_metrics:
+            if laha_metric.name == name:
+                return laha_metric
+
+        return None
+
+    active_devices: np.ndarray = np.array(list(map(lambda laha_stat: laha_stat.laha_stats.active_devices, laha_stats)))
+
+    iml_actual: np.ndarray = active_devices * 12_000 * 2 * 60 * 15 / 1_000_000.0
+    iml_actual = iml_actual - iml_actual[0]
+
+
+    # x = np.array(list(map(lambda d: d.time, data)))
+    total_samples = np.array(list(map(lambda d: d.total_samples, data)))
+    total_bytes = np.array(list(map(lambda d: d.total_samples_b, data)))
+    total_mb = total_bytes / 1_000_000.0 * 15
+
+    # Plot
+    fig, ax = plt.subplots(3, 1, figsize=(16, 9), sharex="all", constrained_layout=True)
+    fig: plt.Figure = fig
+    ax: List[plt.Axes] = ax
+
+    fig.suptitle("Actual IML vs IML w/o TTL (OPQ)")
+
+    # Estimated
+    ax_estimated = ax[0]
+    ax_estimated.plot(dts, total_mb[:len(dts)])
+
+    ax_estimated.set_title("Actual IML vs Simulated IML (OPQ)")
+    ax_estimated.set_ylabel("Size MB")
+
+    # Actual
+    ax_actual = ax[1]
+    ax_actual.plot(dts, iml_actual)
+
+    ax_actual.set_title("Actual IML")
+    ax_actual.set_ylabel("Size MB")
+
+    # Estimated - Actual
+    ax_diff = ax[2]
+    ax_diff.plot(dts, total_mb[:len(dts)] - iml_actual)
+
+    ax_diff.set_title("Difference (Simulated IML - Actual IML)")
+    ax_diff.set_ylabel("Size MB")
+    ax_diff.set_xlabel("Time (UTC)")
+
+    fig.show()
+    # fig.savefig(f"{out_dir}/actual_iml_vs_sim_opq.png")
+
 if __name__ == "__main__":
     # mongo_client: pymongo.MongoClient = pymongo.MongoClient()
     # laha_stats: List[LahaStat] = get_laha_stats(mongo_client)
@@ -1209,4 +1349,6 @@ if __name__ == "__main__":
     # plot_dl_vs_no_tll(laha_stats, "/home/opq/Documents/anthony/dissertation/src/figures")
     # plot_il_vs_no_tll(laha_stats, "/home/opq/Documents/anthony/dissertation/src/figures")
     # plot_laha_vs_no_tll(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
-    plot_laha_vs_no_tll_no_iml(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+    # plot_laha_vs_no_tll_no_iml(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+    data_iml = parse_file("sim_data_iml.txt")
+    plot_iml_vs_sim(laha_stats, data_iml, "/Users/anthony/Development/dissertation/src/figures")
