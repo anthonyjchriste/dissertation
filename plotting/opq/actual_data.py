@@ -353,6 +353,11 @@ def map_laha_metric(laha_stat: LahaStat, name: str) -> Optional[LahaMetric]:
     return None
 
 
+@dataclass
+class SimpleData:
+    time_val: Union[int, datetime.datetime]
+    val: Union[int, float]
+
 def get_laha_stats(mongo_client: pymongo.MongoClient) -> List[LahaStat]:
     db: pymongo.database.Database = mongo_client[DB]
     coll: pymongo.collection.Collection = db[COLL]
@@ -786,20 +791,31 @@ def plot_system_resources(laha_stats: List[LahaStat], out_dir: str):
 
 
 def plot_iml_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
-    # Actual Data
-    timestamps_s: np.ndarray = np.array(list(map(lambda laha_stat: laha_stat.timestamp_s, laha_stats)))
-    dts: List[datetime.datetime] = list(map(datetime.datetime.utcfromtimestamp, timestamps_s))
-    active_devices: np.ndarray = np.array(list(map(lambda laha_stat: laha_stat.laha_stats.active_devices, laha_stats)))
-    iml_actual: np.ndarray = active_devices * 12_000 * 2 * 60 * 15 / 1_000_000.0
-    iml_actual = iml_actual - iml_actual[0]
-
     # Estimated Data
     s_samp = 2
     sr = 12_000
     mu_n_sen = 15
-    sigma_n_sen = 0.7
-    x_values = timestamps_s - timestamps_s[0]
-    y_values = s_samp * sr * mu_n_sen * x_values / 1_000_000.0
+
+    # Align the data
+    first_laha_stat_timestamp_s = laha_stats[0].timestamp_s
+    last_laha_stat_timestamp_s = laha_stats[-1].timestamp_s
+    time_range = last_laha_stat_timestamp_s - first_laha_stat_timestamp_s
+    aligned_actual_dts, aligned_actual_vals, aligned_est_dts, aligned_est_vals = align_data(
+        laha_stats,
+        list(range(1, time_range + 1)),
+        lambda laha_stat: datetime.datetime.utcfromtimestamp(laha_stat.timestamp_s),
+        lambda x: datetime.datetime.utcfromtimestamp(first_laha_stat_timestamp_s + x),
+        lambda laha_stat: laha_stat,
+        lambda x: s_samp * sr * mu_n_sen * x / 1_000_000.0
+    )
+
+    # for i in range(len(aligned_actual_dts)):
+    #     print(aligned_actual_dts[i], aligned_est_dts[i])
+
+    # Actual Data
+    active_devices: np.ndarray = np.array(list(map(lambda laha_stat: laha_stat.laha_stats.active_devices, aligned_actual_vals)))
+    iml_actual: np.ndarray = active_devices * 12_000 * 2 * 60 * 15 / 1_000_000.0
+    iml_actual = iml_actual - iml_actual[0]
 
     # Plot
     fig, ax = plt.subplots(3, 1, figsize=(16, 9), sharex="all", constrained_layout=True)
@@ -810,28 +826,28 @@ def plot_iml_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
 
     # Estimated
     ax_estimated = ax[0]
-    ax_estimated.plot(dts, y_values)
+    ax_estimated.plot(aligned_est_dts, aligned_est_vals)
 
     ax_estimated.set_title("Estimated Unbounded IML with 15 Sensors")
     ax_estimated.set_ylabel("Size MB")
 
     # Actual
     ax_actual = ax[1]
-    ax_actual.plot(dts, iml_actual)
+    ax_actual.plot(iml_actual)
 
     ax_actual.set_title("Actual IML")
     ax_actual.set_ylabel("Size MB")
 
     # Estimated - Actual
     ax_diff = ax[2]
-    ax_diff.plot(dts, y_values - iml_actual)
+    ax_diff.plot(aligned_est_vals - iml_actual)
 
     ax_diff.set_title("Difference (Estimated IML - Actual IML)")
     ax_diff.set_ylabel("Size MB")
     ax_diff.set_xlabel("Time (UTC)")
 
-    # fig.show()
-    fig.savefig(f"{out_dir}/actual_iml_vs_unbounded_opq.png")
+    fig.show()
+    # fig.savefig(f"{out_dir}/actual_iml_vs_unbounded_opq.png")
 
 
 def plot_aml_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
@@ -1333,8 +1349,8 @@ def plot_aml_vs_sim(laha_stats: List[LahaStat], data: List[Data], out_dir: str) 
             lambda laha_stat: laha_stat,
             lambda sim_data: sim_data
     )
-    
-    
+
+
     # Actual Data
     measurements: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "measurements"), aligned_laha_stats))
     measurement_bytes: np.ndarray = np.array(list(map(lambda measurement: measurement.size_bytes, measurements)))
@@ -1623,21 +1639,21 @@ if __name__ == "__main__":
     # plot_laha(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
 
     # plot_system_resources(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
-    # plot_iml_vs_no_tll(laha_stats, "/home/opq/Documents/anthony/dissertation/src/figures")
+    plot_iml_vs_no_tll(laha_stats, "/home/opq/Documents/anthony/dissertation/src/figures")
     # plot_aml_vs_no_tll(laha_stats, "/home/opq/Documents/anthony/dissertation/src/figures")
     # plot_dl_vs_no_tll(laha_stats, "/home/opq/Documents/anthony/dissertation/src/figures")
     # plot_il_vs_no_tll(laha_stats, "/home/opq/Documents/anthony/dissertation/src/figures")
     # plot_laha_vs_no_tll(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
     # plot_laha_vs_no_tll_no_iml(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
 
-    sim_data = parse_file("sim_data.txt")
+    # sim_data = parse_file("sim_data.txt")
 
 
-    plot_iml_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
-    plot_aml_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
-    plot_dl_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
-    plot_il_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
-    plot_laha_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
+    # plot_iml_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
+    # plot_aml_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
+    # plot_dl_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
+    # plot_il_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
+    # plot_laha_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
     # print(laha_stats[-2])
     # print(laha_stats[-1])
 
