@@ -345,7 +345,7 @@ def plot_iml_average():
     plt.figure(figsize=(12, 5))
     s_samp = 2
     sr = 12_000
-    mu_n_sen = 9.9
+    mu_n_sen = 15.0
     sigma_n_sen = 0.7
     x_values = np.arange(S_IN_YEAR, step=S_IN_DAY)
     y_values = s_samp * sr * mu_n_sen * x_values
@@ -367,7 +367,7 @@ def plot_iml_average():
 def plot_dl_opq_avg():
     plt.figure(figsize=(12, 5))
 
-    mu_dr = 8211.7
+    mu_dr = 3138.2362879905268
     sigma_dr = 185544.8
 
     x_values = np.arange(1, S_IN_YEAR, step=S_IN_DAY)
@@ -390,7 +390,7 @@ def plot_dl_opq_avg():
 def plot_il_opq_avg():
     plt.figure(figsize=(12, 5))
 
-    mu_dr = 438.58
+    mu_dr = 234.83720746762222
     sigma_dr = 6288.48
 
     x_values = np.arange(S_IN_YEAR, step=S_IN_DAY)
@@ -418,7 +418,7 @@ def plot_laha_opq():
     x_values = np.arange(1, S_IN_YEAR * 3, step=S_IN_DAY)
 
     # IML
-    mu_n_sens = 1.0
+    mu_n_sens = 15.0
     sigma_n_sens = 0.7
     s_samp = 2
     sr = 12000
@@ -446,14 +446,14 @@ def plot_laha_opq():
 
     # DL
     mu_dr = 40.69
-    sigma_dr = 185544.81743550362
+    sigma_dr = 3138.2362879905268
 
     dl_size = mu_dr * x_values
     dl_size_e = (sigma_dr / np.sqrt(x_values)) * np.abs(x_values)
     plt.errorbar(x_values, dl_size, yerr=dl_size_e, label="DL")
 
     # IL
-    mu_il = 184.41
+    mu_il = 234.83720746762222
     sigma_il = 6288.484706127778
 
     il_size = mu_il * x_values
@@ -487,13 +487,13 @@ def plot_laha_opq_no_iml():
     x_values = np.arange(1, S_IN_YEAR, step=S_IN_DAY)
 
     # IML
-    mu_n_sens = 9.9
+    mu_n_sens = 15.0
     sigma_n_sens = 0.7
 
     # AML
     s_meas = 145.0
     r_meas = 1.0 / 1.0
-    s_trend = 324.0
+    s_trend = 365.0
     r_trend = 1.0 / 60.0
     aml_size_meas = s_meas * r_meas * mu_n_sens * x_values
     aml_size_trend = s_trend * r_trend * mu_n_sens * x_values
@@ -508,7 +508,7 @@ def plot_laha_opq_no_iml():
     plt.errorbar(x_values, aml_size_total, yerr=aml_size_e, label="AML")
 
     # DL
-    mu_dr = 8211.741437354178
+    mu_dr = 3138.2362879905268
     sigma_dr = 185544.81743550362
 
     dl_size = mu_dr * x_values
@@ -516,7 +516,7 @@ def plot_laha_opq_no_iml():
     plt.errorbar(x_values, dl_size, yerr=dl_size_e, label="DL")
 
     # IL
-    mu_il = 438.57850995956863
+    mu_il = 234.83720746762222
     sigma_il = 6288.484706127778
 
     il_size = mu_il * x_values
@@ -542,7 +542,7 @@ def plot_laha_opq_pie():
 
     # IML
     mu_n_sens = 1.0
-    sigma_n_sens = 0.7
+    sigma_n_sens = 15.0
     s_samp = 2
     sr = 12000
 
@@ -557,10 +557,10 @@ def plot_laha_opq_pie():
     aml_size_trend = s_trend * r_trend * mu_n_sens * x_values
 
     # DL
-    mu_dr = 40.69
+    mu_dr = 3138.2362879905268
     dl_size = mu_dr * x_values
     # IL
-    mu_il = 184.41
+    mu_il = 234.83720746762222
     il_size = mu_il * x_values
 
     plt.subplot(1, 2, 1)
@@ -709,11 +709,11 @@ if __name__ == "__main__":
     # plot_iml_level_lokahi()
     # plot_dl_opq_no_err()
     # plot_dl_opq_err()
-    # plot_iml_average()
-    # plot_dl_opq_avg()
-    # plot_il_opq_avg()
-    # plot_laha_opq()
-    # plot_laha_opq_no_iml()
-    # plot_laha_opq_pie()
+    plot_iml_average()
+    plot_dl_opq_avg()
+    plot_il_opq_avg()
+    plot_laha_opq()
+    plot_laha_opq_no_iml()
+    plot_laha_opq_pie()
     # plot_laha_lokahi_pie()
-    plot_laha_lokahi()
+    # plot_laha_lokahi()

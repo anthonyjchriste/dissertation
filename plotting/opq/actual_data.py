@@ -912,7 +912,7 @@ def plot_aml_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
 
 def plot_dl_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
     # Estimated Data
-    mu_dr = 44.58476968146592
+    mu_dr = 3138.2362879905268
 
     # Align the data
     first_laha_stat_timestamp_s = laha_stats[0].timestamp_s
@@ -969,7 +969,7 @@ def plot_dl_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
 
 def plot_il_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
     # Estimated Data
-    mu_dr = 234.74539870516887
+    mu_dr = 234.83720746762222
 
     # Align the data
     first_laha_stat_timestamp_s = laha_stats[0].timestamp_s
@@ -1029,8 +1029,8 @@ def plot_laha_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
     s_samp = 2
     sr = 12_000
     mu_n_sen = 15
-    mu_dr_dl = 8211.7
-    mu_dr_il = 438.58
+    mu_dr_dl = 3138.2362879905268
+    mu_dr_il = 234.83720746762222
 
     # Align the data
     first_laha_stat_timestamp_s = laha_stats[0].timestamp_s
@@ -1119,8 +1119,8 @@ def plot_laha_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
 
 def plot_laha_vs_no_tll_no_iml(laha_stats: List[LahaStat], out_dir: str) -> None:
     # Estimated Data
-    mu_dr_dl = 44.58476968146592
-    mu_dr_il = 234.74539870516887
+    mu_dr_dl = 3138.2362879905268
+    mu_dr_il = 234.83720746762222
 
     # Align the data
     first_laha_stat_timestamp_s = laha_stats[0].timestamp_s
@@ -1556,11 +1556,11 @@ if __name__ == "__main__":
 
     laha_stats: List[LahaStat] = load_laha_stats("laha_stats.pickle.db")
 
-    plot_iml(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
-    plot_aml(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
-    plot_dl(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
-    plot_il(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
-    plot_laha(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+    # plot_iml(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+    # plot_aml(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+    # plot_dl(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+    # plot_il(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+    # plot_laha(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
 
     # plot_system_resources(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
     plot_iml_vs_no_tll(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
@@ -1570,10 +1570,10 @@ if __name__ == "__main__":
     plot_laha_vs_no_tll(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
     plot_laha_vs_no_tll_no_iml(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
 
-    sim_data = parse_file("sim_data.txt")
-    plot_iml_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
-    plot_aml_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
-    plot_dl_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
-    plot_il_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
-    plot_laha_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
+    # sim_data = parse_file("sim_data.txt")
+    # plot_iml_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
+    # plot_aml_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
+    # plot_dl_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
+    # plot_il_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
+    # plot_laha_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
 
