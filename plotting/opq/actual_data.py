@@ -67,7 +67,7 @@ def align_data(series_a: List,
             resulting_b_vals.append(b_vals[i])
             already_seen_b_dts.add(dt)
 
-    return resulting_dts_a, resulting_a_vals, resulting_dts_b, resulting_b_vals
+    return np.array(resulting_dts_a), np.array(resulting_a_vals), np.array(resulting_dts_b), np.array(resulting_b_vals)
 
 class Data:
     def __init__(self,
@@ -809,9 +809,6 @@ def plot_iml_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
         lambda x: s_samp * sr * mu_n_sen * x / 1_000_000.0
     )
 
-    # for i in range(len(aligned_actual_dts)):
-    #     print(aligned_actual_dts[i], aligned_est_dts[i])
-
     # Actual Data
     active_devices: np.ndarray = np.array(list(map(lambda laha_stat: laha_stat.laha_stats.active_devices, aligned_actual_vals)))
     iml_actual: np.ndarray = active_devices * 12_000 * 2 * 60 * 15 / 1_000_000.0
@@ -833,67 +830,51 @@ def plot_iml_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
 
     # Actual
     ax_actual = ax[1]
-    ax_actual.plot(iml_actual)
+    ax_actual.plot(aligned_actual_dts, iml_actual)
 
     ax_actual.set_title("Actual IML")
     ax_actual.set_ylabel("Size MB")
 
     # Estimated - Actual
     ax_diff = ax[2]
-    ax_diff.plot(aligned_est_vals - iml_actual)
+    ax_diff.plot(aligned_actual_dts, aligned_est_vals - iml_actual)
 
     ax_diff.set_title("Difference (Estimated IML - Actual IML)")
     ax_diff.set_ylabel("Size MB")
     ax_diff.set_xlabel("Time (UTC)")
 
-    fig.show()
-    # fig.savefig(f"{out_dir}/actual_iml_vs_unbounded_opq.png")
+    # fig.show()
+    fig.savefig(f"{out_dir}/actual_iml_vs_unbounded_opq.png")
 
 
 def plot_aml_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
-    # Actual Data
-    timestamps_s: np.ndarray = np.array(list(map(lambda laha_stat: laha_stat.timestamp_s, laha_stats)))
-    dts: List[datetime.datetime] = list(map(datetime.datetime.utcfromtimestamp, timestamps_s))
 
-    measurements: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "measurements"), laha_stats))
-    measurement_cnt: np.ndarray = np.array(list(map(lambda measurement: measurement.count, measurements)))
+    # Align the data
+    first_laha_stat_timestamp_s = laha_stats[0].timestamp_s
+    last_laha_stat_timestamp_s = laha_stats[-1].timestamp_s
+    time_range = last_laha_stat_timestamp_s - first_laha_stat_timestamp_s
+    aligned_actual_dts, aligned_actual_vals, aligned_est_dts, aligned_est_vals = align_data(
+            laha_stats,
+            list(range(1, time_range + 1)),
+            lambda laha_stat: datetime.datetime.utcfromtimestamp(laha_stat.timestamp_s),
+            lambda x: datetime.datetime.utcfromtimestamp(first_laha_stat_timestamp_s + x),
+            lambda laha_stat: laha_stat,
+            lambda x: ((x * 144 * 1.0 / 1.0) + (x * 323 * 1.0 / 60.0)) * 15.0 / 1_000_000_000.0
+    )
+
+
+    # Actual Data
+    measurements: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "measurements"), aligned_actual_vals))
     measurement_bytes: np.ndarray = np.array(list(map(lambda measurement: measurement.size_bytes, measurements)))
     measurement_gb: np.ndarray = measurement_bytes / 1_000_000_000.0
 
-    trends: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "trends"), laha_stats))
-    trends_cnt: np.ndarray = np.array(list(map(lambda trend: trend.count, trends)))
+    trends: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "trends"), aligned_actual_vals))
     trends_bytes: np.ndarray = np.array(list(map(lambda trend: trend.size_bytes, trends)))
     trends_gb: np.ndarray = trends_bytes / 1_000_000_000.0
 
     total_gb = trends_gb + measurement_gb
-    total_cnt = trends_cnt + measurement_cnt
 
     total_gb = total_gb - total_gb[0]
-
-    # Estimated Data
-    sub_levels = ["measurements", "trends"]
-
-    sl_to_size = {
-        "measurements": 144,
-        "trends": 323
-    }
-
-    sl_to_rate = {
-        "measurements": 1,
-        "trends": 60
-    }
-
-    x_values = timestamps_s - timestamps_s[0]
-
-    total_y = np.zeros(len(x_values))
-    for sl in sub_levels:
-        size = sl_to_size[sl]
-        rate = sl_to_rate[sl]
-        y_values = x_values * size * 1.0 / rate * 15
-        total_y += y_values
-        # plt.plot(x_values, y_values, label="Sub-Level=%s, Size Bytes=%d, Rate Hz=1/%d" % (sl, size, rate))
-
-    total_y = total_y / 1_000_000_000.0
 
     # Plot
     fig, ax = plt.subplots(3, 1, figsize=(16, 9), sharex="all", constrained_layout=True, sharey="all")
@@ -904,22 +885,22 @@ def plot_aml_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
 
     # Estimated
     ax_estimated = ax[0]
-    ax_estimated.plot(dts, total_y)
+    ax_estimated.plot(aligned_est_dts, aligned_est_vals)
 
     ax_estimated.set_title("Estimated Unbounded AML with 15 Sensors")
     ax_estimated.set_ylabel("Size GB")
 
     # Actual
     ax_actual = ax[1]
-    ax_actual.plot(dts, total_gb)
+    ax_actual.plot(aligned_actual_dts, total_gb)
 
     ax_actual.set_title("Actual AML")
     ax_actual.set_ylabel("Size GB")
 
     # Estimated - Actual
     ax_diff = ax[2]
-    diff = total_y - total_gb
-    ax_diff.plot(dts, diff)
+    diff = aligned_est_vals - total_gb
+    ax_diff.plot(aligned_actual_dts, diff)
 
     ax_diff.set_title("Difference (Estimated AML - Actual AML)")
     ax_diff.set_ylabel("Size GB")
@@ -930,23 +911,27 @@ def plot_aml_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
 
 
 def plot_dl_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
-    # Actual Data
-    timestamps_s: np.ndarray = np.array(list(map(lambda laha_stat: laha_stat.timestamp_s, laha_stats)))
-    dts: List[datetime.datetime] = list(map(datetime.datetime.utcfromtimestamp, timestamps_s))
+    # Estimated Data
+    mu_dr = 8211.7
 
-    events: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "events"), laha_stats))
-    events_cnt: np.ndarray = np.array(list(map(lambda event: event.count, events)))
+    # Align the data
+    first_laha_stat_timestamp_s = laha_stats[0].timestamp_s
+    last_laha_stat_timestamp_s = laha_stats[-1].timestamp_s
+    time_range = last_laha_stat_timestamp_s - first_laha_stat_timestamp_s
+    aligned_actual_dts, aligned_actual_vals, aligned_est_dts, aligned_est_vals = align_data(
+            laha_stats,
+            list(range(1, time_range + 1)),
+            lambda laha_stat: datetime.datetime.utcfromtimestamp(laha_stat.timestamp_s),
+            lambda x: datetime.datetime.utcfromtimestamp(first_laha_stat_timestamp_s + x),
+            lambda laha_stat: laha_stat,
+            lambda x: mu_dr * x / 1_000_000_000.0
+    )
+
+    # Actual Data
+    events: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "events"), aligned_actual_vals))
     events_bytes: np.ndarray = np.array(list(map(lambda event: event.size_bytes, events)))
     events_gb: np.ndarray = events_bytes / 1_000_000_000.0
     events_gb = events_gb - events_gb[0]
-
-    # Estimated Data
-    mu_dr = 8211.7
-    sigma_dr = 185544.8
-
-    x_values = timestamps_s - timestamps_s[0]
-    y_values = mu_dr * x_values / 1_000_000_000.0
-    e_values = (sigma_dr / np.sqrt(x_values)) * np.abs(x_values)
 
     # Plot
     fig, ax = plt.subplots(3, 1, figsize=(16, 9), sharex="all", constrained_layout=True, sharey="all")
@@ -957,22 +942,22 @@ def plot_dl_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
 
     # Estimated
     ax_estimated = ax[0]
-    ax_estimated.plot(dts, y_values)
+    ax_estimated.plot(aligned_est_dts, aligned_est_vals)
 
     ax_estimated.set_title("Estimated Unbounded DL with 15 Sensors")
     ax_estimated.set_ylabel("Size GB")
 
     # Actual
     ax_actual = ax[1]
-    ax_actual.plot(dts, events_gb)
+    ax_actual.plot(aligned_actual_dts, events_gb)
 
     ax_actual.set_title("Actual DL")
     ax_actual.set_ylabel("Size GB")
 
     # Estimated - Actual
     ax_diff = ax[2]
-    diff = y_values - events_gb
-    ax_diff.plot(dts, diff)
+    diff = aligned_est_vals - events_gb
+    ax_diff.plot(aligned_actual_dts, diff)
 
     ax_diff.set_title("Difference (Estimated DL - Actual DL)")
     ax_diff.set_ylabel("Size GB")
@@ -983,22 +968,27 @@ def plot_dl_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
 
 
 def plot_il_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
-    # Actual Data
-    timestamps_s: np.ndarray = np.array(list(map(lambda laha_stat: laha_stat.timestamp_s, laha_stats)))
-    dts: List[datetime.datetime] = list(map(datetime.datetime.utcfromtimestamp, timestamps_s))
+    # Estimated Data
+    mu_dr = 438.58
 
-    incidents: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "incidents"), laha_stats))
-    incidents_cnt: np.ndarray = np.array(list(map(lambda incident: incident.count, incidents)))
+    # Align the data
+    first_laha_stat_timestamp_s = laha_stats[0].timestamp_s
+    last_laha_stat_timestamp_s = laha_stats[-1].timestamp_s
+    time_range = last_laha_stat_timestamp_s - first_laha_stat_timestamp_s
+    aligned_actual_dts, aligned_actual_vals, aligned_est_dts, aligned_est_vals = align_data(
+            laha_stats,
+            list(range(1, time_range + 1)),
+            lambda laha_stat: datetime.datetime.utcfromtimestamp(laha_stat.timestamp_s),
+            lambda x: datetime.datetime.utcfromtimestamp(first_laha_stat_timestamp_s + x),
+            lambda laha_stat: laha_stat,
+            lambda x: (mu_dr * x) / 1_000_000.0
+    )
+
+    # Actual Data
+    incidents: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "incidents"), aligned_actual_vals))
     incidents_bytes: np.ndarray = np.array(list(map(lambda incident: incident.size_bytes, incidents)))
     incidents_gb: np.ndarray = incidents_bytes / 1_000_000_000.0
     incidents_gb = incidents_gb - incidents_gb[0]
-
-    # Estimated Data
-    mu_dr = 438.58
-    sigma_dr = 6288.48
-
-    x_values = timestamps_s - timestamps_s[0]
-    y_values = mu_dr * x_values / 1_000_000_000.0
 
     # Plot
     fig, ax = plt.subplots(3, 1, figsize=(16, 9), sharex="all", constrained_layout=True, sharey="all")
@@ -1009,22 +999,22 @@ def plot_il_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
 
     # Estimated
     ax_estimated = ax[0]
-    ax_estimated.plot(dts, y_values)
+    ax_estimated.plot(aligned_est_dts, aligned_est_vals)
 
     ax_estimated.set_title("Estimated Unbounded IL with 15 Sensors")
     ax_estimated.set_ylabel("Size GB")
 
     # Actual
     ax_actual = ax[1]
-    ax_actual.plot(dts, incidents_gb)
+    ax_actual.plot(aligned_actual_dts, incidents_gb)
 
     ax_actual.set_title("Actual IL")
     ax_actual.set_ylabel("Size GB")
 
     # Estimated - Actual
     ax_diff = ax[2]
-    diff = y_values - incidents_gb
-    ax_diff.plot(dts, diff)
+    diff = aligned_est_vals - incidents_gb
+    ax_diff.plot(aligned_actual_dts, diff)
 
     ax_diff.set_title("Difference (Estimated IL - Actual IL)")
     ax_diff.set_ylabel("Size GB")
@@ -1035,43 +1025,55 @@ def plot_il_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
 
 
 def plot_laha_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
-    # Actual Data
-    timestamps_s: np.ndarray = np.array(list(map(lambda laha_stat: laha_stat.timestamp_s, laha_stats)))
-    dts: List[datetime.datetime] = list(map(datetime.datetime.utcfromtimestamp, timestamps_s))
+    # Estimated Data
+    s_samp = 2
+    sr = 12_000
+    mu_n_sen = 15
+    mu_dr_dl = 8211.7
+    mu_dr_il = 438.58
 
-    active_devices: np.ndarray = np.array(list(map(lambda laha_stat: laha_stat.laha_stats.active_devices, laha_stats)))
+    # Align the data
+    first_laha_stat_timestamp_s = laha_stats[0].timestamp_s
+    last_laha_stat_timestamp_s = laha_stats[-1].timestamp_s
+    time_range = last_laha_stat_timestamp_s - first_laha_stat_timestamp_s
+    aligned_actual_dts, aligned_actual_vals, aligned_est_dts, aligned_est_vals = align_data(
+            laha_stats,
+            list(range(1, time_range + 1)),
+            lambda laha_stat: datetime.datetime.utcfromtimestamp(laha_stat.timestamp_s),
+            lambda x: datetime.datetime.utcfromtimestamp(first_laha_stat_timestamp_s + x),
+            lambda laha_stat: laha_stat,
+            lambda x: (s_samp * sr * mu_n_sen * x) + ((x * 144 * 1.0 / 1.0) + (x * 323 * 1.0 / 60.0) * 15.0) + (x * mu_dr_dl) + (x * mu_dr_il) / 1_000_000_000.0
+    )
+
+    # Actual Data
+    active_devices: np.ndarray = np.array(list(map(lambda laha_stat: laha_stat.laha_stats.active_devices, aligned_actual_vals)))
 
     # IML
     iml_actual: np.ndarray = active_devices * 12_000 * 2 * 60 * 15 / 1_000_000.0
     iml_actual = iml_actual - iml_actual[0]
 
     # AML
-    measurements: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "measurements"), laha_stats))
-    measurement_cnt: np.ndarray = np.array(list(map(lambda measurement: measurement.count, measurements)))
+    measurements: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "measurements"), aligned_actual_vals))
     measurement_bytes: np.ndarray = np.array(list(map(lambda measurement: measurement.size_bytes, measurements)))
     measurement_gb: np.ndarray = measurement_bytes / 1_000_000_000.0
 
-    trends: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "trends"), laha_stats))
-    trends_cnt: np.ndarray = np.array(list(map(lambda trend: trend.count, trends)))
+    trends: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "trends"), aligned_actual_vals))
     trends_bytes: np.ndarray = np.array(list(map(lambda trend: trend.size_bytes, trends)))
     trends_gb: np.ndarray = trends_bytes / 1_000_000_000.0
 
     total_gb_aml = trends_gb + measurement_gb
-    total_cnt = trends_cnt + measurement_cnt
 
     total_gb_aml = total_gb_aml - total_gb_aml[0]
 
     # DL
-    events: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "events"), laha_stats))
-    events_cnt: np.ndarray = np.array(list(map(lambda event: event.count, events)))
+    events: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "events"), aligned_actual_vals))
     events_bytes: np.ndarray = np.array(list(map(lambda event: event.size_bytes, events)))
     events_gb: np.ndarray = events_bytes / 1_000_000_000.0
     events_gb = events_gb - events_gb[0]
 
     # IL
 
-    incidents: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "incidents"), laha_stats))
-    incidents_cnt: np.ndarray = np.array(list(map(lambda incident: incident.count, incidents)))
+    incidents: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "incidents"), aligned_actual_vals))
     incidents_bytes: np.ndarray = np.array(list(map(lambda incident: incident.size_bytes, incidents)))
     incidents_gb: np.ndarray = incidents_bytes / 1_000_000_000.0
     incidents_gb = incidents_gb - incidents_gb[0]
@@ -1080,52 +1082,6 @@ def plot_laha_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
     total_opq_gb = iml_actual + total_gb_aml + events_gb + incidents_gb
 
     # Estimated Data
-    x_values = timestamps_s - timestamps_s[0]
-    # IML
-    s_samp = 2
-    sr = 12_000
-    mu_n_sen = 15
-    sigma_n_sen = 0.7
-
-    y_values = s_samp * sr * mu_n_sen * x_values / 1_000_000.0
-
-    # AML
-    sub_levels = ["measurements", "trends"]
-
-    sl_to_size = {
-        "measurements": 144,
-        "trends": 323
-    }
-
-    sl_to_rate = {
-        "measurements": 1,
-        "trends": 60
-    }
-
-    total_y_aml = np.zeros(len(x_values))
-    for sl in sub_levels:
-        size = sl_to_size[sl]
-        rate = sl_to_rate[sl]
-        y_values = x_values * size * 1.0 / rate * 15
-        total_y_aml += y_values
-        # plt.plot(x_values, y_values, label="Sub-Level=%s, Size Bytes=%d, Rate Hz=1/%d" % (sl, size, rate))
-
-    total_y_aml = total_y_aml / 1_000_000_000.0
-
-    # DL
-    mu_dr_events = 8211.7
-    sigma_dr_events = 185544.8
-
-    y_values_events = mu_dr_events * x_values / 1_000_000_000.0
-
-    # IL
-
-    mu_dr = 438.58
-    sigma_dr = 6288.48
-    y_values_incidents = mu_dr * x_values / 1_000_000_000.0
-
-    # Total
-    total_gb_est = y_values + total_y_aml + y_values_events + y_values_incidents
 
     # Plot
     fig, ax = plt.subplots(3, 1, figsize=(16, 9), sharex="all", constrained_layout=True)
@@ -1136,22 +1092,22 @@ def plot_laha_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
 
     # Estimated
     ax_estimated = ax[0]
-    ax_estimated.plot(dts, total_gb_est)
+    ax_estimated.plot(aligned_est_dts, aligned_est_vals)
 
     ax_estimated.set_title("Estimated Unbounded Laha with 15 Sensors")
     ax_estimated.set_ylabel("Size GB")
 
     # Actual
     ax_actual = ax[1]
-    ax_actual.plot(dts, total_opq_gb)
+    ax_actual.plot(aligned_actual_dts, total_opq_gb)
 
     ax_actual.set_title("Actual Laha")
     ax_actual.set_ylabel("Size GB")
 
     # Estimated - Actual
     ax_diff = ax[2]
-    diff = total_gb_est - total_opq_gb
-    ax_diff.plot(dts, diff)
+    diff = aligned_est_vals - total_opq_gb
+    ax_diff.plot(aligned_actual_dts, diff)
 
     ax_diff.set_title("Difference (Estimated Laha - Actual Laha)")
     ax_diff.set_ylabel("Size GB")
@@ -1162,18 +1118,31 @@ def plot_laha_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
 
 
 def plot_laha_vs_no_tll_no_iml(laha_stats: List[LahaStat], out_dir: str) -> None:
+    # Estimated Data
+    mu_dr_dl = 8211.7
+    mu_dr_il = 438.58
+
+    # Align the data
+    first_laha_stat_timestamp_s = laha_stats[0].timestamp_s
+    last_laha_stat_timestamp_s = laha_stats[-1].timestamp_s
+    time_range = last_laha_stat_timestamp_s - first_laha_stat_timestamp_s
+    aligned_actual_dts, aligned_actual_vals, aligned_est_dts, aligned_est_vals = align_data(
+            laha_stats,
+            list(range(1, time_range + 1)),
+            lambda laha_stat: datetime.datetime.utcfromtimestamp(laha_stat.timestamp_s),
+            lambda x: datetime.datetime.utcfromtimestamp(first_laha_stat_timestamp_s + x),
+            lambda laha_stat: laha_stat,
+            lambda x: ((x * 144 * 1.0 / 1.0) + (x * 323 * 1.0 / 60.0) * 15.0) + (x * mu_dr_dl) + (x * mu_dr_il) / 1_000_000_000.0
+    )
+
     # Actual Data
-    timestamps_s: np.ndarray = np.array(list(map(lambda laha_stat: laha_stat.timestamp_s, laha_stats)))
-    dts: List[datetime.datetime] = list(map(datetime.datetime.utcfromtimestamp, timestamps_s))
 
     # AML
-    measurements: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "measurements"), laha_stats))
-    measurement_cnt: np.ndarray = np.array(list(map(lambda measurement: measurement.count, measurements)))
+    measurements: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "measurements"), aligned_actual_vals))
     measurement_bytes: np.ndarray = np.array(list(map(lambda measurement: measurement.size_bytes, measurements)))
     measurement_gb: np.ndarray = measurement_bytes / 1_000_000_000.0
 
-    trends: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "trends"), laha_stats))
-    trends_cnt: np.ndarray = np.array(list(map(lambda trend: trend.count, trends)))
+    trends: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "trends"), aligned_actual_vals))
     trends_bytes: np.ndarray = np.array(list(map(lambda trend: trend.size_bytes, trends)))
     trends_gb: np.ndarray = trends_bytes / 1_000_000_000.0
 
@@ -1182,14 +1151,15 @@ def plot_laha_vs_no_tll_no_iml(laha_stats: List[LahaStat], out_dir: str) -> None
     total_gb_aml = total_gb_aml - total_gb_aml[0]
 
     # DL
-    events: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "events"), laha_stats))
+    events: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "events"), aligned_actual_vals))
     events_bytes: np.ndarray = np.array(list(map(lambda event: event.size_bytes, events)))
     events_gb: np.ndarray = events_bytes / 1_000_000_000.0
     events_gb = events_gb - events_gb[0]
 
     # IL
 
-    incidents: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "incidents"), laha_stats))
+    incidents: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "incidents"), aligned_actual_vals))
+    incidents_cnt: np.ndarray = np.array(list(map(lambda incident: incident.count, incidents)))
     incidents_bytes: np.ndarray = np.array(list(map(lambda incident: incident.size_bytes, incidents)))
     incidents_gb: np.ndarray = incidents_bytes / 1_000_000_000.0
     incidents_gb = incidents_gb - incidents_gb[0]
@@ -1198,85 +1168,39 @@ def plot_laha_vs_no_tll_no_iml(laha_stats: List[LahaStat], out_dir: str) -> None
     total_opq_gb = total_gb_aml + events_gb + incidents_gb
 
     # Estimated Data
-    x_values = timestamps_s - timestamps_s[0]
-    # # IML
-    # s_samp = 2
-    # sr = 12_000
-    # mu_n_sen = 15
-    # sigma_n_sen = 0.7
-    #
-    # y_values = s_samp * sr * mu_n_sen * x_values / 1_000_000.0
-
-    # AML
-    sub_levels = ["measurements", "trends"]
-
-    sl_to_size = {
-        "measurements": 144,
-        "trends": 323
-    }
-
-    sl_to_rate = {
-        "measurements": 1,
-        "trends": 60
-    }
-
-    total_y_aml = np.zeros(len(x_values))
-    for sl in sub_levels:
-        size = sl_to_size[sl]
-        rate = sl_to_rate[sl]
-        y_values = x_values * size * 1.0 / rate * 15
-        total_y_aml += y_values
-        # plt.plot(x_values, y_values, label="Sub-Level=%s, Size Bytes=%d, Rate Hz=1/%d" % (sl, size, rate))
-
-    total_y_aml = total_y_aml / 1_000_000_000.0
-
-    # DL
-    mu_dr_events = 8211.7
-    sigma_dr_events = 185544.8
-
-    y_values_events = mu_dr_events * x_values / 1_000_000_000.0
-
-    # IL
-
-    mu_dr = 438.58
-    sigma_dr = 6288.48
-    y_values_incidents = mu_dr * x_values / 1_000_000_000.0
-
-    # Total
-    total_gb_est = total_y_aml + y_values_events + y_values_incidents
 
     # Plot
     fig, ax = plt.subplots(3, 1, figsize=(16, 9), sharex="all", constrained_layout=True)
     fig: plt.Figure = fig
     ax: List[plt.Axes] = ax
 
-    fig.suptitle("Actual Laha vs Laha w/o TTL w/o IML (OPQ)")
+    fig.suptitle("Actual Laha vs Laha w/o TTL (OPQ)")
 
     # Estimated
     ax_estimated = ax[0]
-    ax_estimated.plot(dts, total_gb_est)
+    ax_estimated.plot(aligned_est_dts, aligned_est_vals)
 
     ax_estimated.set_title("Estimated Unbounded Laha with 15 Sensors")
     ax_estimated.set_ylabel("Size GB")
 
     # Actual
     ax_actual = ax[1]
-    ax_actual.plot(dts, total_opq_gb)
+    ax_actual.plot(aligned_actual_dts, total_opq_gb)
 
     ax_actual.set_title("Actual Laha")
     ax_actual.set_ylabel("Size GB")
 
     # Estimated - Actual
     ax_diff = ax[2]
-    diff = total_gb_est - total_opq_gb
-    ax_diff.plot(dts, diff)
+    diff = aligned_est_vals - total_opq_gb
+    ax_diff.plot(aligned_actual_dts, diff)
 
     ax_diff.set_title("Difference (Estimated Laha - Actual Laha)")
     ax_diff.set_ylabel("Size GB")
     ax_diff.set_xlabel("Time (UTC)")
 
     # fig.show()
-    fig.savefig(f"{out_dir}/actual_laha_vs_unbounded_no_iml_opq.png")
+    fig.savefig(f"{out_dir}/actual_laha_vs_unbounded_opq.png")
 
 
 def plot_iml_vs_sim(laha_stats: List[LahaStat], data: List[Data], out_dir: str) -> None:
@@ -1593,7 +1517,7 @@ def plot_laha_vs_sim(laha_stats: List[LahaStat], data: List[Data], out_dir: str)
     fig: plt.Figure = fig
     ax: List[plt.Axes] = ax
 
-    fig.suptitle("Actual IL vs Simulated IL (OPQ)")
+    fig.suptitle("Actual Laha vs Simulated Laha (OPQ)")
 
     # Estimated
     ax_estimated = ax[0]
@@ -1607,7 +1531,7 @@ def plot_laha_vs_sim(laha_stats: List[LahaStat], data: List[Data], out_dir: str)
     ax_actual = ax[1]
     ax_actual.plot(aligned_laha_dts, actual_total_gb, label="Total Actual Laha")
 
-    ax_actual.set_title("Actual IL")
+    ax_actual.set_title("Actual Laha")
     ax_actual.set_ylabel("Size GB")
     ax_actual.legend()
 
@@ -1632,30 +1556,24 @@ if __name__ == "__main__":
 
     laha_stats: List[LahaStat] = load_laha_stats("laha_stats.pickle.db")
 
-    # plot_iml(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
-    # plot_aml(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
-    # plot_dl(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
-    # plot_il(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
-    # plot_laha(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+    plot_iml(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+    plot_aml(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+    plot_dl(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+    plot_il(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+    plot_laha(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
 
     # plot_system_resources(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
-    plot_iml_vs_no_tll(laha_stats, "/home/opq/Documents/anthony/dissertation/src/figures")
-    # plot_aml_vs_no_tll(laha_stats, "/home/opq/Documents/anthony/dissertation/src/figures")
-    # plot_dl_vs_no_tll(laha_stats, "/home/opq/Documents/anthony/dissertation/src/figures")
-    # plot_il_vs_no_tll(laha_stats, "/home/opq/Documents/anthony/dissertation/src/figures")
-    # plot_laha_vs_no_tll(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
-    # plot_laha_vs_no_tll_no_iml(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+    plot_iml_vs_no_tll(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+    plot_aml_vs_no_tll(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+    plot_dl_vs_no_tll(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+    plot_il_vs_no_tll(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+    plot_laha_vs_no_tll(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+    plot_laha_vs_no_tll_no_iml(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
 
-    # sim_data = parse_file("sim_data.txt")
+    sim_data = parse_file("sim_data.txt")
+    plot_iml_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
+    plot_aml_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
+    plot_dl_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
+    plot_il_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
+    plot_laha_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
 
-
-    # plot_iml_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
-    # plot_aml_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
-    # plot_dl_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
-    # plot_il_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
-    # plot_laha_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
-    # print(laha_stats[-2])
-    # print(laha_stats[-1])
-
-    # Ok, metrics are collected from the database once ever 10 minutes...... we need to find a way to bin both sim and
-    # estimated data so that it lines up with time from the metrics.
