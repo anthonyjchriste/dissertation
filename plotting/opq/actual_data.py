@@ -1318,8 +1318,8 @@ def plot_iml_vs_sim(laha_stats: List[LahaStat], data: List[Data], out_dir: str) 
     ax_diff.set_ylabel("Size MB")
     ax_diff.set_xlabel("Time (UTC)")
 
-    fig.show()
-    # fig.savefig(f"{out_dir}/actual_iml_vs_sim_opq.png")
+    # fig.show()
+    fig.savefig(f"{out_dir}/actual_iml_vs_sim_opq.png")
 
 
 def plot_aml_vs_sim(laha_stats: List[LahaStat], data: List[Data], out_dir: str) -> None:
@@ -1393,8 +1393,8 @@ def plot_aml_vs_sim(laha_stats: List[LahaStat], data: List[Data], out_dir: str) 
     ax_diff.set_xlabel("Time (UTC)")
     ax_diff.legend()
 
-    fig.show()
-    # fig.savefig(f"{out_dir}/actual_aml_vs_sim_opq.png")
+    # fig.show()
+    fig.savefig(f"{out_dir}/actual_aml_vs_sim_opq.png")
 
 def plot_dl_vs_sim(laha_stats: List[LahaStat], data: List[Data], out_dir: str) -> None:
     # Data alignment
@@ -1451,8 +1451,8 @@ def plot_dl_vs_sim(laha_stats: List[LahaStat], data: List[Data], out_dir: str) -
     ax_diff.set_xlabel("Time (UTC)")
     ax_diff.legend()
 
-    fig.show()
-    # fig.savefig(f"{out_dir}/actual_dl_vs_sim_opq.png")
+    # fig.show()
+    fig.savefig(f"{out_dir}/actual_dl_vs_sim_opq.png")
 
 def plot_il_vs_sim(laha_stats: List[LahaStat], data: List[Data], out_dir: str) -> None:
     # Data alignment
@@ -1508,8 +1508,8 @@ def plot_il_vs_sim(laha_stats: List[LahaStat], data: List[Data], out_dir: str) -
     ax_diff.set_xlabel("Time (UTC)")
     ax_diff.legend()
 
-    fig.show()
-    # fig.savefig(f"{out_dir}/actual_il_vs_sim_opq.png")
+    # fig.show()
+    fig.savefig(f"{out_dir}/actual_il_vs_sim_opq.png")
 
 
 def plot_laha_vs_sim(laha_stats: List[LahaStat], data: List[Data], out_dir: str) -> None:
@@ -1604,8 +1604,8 @@ def plot_laha_vs_sim(laha_stats: List[LahaStat], data: List[Data], out_dir: str)
     ax_diff.set_xlabel("Time (UTC)")
     ax_diff.legend()
 
-    fig.show()
-    # fig.savefig(f"{out_dir}/actual_il_vs_sim_opq.png")
+    # fig.show()
+    fig.savefig(f"{out_dir}/actual_laha_vs_sim_opq.png")
 
 
 
@@ -1633,10 +1633,10 @@ if __name__ == "__main__":
     sim_data = parse_file("sim_data.txt")
 
 
-    # plot_iml_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
-    # plot_aml_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
-    # plot_dl_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
-    # plot_il_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
+    plot_iml_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
+    plot_aml_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
+    plot_dl_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
+    plot_il_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
     plot_laha_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
     # print(laha_stats[-2])
     # print(laha_stats[-1])
