@@ -859,7 +859,7 @@ def plot_aml_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
             lambda laha_stat: datetime.datetime.utcfromtimestamp(laha_stat.timestamp_s),
             lambda x: datetime.datetime.utcfromtimestamp(first_laha_stat_timestamp_s + x),
             lambda laha_stat: laha_stat,
-            lambda x: ((x * 144 * 1.0 / 1.0) + (x * 323 * 1.0 / 60.0)) * 15.0 / 1_000_000_000.0
+            lambda x: ((x * 145 * 1.0 / 1.0) + (x * 365 * 1.0 / 60.0)) * 15.0 / 1_000_000_000.0
     )
 
 
@@ -912,7 +912,7 @@ def plot_aml_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
 
 def plot_dl_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
     # Estimated Data
-    mu_dr = 8211.7
+    mu_dr = 44.58476968146592
 
     # Align the data
     first_laha_stat_timestamp_s = laha_stats[0].timestamp_s
@@ -969,7 +969,7 @@ def plot_dl_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
 
 def plot_il_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
     # Estimated Data
-    mu_dr = 438.58
+    mu_dr = 234.74539870516887
 
     # Align the data
     first_laha_stat_timestamp_s = laha_stats[0].timestamp_s
@@ -1042,7 +1042,7 @@ def plot_laha_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
             lambda laha_stat: datetime.datetime.utcfromtimestamp(laha_stat.timestamp_s),
             lambda x: datetime.datetime.utcfromtimestamp(first_laha_stat_timestamp_s + x),
             lambda laha_stat: laha_stat,
-            lambda x: (s_samp * sr * mu_n_sen * x) + ((x * 144 * 1.0 / 1.0) + (x * 323 * 1.0 / 60.0) * 15.0) + (x * mu_dr_dl) + (x * mu_dr_il) / 1_000_000_000.0
+            lambda x: (s_samp * sr * mu_n_sen * x) + ((x * 145 * 1.0 / 1.0) + (x * 365 * 1.0 / 60.0) * 15.0) + (x * mu_dr_dl) + (x * mu_dr_il) / 1_000_000_000.0
     )
 
     # Actual Data
@@ -1119,8 +1119,8 @@ def plot_laha_vs_no_tll(laha_stats: List[LahaStat], out_dir: str) -> None:
 
 def plot_laha_vs_no_tll_no_iml(laha_stats: List[LahaStat], out_dir: str) -> None:
     # Estimated Data
-    mu_dr_dl = 8211.7
-    mu_dr_il = 438.58
+    mu_dr_dl = 44.58476968146592
+    mu_dr_il = 234.74539870516887
 
     # Align the data
     first_laha_stat_timestamp_s = laha_stats[0].timestamp_s
@@ -1132,7 +1132,7 @@ def plot_laha_vs_no_tll_no_iml(laha_stats: List[LahaStat], out_dir: str) -> None
             lambda laha_stat: datetime.datetime.utcfromtimestamp(laha_stat.timestamp_s),
             lambda x: datetime.datetime.utcfromtimestamp(first_laha_stat_timestamp_s + x),
             lambda laha_stat: laha_stat,
-            lambda x: ((x * 144 * 1.0 / 1.0) + (x * 323 * 1.0 / 60.0) * 15.0) + (x * mu_dr_dl) + (x * mu_dr_il) / 1_000_000_000.0
+            lambda x: ((x * 145 * 1.0 / 1.0) + (x * 365 * 1.0 / 60.0) * 15.0) + (x * mu_dr_dl) + (x * mu_dr_il) / 1_000_000_000.0
     )
 
     # Actual Data

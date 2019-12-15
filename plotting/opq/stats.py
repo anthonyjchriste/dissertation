@@ -4,11 +4,13 @@ import numpy as np
 import pymongo
 import pymongo.database
 
-def accurate_event_stats(mongo_client: pymongo.MongoClient) -> List[Dict]:
+
+def event_stats(mongo_client: pymongo.MongoClient) -> List[Dict]:
     db: pymongo.database.Database = mongo_client["opq"]
     coll: pymongo.collection.Collection = db["box_events"]
 
-    query = {}
+    query = {"event_start_timestamp_ms": {"$gt": 0},
+             "event_end_timestamp_ms": {"$gt": 0}}
     projection = {"_id": False,
                   "event_id": True,
                   "event_start_timestamp_ms": True,
@@ -71,7 +73,7 @@ def incident_stats(mongo_client: pymongo.MongoClient) -> List[Dict]:
     max_ts_ms: int = max(list(map(lambda doc: doc["end_timestamp_ms"], incidents)))
 
     durations_ms: np.ndarray = np.array(
-        list(map(lambda doc: doc["end_timestamp_ms"] - doc["start_timestamp_ms"], incidents)))
+            list(map(lambda doc: doc["end_timestamp_ms"] - doc["start_timestamp_ms"], incidents)))
     durations_s: np.ndarray = durations_ms / 1000.0
     data_stored: np.ndarray = 12_000.0 * 2 * durations_s
 
@@ -98,7 +100,6 @@ def incident_stats(mongo_client: pymongo.MongoClient) -> List[Dict]:
     print(f"mean data per second {data_per_second}")
     print(f"mean incidents per second {incidents_per_second}")
 
-
     return incidents
 
 
@@ -110,9 +111,9 @@ def ttl_aml_stats(events: List[Dict], incidents: List[Dict]) -> List[Dict]:
     max_ts_ms: int = max(list(map(lambda doc: doc["event_end_timestamp_ms"], events)))
 
     durations_ms: np.ndarray = np.array(
-            list(map(lambda doc: doc["event_end_timestamp_ms"] - doc["event_start_timestamp_ms"], events_without_an_incident)))
+            list(map(lambda doc: doc["event_end_timestamp_ms"] - doc["event_start_timestamp_ms"],
+                     events_without_an_incident)))
     durations_s: np.ndarray = durations_ms / 1000.0
-
 
     total_duration_ms: int = max_ts_ms - min_ts_ms
     total_duration_s: float = total_duration_ms / 1000.0
@@ -129,7 +130,7 @@ def ttl_aml_stats(events: List[Dict], incidents: List[Dict]) -> List[Dict]:
 
 if __name__ == "__main__":
     mongo_client = pymongo.MongoClient()
-    events = accurate_event_stats(mongo_client)
+    events = event_stats(mongo_client)
     print()
     incidents = incident_stats(mongo_client)
     print()
