@@ -1556,13 +1556,13 @@ if __name__ == "__main__":
 
     laha_stats: List[LahaStat] = load_laha_stats("laha_stats.pickle.db")
 
-    # plot_iml(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
-    # plot_aml(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
-    # plot_dl(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
-    # plot_il(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
-    # plot_laha(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+    plot_iml(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+    plot_aml(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+    plot_dl(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+    plot_il(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+    plot_laha(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
 
-    # plot_system_resources(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
+    plot_system_resources(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
     plot_iml_vs_no_tll(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
     plot_aml_vs_no_tll(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
     plot_dl_vs_no_tll(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
@@ -1570,10 +1570,10 @@ if __name__ == "__main__":
     plot_laha_vs_no_tll(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
     plot_laha_vs_no_tll_no_iml(laha_stats, "/Users/anthony/Development/dissertation/src/figures")
 
-    # sim_data = parse_file("sim_data.txt")
-    # plot_iml_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
-    # plot_aml_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
-    # plot_dl_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
-    # plot_il_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
-    # plot_laha_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
+    sim_data = parse_file("sim_data.txt")
+    plot_iml_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
+    plot_aml_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
+    plot_dl_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
+    plot_il_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
+    plot_laha_vs_sim(laha_stats, sim_data, "/Users/anthony/Development/dissertation/src/figures")
 
