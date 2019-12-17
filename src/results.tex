@@ -46,7 +46,7 @@ I examine the AML data growth for OPQ by looking at the data growth of Measureme
     \label{fig:actual_aml_opq}
 \end{figure}
 
-The top panel displays the AML data growth with size in GB on the left Y-axis and the count of AML items on the right Y-axis. Over a period of two and a half months the AML in OPQ has reached a size of about 1.5 GB containing close to 4 million AML items.
+The top panel displays the AML data growth with size in GB on the left Y-axis and the count of AML items on the right Y-axis. Over a period of two and a half months the AML in OPQ has reached a size of about 1.75 GB containing over 4 million AML items.
 
 The middle panel displays the number of Measurements and Trends that were garbage collected over time on the left Y-axis and the percentage of items that were garbage collected on the right Y-axis. About 98\% of all AML data was garbage collected. About 2\% of all AML data is either awaiting garbage collection of was ``saved" by a higher level in the Laha hierarchy.
 
@@ -84,7 +84,7 @@ Figure~\ref{fig:actual_il_opq} shows the IL growth for the OPQ network over a pe
     \label{fig:actual_il_opq}
 \end{figure}
 
-The top panel shows the growth of the IL with the size in GB on the left Y-axis and the number of Incidents on the right Y-axis. Over a period of two and a half months, the IL of OPQ has grown to near 5GB containing about 400,000 Incidents.
+The top panel shows the growth of the IL with the size in GB on the left Y-axis and the number of Incidents on the right Y-axis. Over a period of two and a half months, the IL of OPQ has grown to near 6GB containing over 400,000 Incidents.
 
 The middle panel shows the garbage collection statistics for the IL. You'll note that the GC statistics are flat lining at 0. This is due to the fact that Incidents are given a default TTL of 1 year and this deployment has only been collecting data for 3 months.
 
@@ -118,6 +118,12 @@ Now that I've shown the results for the actual DSN storage requirements, I will 
 
 Let's first compare the results to the estimated storage requirements without TTL found in Section~\ref{sssec:eval_of_dsn_system_requirements}. This might feel a bit contrived, but the purpose of these results is to show how OPQ compares to a similar system that would collect everything.
 
+One interesting thing to note is that I expected the estimated values to be much higher than the actual values due to the fact that I wasn't including TTL explicitly anywhere in the estimations. It turns out this isn't always the case. The reason for this is that the estimated values are computed by multiplying the amount of time the system has been running with the data rate obtained from the OPQ database for Events, Incidents, and Phenomena, and on the surface, it does not appear that TTL is being used in these estimations. However, this is not exactly the case. The data rate parameters obtained from the OPQ database implicitly have the TTL built in. That is because I measure the data rate over all available Events, Incidents, and Phenomena, but this data rate does not include Incidents, Events, or Phenomena that have been garbage collected!
+
+This really only affects Detections, Incidents, and Phenomena which use estimated database parameters. Samples, Measurements, and Trends are not affected because they are computed directly from the time length without using any estimated database parameters.
+
+The end result of this is that it turns out that the method I use to estimate Events, Incidents, and Phenomena without TTL pretty accurately portray the size of the actual data with TTL.
+
 There was already data in the database before we started collected enhanced metrics. This is true for the AML, DL, IL, and PL. In order to accurately compare data growths from zero, the first value at each level is subtracted from the entire data set at each level. This essentially ``forces" the data set to start at 0 so that we can compare it directly to the estimates.
 
 The Instantaneous Measurements Level (IML) consists of raw samples from sensors. Figure~\ref{fig:actual_iml_vs_unbounded_opq} shows the actual IML vs unbounded IML\@.
@@ -140,7 +146,7 @@ Figure~\ref{fig:actual_aml_vs_unbounded_opq} shows the actual AML vs unbounded A
     \label{fig:actual_aml_vs_unbounded_opq}
 \end{figure}
 
-We can see that over the same time period, AML with TTL saved us about 14.6 GB worth of data versus a store everything approach.
+This data was not affected by the implicit TTL parameter and portrays accurate unbounded versus bounded growth. We can see that over the same time period, AML with TTL saved us about 17.5 GB worth of data versus a store everything approach.
 
 Figure~\ref{fig:actual_dl_vs_unbounded_opq} shows the actual DL vs unbounded DL. The Detection Level contains metadata and data bounded by a window which may or may not include signals of interest.
 
@@ -151,6 +157,8 @@ Figure~\ref{fig:actual_dl_vs_unbounded_opq} shows the actual DL vs unbounded DL.
     \label{fig:actual_dl_vs_unbounded_opq}
 \end{figure}
 
+This data was affected by the implicit TTL parameter and does not portray accurate unbounded versus bounded growth. Instead, the implicit TTL parameter models are actual growth pretty closely and the actual data is about 20 GB larger than the estimated data growth.
+
 Figure~\ref{fig:actual_il_vs_unbounded_opq} shows the actual IL vs unbounded IL. The Incident Level contains metadata and data over window that contains classified signals of interest.
 
 \begin{figure}[H]
@@ -160,14 +168,14 @@ Figure~\ref{fig:actual_il_vs_unbounded_opq} shows the actual IL vs unbounded IL.
     \label{fig:actual_il_vs_unbounded_opq}
 \end{figure}
 
-Here we can see that the actual size of the IL tracks pretty closely to the estimated maximum bounds. This is expected as the IL has a TLL of one year. Since we only have actual data for two and a half months, none of the generated IL have been garbage collected. Since I am comparing the actual data to estimated data without TTL, I expect these two values to trend in a similar fashion. At the end of the data collection period, OPQ collected about 2GB more worth of data than what was projected. This tells me that the estimation parameter for Incident data per second is likely slightly underestimated.
+This data was affected by the implicit TTL parameter and does not portray accurate unbounded versus bounded growth. Instead, we can see that the actual size of the IL tracks pretty closely to the estimated maximum bounds. At the end of the data collection period, OPQ collected about 4GB less worth of data than what was estimated.
 
 Figure shows the actual PL vs unbounded PL.
 
 % TODO
 TODO
 
-Figure shows the actual Laha vs unbounded Laha. Finally, I examine the total size of Laha and compare it to the estimated upper bounds of Laha without TTL. This takes into account all levels within the Laha hierarchy.
+Finally, I examine the total size of Laha and compare it to the estimated bounds of Laha without TTL. This takes into account all levels within the Laha hierarchy.
 
 Now I will compare the results to the estimated (simulated) storage requirements with TTL. Figure~\ref{fig:actual_laha_vs_unbounded_opq} compares the actual bounds of the entire network to the estimated bounds.
 
