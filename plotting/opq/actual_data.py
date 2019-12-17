@@ -750,8 +750,8 @@ def plot_system_resources(laha_stats: List[LahaStat], out_dir: str):
 
 def plot_iml_vs_no_tll(laha_dts: np.ndarray,
                        est_dts: np.ndarray,
-                       est_iml_mb: np.ndarray,
                        laha_iml_mb: np.ndarray,
+                       est_iml_mb: np.ndarray,
                        out_dir: str) -> None:
     # Plot
     fig, ax = plt.subplots(3, 1, figsize=(16, 9), sharex="all", constrained_layout=True)
@@ -1371,6 +1371,8 @@ if __name__ == "__main__":
     # Estimated data
     print("Making estimated data...", end=" ")
     estimated_data: List[EstimatedValue] = list(map(EstimatedValue, range(1, time_range + 1)))
+    print("Done.")
+    print("Aligning estimated data...", end=" ")
     aligned_laha_est_dts, aligned_laha_est_stats, aligned_est_dts, aligned_est_values = align_data(
             laha_stats,
             estimated_data,
@@ -1379,7 +1381,9 @@ if __name__ == "__main__":
             lambda laha_stat: laha_stat,
             lambda est_val: est_val
     )
+    print("Done.")
 
+    print("Extracting estimated parameters...", end=" ")
     # Est IML
     aligned_laha_est_active_devices: np.ndarray = np.array(
             list(map(lambda laha_stat: laha_stat.laha_stats.active_devices, aligned_laha_est_stats)))
