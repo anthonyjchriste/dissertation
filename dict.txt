@@ -481,3 +481,13 @@ Xlll
 Xlllll
 xl
 terabytes
+UHM
+EPRI
+6GB
+4GB
+Maipo
+Xeon
+E5
+JournalD
+tunable
+virtualized

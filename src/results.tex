@@ -114,11 +114,11 @@ The IL starts out small, but as Incidents are identified, the IL surpasses the I
 
 \subsubsection{DSN System Requirements OPQ: Comparing Results to Estimates}
 
-Now that I've shown the results for the actual DSN storage requirements, I will next compare these results to the estimated storage requirements with and without TTL\@.
+Now that I have shown the results for the actual DSN storage requirements, I will next compare these results to the estimated storage requirements with and without TTL\@.
 
-Let's first compare the results to the estimated storage requirements without TTL found in Section~\ref{sssec:eval_of_dsn_system_requirements}. This might feel a bit contrived, but the purpose of these results is to show how OPQ compares to a similar system that would collect everything.
+Let us first compare the results to the estimated storage requirements without TTL found in Section~\ref{sssec:eval_of_dsn_system_requirements}. This might feel a bit contrived, but the purpose of these results is to show how OPQ compares to a similar system that would collect everything.
 
-One interesting thing to note is that I expected the estimated values to be much higher than the actual values due to the fact that I wasn't including TTL explicitly anywhere in the estimations. It turns out this isn't always the case. The reason for this is that the estimated values are computed by multiplying the amount of time the system has been running with the data rate obtained from the OPQ database for Events, Incidents, and Phenomena, and on the surface, it does not appear that TTL is being used in these estimations. However, this is not exactly the case. The data rate parameters obtained from the OPQ database implicitly have the TTL built in. That is because I measure the data rate over all available Events, Incidents, and Phenomena, but this data rate does not include Incidents, Events, or Phenomena that have been garbage collected!
+One interesting thing to note is that I expected the estimated values to be much higher than the actual values due to the fact that I was not including TTL explicitly anywhere in the estimations. It turns out this is not always the case. The reason for this is that the estimated values are computed by multiplying the amount of time the system has been running with the data rate obtained from the OPQ database for Events, Incidents, and Phenomena, and on the surface, it does not appear that TTL is being used in these estimations. However, this is not exactly the case. The data rate parameters obtained from the OPQ database implicitly have the TTL built in. That is because I measure the data rate over all available Events, Incidents, and Phenomena, but this data rate does not include Incidents, Events, or Phenomena that have been garbage collected! Unfortunately, I do not have detailed metrics on data that was garbage collected (only counts). Any future DSN utilizing Laha should consider recording detailed metrics about data that was garbage collected (duration, data stored, etc).
 
 This really only affects Detections, Incidents, and Phenomena which use estimated database parameters. Samples, Measurements, and Trends are not affected because they are computed directly from the time length without using any estimated database parameters.
 
@@ -126,6 +126,7 @@ The end result of this is that it turns out that the method I use to estimate Ev
 
 There was already data in the database before we started collected enhanced metrics. This is true for the AML, DL, IL, and PL. In order to accurately compare data growths from zero, the first value at each level is subtracted from the entire data set at each level. This essentially ``forces" the data set to start at 0 so that we can compare it directly to the estimates.
 
+\paragraph{IML Versus Estimated Growth}
 The Instantaneous Measurements Level (IML) consists of raw samples from sensors. Figure~\ref{fig:actual_iml_vs_unbounded_opq} shows the actual IML vs unbounded IML\@.
 
 \begin{figure}[H]
@@ -137,6 +138,7 @@ The Instantaneous Measurements Level (IML) consists of raw samples from sensors.
 
 This plot is a little uninteresting. The difference is lost by the shear imbalance between magnitudes. With the IML producing the most data consisting of raw samples, without a TTL of 15 minutes the unbounded IML grows very quickly. By having bounds on the data, OPQ saves over 2.5 TB worth of data storage.
 
+\paragraph{AML Versus Estimated Growth}
 Figure~\ref{fig:actual_aml_vs_unbounded_opq} shows the actual AML vs unbounded AML. The AML level contains aggregate measurements which are rolled up summary statistics extracted from the IML\@.
 
 \begin{figure}[H]
@@ -148,6 +150,7 @@ Figure~\ref{fig:actual_aml_vs_unbounded_opq} shows the actual AML vs unbounded A
 
 This data was not affected by the implicit TTL parameter and portrays accurate unbounded versus bounded growth. We can see that over the same time period, AML with TTL saved us about 17.5 GB worth of data versus a store everything approach.
 
+\paragraph{DL Versus Estimated Growth}
 Figure~\ref{fig:actual_dl_vs_unbounded_opq} shows the actual DL vs unbounded DL. The Detection Level contains metadata and data bounded by a window which may or may not include signals of interest.
 
 \begin{figure}[H]
@@ -159,6 +162,7 @@ Figure~\ref{fig:actual_dl_vs_unbounded_opq} shows the actual DL vs unbounded DL.
 
 This data was affected by the implicit TTL parameter and does not portray accurate unbounded versus bounded growth. Instead, the implicit TTL parameter models are actual growth pretty closely and the actual data is about 20 GB larger than the estimated data growth.
 
+\paragraph{IL Versus Estimated Growth}
 Figure~\ref{fig:actual_il_vs_unbounded_opq} shows the actual IL vs unbounded IL. The Incident Level contains metadata and data over window that contains classified signals of interest.
 
 \begin{figure}[H]
@@ -170,14 +174,16 @@ Figure~\ref{fig:actual_il_vs_unbounded_opq} shows the actual IL vs unbounded IL.
 
 This data was affected by the implicit TTL parameter and does not portray accurate unbounded versus bounded growth. Instead, we can see that the actual size of the IL tracks pretty closely to the estimated maximum bounds. At the end of the data collection period, OPQ collected about 4GB less worth of data than what was estimated.
 
+\paragraph{PL Versus Estimated Growth}
 Figure shows the actual PL vs unbounded PL.
 
 % TODO
 TODO
 
+\paragraph{Laha Versus Estimated Growth}
 Finally, I examine the total size of Laha and compare it to the estimated bounds of Laha without TTL. This takes into account all levels within the Laha hierarchy.
 
-Now I will compare the results to the estimated (simulated) storage requirements with TTL. Figure~\ref{fig:actual_laha_vs_unbounded_opq} compares the actual bounds of the entire network to the estimated bounds.
+Figure~\ref{fig:actual_laha_vs_unbounded_opq} compares the actual bounds of the entire network to the estimated bounds.
 
 \begin{figure}[H]
     \centering
@@ -195,11 +201,16 @@ This result is a little unsatisfying. The data growth of the IML is pretty much 
     \label{fig:actual_laha_vs_unbounded_no_iml_opq}
 \end{figure}
 
-Over a time period of 2 and a half months, the OPQ network saved about 20GB of data as compared to a store everything approach (not including the IML which saved about 2.5 TB of data).
+Over a time period of 2 and a half months, the OPQ network saved about 20GB of data as compared to a store everything approach (not including the IML which saved about 2.5 TB of data). Of course, I would expect this difference to be greater if I had actual metrics for the DL, IL and PL that did not have a built-in implicit TTL parameter. Even with the built-in parameter, the savings gained from the AML alone is significant.
 
-Next I will compare the results gathered from the OPQ deployment to the estimated bounds found in Section~\ref{sssec:evaluation_of_ttl}. Similarly to the previous comparisons, I will offset the actual data to ``force" the data to start from zero.
+\subsubsection{DSN System Requirements OPQ: Comparing Results to Simulated Data}
 
-Figure~\ref{fig:actual_iml_vs_sim_opq} shows the actual IML vs estimated IML.
+Next I will compare the results gathered from the OPQ deployment to the simulated bounds found in Section~\ref{sssec:evaluation_of_ttl}.
+
+Similar to the previous comparisons, I will offset the actual data to ``force" the data to start from zero.
+
+\paragraph{IML Versus Simulated Growth}
+The Instantaneous Measurements Level (IML) contains raw samples from sensors. Figure~\ref{fig:actual_iml_vs_sim_opq} shows the actual IML vs estimated IML.
 
 \begin{figure}[H]
     \centering
@@ -208,7 +219,8 @@ Figure~\ref{fig:actual_iml_vs_sim_opq} shows the actual IML vs estimated IML.
     \label{fig:actual_iml_vs_sim_opq}
 \end{figure}
 
-Figure~\ref{fig:actual_aml_vs_sim_opq} shows the actual AML vs estimated AML.
+\paragraph{AML Versus Simulated Growth}
+The Aggregate Measurements Level (AML) contains rolled up summary statistics of selected features generated from IML data. Figure~\ref{fig:actual_aml_vs_sim_opq} shows the actual AML vs estimated AML.
 
 \begin{figure}[H]
     \centering
@@ -217,7 +229,8 @@ Figure~\ref{fig:actual_aml_vs_sim_opq} shows the actual AML vs estimated AML.
     \label{fig:actual_aml_vs_sim_opq}
 \end{figure}
 
-Figure~\ref{fig:actual_dl_vs_sim_opq} shows the actual DL vs estimated DL.
+\paragraph{DL Versus Simulated Growth}
+The Detection Level (DL) contains metadata and a window of raw data that may or may not include signals of interest. Figure~\ref{fig:actual_dl_vs_sim_opq} shows the actual DL vs estimated DL.
 
 \begin{figure}[H]
     \centering
@@ -226,7 +239,8 @@ Figure~\ref{fig:actual_dl_vs_sim_opq} shows the actual DL vs estimated DL.
     \label{fig:actual_dl_vs_sim_opq}
 \end{figure}
 
-Figure~\ref{fig:actual_il_vs_sim_opq} shows the actual IL vs estimated IL.
+\paragraph{IL Versus Simulated Growth}
+The Incidents Level (IL) contains metadata and a window of data that contains classified signals of interest. Figure~\ref{fig:actual_il_vs_sim_opq} shows the actual IL vs estimated IL.
 
 \begin{figure}[H]
     \centering
@@ -235,11 +249,13 @@ Figure~\ref{fig:actual_il_vs_sim_opq} shows the actual IL vs estimated IL.
     \label{fig:actual_il_vs_sim_opq}
 \end{figure}
 
+\paragraph{PL Versus Simulated Growth}
 Figure shows the actual PL vs estimated PL.
 
 % TODO
 TODO
 
+\paragraph{Laha Versus Simulated Growth}
 Figure~\ref{fig:actual_laha_vs_sim_opq} shows the actual Laha vs estimated Laha.
 
 \begin{figure}[H]
@@ -249,13 +265,15 @@ Figure~\ref{fig:actual_laha_vs_sim_opq} shows the actual Laha vs estimated Laha.
     \label{fig:actual_laha_vs_sim_opq}
 \end{figure}
 
+\paragraph{Discussion on Estimation Versus Simulation}
+
 \subsubsection{DSN System Requirements OPQ: CPU, Memory, and Disk Utilization}
 
 We collected CPU, memory, and disk utilization during the deployment of the OPQ network. It would be prudent to first discuss the details of the system that the OPQ network is running on.
 
 Makai, Mauka, View, MongoDB, and Health are all running on the same virtual server hosted by the University's Information Technology Services. The server is running Red Hat Enterprise Linux Server release 7.7 (Maipo). Due to a configuration error, the server only ran with a single virtual CPU up until October 28, 2019. After that time period, a second virtual CPU was added. Each virtual CPU is an Intel Xeon E5-2687W v3 running at 3.10 GHz. The system has 8 GB of main memory and 8 GB of swap space. The system has 1 TB of hard disk storage.
 
-These system statistics are for the entire virtual server and include loads of all virtualized OPQ services. Mauka is certainly doing the most work of any of the virualized services, but it should be noted that these statistics also include overhead incurred from other OPQ and OS services.
+These system statistics are for the entire virtual server and include loads of all virtualized OPQ services. Mauka is certainly doing the most work of any of the virtualized services, but it should be noted that these statistics also include overhead incurred from other OPQ and OS services.
 
 It should be noted that I attempted to collect the same statistics from the Lokahi network, but due to system requirements and a complicated distributed architecture, we were not able to collect metrics for the entire system. For example, many of Lokahi's services use specialized Amazon Web Services (AWS) services which do not expose similar metrics that are exposed by OPQ. For that reason, we will only examine the OPQ network in detail.
 
