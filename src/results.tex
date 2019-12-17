@@ -209,6 +209,8 @@ Next I will compare the results gathered from the OPQ deployment to the simulate
 
 Similar to the previous comparisons, I will offset the actual data to ``force" the data to start from zero.
 
+The simulated data had to be aligned with the collected metrics to perform this evaluation. The alignment works by binning all relevant timestamps to the nearest minute between the two data series.
+
 \paragraph{IML Versus Simulated Growth}
 The Instantaneous Measurements Level (IML) contains raw samples from sensors. Figure~\ref{fig:actual_iml_vs_sim_opq} shows the actual IML vs estimated IML.
 
@@ -218,6 +220,8 @@ The Instantaneous Measurements Level (IML) contains raw samples from sensors. Fi
     \caption{Actual IML vs Simulation IML for OPQ}
     \label{fig:actual_iml_vs_sim_opq}
 \end{figure}
+
+The simulation tracks the actual data pretty closely with a difference hovering around 0 MB. The simulation assumes that 15 sensors are always sending, whereas the actual data fluctuates with the number of active sensors.
 
 \paragraph{AML Versus Simulated Growth}
 The Aggregate Measurements Level (AML) contains rolled up summary statistics of selected features generated from IML data. Figure~\ref{fig:actual_aml_vs_sim_opq} shows the actual AML vs estimated AML.
@@ -229,6 +233,8 @@ The Aggregate Measurements Level (AML) contains rolled up summary statistics of 
     \label{fig:actual_aml_vs_sim_opq}
 \end{figure}
 
+The simulated AML data trends closely with the actual data. There is a slight underestimation early on, but converges to close to 0 GB by the end of the data collection.
+
 \paragraph{DL Versus Simulated Growth}
 The Detection Level (DL) contains metadata and a window of raw data that may or may not include signals of interest. Figure~\ref{fig:actual_dl_vs_sim_opq} shows the actual DL vs estimated DL.
 
@@ -238,6 +244,10 @@ The Detection Level (DL) contains metadata and a window of raw data that may or 
     \caption{Actual DL vs Simulation DL for OPQ}
     \label{fig:actual_dl_vs_sim_opq}
 \end{figure}
+
+Although the simulated data has a similar shape to the actual data for the DL, there is a large offset between the simulation and the actual data. There are several reasons for this offset. The parameters passed into the simulation have somewhat large variances. The leading issue though, is that the simulation assumes that each device produces the same amount of Detections. In practice, certain boxes produce many Detections while others produce relatively few Detections. These differences can likely be attributed to the offset. On the bright side, at least the actual data is less than the simulated data and not the other way around!
+
+OPQ saves near 150 GB of data as compared to the simulation.
 
 \paragraph{IL Versus Simulated Growth}
 The Incidents Level (IL) contains metadata and a window of data that contains classified signals of interest. Figure~\ref{fig:actual_il_vs_sim_opq} shows the actual IL vs estimated IL.
@@ -249,6 +259,8 @@ The Incidents Level (IL) contains metadata and a window of data that contains cl
     \label{fig:actual_il_vs_sim_opq}
 \end{figure}
 
+The simulated IL data is better than the simulated DL data, but still displays an offset, likely for the same reasons as the DL. OPQ saves 20 GB in the IL compared to the simulated IL.
+
 \paragraph{PL Versus Simulated Growth}
 Figure shows the actual PL vs estimated PL.
 
@@ -258,6 +270,8 @@ TODO
 \paragraph{Laha Versus Simulated Growth}
 Figure~\ref{fig:actual_laha_vs_sim_opq} shows the actual Laha vs estimated Laha.
 
+The large offsets in the simulated DL and IL data create the overall trends in this plot. The shapes of the trends are similar but the offset shows that OPQ saves near 150 GB of data over the same time period as the simulation.
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{figures/actual_laha_vs_sim_opq.png}
@@ -266,6 +280,12 @@ Figure~\ref{fig:actual_laha_vs_sim_opq} shows the actual Laha vs estimated Laha.
 \end{figure}
 
 \paragraph{Discussion on Estimation Versus Simulation}
+
+I compared actual data for each level in the Laha hierarchy to both estimated bounds and simulated bounds. Both approaches show promising results for certain levels. The estimated bounds are better suited for examining the DL, IL, and PL whereas the simulated bounds are better for examining the IML and AML. The estimated bounds include an implicit TTL parameter where the simulated bounds actually performs TTL in the simulation.
+
+Future work should look at expanding the collection of parameters saved when items are garbage collected. This would allow better estimated bounds without TTL and provide better parameters to the simulation.
+
+Both approaches showed significant data savings when utilizing the data management techniques within Laha.
 
 \subsubsection{DSN System Requirements OPQ: CPU, Memory, and Disk Utilization}
 
