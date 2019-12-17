@@ -7,32 +7,47 @@ import pymongo.database
 
 def event_stats(mongo_client: pymongo.MongoClient) -> List[Dict]:
     db: pymongo.database.Database = mongo_client["opq"]
-    coll: pymongo.collection.Collection = db["box_events"]
+    box_events_coll: pymongo.collection.Collection = db["box_events"]
+    events_coll: pymongo.collection.Collection = db["events"]
 
-    query = {"event_start_timestamp_ms": {"$gt": 0},
-             "event_end_timestamp_ms": {"$gt": 0}}
-    projection = {"_id": False,
-                  "event_id": True,
-                  "event_start_timestamp_ms": True,
-                  "event_end_timestamp_ms": True}
+    events_query = {"target_event_start_timestamp_ms": {"$gt": 0},
+                    "target_event_end_timestamp_ms": {"$gt": 0}}
 
-    box_events: pymongo.cursor.Cursor = coll.find(query, projection=projection)
+    events_projection = {"_id": False,
+                         "target_event_start_timestamp_ms": True,
+                         "target_event_end_timestamp_ms": True}
+
+    events: List[Dict] = events_coll.find(events_query, projection=events_projection)
+    durations_events_ms: np.ndarray = np.array(
+            list(map(lambda doc: doc["target_event_end_timestamp_ms"] - doc["target_event_start_timestamp_ms"], events)))
+    durations_events_s: np.ndarray = durations_events_ms / 1_000.0
+
+    data_duration_events_s = durations_events_s.sum()
+
+    box_events_query = {"event_start_timestamp_ms": {"$gt": 0},
+                        "event_end_timestamp_ms": {"$gt": 0}}
+    box_events_projection = {"_id": False,
+                             "event_id": True,
+                             "event_start_timestamp_ms": True,
+                             "event_end_timestamp_ms": True}
+
+    box_events: pymongo.cursor.Cursor = box_events_coll.find(box_events_query, projection=box_events_projection)
     box_events: List[Dict] = list(box_events)
 
     min_ts_ms: int = min(list(map(lambda doc: doc["event_start_timestamp_ms"], box_events)))
     max_ts_ms: int = max(list(map(lambda doc: doc["event_end_timestamp_ms"], box_events)))
 
-    durations_ms: np.ndarray = np.array(
+    durations_box_events_ms: np.ndarray = np.array(
             list(map(lambda doc: doc["event_end_timestamp_ms"] - doc["event_start_timestamp_ms"], box_events)))
-    durations_s: np.ndarray = durations_ms / 1000.0
-    data_stored: np.ndarray = 12_000.0 * 2 * durations_s
+    durations_box_events_s: np.ndarray = durations_box_events_ms / 1000.0
+    data_stored: np.ndarray = 12_000.0 * 2 * durations_box_events_s
 
     total_duration_ms: int = max_ts_ms - min_ts_ms
     total_duration_s: float = total_duration_ms / 1000.0
 
-    data_duration_s: float = durations_s.sum()
-    mean_data_duration_s: float = durations_s.mean()
-    std_data_duration_s: float = durations_s.std()
+    data_duration_box_events_s: float = durations_box_events_s.sum()
+    mean_data_duration_box_events_s: float = durations_box_events_s.mean()
+    std_data_duration_box_events_s: float = durations_box_events_s.std()
 
     total_data = data_stored.sum()
     mean_data = data_stored.mean()
@@ -41,10 +56,12 @@ def event_stats(mongo_client: pymongo.MongoClient) -> List[Dict]:
     events_per_second = len(box_events) / total_duration_s
 
     print(f"total events {len(box_events)}")
+    print(f"min ts ms {min_ts_ms} max ts ms {max_ts_ms}")
     print(f"total duration s {total_duration_s}")
-    print(f"total data duration s {data_duration_s}")
-    print(f"percent data duration {data_duration_s / total_duration_s}")
-    print(f"mean data duration s, std {mean_data_duration_s}, {std_data_duration_s}")
+    print(f"total data duration box events s {data_duration_box_events_s}")
+    print(f"percent data duration box events {data_duration_box_events_s / total_duration_s}")
+    print(f"mean data duration box events s, std {mean_data_duration_box_events_s}, {std_data_duration_box_events_s}")
+    print(f"percent data duration events {data_duration_events_s / total_duration_s}")
     print(f"total data {total_data}")
     print(f"mean data, std {mean_data}, {std_data}")
     print(f"mean data per second {data_per_second}")
@@ -91,6 +108,7 @@ def incident_stats(mongo_client: pymongo.MongoClient) -> List[Dict]:
     incidents_per_second = len(incidents) / total_duration_s
 
     print(f"total incidents {len(incidents)}")
+    print(f"min ts ms {min_ts_ms} max ts ms {max_ts_ms}")
     print(f"total duration s {total_duration_s}")
     print(f"total data duration s {data_duration_s}")
     print(f"percent data duration {data_duration_s / total_duration_s}")

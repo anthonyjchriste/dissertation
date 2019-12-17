@@ -1,25 +1,28 @@
-total events 213889
-total duration s 22401992.053
-total data duration s 2929281.0160000003
-percent data duration 0.13075984533293863
-mean data duration s, std 13.695332700606391, 16.227766386726838
-total data 70302744384.0
-mean data, std 328687.98481455335, 389466.3932814442
-mean data per second 3138.2362879905268
-mean events per second 0.009547766979560049
+total events 216167
+min ts ms 1554050690476 max ts ms 1576544275608
+total duration s 22493585.132
+total data duration box events s 2961617.8760000006
+percent data duration box events 0.1316649995374335
+mean data duration box events s, std 13.700601275865422, 16.225139670205277
+percent data duration events 0.09301198295969353
+total data 71078829024.0
+mean data, std 328814.43062077, 389403.3520849267
+mean data per second 3159.959988898403
+mean events per second 0.009610162129845402
 
-total incidents 438566
-total duration s 23830558.929666746
-total data duration s 233179.2463098144
-percent data duration 0.009784883644484257
-mean data duration s, std 0.5316856443723735, 1.348147130131832
-total data 5596301911.435547
-mean data, std 12760.45546493697, 32355.53112316397
-mean data per second 234.83720746762222
-mean incidents per second 0.018403512955544977
+total incidents 446795
+min ts ms 1552622075631.3333 max ts ms 1576544275608.6667
+total duration s 23922199.977333497
+total data duration s 239217.01282348626
+percent data duration 0.00999979153464759
+mean data duration s, std 0.5354066469487937, 1.3573240876400612
+total data 5741208307.763672
+mean data, std 12849.759526771051, 32575.77810336147
+mean data per second 239.9949968315422
+mean incidents per second 0.018677002968930212
 
-aml mean data duration per month 263803.12182506075
-aml percent event to incident 0.32200814441135356
+aml mean data duration per month 265870.837801242
+aml percent event to incident 0.32006272927875207
 
 total_samples=1119744000000 2239488.00MB
 total_measurements=93312000 13530.24MB orphaned_measurements=93154047 99.83% 13507.34MB event_measurements=70017 0.08% 10.15MB incident_measurements=87936 0.09% 12.75MB
