@@ -1466,73 +1466,73 @@ if __name__ == "__main__":
     print("Making plots...")
 
     # Laha Plots
-    # plot_iml(laha_stat_dts,
-    #          laha_active_devices,
-    #          laha_iml_total_mb,
-    #          out_dir)
-    #
-    # plot_aml(laha_stat_dts,
-    #          laha_measurements_gb,
-    #          laha_trends_gb,
-    #          laha_aml_total_gb,
-    #          laha_measurements_cnt,
-    #          laha_trends_cnt,
-    #          laha_aml_total_cnt,
-    #          laha_measurements_gc,
-    #          laha_trends_gc,
-    #          laha_aml_total_gc,
-    #          laha_active_devices,
-    #          out_dir)
-    #
-    # plot_dl(laha_stat_dts,
-    #         laha_events_gb,
-    #         laha_events_cnt,
-    #         laha_events_gc,
-    #         laha_active_devices,
-    #         out_dir)
-    #
-    # plot_il(laha_stat_dts,
-    #         laha_incidents_gb,
-    #         laha_incidents_cnt,
-    #         laha_incidents_gc,
-    #         laha_active_devices,
-    #         out_dir)
-    #
-    # plot_laha(laha_stat_dts,
-    #           laha_iml_total_gb,
-    #           laha_aml_total_gb,
-    #           laha_events_gb,
-    #           laha_incidents_gb,
-    #           laha_total_gb,
-    #           out_dir)
-    #
-    # plot_iml_vs_no_tll(aligned_laha_est_dts,
-    #                    aligned_est_dts,
-    #                    aligned_laha_est_iml_total_mb,
-    #                    aligned_est_iml_total_mb,
-    #                    out_dir)
-    #
-    # plot_aml_vs_no_tll(aligned_laha_est_dts,
-    #                    aligned_est_dts,
-    #                    aligned_laha_est_measurements_gb_zero_offset,
-    #                    aligned_laha_est_trends_gb_zero_offset,
-    #                    aligned_laha_est_aml_total_gb_zero_offset,
-    #                    aligned_est_measurements_gb ,
-    #                    aligned_est_trends_gb,
-    #                    aligned_est_aml_total_gb,
-    #                    out_dir)
-    #
-    # plot_dl_vs_no_tll(aligned_est_dts,
-    #                   aligned_est_dts,
-    #                   aligned_laha_est_events_gb_offset_zero,
-    #                   aligned_est_events_total_gb,
-    #                   out_dir)
-    #
-    # plot_il_vs_no_tll(aligned_laha_est_dts,
-    #                   aligned_est_dts,
-    #                   aligned_laha_est_incidents_gb_offset_zero,
-    #                   aligned_est_incidents_total_gb,
-    #                   out_dir)
+    plot_iml(laha_stat_dts,
+             laha_active_devices,
+             laha_iml_total_mb,
+             out_dir)
+
+    plot_aml(laha_stat_dts,
+             laha_measurements_gb,
+             laha_trends_gb,
+             laha_aml_total_gb,
+             laha_measurements_cnt,
+             laha_trends_cnt,
+             laha_aml_total_cnt,
+             laha_measurements_gc,
+             laha_trends_gc,
+             laha_aml_total_gc,
+             laha_active_devices,
+             out_dir)
+
+    plot_dl(laha_stat_dts,
+            laha_events_gb,
+            laha_events_cnt,
+            laha_events_gc,
+            laha_active_devices,
+            out_dir)
+
+    plot_il(laha_stat_dts,
+            laha_incidents_gb,
+            laha_incidents_cnt,
+            laha_incidents_gc,
+            laha_active_devices,
+            out_dir)
+
+    plot_laha(laha_stat_dts,
+              laha_iml_total_gb,
+              laha_aml_total_gb,
+              laha_events_gb,
+              laha_incidents_gb,
+              laha_total_gb,
+              out_dir)
+
+    plot_iml_vs_no_tll(aligned_laha_est_dts,
+                       aligned_est_dts,
+                       aligned_laha_est_iml_total_mb,
+                       aligned_est_iml_total_mb,
+                       out_dir)
+
+    plot_aml_vs_no_tll(aligned_laha_est_dts,
+                       aligned_est_dts,
+                       aligned_laha_est_measurements_gb_zero_offset,
+                       aligned_laha_est_trends_gb_zero_offset,
+                       aligned_laha_est_aml_total_gb_zero_offset,
+                       aligned_est_measurements_gb ,
+                       aligned_est_trends_gb,
+                       aligned_est_aml_total_gb,
+                       out_dir)
+
+    plot_dl_vs_no_tll(aligned_est_dts,
+                      aligned_est_dts,
+                      aligned_laha_est_events_gb_offset_zero,
+                      aligned_est_events_total_gb,
+                      out_dir)
+
+    plot_il_vs_no_tll(aligned_laha_est_dts,
+                      aligned_est_dts,
+                      aligned_laha_est_incidents_gb_offset_zero,
+                      aligned_est_incidents_total_gb,
+                      out_dir)
 
     plot_laha_vs_no_tll(aligned_laha_est_dts,
                         aligned_est_dts,
@@ -1547,39 +1547,39 @@ if __name__ == "__main__":
                                out_dir)
 
     # Simulation plots
-    # plot_iml_vs_sim(aligned_laha_stats_dts,
-    #                 aligned_sim_data_dts,
-    #                 aligned_laha_iml_total_mb,
-    #                 aligned_sim_iml_total_mb,
-    #                 out_dir)
-    #
-    # plot_aml_vs_sim(aligned_laha_stats_dts,
-    #                 aligned_sim_data_dts,
-    #                 aligned_laha_measurements_gb_zero_offset,
-    #                 aligned_laha_trends_gb_zero_offset,
-    #                 aligned_laha_aml_total_gb_zero_offset,
-    #                 aligned_sim_total_measurements_gb,
-    #                 aligned_sim_total_trends_gb,
-    #                 aligned_sim_aml_total_gb,
-    #                 out_dir)
-    #
-    # plot_dl_vs_sim(aligned_laha_stats_dts,
-    #                aligned_sim_data_dts,
-    #                aligned_laha_events_gb_offset_zero,
-    #                aligned_sim_total_events_gb,
-    #                out_dir)
-    #
-    # plot_il_vs_sim(aligned_laha_stats_dts,
-    #                aligned_sim_data_dts,
-    #                aligned_laha_incidents_gb_offset_zero,
-    #                aligned_sim_total_incidents_gb,
-    #                out_dir)
-    #
-    # plot_laha_vs_sim(aligned_laha_stats_dts,
-    #                  aligned_sim_data_dts,
-    #                  aligned_laha_total_gb,
-    #                  aligned_sim_total_gb,
-    #                  out_dir)
+    plot_iml_vs_sim(aligned_laha_stats_dts,
+                    aligned_sim_data_dts,
+                    aligned_laha_iml_total_mb,
+                    aligned_sim_iml_total_mb,
+                    out_dir)
+
+    plot_aml_vs_sim(aligned_laha_stats_dts,
+                    aligned_sim_data_dts,
+                    aligned_laha_measurements_gb_zero_offset,
+                    aligned_laha_trends_gb_zero_offset,
+                    aligned_laha_aml_total_gb_zero_offset,
+                    aligned_sim_total_measurements_gb,
+                    aligned_sim_total_trends_gb,
+                    aligned_sim_aml_total_gb,
+                    out_dir)
+
+    plot_dl_vs_sim(aligned_laha_stats_dts,
+                   aligned_sim_data_dts,
+                   aligned_laha_events_gb_offset_zero,
+                   aligned_sim_total_events_gb,
+                   out_dir)
+
+    plot_il_vs_sim(aligned_laha_stats_dts,
+                   aligned_sim_data_dts,
+                   aligned_laha_incidents_gb_offset_zero,
+                   aligned_sim_total_incidents_gb,
+                   out_dir)
+
+    plot_laha_vs_sim(aligned_laha_stats_dts,
+                     aligned_sim_data_dts,
+                     aligned_laha_total_gb,
+                     aligned_sim_total_gb,
+                     out_dir)
 
     # System resource plots
-    # plot_system_resources(laha_stats, out_dir)
+    plot_system_resources(laha_stats, out_dir)

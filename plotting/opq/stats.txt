@@ -25,8 +25,8 @@ aml mean data duration per month 265870.837801242
 aml percent event to incident 0.32006272927875207
 
 total_samples=1119744000000 2239488.00MB
-total_measurements=93312000 13530.24MB orphaned_measurements=93154047 99.83% 13507.34MB event_measurements=70017 0.08% 10.15MB incident_measurements=87936 0.09% 12.75MB
-total_trends=1555200 567.65MB orphaned_trends=1552560 99.83% 566.68MB event_trends=1180 0.08% 0.43MB incident_trends=1460 0.09% 0.53MB
-total_events=11702 3931.87MB orphaned_events=5116 43.72% 1718.98MB incident_events=6586 56.28% 2212.90MB
-total_incidents=1360693 17208.68MB
-total_storage_items=189551595
+total_measurements=93312000 13530.24MB orphaned_measurements=84630749 90.70% 12271.46MB event_measurements=5902832 6.33% 855.91MB incident_measurements=2778419 2.98% 402.87MB
+total_trends=1555200 567.65MB orphaned_trends=1410805 90.72% 514.94MB event_trends=98179 6.31% 35.84MB incident_trends=46216 2.97% 16.87MB
+total_events=897589 301589.90MB orphaned_events=610907 68.06% 205264.75MB incident_events=286682 31.94% 96325.15MB
+total_incidents=1741491 22376.42MB
+total_storage_items=190818280
