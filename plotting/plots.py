@@ -261,6 +261,7 @@ def plot_dl_opq_no_err():
     plt.savefig("../src/figures/plot_dl_opq_no_err.png")
     plt.show()
 
+
 def plot_dl_opq_err():
     plt.figure(figsize=(12, 5))
     # x_values = np.arange(S_IN_YEAR, step=S_IN_DAY)
@@ -309,6 +310,7 @@ def plot_dl_opq_err():
     plt.savefig("../src/figures/plot_dl_opq_err.png")
     plt.show()
 
+
 def plot_iml_avg_opq():
     plt.figure(figsize=(12, 5))
     x_values = np.arange(S_IN_YEAR, step=S_IN_DAY)
@@ -338,132 +340,136 @@ def plot_iml_avg_opq():
     plt.show()
 
 
-def plot_dl_lokahi():
-    pass
-
 def plot_iml_average():
     plt.figure(figsize=(12, 5))
     s_samp = 2
     sr = 12_000
-    mu_n_sen = 9.9
+    mu_n_sen = 15.0
     sigma_n_sen = 0.7
     x_values = np.arange(S_IN_YEAR, step=S_IN_DAY)
-    y_values = s_samp * sr * mu_n_sen * x_values
+    y_values = s_samp * sr * mu_n_sen * x_values / 1_000_000_000.0
     e_values = (sigma_n_sen / np.sqrt(x_values)) * np.abs(s_samp * sr * x_values)
 
-    for i in range(len(x_values)):
-        print(x_values[i], y_values[i], e_values[i])
+    print("iml size one day", y_values[1])
+    print("iml size one week", y_values[7])
+    print("iml size one year", y_values[365])
 
-    plt.errorbar(x_values, y_values, yerr=e_values)
+    plt.plot(x_values, y_values)
 
-    plt.title("AML Estimated Size Growth: SR=12000, Size Sample=2, T=1yr, ")
+    plt.title("IML Estimated Size Growth: SR=12000, Size Sample=2, T=1yr, ")
     plt.xlabel("Time (S)")
-    plt.ylabel("Bytes")
+    plt.ylabel("GB")
 
     plt.legend()
-    plt.savefig("../src/figures/plot_dl_opq_err.png")
+    plt.savefig("../src/figures/plot_iml_opq_avg.png")
     plt.show()
+
 
 def plot_dl_opq_avg():
     plt.figure(figsize=(12, 5))
 
-    mu_dr = 8211.7
+    mu_dr = 3138.2362879905268
     sigma_dr = 185544.8
 
     x_values = np.arange(1, S_IN_YEAR, step=S_IN_DAY)
-    y_values = mu_dr * x_values
+    y_values = mu_dr * x_values / 1_000_000.0
     e_values = (sigma_dr / np.sqrt(x_values)) * np.abs(x_values)
 
-    for i in range(len(x_values)):
-        print(x_values[i], y_values[i], e_values[i])
+    print("dl size one day", y_values[1])
+    print("dl size one week", y_values[7])
+    print("dl size one year", y_values[365])
 
-    plt.errorbar(x_values, y_values, yerr=e_values)
+    plt.plot(x_values, y_values)
 
     plt.title("DL (OPQ) $\mu DR$=13064.9 T=1yr")
     plt.xlabel("Time (S)")
-    plt.ylabel("Bytes")
+    plt.ylabel("GB")
 
     plt.legend()
     plt.savefig("../src/figures/plot_dl_opq_avg.png")
     plt.show()
 
+
 def plot_il_opq_avg():
     plt.figure(figsize=(12, 5))
 
-    mu_dr = 438.58
+    mu_dr = 234.83720746762222
     sigma_dr = 6288.48
 
     x_values = np.arange(S_IN_YEAR, step=S_IN_DAY)
-    y_values = mu_dr * x_values
+    y_values = mu_dr * x_values / 1_000_000_000.0
     e_values = (sigma_dr / np.sqrt(x_values)) * np.abs(x_values)
 
-    for i in range(len(x_values)):
-        print(x_values[i], y_values[i], e_values[i])
+    print("il size one day", y_values[1])
+    print("il size one week", y_values[7])
+    print("il size one year", y_values[365])
 
-    plt.errorbar(x_values, y_values, yerr=e_values)
+    plt.plot(x_values, y_values)
 
-    plt.title("IL (OPQ) $\mu IR$=49.1 T=1yr")
+    plt.title("IL (OPQ) $\mu IR$=234.8 T=1yr")
     plt.xlabel("Time (S)")
-    plt.ylabel("Bytes")
+    plt.ylabel("GB")
 
     plt.legend()
     plt.savefig("../src/figures/plot_il_opq_avg.png")
     plt.show()
 
+
 def gb(b: float) -> float:
     return b / 1024.0 / 1024.0 / 1024.0
+
 
 def plot_laha_opq():
     plt.figure(figsize=(12, 5))
     x_values = np.arange(1, S_IN_YEAR * 3, step=S_IN_DAY)
 
     # IML
-    mu_n_sens = 1.0
+    mu_n_sens = 15.0
     sigma_n_sens = 0.7
     s_samp = 2
     sr = 12000
 
-    iml_size = s_samp * sr * mu_n_sens * x_values
+    iml_size = s_samp * sr * mu_n_sens * x_values / 1_000_000_000.0
     iml_error = (sigma_n_sens / np.sqrt(x_values)) * np.abs(s_samp * sr * x_values)
-    plt.errorbar(x_values, iml_size, yerr=iml_error, label="IML")
+    plt.plot(x_values, iml_size, label="IML")
 
     # AML
     s_meas = 145.0
     r_meas = 1.0 / 1.0
     s_trend = 365.0
     r_trend = 1.0 / 60.0
-    aml_size_meas = s_meas * r_meas * mu_n_sens * x_values
-    aml_size_trend = s_trend * r_trend * mu_n_sens * x_values
+    aml_size_meas = s_meas * r_meas * mu_n_sens * x_values / 1_000_000_000.0
+    aml_size_trend = s_trend * r_trend * mu_n_sens * x_values / 1_000_000_000.0
     aml_size_total = aml_size_meas + aml_size_trend
 
     aml_size_meas_e = (sigma_n_sens / np.sqrt(x_values)) * np.abs(s_meas * r_meas * x_values)
     aml_size_trends_e = (sigma_n_sens / np.sqrt(x_values)) * np.abs(s_trend * r_trend * x_values)
-    aml_size_e = np.sqrt(aml_size_meas_e**2 + aml_size_trends_e**2)
+    aml_size_e = np.sqrt(aml_size_meas_e ** 2 + aml_size_trends_e ** 2)
 
-    plt.errorbar(x_values, aml_size_meas, yerr=aml_size_meas_e, label="AML (Measurements)")
-    plt.errorbar(x_values, aml_size_trend, yerr=aml_size_trends_e, label="AML (Trends)")
-    plt.errorbar(x_values, aml_size_total, yerr=aml_size_e, label="AML")
+    plt.plot(x_values, aml_size_meas, label="AML (Measurements)")
+    plt.plot(x_values, aml_size_trend, label="AML (Trends)")
+    plt.plot(x_values, aml_size_total, label="AML")
 
     # DL
     mu_dr = 40.69
-    sigma_dr = 185544.81743550362
+    sigma_dr = 3138.2362879905268
 
-    dl_size = mu_dr * x_values
+    dl_size = mu_dr * x_values / 1_000_000_000.0
     dl_size_e = (sigma_dr / np.sqrt(x_values)) * np.abs(x_values)
-    plt.errorbar(x_values, dl_size, yerr=dl_size_e, label="DL")
+    plt.plot(x_values, dl_size, label="DL")
 
     # IL
-    mu_il = 184.41
+    mu_il = 234.83720746762222
     sigma_il = 6288.484706127778
 
-    il_size = mu_il * x_values
+    il_size = mu_il * x_values / 1_000_000_000.0
     il_size_e = (sigma_il / np.sqrt(x_values)) * np.abs(x_values)
-    plt.errorbar(x_values, il_size, yerr=il_size_e, label="IL")
+    plt.plot(x_values, il_size, label="IL")
 
     # Total
     laha_size = iml_size + aml_size_total + dl_size + il_size
-    laha_size_e = np.sqrt(iml_error**2 + aml_size_e**2 + dl_size_e**2 + il_size_e**2)
-    plt.errorbar(x_values, laha_size, yerr=laha_size_e, label="Laha")
+    laha_size_e = np.sqrt(iml_error ** 2 + aml_size_e ** 2 + dl_size_e ** 2 + il_size_e ** 2)
+    plt.plot(x_values, laha_size, label="Laha")
 
     print("iml", gb(iml_size[-1]), gb(iml_error[-1]))
     print("aml meas", gb(aml_size_meas[-1]), gb(aml_size_meas_e[-1]))
@@ -475,7 +481,7 @@ def plot_laha_opq():
 
     plt.title("Laha (OPQ)")
     plt.xlabel("Time (S)")
-    plt.ylabel("Bytes")
+    plt.ylabel("GB")
 
     plt.legend()
     plt.savefig("../src/figures/plot_laha_opq.png")
@@ -487,46 +493,46 @@ def plot_laha_opq_no_iml():
     x_values = np.arange(1, S_IN_YEAR, step=S_IN_DAY)
 
     # IML
-    mu_n_sens = 9.9
+    mu_n_sens = 15.0
     sigma_n_sens = 0.7
 
     # AML
     s_meas = 145.0
     r_meas = 1.0 / 1.0
-    s_trend = 324.0
+    s_trend = 365.0
     r_trend = 1.0 / 60.0
-    aml_size_meas = s_meas * r_meas * mu_n_sens * x_values
-    aml_size_trend = s_trend * r_trend * mu_n_sens * x_values
+    aml_size_meas = s_meas * r_meas * mu_n_sens * x_values / 1_000_000_000.0
+    aml_size_trend = s_trend * r_trend * mu_n_sens * x_values / 1_000_000_000.0
     aml_size_total = aml_size_meas + aml_size_trend
 
     aml_size_meas_e = (sigma_n_sens / np.sqrt(x_values)) * np.abs(s_meas * r_meas * x_values)
     aml_size_trends_e = (sigma_n_sens / np.sqrt(x_values)) * np.abs(s_trend * r_trend * x_values)
-    aml_size_e = np.sqrt(aml_size_meas_e**2 + aml_size_trends_e**2)
+    aml_size_e = np.sqrt(aml_size_meas_e ** 2 + aml_size_trends_e ** 2)
 
-    plt.errorbar(x_values, aml_size_meas, yerr=aml_size_meas_e, label="AML (Measurements)")
-    plt.errorbar(x_values, aml_size_trend, yerr=aml_size_trends_e, label="AML (Trends)")
-    plt.errorbar(x_values, aml_size_total, yerr=aml_size_e, label="AML")
+    plt.plot(x_values, aml_size_meas, label="AML (Measurements)")
+    plt.plot(x_values, aml_size_trend, label="AML (Trends)")
+    plt.plot(x_values, aml_size_total, label="AML")
 
     # DL
-    mu_dr = 8211.741437354178
+    mu_dr = 3138.2362879905268
     sigma_dr = 185544.81743550362
 
-    dl_size = mu_dr * x_values
+    dl_size = mu_dr * x_values/ 1_000_000_000.0
     dl_size_e = (sigma_dr / np.sqrt(x_values)) * np.abs(x_values)
-    plt.errorbar(x_values, dl_size, yerr=dl_size_e, label="DL")
+    plt.plot(x_values, dl_size, label="DL")
 
     # IL
-    mu_il = 438.57850995956863
+    mu_il = 234.83720746762222
     sigma_il = 6288.484706127778
 
-    il_size = mu_il * x_values
+    il_size = mu_il * x_values/ 1_000_000_000.0
     il_size_e = (sigma_il / np.sqrt(x_values)) * np.abs(x_values)
-    plt.errorbar(x_values, il_size, yerr=il_size_e, label="IL")
+    plt.plot(x_values, il_size, label="IL")
 
     # Total
     laha_size = aml_size_total + dl_size + il_size
-    laha_size_e = np.sqrt(aml_size_e**2 + dl_size_e**2 + il_size_e**2)
-    plt.errorbar(x_values, laha_size, yerr=laha_size_e, label="Laha")
+    laha_size_e = np.sqrt(aml_size_e ** 2 + dl_size_e ** 2 + il_size_e ** 2)
+    plt.plot(x_values, laha_size, label="Laha")
 
     plt.title("Laha (OPQ) Sans IML")
     plt.xlabel("Time (S)")
@@ -536,13 +542,14 @@ def plot_laha_opq_no_iml():
     plt.savefig("../src/figures/plot_laha_opq_no_iml.png")
     plt.show()
 
+
 def plot_laha_opq_pie():
     plt.figure(figsize=(12, 5))
     x_values = np.arange(1, S_IN_YEAR * 3, step=S_IN_DAY)
 
     # IML
     mu_n_sens = 1.0
-    sigma_n_sens = 0.7
+    sigma_n_sens = 15.0
     s_samp = 2
     sr = 12000
 
@@ -557,10 +564,10 @@ def plot_laha_opq_pie():
     aml_size_trend = s_trend * r_trend * mu_n_sens * x_values
 
     # DL
-    mu_dr = 40.69
+    mu_dr = 3138.2362879905268
     dl_size = mu_dr * x_values
     # IL
-    mu_il = 184.41
+    mu_il = 234.83720746762222
     il_size = mu_il * x_values
 
     plt.subplot(1, 2, 1)
@@ -580,6 +587,7 @@ def plot_laha_opq_pie():
 
     plt.savefig("../src/figures/plot_laha_opq_pie.png")
     plt.show()
+
 
 def plot_laha_lokahi_pie():
     plt.figure(figsize=(12, 5))
@@ -617,7 +625,7 @@ def plot_laha_lokahi_pie():
 
     plt.subplot(1, 2, 2)
     labels = ["AML (T)", "DL", "IL"]
-    values = [ gb(aml_size_trend[-1]), gb(dl_size[-1]), gb(il_size[-1])]
+    values = [gb(aml_size_trend[-1]), gb(dl_size[-1]), gb(il_size[-1])]
     total = sum(values)
     plt.pie(values, labels=labels, autopct=lambda p: "%.2f gb" % (p * total / 100.0))
 
@@ -676,7 +684,7 @@ def plot_laha_lokahi():
 
     # Total
     laha_size = iml_size + aml_size_total + dl_size + il_size
-    laha_size_e = np.sqrt(iml_error**2 + aml_size_e**2 + dl_size_e**2 + il_size_e**2)
+    laha_size_e = np.sqrt(iml_error ** 2 + aml_size_e ** 2 + dl_size_e ** 2 + il_size_e ** 2)
     plt.errorbar(x_values, laha_size, yerr=laha_size_e, label="Laha")
 
     print("iml", gb(iml_size[-1]), gb(iml_error[-1]))
@@ -689,11 +697,12 @@ def plot_laha_lokahi():
 
     plt.title("Laha (Lokahi)")
     plt.xlabel("Time (S)")
-    plt.ylabel("Bytes")
+    plt.ylabel("GB")
 
     plt.legend()
     plt.savefig("../src/figures/plot_laha_lokahi.png")
     plt.show()
+
 
 if __name__ == "__main__":
     # sample_sizes = [1, 2, 4, 8, 16]
@@ -709,11 +718,11 @@ if __name__ == "__main__":
     # plot_iml_level_lokahi()
     # plot_dl_opq_no_err()
     # plot_dl_opq_err()
-    # plot_iml_average()
-    # plot_dl_opq_avg()
-    # plot_il_opq_avg()
-    # plot_laha_opq()
-    # plot_laha_opq_no_iml()
-    # plot_laha_opq_pie()
+    plot_iml_average()
+    plot_dl_opq_avg()
+    plot_il_opq_avg()
+    plot_laha_opq()
+    plot_laha_opq_no_iml()
+    plot_laha_opq_pie()
     # plot_laha_lokahi_pie()
-    plot_laha_lokahi()
+    # plot_laha_lokahi()
