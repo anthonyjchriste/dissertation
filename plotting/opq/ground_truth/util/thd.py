@@ -11,15 +11,16 @@ import util
 import util.align_data as align
 import util.io as io
 
+THD_TYPES = ["AVG_VOLTAGE_THD"]
 
-def plot_frequency(opq_start_ts_s: int,
+def plot_thd(opq_start_ts_s: int,
                    opq_end_ts_s: int,
                    opq_box_id: str,
                    ground_truth_root: str,
                    uhm_sensor: str,
                    mongo_client: pymongo.MongoClient,
                    out_dir: str) -> None:
-    ground_truth_path: str = f"{ground_truth_root}/{uhm_sensor}/Frequency"
+    ground_truth_path: str = f"{ground_truth_root}/{uhm_sensor}/AVG_VOLTAGE_THD"
     uhm_data_points: List[io.DataPoint] = io.parse_file(ground_truth_path)
 
     db: pymongo.database.Database = mongo_client["opq"]
@@ -28,14 +29,14 @@ def plot_frequency(opq_start_ts_s: int,
         "box_id": opq_box_id,
         "timestamp_ms": {"$gte": opq_start_ts_s * 1000,
                          "$lte": opq_end_ts_s * 1000},
-        "frequency": {"$exists": True}
+        "thd": {"$exists": True}
     }
 
     projection: Dict[str, bool] = {
         "_id": False,
         "box_id": True,
         "timestamp_ms": True,
-        "frequency": True,
+        "thd": True,
     }
 
     cursor: pymongo.cursor.Cursor = coll.find(query, projection=projection)
@@ -47,7 +48,7 @@ def plot_frequency(opq_start_ts_s: int,
             uhm_data_points,
             lambda trend: datetime.datetime.utcfromtimestamp(trend.timestamp_ms / 1000.0),
             lambda data_point: datetime.datetime.utcfromtimestamp(data_point.ts_s),
-            lambda trend: trend.frequency.average,
+            lambda trend: trend.thd.average * 100.0,
             lambda data_point: data_point.avg_v
     )
 
@@ -66,7 +67,7 @@ def plot_frequency(opq_start_ts_s: int,
     ax: plt.Axes = ax
 
     fig.suptitle(
-            f"Frequency Ground Truth Comparison: {opq_box_id} vs {uhm_sensor} "
+            f"THD Ground Truth Comparison: {opq_box_id} vs {uhm_sensor} "
             f"{aligned_opq_dts[0].strftime('%Y-%m-%d')} to "
             f"{aligned_opq_dts[-1].strftime('%Y-%m-%d')}"
             f"\n$\mu$={mean_diff:.4f} $\sigma$={mean_stddev:.4f}"
@@ -77,16 +78,14 @@ def plot_frequency(opq_start_ts_s: int,
     x = np.linspace(diffs.min(), diffs.max(), 100)
     ax.plot(x, stats.norm.pdf(x, mean_diff, mean_stddev))
 
-    ax.set_xlabel("Frequency Difference Hz (UHM - OPQ)")
+    ax.set_xlabel("THD Difference  (UHM - OPQ)")
     ax.set_ylabel("% Density")
 
-    # fig.show()
-    out_path = f"{out_dir}/f_hist_{opq_box_id}_{uhm_sensor}.png"
-    print(util.latex_figure_source(out_path))
-    fig.savefig(f"{out_dir}/f_hist_{opq_box_id}_{uhm_sensor}.png")
+    fig.show()
+    # fig.savefig(f"{out_dir}/thd_hist_{opq_box_id}_{uhm_sensor}.png")
 
 
-def compare_frequencies(opq_start_ts_s: int,
+def compare_thds(opq_start_ts_s: int,
                         opq_end_ts_s: int,
                         ground_truth_root: str,
                         mongo_client: pymongo.MongoClient,
@@ -94,8 +93,8 @@ def compare_frequencies(opq_start_ts_s: int,
     for opq_box, uhm_meters in util.opq_box_to_uhm_meters.items():
         for uhm_meter in uhm_meters:
             try:
-                print(f"plot_frequency {opq_box} {uhm_meter}")
-                plot_frequency(opq_start_ts_s,
+                print(f"plot_thd {opq_box} {uhm_meter}")
+                plot_thd(opq_start_ts_s,
                                opq_end_ts_s,
                                opq_box,
                                ground_truth_root,

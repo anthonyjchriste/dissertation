@@ -8,6 +8,7 @@ import pymongo
 
 import util.frequency as frequency
 import util.io as io
+import util.thd as thd
 
 
 def find_ground_truth_data_range(ground_truth_root: str):
@@ -28,7 +29,6 @@ def find_ground_truth_data_range(ground_truth_root: str):
     print(f"min_ts {max_timestamp} {datetime.datetime.utcfromtimestamp(max_timestamp)}")
 
 
-
 def main():
     mongo_client: pymongo.MongoClient = pymongo.MongoClient()
     start_ts_s: int = 1575331200
@@ -37,6 +37,7 @@ def main():
     out_dir: str = "/Users/anthony/Development/dissertation/src/figures"
 
     frequency.compare_frequencies(start_ts_s, end_ts_s, gt_root, mongo_client, out_dir)
+    # thd.compare_thds(start_ts_s, end_ts_s, gt_root, mongo_client, out_dir)
 
 
 if __name__ == "__main__":

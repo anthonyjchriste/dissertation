@@ -1,17 +1,44 @@
 import datetime
-from typing import Callable, List, Tuple, Set
+from dataclasses import dataclass
+import functools
+from typing import Callable, List, Tuple, Set, Iterable
 
 import numpy as np
 
 
-# A = TypeVar("A")
-# B = TypeVar("B")
-# C = TypeVar("C")
-# D = TypeVar("D")
+@dataclass
+class SeriesSpec:
+    time: List
+    values: List
+    dt_func: Callable
+    v_func: Callable
 
 
 def bin_dt_by_min(dt: datetime.datetime) -> datetime.datetime:
     return datetime.datetime(dt.year, dt.month, dt.day, dt.hour, dt.minute, 0, 0, tzinfo=datetime.timezone.utc)
+
+
+def intersect_lists(lists: List[List[datetime.datetime]]) -> Set[datetime.datetime]:
+    sets: List[Set] = list(map(set, lists))
+    return set.intersection(*sets)
+
+
+def align_data_multi(series: List[SeriesSpec]) -> None:
+    all_dts: List[List[datetime.datetime]] = []
+    all_binned_dts: List[List[datetime.datetime]] = []
+
+    for serie in series:
+        dts: Iterable[List[datetime.datetime]] = list(map(serie.dt_func, serie.time))
+        binned_dts: Iterable[List[datetime.datetime]] = list(map(bin_dt_by_min, dts))
+        all_dts.extend(dts)
+        all_binned_dts.extend(binned_dts)
+
+    intersecting_dts: Set[datetime.datetime] = intersect_lists(all_binned_dts)
+
+    for serie_idx, serie in enumerate(series):
+        pass
+
+
 
 
 def align_data_by_min(series_a: List,

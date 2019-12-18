@@ -1,4 +1,5 @@
 from typing import Dict, List
+import os.path
 
 opq_box_to_uhm_meters: Dict[str, List[str]] = {
     "1000": ["POST_MAIN_1",
@@ -33,3 +34,22 @@ uhm_meter_to_opq_box: Dict[str, str] = {}
 for opq_box, uhm_meters in opq_box_to_uhm_meters.items():
     for uhm_meter in uhm_meters:
         uhm_meter_to_opq_box[uhm_meter] = opq_box
+
+
+def latex_figure_source(path: str) -> str:
+    file_name: str = os.path.split(path)[-1]
+    file_label: str = file_name.split(".")[0]
+    return """
+Figure~\\ref{FILE_LABEL}    
+    
+\\begin{figure}[H]
+    \\centering
+    \\includegraphics[width=\\linewidth]{figures/FILE_NAME}
+    \\caption{System Utilization for OPQ}
+    \\label{fig:FILE_LABEL}
+\\end{figure}
+""".replace("FILE_NAME", file_name).replace("FILE_LABEL", file_label)
+
+
+if __name__ == "__main__":
+    print(latex_figure_source("/home/test/foo.png"))

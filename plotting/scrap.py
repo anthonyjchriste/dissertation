@@ -1,17 +1,16 @@
-from typing import List
+from functools import reduce
+from typing import List, Set
 import numpy as np
 
-def correct_counts(counts: np.ndarray) -> np.ndarray:
-    diffs = np.diff(counts)
-    diffs[np.where(diffs < 0)] = 0
 
-    corrected_counts: List[int] = []
-    for i in range(len(diffs)):
-        corrected_counts.append(diffs[0:i].sum())
+def intersect_lists(lists: List[List]) -> Set:
+    sets: List[Set] = list(map(set, lists))
+    return set.intersection(*sets)
 
-    return np.array(corrected_counts)
 
 if __name__ == "__main__":
-    a: np.ndarray = np.array([0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 0, 1, 0])
-    b = correct_counts(a)
-    print(b)
+    a = [1, 2, 3]
+    b = [2, 3, 4]
+    c = [3, 4, 5]
+
+    print(np.array({1, 2, 3}))
