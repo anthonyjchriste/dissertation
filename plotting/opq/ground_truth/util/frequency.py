@@ -62,13 +62,13 @@ def plot_frequency(opq_start_ts_s: int,
     mean_stddev: float = diffs.std()
 
     # Plot
-    fig, ax = plt.subplots(1, 1, figsize=(16, 9))
+    fig, ax = plt.subplots(1, 1, figsize=(8, 8))
     fig: plt.Figure = fig
     ax: plt.Axes = ax
 
     fig.suptitle(
-            f"Frequency Ground Truth Comparison: {opq_box_id} vs {uhm_sensor} "
-            f"{aligned_opq_dts[0].strftime('%Y-%m-%d')} to "
+            f"Frequency Ground Truth Comparison\n{opq_box_id} vs {uhm_sensor}"
+            f"\n{aligned_opq_dts[0].strftime('%Y-%m-%d')} to "
             f"{aligned_opq_dts[-1].strftime('%Y-%m-%d')}"
             f"\n$\mu$={mean_diff:.4f} $\sigma$={mean_stddev:.4f}"
     )
@@ -84,7 +84,7 @@ def plot_frequency(opq_start_ts_s: int,
     # fig.show()
     out_path = f"{out_dir}/f_hist_{opq_box_id}_{uhm_sensor}.png"
     # print(util.latex_figure_source(out_path))
-    fig.savefig(f"{out_dir}/f_hist_{opq_box_id}_{uhm_sensor}.png")
+    fig.savefig(f"{out_dir}/f_hist_{opq_box_id}_{uhm_sensor}.png", bbox_inches='tight')
     return out_path
 
 
