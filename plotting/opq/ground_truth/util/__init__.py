@@ -40,12 +40,12 @@ def latex_figure_source(path: str) -> str:
     file_name: str = os.path.split(path)[-1]
     file_label: str = file_name.split(".")[0]
     return """
-Figure~\\ref{FILE_LABEL}    
+Figure~\\ref{fig:FILE_LABEL}    
     
 \\begin{figure}[H]
     \\centering
     \\includegraphics[width=\\linewidth]{figures/FILE_NAME}
-    \\caption{System Utilization for OPQ}
+    \\caption{}
     \\label{fig:FILE_LABEL}
 \\end{figure}
 """.replace("FILE_NAME", file_name).replace("FILE_LABEL", file_label)

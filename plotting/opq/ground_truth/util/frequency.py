@@ -1,4 +1,5 @@
 import datetime
+import os.path
 from typing import Dict, List, Tuple
 
 import matplotlib.pyplot as plt
@@ -18,7 +19,7 @@ def plot_frequency(opq_start_ts_s: int,
                    ground_truth_root: str,
                    uhm_sensor: str,
                    mongo_client: pymongo.MongoClient,
-                   out_dir: str) -> None:
+                   out_dir: str) -> str:
     ground_truth_path: str = f"{ground_truth_root}/{uhm_sensor}/Frequency"
     uhm_data_points: List[io.DataPoint] = io.parse_file(ground_truth_path)
 
@@ -82,8 +83,9 @@ def plot_frequency(opq_start_ts_s: int,
 
     # fig.show()
     out_path = f"{out_dir}/f_hist_{opq_box_id}_{uhm_sensor}.png"
-    print(util.latex_figure_source(out_path))
+    # print(util.latex_figure_source(out_path))
     fig.savefig(f"{out_dir}/f_hist_{opq_box_id}_{uhm_sensor}.png")
+    return out_path
 
 
 def compare_frequencies(opq_start_ts_s: int,
@@ -91,16 +93,18 @@ def compare_frequencies(opq_start_ts_s: int,
                         ground_truth_root: str,
                         mongo_client: pymongo.MongoClient,
                         out_dir: str) -> None:
-    for opq_box, uhm_meters in util.opq_box_to_uhm_meters.items():
-        for uhm_meter in uhm_meters:
-            try:
-                print(f"plot_frequency {opq_box} {uhm_meter}")
-                plot_frequency(opq_start_ts_s,
-                               opq_end_ts_s,
-                               opq_box,
-                               ground_truth_root,
-                               uhm_meter,
-                               mongo_client,
-                               out_dir)
-            except Exception as e:
-                print(e, "...ignoring...")
+    with open(os.path.join(out_dir, "f_latex.txt"), "w") as fout:
+        for opq_box, uhm_meters in util.opq_box_to_uhm_meters.items():
+            for uhm_meter in uhm_meters:
+                try:
+                    print(f"plot_frequency {opq_box} {uhm_meter}")
+                    path = plot_frequency(opq_start_ts_s,
+                                          opq_end_ts_s,
+                                          opq_box,
+                                          ground_truth_root,
+                                          uhm_meter,
+                                          mongo_client,
+                                          out_dir)
+                    fout.write(util.latex_figure_source(path))
+                except Exception as e:
+                    print(e, "...ignoring...")
