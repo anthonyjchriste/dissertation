@@ -1,10 +1,12 @@
 import datetime
 from typing import *
 
+import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 import numpy as np
 import pymongo
 import pymongo.database
+import scipy.stats as stats
 
 import util
 import util.align_data as align
@@ -18,6 +20,9 @@ def plot_frequency(opq_start_ts_s: int,
                    uhm_sensor: str,
                    mongo_client: pymongo.MongoClient,
                    out_dir: str) -> None:
+    ground_truth_path: str = f"{ground_truth_root}/{uhm_sensor}/Frequency"
+    uhm_data_points: List[io.DataPoint] = io.parse_file(ground_truth_path)
+
     db: pymongo.database.Database = mongo_client["opq"]
     coll: pymongo.collection.Collection = db["trends"]
     query: Dict = {
@@ -35,65 +40,49 @@ def plot_frequency(opq_start_ts_s: int,
     }
 
     cursor: pymongo.cursor.Cursor = coll.find(query, projection=projection)
-    opq_trends: List[Dict] = list(cursor)
+    opq_trend_docs: List[Dict] = list(cursor)
+    opq_trends: List[io.Trend] = list(map(io.Trend.from_doc, opq_trend_docs))
 
-    ground_truth_path: str = f"{ground_truth_root}/{uhm_sensor}/Frequency"
-    uhm_data_points: List[io.DataPoint] = io.parse_file(ground_truth_path)
-
-    aligned_opq_dts, aligned_opq_vs, aligned_uhm_dts, aligned_uhm_vs = align.align_data_by_min(
+    aligned_data: Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] = align.align_data_by_min(
             opq_trends,
             uhm_data_points,
-            lambda trend: datetime.datetime.utcfromtimestamp(trend["timestamp_ms"] / 1000.0),
+            lambda trend: datetime.datetime.utcfromtimestamp(trend.timestamp_ms / 1000.0),
             lambda data_point: datetime.datetime.utcfromtimestamp(data_point.ts_s),
-            lambda trend: trend["frequency"]["average"],
+            lambda trend: trend.frequency.average,
             lambda data_point: data_point.avg_v
     )
 
-    aligned_opq_freqs = np.array(aligned_opq_vs)
-    aligned_uhm_freqs = np.array(aligned_uhm_vs)
+    aligned_opq_dts: np.ndarray = aligned_data[0]
+    aligned_opq_vs: np.ndarray = aligned_data[1]
+    aligned_uhm_dts: np.ndarray = aligned_data[2]
+    aligned_uhm_vs: np.ndarray = aligned_data[3]
 
-    min_y = min(aligned_opq_freqs.min(), aligned_uhm_freqs.min())
-    max_y = max(aligned_opq_freqs.max(), aligned_uhm_freqs.max())
+    diffs: np.ndarray = aligned_uhm_vs - aligned_opq_vs
+    mean_diff: float = diffs.mean()
+    mean_stddev: float = diffs.std()
 
-    fig, ax = plt.subplots(3, 1, figsize=(16, 9), sharex="all")
-    # noinspection Mypy
+    # Plot
+    fig, ax = plt.subplots(1, 1, figsize=(16, 9))
     fig: plt.Figure = fig
-    # noinspection Mypy
-    ax: List[plt.Axes] = ax
-
-    # OPQ
-    ax_opq = ax[0]
-    ax_opq.plot(aligned_opq_dts, aligned_opq_freqs, label=f"Trends (OPQ Box {opq_box_id})")
-    ax_opq.set_ylim(ymin=min_y, ymax=max_y)
-    ax_opq.set_ylabel("Frequency (Hz)")
-    ax_opq.set_title(f"OPQ Box {opq_box_id} Mean={aligned_opq_freqs.mean()} Std={aligned_opq_freqs.std()}")
-    ax_opq.legend()
-
-    # UHM
-    ax_uhm = ax[1]
-    ax_uhm.plot(aligned_uhm_dts, aligned_uhm_freqs, label=f"Ground Truth ({uhm_sensor})")
-    ax_uhm.set_ylim(ymin=min_y, ymax=max_y)
-    ax_uhm.set_ylabel("Frequency (Hz)")
-    ax_uhm.set_title(f"UHM Meter {uhm_sensor} Mean={aligned_uhm_freqs.mean()} Std={aligned_uhm_freqs.std()}")
-    ax_uhm.legend()
-
-    # Diff
-    ax_diff = ax[2]
-    diff: np.ndarray = aligned_opq_freqs - aligned_uhm_freqs
-    ax_diff.plot(aligned_opq_dts, diff, label=f"Diff")
-    ax_diff.legend()
-    ax_diff.set_ylabel("Difference")
-    ax_diff.set_title(f"Difference ({opq_box_id} - {uhm_sensor})  Mean={diff.mean()} Std={diff.std()}")
-
-    ax_diff.set_ylabel("Frequency Diff (Hz)")
-    ax_diff.set_xlabel("Time (UTC)")
+    ax: plt.Axes = ax
 
     fig.suptitle(
             f"Frequency Ground Truth Comparison: {opq_box_id} vs {uhm_sensor} "
             f"{aligned_opq_dts[0].strftime('%Y-%m-%d')} to "
-            f"{aligned_opq_dts[-1].strftime('%Y-%m-%d')}")
+            f"{aligned_opq_dts[-1].strftime('%Y-%m-%d')}"
+            f"\n$\mu$={mean_diff:.4f} $\sigma$={mean_stddev:.4f}"
+    )
 
-    fig.savefig(f"{out_dir}/f_{opq_box_id}_{uhm_sensor}.png")
+    n, bins, patches = ax.hist(diffs, bins=250, density=True)
+
+    x = np.linspace(diffs.min(), diffs.max(), 100)
+    ax.plot(x, stats.norm.pdf(x, mean_diff, mean_stddev))
+
+    ax.set_xlabel("Frequency Difference (Hz)")
+    ax.set_ylabel("% Density")
+
+    # fig.show()
+    fig.savefig(f"{out_dir}/f_hist_{opq_box_id}_{uhm_sensor}.png")
 
 
 def compare_frequencies(opq_start_ts_s: int,
@@ -105,7 +94,12 @@ def compare_frequencies(opq_start_ts_s: int,
         for uhm_meter in uhm_meters:
             try:
                 print(f"plot_frequency {opq_box} {uhm_meter}")
-                plot_frequency(opq_start_ts_s, opq_end_ts_s, opq_box, ground_truth_root, uhm_meter, mongo_client,
+                plot_frequency(opq_start_ts_s,
+                               opq_end_ts_s,
+                               opq_box,
+                               ground_truth_root,
+                               uhm_meter,
+                               mongo_client,
                                out_dir)
             except Exception as e:
                 print(e, "...ignoring...")

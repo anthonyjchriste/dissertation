@@ -1,4 +1,36 @@
-from typing import *
+from dataclasses import dataclass
+from typing import Dict, List, Optional, Union
+
+
+@dataclass
+class TrendMetric:
+    min_v: float
+    max_v: float
+    average: float
+
+    @staticmethod
+    def from_doc(doc: Dict[str, Union[float, int]]) -> 'TrendMetric':
+        return TrendMetric(doc["min"],
+                           doc["max"],
+                           doc["average"])
+
+
+@dataclass
+class Trend:
+    box_id: str
+    timestamp_ms: int
+    thd: Optional[TrendMetric]
+    voltage: Optional[TrendMetric]
+    frequency: Optional[TrendMetric]
+
+    @staticmethod
+    def from_doc(doc: Dict) -> 'Trend':
+        return Trend(doc["box_id"],
+                     doc["timestamp_ms"],
+                     TrendMetric.from_doc(doc["thd"]) if "thd" in doc else None,
+                     TrendMetric.from_doc(doc["voltage"]) if "voltage" in doc else None,
+                     TrendMetric.from_doc(doc["frequency"]) if "frequency" in doc else None)
+
 
 class DataPoint:
     def __init__(self,

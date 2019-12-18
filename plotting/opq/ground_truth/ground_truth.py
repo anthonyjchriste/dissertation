@@ -34,10 +34,9 @@ def main():
     start_ts_s: int = 1575331200
     end_ts_s: int = 1576622969
     gt_root: str = "/Users/anthony/Desktop/forAnthony/data"
-    out_dir: str = "/Users/anthony/Desktop/forAnthony"
+    out_dir: str = "/Users/anthony/Development/dissertation/src/figures"
 
     frequency.compare_frequencies(start_ts_s, end_ts_s, gt_root, mongo_client, out_dir)
-    # find_ground_truth_data_range(gt_root)
 
 
 if __name__ == "__main__":
