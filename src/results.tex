@@ -16,13 +16,13 @@ There were several schema changes to the stored metric data, with the most signi
 
 Further, the astute reader will notice that there are often times more than 15 Boxes in the metric data when only 15 Boxes were deployed for the UHM deployment. This is attributed to the fact that several Boxes were sent to the Electric Power Research Institute (EPRI) to evaluate if our Boxes could be used as a test bed for their power quality analysis needs. The metrics collected by Laha are collected for the total set of all Boxes sending to OPQ, and thus, also sometimes include metrics from the Boxes that EPRI are evaluating.
 
-First I will examine the storage requirements at each level within the hierarchy. Then I will compare the levels to each other to get an idea of the requirements for the entire network. Finally, I will compare these values to the theoretical bounds found in previous sections.
+First I will examine the storage requirements at each level within the hierarchy. After these have been examined in detail, I will compare the actual results to the theoretical results founds in previous sections.
 
 \subsubsection{DSN System Requirements OPQ: IML}
 
-The Instantaneous Measurements Level (IML) contains a window of raw samples from sensors. In the case OPQ, these consist of the samples of data stored in the main memory of each OPQ Box. The IML has a TTL of 15 minutes which is determined by the available storage capacity of each OPQ Box.
+The Instantaneous Measurements Level (IML) contains a window of raw samples from sensors. In the case of OPQ, these consist of the samples of data stored in the main memory of each OPQ Box. The IML has a TTL of 15 minutes which is determined by the available storage capacity of each OPQ Box.
 
-The IML is unique in that data from the IML is never ``saved" by higher levels in the hierarchy. Instead, IML data is copied into Detections, Incidents, and Phenomena. Because of this, the size of the IML over time is function of the number of OPQ Boxes sending data at any particular time. Figure~\ref{fig:actual_iml_opq} shows the actual OPQ IML data growth over the deployment period. As can be observed, the AML size is a simple function of the number of OPQ Boxes sending data.
+The IML is unique in that data from the IML is never ``saved" by higher levels in the hierarchy. Instead, IML data is copied into Detections, Incidents, and Phenomena. Because of this, the size of the IML over time is function of the number of OPQ Boxes sending data at any particular time. Figure~\ref{fig:actual_iml_opq} shows the actual OPQ IML data growth over the deployment period. As can be observed, the IML size is a simple function of the number of OPQ Boxes sending data.
 
 \begin{figure}[H]
     \centering
@@ -31,7 +31,9 @@ The IML is unique in that data from the IML is never ``saved" by higher levels i
     \label{fig:actual_iml_opq}
 \end{figure}
 
-A deployment of 15 OPQ Boxes will consume about 325 MB of IML space.
+A deployment of 15 OPQ Boxes will consume about 325 MB of IML space. The changes in data size are attributed to the fact that OPQ Boxes came on and offline during the period of the OPQ deployment. At the lowest point, only 9 OPQ Boxes were sending and at the highest point 17 OPQ Boxes were sending data. Garbage collection doesn't take place in the traditional sense in the cloud at this level as the IML samples are stored on the OPQ Boxes and bounded by the available memory that each Box can store. This plot assumes that at each Box is storing 15 minutes worth of data in a circular buffer. The spikes in IML size are from data gaps in sensor data. Either the sensor was powered off or there were network connectivity issues.
+
+I will compare this result to the theoretical results in following sections.
 
 \subsubsection{DSN System Requirements OPQ: AML}
 
@@ -48,9 +50,11 @@ I examine the AML data growth for OPQ by looking at the data growth of Measureme
 
 The top panel displays the AML data growth with size in GB on the left Y-axis and the count of AML items on the right Y-axis. Over a period of two and a half months the AML in OPQ has reached a size of about 1.75 GB containing over 4 million AML items.
 
-The middle panel displays the number of Measurements and Trends that were garbage collected over time on the left Y-axis and the percentage of items that were garbage collected on the right Y-axis. About 98\% of all AML data was garbage collected. About 2\% of all AML data is either awaiting garbage collection of was ``saved" by a higher level in the Laha hierarchy.
+The middle panel displays the number of Measurements and Trends that were garbage collected over time on the left Y-axis and the percentage of items that were garbage collected on the right Y-axis. About 98\% of all AML data was garbage collected. About 2\% of all AML data is either awaiting garbage collection or was ``saved" by a higher level in the Laha hierarchy.
 
 The bottom panel displays the number of active OPQ Boxes over time. It's possible to see how the number of Boxes impacts the size of the AML. For example, the increase in Boxes in September and the decrease of Boxes in mid-November have noticeable impacts on the AML storage size.
+
+I will compare this result to the theoretical results in following sections.
 
 \subsubsection{DSN System Requirements OPQ: DL}
 
@@ -71,6 +75,8 @@ The middle panel shows the garbage collection statistics for the DL. Of note is 
 
 The bottom panel shows the number of active OPQ Boxes sending data over time.
 
+I will compare this result to the theoretical results in following sections.
+
 \subsubsection{DSN System Requirements OPQ: IL}
 
 The Incidents Level (IL) contains metadata and data relating to classified signals of interest. Incidents are created when a Mauka plugin classifies a signal of interest from a Detection. Incidents can be saved by Phenomena.
@@ -89,6 +95,8 @@ The top panel shows the growth of the IL with the size in GB on the left Y-axis 
 The middle panel shows the garbage collection statistics for the IL. You'll note that the GC statistics are flat lining at 0. This is due to the fact that Incidents are given a default TTL of 1 year and this deployment has only been collecting data for 3 months.
 
 The bottom panel shows the number of active OPQ Boxes sending data over time.
+
+I will compare this result to the theoretical results in following sections.
 
 \subsubsection{DSN System Requirements OPQ: PL}
 
@@ -111,6 +119,8 @@ First, please note that the Y-axis is using a log scale in order to better displ
 We can observe that the IML level converges to the smallest of the levels due to its strict 15 minute TTL.
 
 The IL starts out small, but as Incidents are identified, the IL surpasses the IML at about 1 month and surpasses the AML in size at about 2 months. The Detections level is the largest and this makes sense since we treat Detections relatively cheaply and they contain windows of data that are generally larger than the signal of interest if there even is a signal of interest at all.
+
+I will compare this result to the theoretical results in following sections.
 
 \subsubsection{DSN System Requirements OPQ: Comparing Results to Estimates}
 
@@ -289,7 +299,7 @@ Both approaches showed significant data savings when utilizing the data manageme
 
 \subsubsection{DSN System Requirements OPQ: CPU, Memory, and Disk Utilization}
 
-We collected CPU, memory, and disk utilization during the deployment of the OPQ network. It would be prudent to first discuss the details of the system that the OPQ network is running on.
+We collected CPU, memory, and disk utilization during the deployment of the OPQ network. It is useful to first discuss the details of the system that the OPQ network is running on.
 
 Makai, Mauka, View, MongoDB, and Health are all running on the same virtual server hosted by the University's Information Technology Services. The server is running Red Hat Enterprise Linux Server release 7.7 (Maipo). Due to a configuration error, the server only ran with a single virtual CPU up until October 28, 2019. After that time period, a second virtual CPU was added. Each virtual CPU is an Intel Xeon E5-2687W v3 running at 3.10 GHz. The system has 8 GB of main memory and 8 GB of swap space. The system has 1 TB of hard disk storage.
 
@@ -306,7 +316,7 @@ Figure~\ref{fig:actual_system_opq} shows the OPQ system resource utilization ove
     \label{fig:actual_system_opq}
 \end{figure}
 
-You'll note a gaps in the data in early and mid October. These were caused by a mix-up in deployed branches where one of the branches did not have collected of system statistics enabled.
+You'll note gaps in the data in early and mid October. These were caused by a mix-up in deployed branches where one of the branches did not have collection of system statistics enabled.
 
 The top panel shows the minimum, mean, and maximum CPU load. Each triplet of min, mean, and max values are aggregated over 30 sample points. So even though the CPU hits 100\% utilization quite often, the mean of the CPU utilization is much lower, rarely rising over 40\%. A slight decrease (~5\%) in CPU load can be observed when the second virtual CPU was added to the system.
 
