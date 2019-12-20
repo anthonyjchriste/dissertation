@@ -435,6 +435,10 @@ def plot_iml(laha_stat_dts: np.ndarray,
     fig.savefig(f"{out_dir}/actual_iml_opq.png")
 
 
+def slope_intercept(slope: float, intercept: float) -> str:
+    return f"y = {slope} * t + {intercept}"
+
+
 def plot_aml(laha_stat_dts: np.ndarray,
              measurements_gb: np.ndarray,
              trends_gb: np.ndarray,
@@ -453,6 +457,7 @@ def plot_aml(laha_stat_dts: np.ndarray,
 
     xs = np.array(list(map(lambda dt: dt.timestamp(), laha_stat_dts)))
     slope, intercept, r_value, p_value, std_err = stats.linregress(xs, total_gb)
+    print("aml", slope_intercept(slope, intercept))
 
     fig.suptitle(f"Laha AML (OPQ)\n"
                  f"$LR_{{AML\ Total}}$=($m$={slope} $b$={intercept} $R^2$={r_value**2} $\sigma$={std_err})")
@@ -531,6 +536,7 @@ def plot_dl(laha_stat_dts: np.ndarray,
 
     xs = np.array(list(range(len(laha_stat_dts))))
     slope, intercept, r_value, p_value, std_err = stats.linregress(xs, events_gb)
+    print("dl", slope_intercept(slope, intercept))
 
     fig.suptitle("Laha DL (OPQ)\n"
                  f"$LR_{{DL\ Total}}$=($m$={slope} $b$={intercept} $R^2$={r_value**2} $\sigma$={std_err})")
@@ -595,6 +601,7 @@ def plot_il(laha_stat_dts: np.ndarray,
 
     xs = np.array(list(range(len(laha_stat_dts))))
     slope, intercept, r_value, p_value, std_err = stats.linregress(xs, incidents_gb)
+    print("il", slope_intercept(slope, intercept))
 
     fig.suptitle("Laha IL (OPQ)\n"
                  f"$LR_{{IL\ Total}}$=($m$={slope} $b$={intercept} $R^2$={r_value**2} $\sigma$={std_err})")
@@ -661,6 +668,7 @@ def plot_laha(laha_stat_dts: np.ndarray,
 
     xs = np.array(list(range(len(laha_stat_dts))))
     slope, intercept, r_value, p_value, std_err = stats.linregress(xs, total_gb)
+    print("laha", slope_intercept(slope, intercept))
 
     fig.suptitle("Laha IL (OPQ)\n"
                  f"$LR_{{Laha\ Total}}$=($m$={slope} $b$={intercept} $R^2$={r_value**2} $\sigma$={std_err})")

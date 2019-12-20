@@ -54,6 +54,13 @@ The middle panel displays the number of Measurements and Trends that were garbag
 
 The bottom panel displays the number of active OPQ Boxes over time. It's possible to see how the number of Boxes impacts the size of the AML. For example, the increase in Boxes in September and the decrease of Boxes in mid-November have noticeable impacts on the AML storage size.
 
+Equation~\ref{eq:aml_si} provides the best fit linear regression for the total AML size in GB with an $R^2$ value = 0.98.
+
+\begin{equation}
+    y = 1.3114190030697152e-07 * x + -205.0594231185633
+    \label{eq:aml_si}
+\end{equation}
+
 I will compare this result to the theoretical results in following sections.
 
 \subsubsection{DSN System Requirements OPQ: DL}
@@ -74,6 +81,13 @@ The top panel shows the size of the DL over time with the size in GB on the left
 The middle panel shows the garbage collection statistics for the DL. Of note is the delayed uptick in garbage collection until October 1, 2019. This is a direct result of the fact that Detections have a TTL of 1 month, and thus, no Detections were garbage collected during the first month of data collection. As of two and a half months of data collection, about 50\% of all Detections generated have been garbage collected while the other 50\% are wither awaiting garbage collection or have been saved by Incidents or Phenomena.
 
 The bottom panel shows the number of active OPQ Boxes sending data over time.
+
+Equation~\ref{eq:dl_si} provides the best fit linear regression for the total DL size in GB with an $R^2$ value = 0.87.
+
+\begin{equation}
+    y = 0.0015753666595407743 * x + 35.36203597974968
+    \label{eq:dl_si}
+\end{equation}
 
 I will compare this result to the theoretical results in following sections.
 
@@ -98,6 +112,13 @@ This brings up the question, is a TTL of 1 year for Incidents too long? It's cle
 
 The bottom panel shows the number of active OPQ Boxes sending data over time.
 
+Equation~\ref{eq:il_si} provides the best fit linear regression for the total IL size in GB with an $R^2$ value = 0.86.
+
+\begin{equation}
+    y = 0.0002639755092549473 * x + -1.0734989552250378
+    \label{eq:il_si}
+\end{equation}
+
 I will compare this result to the theoretical results in following sections.
 
 \subsubsection{DSN System Requirements OPQ: PL}
@@ -121,6 +142,13 @@ First, please note that the Y-axis is using a log scale in order to better displ
 We can observe that the IML level converges to the smallest of the levels due to its strict 15 minute TTL.
 
 The IL starts out small, but as Incidents are identified, the IL surpasses the IML at about 1 month and surpasses the AML in size at about 2 months. The Detections level is the largest and this makes sense since we treat Detections relatively cheaply and they contain windows of data that are generally larger than the signal of interest if there even is a signal of interest at all.
+
+Equation~\ref{eq:laha_si} provides the best fit linear regression for the total Laha size in GB with an $R^2$ value = 0.91.
+
+\begin{equation}
+    y = 0.0018820483597437351 * x + 35.400368198840155
+    \label{eq:laha_si}
+\end{equation}
 
 I will compare this result to the theoretical results in following sections.
 
