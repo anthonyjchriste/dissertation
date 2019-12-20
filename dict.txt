@@ -493,3 +493,13 @@ tunable
 virtualized
 20GB
 uptick
+VAB
+VBC
+VBN
+VCA
+CB
+BN
+420V
+240V
+VCN
+CN
