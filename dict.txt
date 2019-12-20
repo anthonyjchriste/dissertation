@@ -503,3 +503,4 @@ BN
 240V
 VCN
 CN
+offline
