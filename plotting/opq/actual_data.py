@@ -436,7 +436,7 @@ def plot_iml(laha_stat_dts: np.ndarray,
 
 
 def slope_intercept(slope: float, intercept: float) -> str:
-    return f"y = {slope} * t + {intercept}"
+    return f"y = {slope} * x + {intercept}"
 
 
 def plot_aml(laha_stat_dts: np.ndarray,
@@ -456,20 +456,20 @@ def plot_aml(laha_stat_dts: np.ndarray,
     ax: List[plt.Axes] = ax
 
     xs = np.array(list(map(lambda dt: dt.timestamp(), laha_stat_dts)))
+    xs = xs - xs[0]
     slope, intercept, r_value, p_value, std_err = stats.linregress(xs, total_gb)
-    print("aml", slope_intercept(slope, intercept))
+    print("aml", slope_intercept(slope, intercept), total_gb[0])
 
     fig.suptitle(f"Laha AML (OPQ)\n"
-                 f"$LR_{{AML\ Total}}$=($m$={slope} $b$={intercept} $R^2$={r_value**2} $\sigma$={std_err})")
-
-    print(slope, intercept, r_value, p_value, std_err)
+                 f"$LR_{{AML\ Total}}$=($m$={slope} $b$={intercept} $R^2$={r_value ** 2} $\sigma$={std_err})")
 
     # Size
     ax_size = ax[0]
     ax_size.plot(laha_stat_dts, measurements_gb, label="Measurements Size GB", color="blue")
     ax_size.plot(laha_stat_dts, trends_gb, label="Trends Size GB", color="green")
     ax_size.plot(laha_stat_dts, total_gb, label="AML Total GB", color="red")
-    ax_size.errorbar(laha_stat_dts, intercept + slope*xs, yerr=std_err, label="AML Total GB LR", color="black", linestyle=":")
+    ax_size.errorbar(laha_stat_dts, intercept + slope * xs, yerr=std_err, label="AML Total GB LR", color="black",
+                     linestyle=":")
     ax_size.set_ylabel("Size GB")
     ax_size.set_title("Actual AML Size")
     ax_size.legend(loc="upper left")
@@ -534,17 +534,19 @@ def plot_dl(laha_stat_dts: np.ndarray,
     fig: plt.Figure = fig
     ax: List[plt.Axes] = ax
 
-    xs = np.array(list(range(len(laha_stat_dts))))
+    xs = np.array(list(map(lambda dt: dt.timestamp(), laha_stat_dts)))
+    xs = xs - xs[0]
     slope, intercept, r_value, p_value, std_err = stats.linregress(xs, events_gb)
-    print("dl", slope_intercept(slope, intercept))
+    print("dl", slope_intercept(slope, intercept), events_gb[0])
 
     fig.suptitle("Laha DL (OPQ)\n"
-                 f"$LR_{{DL\ Total}}$=($m$={slope} $b$={intercept} $R^2$={r_value**2} $\sigma$={std_err})")
+                 f"$LR_{{DL\ Total}}$=($m$={slope} $b$={intercept} $R^2$={r_value ** 2} $\sigma$={std_err})")
 
     # Size
     ax_size = ax[0]
     ax_size.plot(laha_stat_dts, events_gb, label="Events Size GB", color="blue")
-    ax_size.errorbar(laha_stat_dts, intercept + slope*xs, yerr=std_err, label="DL Total GB LR", color="black", linestyle=":")
+    ax_size.errorbar(laha_stat_dts, intercept + slope * xs, yerr=std_err, label="DL Total GB LR", color="black",
+                     linestyle=":")
     ax_size.set_ylabel("Size GB")
     ax_size.set_title("Actual DL Size")
     ax_size.legend(loc="upper left")
@@ -599,17 +601,19 @@ def plot_il(laha_stat_dts: np.ndarray,
     fig: plt.Figure = fig
     ax: List[plt.Axes] = ax
 
-    xs = np.array(list(range(len(laha_stat_dts))))
+    xs = np.array(list(map(lambda dt: dt.timestamp(), laha_stat_dts)))
+    xs = xs - xs[0]
     slope, intercept, r_value, p_value, std_err = stats.linregress(xs, incidents_gb)
-    print("il", slope_intercept(slope, intercept))
+    print("il", slope_intercept(slope, intercept), incidents_gb[0])
 
     fig.suptitle("Laha IL (OPQ)\n"
-                 f"$LR_{{IL\ Total}}$=($m$={slope} $b$={intercept} $R^2$={r_value**2} $\sigma$={std_err})")
+                 f"$LR_{{IL\ Total}}$=($m$={slope} $b$={intercept} $R^2$={r_value ** 2} $\sigma$={std_err})")
 
     # Size
     ax_size = ax[0]
     ax_size.plot(laha_stat_dts, incidents_gb, label="Incidents Size GB", color="blue")
-    ax_size.errorbar(laha_stat_dts, intercept + slope*xs, yerr=std_err, label="IL Total GB LR", color="black", linestyle=":")
+    ax_size.errorbar(laha_stat_dts, intercept + slope * xs, yerr=std_err, label="IL Total GB LR", color="black",
+                     linestyle=":")
     ax_size.set_ylabel("Size GB")
     ax_size.set_title("Actual IL Size")
     ax_size.legend(loc="upper left")
@@ -666,12 +670,13 @@ def plot_laha(laha_stat_dts: np.ndarray,
     fig: plt.Figure = fig
     ax: plt.Axes = ax
 
-    xs = np.array(list(range(len(laha_stat_dts))))
+    xs = np.array(list(map(lambda dt: dt.timestamp(), laha_stat_dts)))
+    xs = xs - xs[0]
     slope, intercept, r_value, p_value, std_err = stats.linregress(xs, total_gb)
-    print("laha", slope_intercept(slope, intercept))
+    print("laha", slope_intercept(slope, intercept), total_gb[0])
 
     fig.suptitle("Laha IL (OPQ)\n"
-                 f"$LR_{{Laha\ Total}}$=($m$={slope} $b$={intercept} $R^2$={r_value**2} $\sigma$={std_err})")
+                 f"$LR_{{Laha\ Total}}$=($m$={slope} $b$={intercept} $R^2$={r_value ** 2} $\sigma$={std_err})")
 
     # Size
     size_ax = ax
@@ -680,7 +685,8 @@ def plot_laha(laha_stat_dts: np.ndarray,
     size_ax.plot(laha_stat_dts, dl_gb, label="DL Total")
     size_ax.plot(laha_stat_dts, il_gb, label="IL Total")
     size_ax.plot(laha_stat_dts, total_gb, label="Total")
-    size_ax.errorbar(laha_stat_dts, intercept + slope*xs, yerr=std_err, label="Laha Total GB LR", color="black", linestyle=":")
+    size_ax.errorbar(laha_stat_dts, intercept + slope * xs, yerr=std_err, label="Laha Total GB LR", color="black",
+                     linestyle=":")
 
     size_ax.set_yscale("log")
     size_ax.set_ylabel("Size GB")
@@ -876,7 +882,6 @@ def plot_dl_vs_no_tll(laha_dts: np.ndarray,
                       laha_events_gb: np.ndarray,
                       est_events_gb: np.ndarray,
                       out_dir: str) -> None:
-
     # Plot
     fig, ax = plt.subplots(3, 1, figsize=(16, 9), sharex="all", constrained_layout=True, sharey="all")
     fig: plt.Figure = fig
@@ -1243,7 +1248,7 @@ def plot_laha_vs_sim(laha_stat_dts: np.ndarray,
     fig.savefig(f"{out_dir}/actual_laha_vs_sim_opq.png")
 
 
-if __name__ == "__main__":
+def main():
     # mongo_client: pymongo.MongoClient = pymongo.MongoClient()
     # laha_stats: List[LahaStat] = get_laha_stats(mongo_client)
     # save_laha_stats(laha_stats, "laha_stats.pickle.db")
@@ -1297,7 +1302,8 @@ if __name__ == "__main__":
     # aligned_laha_measurements_bytes: np.ndarray = np.array(
     #         list(map(lambda measurement: measurement.size_bytes, aligned_laha_measurements)))
     # aligned_laha_measurements_gb: np.ndarray = aligned_laha_measurements_bytes / 1_000_000_000.0
-    # aligned_laha_measurements_gb_zero_offset: np.ndarray = aligned_laha_measurements_gb - aligned_laha_measurements_gb[
+    # aligned_laha_measurements_gb_zero_offset: np.ndarray = aligned_laha_measurements_gb -
+    # aligned_laha_measurements_gb[
     #     0]
     #
     # aligned_laha_trends: List[LahaMetric] = list(
@@ -1432,12 +1438,14 @@ if __name__ == "__main__":
     # aligned_laha_est_measurements_bytes: np.ndarray = np.array(
     #         list(map(lambda measurement: measurement.size_bytes, aligned_laha_est_measurements)))
     # aligned_laha_est_measurements_gb: np.ndarray = aligned_laha_est_measurements_bytes / 1_000_000_000.0
-    # aligned_laha_est_measurements_gb_zero_offset: np.ndarray = aligned_laha_est_measurements_gb - aligned_laha_est_measurements_gb[
+    # aligned_laha_est_measurements_gb_zero_offset: np.ndarray = aligned_laha_est_measurements_gb -
+    # aligned_laha_est_measurements_gb[
     #     0]
     #
     # aligned_laha_est_trends: List[LahaMetric] = list(
     #         map(lambda laha_est_stat: map_laha_metric(laha_est_stat, "trends"), aligned_laha_est_stats))
-    # aligned_laha_est_trends_bytes: np.ndarray = np.array(list(map(lambda trend: trend.size_bytes, aligned_laha_est_trends)))
+    # aligned_laha_est_trends_bytes: np.ndarray = np.array(list(map(lambda trend: trend.size_bytes,
+    # aligned_laha_est_trends)))
     # aligned_laha_est_trends_gb: np.ndarray = aligned_laha_est_trends_bytes / 1_000_000_000.0
     # aligned_laha_est_trends_gb_zero_offset: np.ndarray = aligned_laha_est_trends_gb - aligned_laha_est_trends_gb[0]
     #
@@ -1445,7 +1453,8 @@ if __name__ == "__main__":
     # aligned_laha_est_aml_total_gb_zero_offset: np.ndarray = aligned_laha_est_trends_gb_zero_offset + \
     #                                                     aligned_laha_est_measurements_gb_zero_offset
     #
-    # aligned_est_measurements_b: np.ndarray = np.array(list(map(lambda est_val: est_val.aml_measurements, aligned_est_values)))
+    # aligned_est_measurements_b: np.ndarray = np.array(list(map(lambda est_val: est_val.aml_measurements,
+    # aligned_est_values)))
     # aligned_est_measurements_gb: np.ndarray = aligned_est_measurements_b / 1_000_000_000.0
     #
     # aligned_est_trends_b: np.ndarray = np.array(list(map(lambda est_val: est_val.aml_trends, aligned_est_values)))
@@ -1457,7 +1466,8 @@ if __name__ == "__main__":
     # # Est DL
     # aligned_laha_est_events: List[LahaMetric] = list(
     #         map(lambda laha_est_stat: map_laha_metric(laha_est_stat, "events"), aligned_laha_est_stats))
-    # aligned_laha_est_events_bytes: np.ndarray = np.array(list(map(lambda event: event.size_bytes, aligned_laha_est_events)))
+    # aligned_laha_est_events_bytes: np.ndarray = np.array(list(map(lambda event: event.size_bytes,
+    # aligned_laha_est_events)))
     # aligned_laha_est_events_gb: np.ndarray = aligned_laha_est_events_bytes / 1_000_000_000.0
     # aligned_laha_est_events_gb_offset_zero: np.ndarray = aligned_laha_est_events_gb - aligned_laha_est_events_gb[0]
     #
@@ -1470,7 +1480,8 @@ if __name__ == "__main__":
     # aligned_laha_est_incidents_bytes: np.ndarray = np.array(
     #         list(map(lambda incident: incident.size_bytes, aligned_laha_est_incidents)))
     # aligned_laha_est_incidents_gb: np.ndarray = aligned_laha_est_incidents_bytes / 1_000_000_000.0
-    # aligned_laha_est_incidents_gb_offset_zero: np.ndarray = aligned_laha_est_incidents_gb - aligned_laha_est_incidents_gb[0]
+    # aligned_laha_est_incidents_gb_offset_zero: np.ndarray = aligned_laha_est_incidents_gb -
+    # aligned_laha_est_incidents_gb[0]
     #
     # aligned_est_incidents_total_b: np.ndarray = np.array(list(map(lambda est_val: est_val.il, aligned_est_values)))
     # aligned_est_incidents_total_gb: np.ndarray = aligned_est_incidents_total_b / 1_000_000_000.0
@@ -1480,12 +1491,14 @@ if __name__ == "__main__":
     #                                     aligned_laha_est_events_gb + aligned_laha_est_incidents_gb
     # aligned_laha_est_total_gb_offset_zero: np.ndarray = aligned_laha_est_total_gb - aligned_laha_est_total_gb[0]
     #
-    # aligned_est_total_gb: np.ndarray = aligned_est_iml_total_gb + aligned_est_aml_total_gb + aligned_est_events_total_gb \
+    # aligned_est_total_gb: np.ndarray = aligned_est_iml_total_gb + aligned_est_aml_total_gb +
+    # aligned_est_events_total_gb \
     #                             + aligned_est_incidents_total_gb
     #
     # aligned_laha_est_total_gb_sans_iml: np.ndarray = aligned_laha_est_aml_total_gb + \
     #                                         aligned_laha_est_events_gb + aligned_laha_est_incidents_gb
-    # aligned_laha_est_total_gb_offset_zero_sans_iml: np.ndarray = aligned_laha_est_total_gb_sans_iml - aligned_laha_est_total_gb_sans_iml[0]
+    # aligned_laha_est_total_gb_offset_zero_sans_iml: np.ndarray = aligned_laha_est_total_gb_sans_iml -
+    # aligned_laha_est_total_gb_sans_iml[0]
     #
     # aligned_est_total_gb_sans_iml: np.ndarray = aligned_est_aml_total_gb + aligned_est_events_total_gb \
     #                                    + aligned_est_incidents_total_gb
@@ -1614,3 +1627,7 @@ if __name__ == "__main__":
     #
     # # System resource plots
     # plot_system_resources(laha_stats, out_dir)
+
+
+if __name__ == "__main__":
+    main()
