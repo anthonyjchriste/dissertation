@@ -62,24 +62,27 @@ def plot_frequency(opq_start_ts_s: int,
     mean_stddev: float = diffs.std()
 
     # Plot
-    fig, ax = plt.subplots(1, 1, figsize=(8, 8))
+    fig, ax = plt.subplots(1, 1, figsize=(5, 4))
     fig: plt.Figure = fig
     ax: plt.Axes = ax
 
     fig.suptitle(
-            f"Frequency Ground Truth Comparison\n{opq_box_id} vs {uhm_sensor}"
-            f"\n{aligned_opq_dts[0].strftime('%Y-%m-%d')} to "
-            f"{aligned_opq_dts[-1].strftime('%Y-%m-%d')}"
-            f"\n$\mu$={mean_diff:.4f} $\sigma$={mean_stddev:.4f}"
+            f"Frequency Comparison "
+            f"({aligned_opq_dts[0].strftime('%m-%d')} to "
+            f"{aligned_opq_dts[-1].strftime('%m-%d')})"
+            f"\n{opq_box_id} vs {uhm_sensor}"
+
+            # f"\n$\mu$={mean_diff:.4f} $\sigma$={mean_stddev:.4f}"
     )
 
     n, bins, patches = ax.hist(diffs, bins=250, density=True)
 
     x = np.linspace(diffs.min(), diffs.max(), 100)
-    ax.plot(x, stats.norm.pdf(x, mean_diff, mean_stddev))
+    ax.plot(x, stats.norm.pdf(x, mean_diff, mean_stddev), label=f"$\mu$={mean_diff:.4f} $\sigma$={mean_stddev:.4f}")
 
     ax.set_xlabel("Frequency Difference Hz (UHM - OPQ)")
     ax.set_ylabel("% Density")
+    ax.legend(loc="upper left")
 
     # fig.show()
     out_path = f"{out_dir}/f_hist_{opq_box_id}_{uhm_sensor}.png"
@@ -93,6 +96,7 @@ def compare_frequencies(opq_start_ts_s: int,
                         ground_truth_root: str,
                         mongo_client: pymongo.MongoClient,
                         out_dir: str) -> None:
+    paths: List[str] = []
     with open(os.path.join(out_dir, "f_latex.txt"), "w") as fout:
         for opq_box, uhm_meters in util.opq_box_to_uhm_meters.items():
             for uhm_meter in uhm_meters:
@@ -105,6 +109,9 @@ def compare_frequencies(opq_start_ts_s: int,
                                           uhm_meter,
                                           mongo_client,
                                           out_dir)
-                    fout.write(util.latex_figure_source(path))
+                    paths.append(path)
+                    # fout.write(util.latex_figure_source(path))
                 except Exception as e:
                     print(e, "...ignoring...")
+
+    util.latex_figure_table_source(paths, 3, 2)

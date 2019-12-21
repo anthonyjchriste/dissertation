@@ -50,6 +50,47 @@ Figure~\\ref{fig:FILE_LABEL}
 \\end{figure}
 """.replace("FILE_NAME", file_name).replace("FILE_LABEL", file_label)
 
+def latex_sub_float(path: str, width: float) -> str:
+    file_name: str = os.path.split(path)[-1]
+    file_label: str = file_name.split(".")[0].replace("_", "\\_")
+
+    return "\\subfloat[FILE_LABEL]{\\includegraphics[width = WIDTH\\linewidth]{figures/FILE_NAME}}" \
+        .replace("FILE_NAME", file_name) \
+        .replace("WIDTH", str(width)) \
+        .replace("FILE_LABEL", file_label)
+
+
+def latex_figure_table_source(paths: List[str], max_rows: int, max_cols: int) -> None:
+    sub_float_width = 1.0 / max_cols
+    sub_floats: List[str] = list(map(lambda path: latex_sub_float(path, sub_float_width), paths))
+
+    offset: int = max_rows * max_cols
+    while len(sub_floats) > 0:
+        figure_floats: List[str] = sub_floats[:offset]
+        sub_floats = sub_floats[offset:]
+
+        figure_floats_str: str = ""
+        for i, figure_float in enumerate(figure_floats):
+            if i == len(figure_floats) - 1:
+                figure_floats_str += f"\t\t{figure_floats[i]} \\\\"
+            elif i % 2 == 1:
+                figure_floats_str += f"\t\t{figure_floats[i]} \\\\ \n"
+            else:
+                figure_floats_str += f"\t\t{figure_floats[i]} & \n"
+
+        columns = "c" * max_cols
+
+        figure_src: str = """
+\\begin{figure}
+    \\begin{tabular}{COLUMNS}
+SUB_FLOATS
+    \\end{tabular}
+\\end{figure}
+        """.replace("COLUMNS", columns).replace("SUB_FLOATS", figure_floats_str)
+
+        print(figure_src)
+
+
 
 if __name__ == "__main__":
     print(latex_figure_source("/home/test/foo.png"))

@@ -438,144 +438,79 @@ The Frequency and THD measurements are in units that similar to what OPQ collect
 
 To complicate things, we do not have a UHM meter co-located with every OPQ Box and several of our Boxes are co-located with multiple UHM meters making the determination of which combination of Box and Meter to compare arduous.
 
-Finally, it should be noted that because of OPQ's TTL, Measurements are only stored for a day and Trends are only stored for two weeks.
+Finally, it should be noted that because of OPQ's TTL, Measurements are only stored for a day and Trends are only stored for two weeks. This means that we can not compare the ground truth trends directly (unless they were saved by an Event, Incident, or Phenomena) for more than a period of 2 weeks.
 
-\subsubsection{Frequency Analysis}
+Table~\ref{table:gt} provides the mapping from OPQ Boxes to co-located UHM meters.
+
+\begin{table}[H]
+    \centering
+    \caption{OPQ Boxes Co-Located with UHM Ground Truth Sensors}
+    \begin{tabularx}{\textwidth}{lX}
+        \toprule
+        \textbf{OPQ Boxes} & \textbf{UHM Ground Truth Sensors} \\
+        \midrule
+        1000, 1002 (POST) & POST\_MAIN\_1, POST\_MAIN\_2 \\
+        1001 (Hamilton) & HAMILTON\_LIB\_PH\_III\_CH\_1\_MTR, HAMILTON\_LIB\_PH\_III\_CH\_2\_MTR, HAMILTON\_LIB\_PH\_III\_CH\_3\_MTR, HAMILTON\_LIB\_PH\_III\_MAIN\_1\_MTR, HAMILTON\_LIB\_PH\_III\_MAIN\_2\_MTR, HAMILTON\_LIB\_PH\_III\_MCC\_AC1\_MTR, HAMILTON\_LIB\_PH\_III\_MCC\_AC2\_MTR \\
+        1003 (Keller) & KELLER\_HALL\_MAIN\_MTR \\
+        1005 (Parking Structure Ph. II) & N/A \\
+        1006 (Frog I) & N/A \\
+        1007 (Frog II) & N/A \\
+        1008 (Mile's Office) & N/A \\
+        1009 (Watanabe) & N/A \\
+        1010 (Holmes) & N/A \\
+        1021 (MSB) & MARINE\_SCIENCE\_MAIN\_A\_MTR, MARINE\_SCIENCE\_MAIN\_B\_MTR, MARINE\_SCIENCE\_MCC\_MTR \\
+        1022 (Ag. Engineering) & AG\_ENGINEERING\_MAIN\_MTR, AG\_ENGINEERING\_MCC\_MTR \\
+        1023 (Law Library) & LAW\_LIB\_MAIN\_MTR \\
+        1024 (IT Building) & N/A \\
+        1025 (Kennedy Theater) & KENNEDY\_THEATRE\_MAIN\_MTR \\
+        \bottomrule
+    \end{tabularx}
+    \label{table:gt}
+\end{table}
+
+\subsubsection{Frequency Ground Truth Analysis}
+
+Frequency can be compared one-to-one with the UH ground truth meters. In the following Figures, I compare the observed OPQ Frequencies to the observed co-located UHM meter Frequencies. Since there are 14 comparisons made, I will break these comparisons up into multiple Figures and sub-Figures as shown in Figures~\ref{fig:gt_freq_i}, \ref{fig:gt_freq_ii}, and~\ref{fig:gt_freq_iii}.
+
+For each Frequency comparison, I aligned and subtracted two weeks of OPQ observed Frequencies from the UHM observed Frequencies. I then plot the differences as a histogram and finally model a best fit of a Normal Distribution on top of the histogram.
 
 \begin{figure}
-    \begin{tabular}{ccc}
-        \subfloat[caption]{\includegraphics[width = .3\linewidth]{figures/f_hist_1000_POST_MAIN_2.png}} &
-        \subfloat[caption]{\includegraphics[width = .3\linewidth]{figures/f_hist_1001_HAMILTON_LIB_PH_III_CH_1_MTR.png}} &
-        \subfloat[caption]{\includegraphics[width = .3\linewidth]{figures/f_hist_1001_HAMILTON_LIB_PH_III_CH_2_MTR.png}}  \\
-        \subfloat[caption]{\includegraphics[width = .3\linewidth]{figures/f_hist_1001_HAMILTON_LIB_PH_III_MCC_AC1_MTR.png}} &
-        \subfloat[caption]{\includegraphics[width = .3\linewidth]{figures/f_hist_1001_HAMILTON_LIB_PH_III_MCC_AC2_MTR.png}} &
-        \subfloat[caption]{\includegraphics[width = .3\linewidth]{figures/f_hist_1002_POST_MAIN_2.png}} \\
+    \begin{tabular}{cc}
+        \subfloat[1000 vs. POST\_MAIN\_2]{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1000_POST_MAIN_2.png}} &
+        \subfloat[1001 vs. HAMILTON\_LIB\_PH\_III\_CH\_1\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1001_HAMILTON_LIB_PH_III_CH_1_MTR.png}} \\
+        \subfloat[1001 vs. HAMILTON\_LIB\_PH\_III\_CH\_2\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1001_HAMILTON_LIB_PH_III_CH_2_MTR.png}} &
+        \subfloat[1001 vs. HAMILTON\_LIB\_PH\_III\_CH\_3\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1001_HAMILTON_LIB_PH_III_CH_3_MTR.png}} \\
+        \subfloat[1001 vs. HAMILTON\_LIB\_PH\_III\_MCC\_AC1\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1001_HAMILTON_LIB_PH_III_MCC_AC1_MTR.png}} &
+        \subfloat[1001 vs. HAMILTON\_LIB\_PH\_III\_MCC\_AC2\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1001_HAMILTON_LIB_PH_III_MCC_AC2_MTR.png}} \\
     \end{tabular}
-    \caption{4 x 4}
+    \caption{UHM Frequency vs. OPQ Frequency I}
+    \label{fig:gt_freq_i}
 \end{figure}
 
-%Figure~\ref{fig:f_hist_1000_POST_MAIN_2}
-%
-%\begin{figure}[H]
-%    \centering
-%    \includegraphics[width=\linewidth]{figures/f_hist_1000_POST_MAIN_2.png}
-%    \caption{}
-%    \label{fig:f_hist_1000_POST_MAIN_2}
-%\end{figure}
-%
-%Figure~\ref{fig:f_hist_1001_HAMILTON_LIB_PH_III_CH_1_MTR}
-%
-%\begin{figure}[H]
-%    \centering
-%    \includegraphics[width=\linewidth]{figures/f_hist_1001_HAMILTON_LIB_PH_III_CH_1_MTR.png}
-%    \caption{}
-%    \label{fig:f_hist_1001_HAMILTON_LIB_PH_III_CH_1_MTR}
-%\end{figure}
-%
-%Figure~\ref{fig:f_hist_1001_HAMILTON_LIB_PH_III_CH_2_MTR}
-%
-%\begin{figure}[H]
-%    \centering
-%    \includegraphics[width=\linewidth]{figures/f_hist_1001_HAMILTON_LIB_PH_III_CH_2_MTR.png}
-%    \caption{}
-%    \label{fig:f_hist_1001_HAMILTON_LIB_PH_III_CH_2_MTR}
-%\end{figure}
-
-Figure~\ref{fig:f_hist_1001_HAMILTON_LIB_PH_III_CH_3_MTR}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\linewidth]{figures/f_hist_1001_HAMILTON_LIB_PH_III_CH_3_MTR.png}
-    \caption{}
-    \label{fig:f_hist_1001_HAMILTON_LIB_PH_III_CH_3_MTR}
+\begin{figure}
+    \begin{tabular}{cc}
+        \subfloat[1002 vs. POST\_MAIN\_2]{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1002_POST_MAIN_2.png}} &
+        \subfloat[1003 vs. KELLER\_HALL\_MAIN\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1003_KELLER_HALL_MAIN_MTR.png}} \\
+        \subfloat[1021 vs. MARINE\_SCIENCE\_MAIN\_A\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1021_MARINE_SCIENCE_MAIN_A_MTR.png}} &
+        \subfloat[1021 vs. MARINE\_SCIENCE\_MAIN\_B\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1021_MARINE_SCIENCE_MAIN_B_MTR.png}} \\
+        \subfloat[1022 vs. AG\_ENGINEERING\_MAIN\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1022_AG_ENGINEERING_MAIN_MTR.png}} &
+        \subfloat[1022 vs. AG\_ENGINEERING\_MCC\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1022_AG_ENGINEERING_MCC_MTR.png}} \\
+    \end{tabular}
+    \caption{UHM Frequency vs. OPQ Frequency II}
+    \label{fig:gt_freq_ii}
 \end{figure}
 
-Figure~\ref{fig:f_hist_1001_HAMILTON_LIB_PH_III_MCC_AC1_MTR}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\linewidth]{figures/f_hist_1001_HAMILTON_LIB_PH_III_MCC_AC1_MTR.png}
-    \caption{}
-    \label{fig:f_hist_1001_HAMILTON_LIB_PH_III_MCC_AC1_MTR}
+\begin{figure}
+    \begin{tabular}{cc}
+        \subfloat[1023 vs. LAW\_LIB\_MAIN\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1023_LAW_LIB_MAIN_MTR.png}} &
+        \subfloat[1025 vs. KENNEDY\_THEATRE\_MAIN\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1025_KENNEDY_THEATRE_MAIN_MTR.png}} \\
+    \end{tabular}
+    \caption{UHM Frequency vs. OPQ Frequency III}
+    \label{fig:gt_freq_iii}
 \end{figure}
 
-Figure~\ref{fig:f_hist_1001_HAMILTON_LIB_PH_III_MCC_AC2_MTR}
+As can be observed, the OPQ Boxes that we have co-located with UHM ground sensors track the Frequency quite accurately. In general we rarely see differences outside of 0.02 Hz and most sensors show a mean difference on the order of a mHz.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\linewidth]{figures/f_hist_1001_HAMILTON_LIB_PH_III_MCC_AC2_MTR.png}
-    \caption{}
-    \label{fig:f_hist_1001_HAMILTON_LIB_PH_III_MCC_AC2_MTR}
-\end{figure}
+\subsubsection{THD Ground Truth Analysis}
 
-Figure~\ref{fig:f_hist_1002_POST_MAIN_2}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\linewidth]{figures/f_hist_1002_POST_MAIN_2.png}
-    \caption{}
-    \label{fig:f_hist_1002_POST_MAIN_2}
-\end{figure}
-
-Figure~\ref{fig:f_hist_1003_KELLER_HALL_MAIN_MTR}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\linewidth]{figures/f_hist_1003_KELLER_HALL_MAIN_MTR.png}
-    \caption{}
-    \label{fig:f_hist_1003_KELLER_HALL_MAIN_MTR}
-\end{figure}
-
-Figure~\ref{fig:f_hist_1021_MARINE_SCIENCE_MAIN_A_MTR}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\linewidth]{figures/f_hist_1021_MARINE_SCIENCE_MAIN_A_MTR.png}
-    \caption{}
-    \label{fig:f_hist_1021_MARINE_SCIENCE_MAIN_A_MTR}
-\end{figure}
-
-Figure~\ref{fig:f_hist_1021_MARINE_SCIENCE_MAIN_B_MTR}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\linewidth]{figures/f_hist_1021_MARINE_SCIENCE_MAIN_B_MTR.png}
-    \caption{}
-    \label{fig:f_hist_1021_MARINE_SCIENCE_MAIN_B_MTR}
-\end{figure}
-
-Figure~\ref{fig:f_hist_1022_AG_ENGINEERING_MAIN_MTR}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\linewidth]{figures/f_hist_1022_AG_ENGINEERING_MAIN_MTR.png}
-    \caption{}
-    \label{fig:f_hist_1022_AG_ENGINEERING_MAIN_MTR}
-\end{figure}
-
-Figure~\ref{fig:f_hist_1022_AG_ENGINEERING_MCC_MTR}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\linewidth]{figures/f_hist_1022_AG_ENGINEERING_MCC_MTR.png}
-    \caption{}
-    \label{fig:f_hist_1022_AG_ENGINEERING_MCC_MTR}
-\end{figure}
-
-Figure~\ref{fig:f_hist_1023_LAW_LIB_MAIN_MTR}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\linewidth]{figures/f_hist_1023_LAW_LIB_MAIN_MTR.png}
-    \caption{}
-    \label{fig:f_hist_1023_LAW_LIB_MAIN_MTR}
-\end{figure}
-
-Figure~\ref{fig:f_hist_1025_KENNEDY_THEATRE_MAIN_MTR}
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\linewidth]{figures/f_hist_1025_KENNEDY_THEATRE_MAIN_MTR.png}
-    \caption{}
-    \label{fig:f_hist_1025_KENNEDY_THEATRE_MAIN_MTR}
-\end{figure}
+Total Harmonic Distortion (THD) is collected by both OPQ Boxes and UHM ground truth sensors. The feature that was used to make THD comparisons is the AVERAGE\_VOLTAGE\_THD from the ground truth data. Similar to the Frequency comparison, I subtracted the OPQ THD observations from the UHM THD observations and created histograms of the differences. I also attempted to fit the data with a Normal Distribution, but had less success than with the Frequency. This is due to the fact that several of the distribution do not follow a Gaussian, but instead present two separate Normal distributions.
