@@ -13,13 +13,19 @@ import util.io as io
 
 THD_TYPES = ["AVG_VOLTAGE_THD"]
 
+
+def normal(mu: float, sigma: float, bins: np.ndarray, percent_density: float) -> np.ndarray:
+    return ((1 / (np.sqrt(2 * np.pi) * sigma)) *
+            np.exp(-0.5 * (1 / sigma * (bins - mu)) ** 2)) * percent_density
+
+
 def plot_thd(opq_start_ts_s: int,
-                   opq_end_ts_s: int,
-                   opq_box_id: str,
-                   ground_truth_root: str,
-                   uhm_sensor: str,
-                   mongo_client: pymongo.MongoClient,
-                   out_dir: str) -> None:
+             opq_end_ts_s: int,
+             opq_box_id: str,
+             ground_truth_root: str,
+             uhm_sensor: str,
+             mongo_client: pymongo.MongoClient,
+             out_dir: str) -> str:
     ground_truth_path: str = f"{ground_truth_root}/{uhm_sensor}/AVG_VOLTAGE_THD"
     uhm_data_points: List[io.DataPoint] = io.parse_file(ground_truth_path)
 
@@ -62,44 +68,194 @@ def plot_thd(opq_start_ts_s: int,
     mean_stddev: float = diffs.std()
 
     # Plot
-    fig, ax = plt.subplots(1, 1, figsize=(16, 9))
+    fig, ax = plt.subplots(1, 1, figsize=(5, 4))
     fig: plt.Figure = fig
     ax: plt.Axes = ax
 
-    fig.suptitle(
-            f"THD Ground Truth Comparison: {opq_box_id} vs {uhm_sensor} "
-            f"{aligned_opq_dts[0].strftime('%Y-%m-%d')} to "
-            f"{aligned_opq_dts[-1].strftime('%Y-%m-%d')}"
-            f"\n$\mu$={mean_diff:.4f} $\sigma$={mean_stddev:.4f}"
+    ax.set_title(
+            f"THD Comparison {aligned_opq_dts[0].strftime('%m-%d')} to {aligned_opq_dts[-1].strftime('%m-%d')}"
+            f"\n{opq_box_id} vs {uhm_sensor}"
     )
 
-    n, bins, patches = ax.hist(diffs, bins=250, density=True)
+    # n, bins, patches = ax.hist(diffs, bins=250, density=True)
 
-    x = np.linspace(diffs.min(), diffs.max(), 100)
-    ax.plot(x, stats.norm.pdf(x, mean_diff, mean_stddev))
+    if opq_box_id == "1000" and uhm_sensor == "POST_MAIN_1":
+        split: float = -0.4
+        low: np.ndarray = diffs[diffs < split]
+        high: np.ndarray = diffs[diffs >= split]
+
+        n, bins, patches = ax.hist(diffs, bins=250, density=True)
+
+        low_p: float = float(len(low)) / float((len(low) + len(high)))
+        high_p: float = 1.0 - low_p
+
+        low_bins: np.ndarray = bins[bins < split]
+        high_bins: np.ndarray = bins[bins >= split]
+
+        low_mu = low.mean()
+        low_sigma = low.std()
+
+        high_mu = high.mean()
+        high_sigma = high.std()
+
+        y_low = normal(low_mu, low_sigma, low_bins, low_p)
+        y_high = normal(high_mu, high_sigma, high_bins, high_p)
+
+        ax.plot(low_bins, y_low, label=f"\n$\mu$={low_mu:.4f} $\sigma$={low_sigma:.4f}")
+        ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
+    elif opq_box_id == "1000" and uhm_sensor == "POST_MAIN_2":
+        split: float = 0.07
+        low: np.ndarray = diffs[diffs < split]
+        high: np.ndarray = diffs[diffs >= split]
+
+        n, bins, patches = ax.hist(diffs, bins=250, density=True)
+
+        low_p: float = float(len(low)) / float((len(low) + len(high)))
+        high_p: float = 1.0 - low_p
+
+        low_bins: np.ndarray = bins[bins < split]
+        high_bins: np.ndarray = bins[bins >= split]
+
+        low_mu = low.mean()
+        low_sigma = low.std()
+
+        high_mu = high.mean()
+        high_sigma = high.std()
+
+        y_low = normal(low_mu, low_sigma, low_bins, low_p)
+        y_high = normal(high_mu, high_sigma, high_bins, high_p)
+
+        ax.plot(low_bins, y_low, label=f"\n$\mu$={low_mu:.4f} $\sigma$={low_sigma:.4f}")
+        ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
+    elif opq_box_id == "1002" and uhm_sensor == "POST_MAIN_1":
+        split: float = 0.15
+        low: np.ndarray = diffs[diffs < split]
+        high: np.ndarray = diffs[diffs >= split]
+
+        n, bins, patches = ax.hist(diffs, bins=250, density=True)
+
+        low_p: float = float(len(low)) / float((len(low) + len(high)))
+        high_p: float = 1.0 - low_p
+
+        low_bins: np.ndarray = bins[bins < split]
+        high_bins: np.ndarray = bins[bins >= split]
+
+        low_mu = low.mean()
+        low_sigma = low.std()
+
+        high_mu = high.mean()
+        high_sigma = high.std()
+
+        y_low = normal(low_mu, low_sigma, low_bins, low_p)
+        y_high = normal(high_mu, high_sigma, high_bins, high_p)
+
+        ax.plot(low_bins, y_low, label=f"\n$\mu$={low_mu:.4f} $\sigma$={low_sigma:.4f}")
+        ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
+    elif opq_box_id == "1002" and uhm_sensor == "POST_MAIN_2":
+        split: float = 0.5
+        low: np.ndarray = diffs[diffs < split]
+        high: np.ndarray = diffs[diffs >= split]
+
+        n, bins, patches = ax.hist(diffs, bins=250, density=True)
+
+        low_p: float = float(len(low)) / float((len(low) + len(high)))
+        high_p: float = 1.0 - low_p
+
+        low_bins: np.ndarray = bins[bins < split]
+        high_bins: np.ndarray = bins[bins >= split]
+
+        low_mu = low.mean()
+        low_sigma = low.std()
+
+        high_mu = high.mean()
+        high_sigma = high.std()
+
+        y_low = normal(low_mu, low_sigma, low_bins, low_p)
+        y_high = normal(high_mu, high_sigma, high_bins, high_p)
+
+        ax.plot(low_bins, y_low, label=f"\n$\mu$={low_mu:.4f} $\sigma$={low_sigma:.4f}")
+        ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
+    elif opq_box_id == "1001" and uhm_sensor == "HAMILTON_LIB_PH_III_MAIN_2_MTR":
+        split: float = 1.20
+        low: np.ndarray = diffs[diffs < split]
+        high: np.ndarray = diffs[diffs >= split]
+
+        n, bins, patches = ax.hist(diffs, bins=250, density=True)
+
+        low_p: float = float(len(low)) / float((len(low) + len(high)))
+        high_p: float = 1.0 - low_p
+
+        low_bins: np.ndarray = bins[bins < split]
+        high_bins: np.ndarray = bins[bins >= split]
+
+        low_mu = low.mean()
+        low_sigma = low.std()
+
+        high_mu = high.mean()
+        high_sigma = high.std()
+
+        y_low = normal(low_mu, low_sigma, low_bins, low_p)
+        y_high = normal(high_mu, high_sigma, high_bins, high_p)
+
+        ax.plot(low_bins, y_low, label=f"\n$\mu$={low_mu:.4f} $\sigma$={low_sigma:.4f}")
+        ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
+    elif opq_box_id == "1021" and uhm_sensor == "MARINE_SCIENCE_MAIN_B_MTR":
+        split: float = 0.45
+        low: np.ndarray = diffs[diffs < split]
+        high: np.ndarray = diffs[diffs >= split]
+
+        n, bins, patches = ax.hist(diffs, bins=250, density=True)
+
+        low_p: float = float(len(low)) / float((len(low) + len(high)))
+        high_p: float = 1.0 - low_p
+
+        low_bins: np.ndarray = bins[bins < split]
+        high_bins: np.ndarray = bins[bins >= split]
+
+        low_mu = low.mean()
+        low_sigma = low.std()
+
+        high_mu = high.mean()
+        high_sigma = high.std()
+
+        y_low = normal(low_mu, low_sigma, low_bins, low_p)
+        y_high = normal(high_mu, high_sigma, high_bins, high_p)
+
+        ax.plot(low_bins, y_low, label=f"\n$\mu$={low_mu:.4f} $\sigma$={low_sigma:.4f}")
+        ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
+    else:
+        n, bins, patches = ax.hist(diffs, bins=250, density=True)
+        x = np.linspace(diffs.min(), diffs.max(), 100)
+        ax.plot(x, stats.norm.pdf(x, mean_diff, mean_stddev),
+                label=f"\n$\mu$={mean_diff:.4f} $\sigma$={mean_stddev:.4f}")
 
     ax.set_xlabel("THD Difference  (UHM - OPQ)")
     ax.set_ylabel("% Density")
-
-    fig.show()
-    # fig.savefig(f"{out_dir}/thd_hist_{opq_box_id}_{uhm_sensor}.png")
+    ax.legend()
+    # fig.show()
+    path = f"{out_dir}/thd_hist_{opq_box_id}_{uhm_sensor}.png"
+    fig.savefig(path, bbox_inches='tight')
+    return path
 
 
 def compare_thds(opq_start_ts_s: int,
-                        opq_end_ts_s: int,
-                        ground_truth_root: str,
-                        mongo_client: pymongo.MongoClient,
-                        out_dir: str) -> None:
+                 opq_end_ts_s: int,
+                 ground_truth_root: str,
+                 mongo_client: pymongo.MongoClient,
+                 out_dir: str) -> None:
+    paths: List[str] = []
     for opq_box, uhm_meters in util.opq_box_to_uhm_meters.items():
         for uhm_meter in uhm_meters:
             try:
                 print(f"plot_thd {opq_box} {uhm_meter}")
-                plot_thd(opq_start_ts_s,
-                               opq_end_ts_s,
-                               opq_box,
-                               ground_truth_root,
-                               uhm_meter,
-                               mongo_client,
-                               out_dir)
+                path = plot_thd(opq_start_ts_s,
+                         opq_end_ts_s,
+                         opq_box,
+                         ground_truth_root,
+                         uhm_meter,
+                         mongo_client,
+                         out_dir)
+                paths.append(path)
             except Exception as e:
                 print(e, "...ignoring...")
+    util.latex_figure_table_source(paths, 3, 2)

@@ -476,12 +476,12 @@ For each Frequency comparison, I aligned and subtracted two weeks of OPQ observe
 
 \begin{figure}
     \begin{tabular}{cc}
-        \subfloat[1000 vs. POST\_MAIN\_2]{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1000_POST_MAIN_2.png}} &
-        \subfloat[1001 vs. HAMILTON\_LIB\_PH\_III\_CH\_1\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1001_HAMILTON_LIB_PH_III_CH_1_MTR.png}} \\
-        \subfloat[1001 vs. HAMILTON\_LIB\_PH\_III\_CH\_2\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1001_HAMILTON_LIB_PH_III_CH_2_MTR.png}} &
-        \subfloat[1001 vs. HAMILTON\_LIB\_PH\_III\_CH\_3\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1001_HAMILTON_LIB_PH_III_CH_3_MTR.png}} \\
-        \subfloat[1001 vs. HAMILTON\_LIB\_PH\_III\_MCC\_AC1\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1001_HAMILTON_LIB_PH_III_MCC_AC1_MTR.png}} &
-        \subfloat[1001 vs. HAMILTON\_LIB\_PH\_III\_MCC\_AC2\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1001_HAMILTON_LIB_PH_III_MCC_AC2_MTR.png}} \\
+        \subfloat{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1000_POST_MAIN_2.png}} &
+        \subfloat{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1001_HAMILTON_LIB_PH_III_CH_1_MTR.png}} \\
+        \subfloat{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1001_HAMILTON_LIB_PH_III_CH_2_MTR.png}} &
+        \subfloat{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1001_HAMILTON_LIB_PH_III_CH_3_MTR.png}} \\
+        \subfloat{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1001_HAMILTON_LIB_PH_III_MCC_AC1_MTR.png}} &
+        \subfloat{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1001_HAMILTON_LIB_PH_III_MCC_AC2_MTR.png}} \\
     \end{tabular}
     \caption{UHM Frequency vs. OPQ Frequency I}
     \label{fig:gt_freq_i}
@@ -513,4 +513,60 @@ As can be observed, the OPQ Boxes that we have co-located with UHM ground sensor
 
 \subsubsection{THD Ground Truth Analysis}
 
-Total Harmonic Distortion (THD) is collected by both OPQ Boxes and UHM ground truth sensors. The feature that was used to make THD comparisons is the AVERAGE\_VOLTAGE\_THD from the ground truth data. Similar to the Frequency comparison, I subtracted the OPQ THD observations from the UHM THD observations and created histograms of the differences. I also attempted to fit the data with a Normal Distribution, but had less success than with the Frequency. This is due to the fact that several of the distribution do not follow a Gaussian, but instead present two separate Normal distributions.
+Total Harmonic Distortion (THD) is collected by both OPQ Boxes and UHM ground truth sensors. The feature that was used to make THD comparisons is the AVERAGE\_VOLTAGE\_THD from the ground truth data. Similar to the Frequency comparison, I subtracted the OPQ THD observations from the UHM THD observations and created histograms of the differences. I also attempted to fit the data with a Normal Distribution, but had less success than with the Frequency. This is due to the fact that several of the distribution do not follow a Gaussian, but instead present two separate Gaussian distributions.
+
+Figure~\ref{fig:gt_thd_i} compares THD between the Pacific Ocean Science and Technology building (POST) OPQ Boxes and POST UHM sensors.
+
+\begin{figure}
+    \begin{tabular}{cc}
+        \subfloat[1000 vs. POST\_MAIN\_1]{\includegraphics[width = 0.5\linewidth]{figures/thd_hist_1000_POST_MAIN_1.png}} &
+        \subfloat[1000 vs. POST\_MAIN\_2]{\includegraphics[width = 0.5\linewidth]{figures/thd_hist_1000_POST_MAIN_2.png}} \\
+        \subfloat[1002 vs. POST\_MAIN\_1]{\includegraphics[width = 0.5\linewidth]{figures/thd_hist_1002_POST_MAIN_1.png}} &
+        \subfloat[1002 vs. POST\_MAIN\_2]{\includegraphics[width = 0.5\linewidth]{figures/thd_hist_1002_POST_MAIN_2.png}} \\
+    \end{tabular}
+    \caption{UHM THD vs. OPQ THD I}
+    \label{fig:gt_thd_i}
+\end{figure}
+
+The THD comparison within the POST building provides several interesting features to discuss.
+
+First, POST has two ground truth meters (POST\_MAIN\_1 and POST\_MAIN\_2) and two OPQ Boxes (1000 in the Collaborative Software Development Lab (CSDL) and 1002 in ICSpace). Both OPQ Boxes are on the third floor, roughly opposite each other in the building. As mentioned previously, I do not know exactly which electrical subsystem each OPQ Box is on when there are multiple electrical mains servicing a single building. In the case of POST, there are two electrical mains. I believe it's possible to guess which OPQ Box corresponds with which main by looking at the ground truth comparisons.
+
+For instance, OPQ Box 1000 vs. POST\_MAIN\_2 provides a much smaller spread in THD difference (about .25\% THD) than OPQ Box 1000 vs. POST\_MAIN\_2 which has a spread of close to 1\% THD. I speculate that OPQ Box 1000 is on the same main as the POST\_MAIN\_2 meter. The opposite holds true for OPQ Box 1002. The spread for Box 1002 is smaller for POST\_MAIN\_1 (about 0.3\% THD) than it is for POST\_MAIN\_2 (about 0.6\% THD) which leads me to speculate that Box 1002 may be serviced by the same electrical main as the POST\_MAIN\_1 meter.
+
+Figures~\ref{fig:gt_thd_ii} and~\ref{fig:gt_thd_iii} compares THD with OPQ Box 1001 in Hamilton Library to all available UHM ground truth meters at Hamilton. Unfortunately, I only have ground truth data for Hamilton's Phase III electrical main and I do not know which main Box 1001 is on. The THD comparison for Hamilton provides less than spectacular results with THD differences reaching close to 2\% THD. Because the other OPQ Boxes track THD so well, this leads me to believe that OPQ Box 1001 tracks THD on a difference electrical main than that of the Hamilton Phase III meters.
+
+\begin{figure}
+    \begin{tabular}{cc}
+        \subfloat[1001 vs. HAMILTON\_LIB\_PH\_III\_CH\_1\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/thd_hist_1001_HAMILTON_LIB_PH_III_CH_1_MTR.png}} &
+        \subfloat[1001 vs. HAMILTON\_LIB\_PH\_III\_CH\_2\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/thd_hist_1001_HAMILTON_LIB_PH_III_CH_2_MTR.png}} \\
+        \subfloat[1001 vs. HAMILTON\_LIB\_PH\_III\_CH\_3\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/thd_hist_1001_HAMILTON_LIB_PH_III_CH_3_MTR.png}} \\
+    \end{tabular}
+    \caption{UHM THD vs. OPQ THD II}
+    \label{fig:gt_thd_ii}
+\end{figure}
+
+\begin{figure}
+    \begin{tabular}{cc}
+        \subfloat[1001 vs. HAMILTON\_LIB\_PH\_III\_MAIN\_1\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/thd_hist_1001_HAMILTON_LIB_PH_III_MAIN_1_MTR.png}} &
+        \subfloat[1001 vs. HAMILTON\_LIB\_PH\_III\_MAIN\_2\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/thd_hist_1001_HAMILTON_LIB_PH_III_MAIN_2_MTR.png}} \\
+        \subfloat[1001 vs. HAMILTON\_LIB\_PH\_III\_MCC\_AC1\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/thd_hist_1001_HAMILTON_LIB_PH_III_MCC_AC1_MTR.png}} &
+        \subfloat[1001 vs. HAMILTON\_LIB\_PH\_III\_MCC\_AC2\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/thd_hist_1001_HAMILTON_LIB_PH_III_MCC_AC2_MTR.png}} \\
+    \end{tabular}
+    \caption{UHM THD vs. OPQ THD III}
+    \label{fig:gt_thd_iii}
+\end{figure}
+
+Figure~\ref{fig:gt_thd_iv} shows THD comparisons between OPQ Boxes at the Marine Science Building (MSB) and the Agriculture Engineering building.
+
+\begin{figure}
+    \begin{tabular}{cc}
+        \subfloat[1021 vs. MARINE\_SCIENCE\_MAIN\_A\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/thd_hist_1021_MARINE_SCIENCE_MAIN_A_MTR.png}} &
+        \subfloat[1021 vs. MARINE\_SCIENCE\_MAIN\_B\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/thd_hist_1021_MARINE_SCIENCE_MAIN_B_MTR.png}} \\
+        \subfloat[1021 vs. MARINE\_SCIENCE\_MCC\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/thd_hist_1021_MARINE_SCIENCE_MCC_MTR.png}} &
+        \subfloat[1022 vs. AG\_ENGINEERING\_MAIN\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/thd_hist_1022_AG_ENGINEERING_MAIN_MTR.png}} \\
+        \subfloat[1022 vs. AG\_ENGINEERING\_MCC\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/thd_hist_1022_AG_ENGINEERING_MCC_MTR.png}} \\
+    \end{tabular}
+    \caption{UHM THD vs. OPQ THD IV}
+    \label{fig:gt_thd_iv}
+\end{figure}

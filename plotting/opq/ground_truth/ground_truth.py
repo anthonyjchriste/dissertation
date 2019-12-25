@@ -31,13 +31,14 @@ def find_ground_truth_data_range(ground_truth_root: str):
 
 def main():
     mongo_client: pymongo.MongoClient = pymongo.MongoClient()
-    start_ts_s: int = 1575331200
-    end_ts_s: int = 1576622969
-    gt_root: str = "/Users/anthony/Desktop/forAnthony/data"
+    start_ts_s: int = 1575936000
+    end_ts_s: int = 1577145600
+    gt_root: str = "/Users/anthony/scrap/ground_truth_data"
     out_dir: str = "/Users/anthony/Development/dissertation/src/figures"
 
-    frequency.compare_frequencies(start_ts_s, end_ts_s, gt_root, mongo_client, out_dir)
-    # thd.compare_thds(start_ts_s, end_ts_s, gt_root, mongo_client, out_dir)
+    # frequency.compare_frequencies(start_ts_s, end_ts_s, gt_root, mongo_client, out_dir)
+    thd.compare_thds(start_ts_s, end_ts_s, gt_root, mongo_client, out_dir)
+    # find_ground_truth_data_range(gt_root)
 
 
 if __name__ == "__main__":
