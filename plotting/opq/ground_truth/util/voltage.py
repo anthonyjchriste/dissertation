@@ -11,7 +11,10 @@ import util
 import util.align_data as align
 import util.io as io
 
-VOLTAGE_TYPES = ["VAB", "VBC", "VCA"]
+
+def normal(mu: float, sigma: float, bins: np.ndarray, percent_density: float) -> np.ndarray:
+    return ((1 / (np.sqrt(2 * np.pi) * sigma)) *
+            np.exp(-0.5 * (1 / sigma * (bins - mu)) ** 2)) * percent_density
 
 
 def plot_voltage(opq_start_ts_s: int,
@@ -85,40 +88,386 @@ def plot_voltage(opq_start_ts_s: int,
     sq_sum = np.square(vab_vals) + np.square(vbc_vals) + np.square(vca_vals)
     vrms_vals: np.ndarray = eq_left * np.sqrt(sq_sum)
 
-    print(len(vrms_vals), type(vrms_vals), vrms_vals[0])
-    print(len(trend_vals), type(trend_vals), trend_vals[0])
-
     diffs: np.ndarray = vrms_vals - trend_vals
-
-
-
-
 
     mean_diff: float = diffs.mean()
     mean_stddev: float = diffs.std()
 
     # Plot
-    fig, ax = plt.subplots(1, 1, figsize=(16, 9))
+    fig, ax = plt.subplots(1, 1, figsize=(5, 4))
     fig: plt.Figure = fig
     ax: plt.Axes = ax
 
-    fig.suptitle(
-            f"RMS Voltage Ground Truth Comparison: {opq_box_id} vs {uhm_sensor} "
-            f"{trend_dts[0].strftime('%Y-%m-%d')} to "
-            f"{trend_dts[-1].strftime('%Y-%m-%d')}"
-            f"\n$\mu$={mean_diff:.4f} $\sigma$={mean_stddev:.4f}"
+    ax.set_title(
+            f"Voltage Comparison {trend_dts[0].strftime('%m-%d')} to {trend_dts[-1].strftime('%m-%d')}"
+            f"\n{opq_box_id} vs {uhm_sensor}"
     )
 
-    n, bins, patches = ax.hist(diffs, bins=250, density=True)
+    if opq_box_id == "1002" and uhm_sensor == "POST_MAIN_1":
+        split: float = -2.25
+        low: np.ndarray = diffs[diffs < split]
+        high: np.ndarray = diffs[diffs >= split]
 
-    x = np.linspace(diffs.min(), diffs.max(), 100)
-    ax.plot(x, stats.norm.pdf(x, mean_diff, mean_stddev))
+        n, bins, patches = ax.hist(diffs, bins=250, density=True)
+
+        low_p: float = float(len(low)) / float((len(low) + len(high)))
+        high_p: float = 1.0 - low_p
+
+        low_bins: np.ndarray = bins[bins < split]
+        high_bins: np.ndarray = bins[bins >= split]
+
+        low_mu = low.mean()
+        low_sigma = low.std()
+
+        high_mu = high.mean()
+        high_sigma = high.std()
+
+        y_low = normal(low_mu, low_sigma, low_bins, low_p)
+        y_high = normal(high_mu, high_sigma, high_bins, high_p)
+
+        ax.plot(low_bins, y_low, label=f"\n$\mu$={low_mu:.4f} $\sigma$={low_sigma:.4f}")
+        ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
+    elif opq_box_id == "1001" and uhm_sensor == "HAMILTON_LIB_PH_III_MAIN_1_MTR":
+        split_low: float = -2.2
+        split_high: float = -1.65
+        low: np.ndarray = diffs[diffs < split_low]
+        mid: np.ndarray = diffs[np.logical_and(diffs >= split_low, diffs < split_high)]
+        high: np.ndarray = diffs[diffs >= split_high]
+
+        n, bins, patches = ax.hist(diffs, bins=250, density=True)
+
+        low_p: float = float(len(low)) / float((len(low) + len(mid) + len(high)))
+        mid_p: float = float(len(mid)) / float((len(low) + len(mid) + len(high)))
+        high_p: float = float(len(high)) / float((len(low) + len(mid) + len(high)))
+
+        low_bins: np.ndarray = bins[bins < split_low]
+        mid_bins: np.ndarray = bins[np.logical_and(bins >= split_low, bins < split_high)]
+        high_bins: np.ndarray = bins[bins >= split_high]
+
+        low_mu = low.mean()
+        low_sigma = low.std()
+
+        mid_mu = mid.mean()
+        mid_sigma = mid.std()
+
+        high_mu = high.mean()
+        high_sigma = high.std()
+
+        y_low = normal(low_mu, low_sigma, low_bins, low_p)
+        y_mid = normal(mid_mu, mid_sigma, mid_bins, mid_p)
+        y_high = normal(high_mu, high_sigma, high_bins, high_p)
+
+        ax.plot(low_bins, y_low, label=f"\n$\mu$={low_mu:.4f} $\sigma$={low_sigma:.4f}")
+        ax.plot(mid_bins, y_mid, label=f"\n$\mu$={mid_mu:.4f} $\sigma$={mid_sigma:.4f}")
+        ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
+    elif opq_box_id == "1001" and uhm_sensor == "HAMILTON_LIB_PH_III_MAIN_2_MTR":
+        split_low: float = -2.0
+        split_high: float = -1.40
+        low: np.ndarray = diffs[diffs < split_low]
+        mid: np.ndarray = diffs[np.logical_and(diffs >= split_low, diffs < split_high)]
+        high: np.ndarray = diffs[diffs >= split_high]
+
+        n, bins, patches = ax.hist(diffs, bins=250, density=True)
+
+        low_p: float = float(len(low)) / float((len(low) + len(mid) + len(high)))
+        mid_p: float = float(len(mid)) / float((len(low) + len(mid) + len(high)))
+        high_p: float = float(len(high)) / float((len(low) + len(mid) + len(high)))
+
+        low_bins: np.ndarray = bins[bins < split_low]
+        mid_bins: np.ndarray = bins[np.logical_and(bins >= split_low, bins < split_high)]
+        high_bins: np.ndarray = bins[bins >= split_high]
+
+        low_mu = low.mean()
+        low_sigma = low.std()
+
+        mid_mu = mid.mean()
+        mid_sigma = mid.std()
+
+        high_mu = high.mean()
+        high_sigma = high.std()
+
+        y_low = normal(low_mu, low_sigma, low_bins, low_p)
+        y_mid = normal(mid_mu, mid_sigma, mid_bins, mid_p)
+        y_high = normal(high_mu, high_sigma, high_bins, high_p)
+
+        ax.plot(low_bins, y_low, label=f"\n$\mu$={low_mu:.4f} $\sigma$={low_sigma:.4f}")
+        ax.plot(mid_bins, y_mid, label=f"\n$\mu$={mid_mu:.4f} $\sigma$={mid_sigma:.4f}")
+        ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
+    elif opq_box_id == "1001" and uhm_sensor == "HAMILTON_LIB_PH_III_MCC_AC1_MTR":
+        split_low: float = -2.45
+        split_high: float = -1.7
+        low: np.ndarray = diffs[diffs < split_low]
+        mid: np.ndarray = diffs[np.logical_and(diffs >= split_low, diffs < split_high)]
+        high: np.ndarray = diffs[diffs >= split_high]
+
+        n, bins, patches = ax.hist(diffs, bins=250, density=True)
+
+        low_p: float = float(len(low)) / float((len(low) + len(mid) + len(high)))
+        mid_p: float = float(len(mid)) / float((len(low) + len(mid) + len(high)))
+        high_p: float = float(len(high)) / float((len(low) + len(mid) + len(high)))
+
+        low_bins: np.ndarray = bins[bins < split_low]
+        mid_bins: np.ndarray = bins[np.logical_and(bins >= split_low, bins < split_high)]
+        high_bins: np.ndarray = bins[bins >= split_high]
+
+        low_mu = low.mean()
+        low_sigma = low.std()
+
+        mid_mu = mid.mean()
+        mid_sigma = mid.std()
+
+        high_mu = high.mean()
+        high_sigma = high.std()
+
+        y_low = normal(low_mu, low_sigma, low_bins, low_p)
+        y_mid = normal(mid_mu, mid_sigma, mid_bins, mid_p)
+        y_high = normal(high_mu, high_sigma, high_bins, high_p)
+
+        ax.plot(low_bins, y_low, label=f"\n$\mu$={low_mu:.4f} $\sigma$={low_sigma:.4f}")
+        ax.plot(mid_bins, y_mid, label=f"\n$\mu$={mid_mu:.4f} $\sigma$={mid_sigma:.4f}")
+        ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
+    elif opq_box_id == "1001" and uhm_sensor == "HAMILTON_LIB_PH_III_MCC_AC2_MTR":
+        split_low: float = -2.35
+        split_high: float = -1.70
+        low: np.ndarray = diffs[diffs < split_low]
+        mid: np.ndarray = diffs[np.logical_and(diffs >= split_low, diffs < split_high)]
+        high: np.ndarray = diffs[diffs >= split_high]
+
+        n, bins, patches = ax.hist(diffs, bins=250, density=True)
+
+        low_p: float = float(len(low)) / float((len(low) + len(mid) + len(high)))
+        mid_p: float = float(len(mid)) / float((len(low) + len(mid) + len(high)))
+        high_p: float = float(len(high)) / float((len(low) + len(mid) + len(high)))
+
+        low_bins: np.ndarray = bins[bins < split_low]
+        mid_bins: np.ndarray = bins[np.logical_and(bins >= split_low, bins < split_high)]
+        high_bins: np.ndarray = bins[bins >= split_high]
+
+        low_mu = low.mean()
+        low_sigma = low.std()
+
+        mid_mu = mid.mean()
+        mid_sigma = mid.std()
+
+        high_mu = high.mean()
+        high_sigma = high.std()
+
+        y_low = normal(low_mu, low_sigma, low_bins, low_p)
+        y_mid = normal(mid_mu, mid_sigma, mid_bins, mid_p)
+        y_high = normal(high_mu, high_sigma, high_bins, high_p)
+
+        ax.plot(low_bins, y_low, label=f"\n$\mu$={low_mu:.4f} $\sigma$={low_sigma:.4f}")
+        ax.plot(mid_bins, y_mid, label=f"\n$\mu$={mid_mu:.4f} $\sigma$={mid_sigma:.4f}")
+        ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
+    elif opq_box_id == "1001" and uhm_sensor == "HAMILTON_LIB_PH_III_CH_1_MTR":
+        split_low: float = -2.5
+        split_high: float = -1.90
+        low: np.ndarray = diffs[diffs < split_low]
+        mid: np.ndarray = diffs[np.logical_and(diffs >= split_low, diffs < split_high)]
+        high: np.ndarray = diffs[diffs >= split_high]
+
+        n, bins, patches = ax.hist(diffs, bins=250, density=True)
+
+        low_p: float = float(len(low)) / float((len(low) + len(mid) + len(high)))
+        mid_p: float = float(len(mid)) / float((len(low) + len(mid) + len(high)))
+        high_p: float = float(len(high)) / float((len(low) + len(mid) + len(high)))
+
+        low_bins: np.ndarray = bins[bins < split_low]
+        mid_bins: np.ndarray = bins[np.logical_and(bins >= split_low, bins < split_high)]
+        high_bins: np.ndarray = bins[bins >= split_high]
+
+        low_mu = low.mean()
+        low_sigma = low.std()
+
+        mid_mu = mid.mean()
+        mid_sigma = mid.std()
+
+        high_mu = high.mean()
+        high_sigma = high.std()
+
+        y_low = normal(low_mu, low_sigma, low_bins, low_p)
+        y_mid = normal(mid_mu, mid_sigma, mid_bins, mid_p)
+        y_high = normal(high_mu, high_sigma, high_bins, high_p)
+
+        ax.plot(low_bins, y_low, label=f"\n$\mu$={low_mu:.4f} $\sigma$={low_sigma:.4f}")
+        ax.plot(mid_bins, y_mid, label=f"\n$\mu$={mid_mu:.4f} $\sigma$={mid_sigma:.4f}")
+        ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
+    elif opq_box_id == "1001" and uhm_sensor == "HAMILTON_LIB_PH_III_CH_2_MTR":
+        split_low: float = -2.7
+        split_high: float = -2.1
+        low: np.ndarray = diffs[diffs < split_low]
+        mid: np.ndarray = diffs[np.logical_and(diffs >= split_low, diffs < split_high)]
+        high: np.ndarray = diffs[diffs >= split_high]
+
+        n, bins, patches = ax.hist(diffs, bins=250, density=True)
+
+        low_p: float = float(len(low)) / float((len(low) + len(mid) + len(high)))
+        mid_p: float = float(len(mid)) / float((len(low) + len(mid) + len(high)))
+        high_p: float = float(len(high)) / float((len(low) + len(mid) + len(high)))
+
+        low_bins: np.ndarray = bins[bins < split_low]
+        mid_bins: np.ndarray = bins[np.logical_and(bins >= split_low, bins < split_high)]
+        high_bins: np.ndarray = bins[bins >= split_high]
+
+        low_mu = low.mean()
+        low_sigma = low.std()
+
+        mid_mu = mid.mean()
+        mid_sigma = mid.std()
+
+        high_mu = high.mean()
+        high_sigma = high.std()
+
+        y_low = normal(low_mu, low_sigma, low_bins, low_p)
+        y_mid = normal(mid_mu, mid_sigma, mid_bins, mid_p)
+        y_high = normal(high_mu, high_sigma, high_bins, high_p)
+
+        ax.plot(low_bins, y_low, label=f"\n$\mu$={low_mu:.4f} $\sigma$={low_sigma:.4f}")
+        ax.plot(mid_bins, y_mid, label=f"\n$\mu$={mid_mu:.4f} $\sigma$={mid_sigma:.4f}")
+        ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
+    elif opq_box_id == "1001" and uhm_sensor == "HAMILTON_LIB_PH_III_CH_3_MTR":
+        split_low: float = -2.3
+        split_high: float = -1.75
+        low: np.ndarray = diffs[diffs < split_low]
+        mid: np.ndarray = diffs[np.logical_and(diffs >= split_low, diffs < split_high)]
+        high: np.ndarray = diffs[diffs >= split_high]
+
+        n, bins, patches = ax.hist(diffs, bins=250, density=True)
+
+        low_p: float = float(len(low)) / float((len(low) + len(mid) + len(high)))
+        mid_p: float = float(len(mid)) / float((len(low) + len(mid) + len(high)))
+        high_p: float = float(len(high)) / float((len(low) + len(mid) + len(high)))
+
+        low_bins: np.ndarray = bins[bins < split_low]
+        mid_bins: np.ndarray = bins[np.logical_and(bins >= split_low, bins < split_high)]
+        high_bins: np.ndarray = bins[bins >= split_high]
+
+        low_mu = low.mean()
+        low_sigma = low.std()
+
+        mid_mu = mid.mean()
+        mid_sigma = mid.std()
+
+        high_mu = high.mean()
+        high_sigma = high.std()
+
+        y_low = normal(low_mu, low_sigma, low_bins, low_p)
+        y_mid = normal(mid_mu, mid_sigma, mid_bins, mid_p)
+        y_high = normal(high_mu, high_sigma, high_bins, high_p)
+
+        ax.plot(low_bins, y_low, label=f"\n$\mu$={low_mu:.4f} $\sigma$={low_sigma:.4f}")
+        ax.plot(mid_bins, y_mid, label=f"\n$\mu$={mid_mu:.4f} $\sigma$={mid_sigma:.4f}")
+        ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
+    elif opq_box_id == "1021" and uhm_sensor == "MARINE_SCIENCE_MAIN_A_MTR":
+        split_low: float = -1.3
+        split_high: float = -0.6
+        low: np.ndarray = diffs[np.logical_and(diffs < split_low, diffs > -1.75)]
+        mid: np.ndarray = diffs[np.logical_and(diffs >= split_low, diffs < split_high)]
+        high: np.ndarray = diffs[diffs >= split_high]
+
+        n, bins, patches = ax.hist(diffs, bins=250, density=True)
+
+        low_p: float = float(len(low)) / float((len(low) + len(mid) + len(high)))
+        mid_p: float = float(len(mid)) / float((len(low) + len(mid) + len(high)))
+        high_p: float = float(len(high)) / float((len(low) + len(mid) + len(high)))
+
+        low_bins: np.ndarray = bins[bins < split_low]
+        mid_bins: np.ndarray = bins[np.logical_and(bins >= split_low, bins < split_high)]
+        high_bins: np.ndarray = bins[bins >= split_high]
+
+        low_mu = low.mean()
+        low_sigma = low.std()
+
+        mid_mu = mid.mean()
+        mid_sigma = mid.std()
+
+        high_mu = high.mean()
+        high_sigma = high.std()
+
+        y_low = normal(low_mu, low_sigma, low_bins, low_p)
+        y_mid = normal(mid_mu, mid_sigma, mid_bins, mid_p)
+        y_high = normal(high_mu, high_sigma, high_bins, high_p)
+
+        ax.plot(low_bins, y_low, label=f"\n$\mu$={low_mu:.4f} $\sigma$={low_sigma:.4f}")
+        ax.plot(mid_bins, y_mid, label=f"\n$\mu$={mid_mu:.4f} $\sigma$={mid_sigma:.4f}")
+        ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
+    elif opq_box_id == "1021" and uhm_sensor == "MARINE_SCIENCE_MAIN_B_MTR":
+        split_low: float = 1.1
+        split_high: float = 1.75
+        low: np.ndarray = diffs[np.logical_and(diffs < split_low, diffs > .75)]
+        mid: np.ndarray = diffs[np.logical_and(diffs >= split_low, diffs < split_high)]
+        high: np.ndarray = diffs[diffs >= split_high]
+
+        n, bins, patches = ax.hist(diffs, bins=250, density=True)
+
+        low_p: float = float(len(low)) / float((len(low) + len(mid) + len(high)))
+        mid_p: float = float(len(mid)) / float((len(low) + len(mid) + len(high)))
+        high_p: float = float(len(high)) / float((len(low) + len(mid) + len(high)))
+
+        low_bins: np.ndarray = bins[bins < split_low]
+        mid_bins: np.ndarray = bins[np.logical_and(bins >= split_low, bins < split_high)]
+        high_bins: np.ndarray = bins[bins >= split_high]
+
+        low_mu = low.mean()
+        low_sigma = low.std()
+
+        mid_mu = mid.mean()
+        mid_sigma = mid.std()
+
+        high_mu = high.mean()
+        high_sigma = high.std()
+
+        y_low = normal(low_mu, low_sigma, low_bins, low_p)
+        y_mid = normal(mid_mu, mid_sigma, mid_bins, mid_p)
+        y_high = normal(high_mu, high_sigma, high_bins, high_p)
+
+        ax.plot(low_bins, y_low, label=f"\n$\mu$={low_mu:.4f} $\sigma$={low_sigma:.4f}")
+        ax.plot(mid_bins, y_mid, label=f"\n$\mu$={mid_mu:.4f} $\sigma$={mid_sigma:.4f}")
+        ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
+    elif opq_box_id == "1021" and uhm_sensor == "MARINE_SCIENCE_MCC_MTR":
+        split_low: float = -1.5
+        split_high: float = -0.85
+        low: np.ndarray = diffs[np.logical_and(diffs < split_low, diffs > -2)]
+        mid: np.ndarray = diffs[np.logical_and(diffs >= split_low, diffs < split_high)]
+        high: np.ndarray = diffs[diffs >= split_high]
+
+        n, bins, patches = ax.hist(diffs, bins=250, density=True)
+
+        low_p: float = float(len(low)) / float((len(low) + len(mid) + len(high)))
+        mid_p: float = float(len(mid)) / float((len(low) + len(mid) + len(high)))
+        high_p: float = float(len(high)) / float((len(low) + len(mid) + len(high)))
+
+        low_bins: np.ndarray = bins[bins < split_low]
+        mid_bins: np.ndarray = bins[np.logical_and(bins >= split_low, bins < split_high)]
+        high_bins: np.ndarray = bins[bins >= split_high]
+
+        low_mu = low.mean()
+        low_sigma = low.std()
+
+        mid_mu = mid.mean()
+        mid_sigma = mid.std()
+
+        high_mu = high.mean()
+        high_sigma = high.std()
+
+        y_low = normal(low_mu, low_sigma, low_bins, low_p)
+        y_mid = normal(mid_mu, mid_sigma, mid_bins, mid_p)
+        y_high = normal(high_mu, high_sigma, high_bins, high_p)
+
+        ax.plot(low_bins, y_low, label=f"\n$\mu$={low_mu:.4f} $\sigma$={low_sigma:.4f}")
+        ax.plot(mid_bins, y_mid, label=f"\n$\mu$={mid_mu:.4f} $\sigma$={mid_sigma:.4f}")
+        ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
+    else:
+        n, bins, patches = ax.hist(diffs, bins=400, density=True)
+        ax.plot(bins, normal(mean_diff, mean_stddev, bins, 1.0), label=f"\n$\mu$={mean_diff:.4f} $\sigma$={mean_stddev:.4f}")
 
     ax.set_xlabel("RMS Difference V (UHM - OPQ)")
     ax.set_ylabel("% Density")
 
-    fig.show()
-    # fig.savefig(f"{out_dir}/thd_hist_{opq_box_id}_{uhm_sensor}.png")
+    ax.legend()
+
+    # fig.show()
+    fig.savefig(f"{out_dir}/thd_hist_{opq_box_id}_{uhm_sensor}.png", bbox_inches='tight')
 
 
 def compare_vrms(opq_start_ts_s: int,
