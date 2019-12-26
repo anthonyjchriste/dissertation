@@ -8,7 +8,6 @@ import numpy as np
 
 @dataclass
 class SeriesSpec:
-    time: List
     values: List
     dt_func: Callable
     v_func: Callable
@@ -23,20 +22,38 @@ def intersect_lists(lists: List[List[datetime.datetime]]) -> Set[datetime.dateti
     return set.intersection(*sets)
 
 
-def align_data_multi(series: List[SeriesSpec]) -> None:
+def align_data_multi(series: List[SeriesSpec]) -> List[Tuple[np.ndarray, np.ndarray]]:
     all_dts: List[List[datetime.datetime]] = []
     all_binned_dts: List[List[datetime.datetime]] = []
+    all_vals: List[List[float]] = []
+    already_seens: List[Set[datetime.datetime]] = []
+
+    for _ in range(len(series)):
+        already_seens.append(set())
 
     for serie in series:
-        dts: Iterable[List[datetime.datetime]] = list(map(serie.dt_func, serie.time))
-        binned_dts: Iterable[List[datetime.datetime]] = list(map(bin_dt_by_min, dts))
-        all_dts.extend(dts)
-        all_binned_dts.extend(binned_dts)
+        dts: List[datetime.datetime] = list(map(serie.dt_func, serie.values))
+        binned_dts: List[datetime.datetime] = list(map(bin_dt_by_min, dts))
+        vals: List = list(map(serie.v_func, serie.values))
+        all_dts.append(dts)
+        all_binned_dts.append(binned_dts)
+        all_vals.append(vals)
 
     intersecting_dts: Set[datetime.datetime] = intersect_lists(all_binned_dts)
 
-    for serie_idx, serie in enumerate(series):
-        pass
+    res: List[Tuple[np.ndarray, np.ndarray]] = []
+
+    for i, binned_dts in enumerate(all_binned_dts):
+        dts = []
+        vs = []
+        for j, binned_dt in enumerate(binned_dts):
+            if binned_dt in intersecting_dts and binned_dt not in already_seens[i]:
+                dts.append(binned_dt)
+                vs.append(all_vals[i][j])
+                already_seens[i].add(binned_dt)
+        res.append((np.array(dts), np.array(vs)))
+
+    return res
 
 
 

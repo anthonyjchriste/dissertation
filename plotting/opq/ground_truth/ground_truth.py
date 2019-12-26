@@ -9,6 +9,7 @@ import pymongo
 import util.frequency as frequency
 import util.io as io
 import util.thd as thd
+import util.voltage as voltage
 
 
 def find_ground_truth_data_range(ground_truth_root: str):
@@ -37,7 +38,8 @@ def main():
     out_dir: str = "/Users/anthony/Development/dissertation/src/figures"
 
     # frequency.compare_frequencies(start_ts_s, end_ts_s, gt_root, mongo_client, out_dir)
-    thd.compare_thds(start_ts_s, end_ts_s, gt_root, mongo_client, out_dir)
+    # thd.compare_thds(start_ts_s, end_ts_s, gt_root, mongo_client, out_dir)
+    voltage.compare_vrms(start_ts_s, end_ts_s, gt_root, mongo_client, out_dir)
     # find_ground_truth_data_range(gt_root)
 
 
