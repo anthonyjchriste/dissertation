@@ -501,13 +501,14 @@ The rest of the Frequency comparisons look very similar and the results are summ
         1000 & POST\_MAIN\_2 & 0.0016 & 0.0077 \\
         1001 & HAMILTON\_LIB\_PH\_III\_CH\_1\_MTR & 0.0006 & 0.0074 \\
         1001 & HAMILTON\_LIB\_PH\_III\_CH\_2\_MTR & 0.0009 & 0.0074 \\
+        1001 & HAMILTON\_LIB\_PH\_III\_CH\_3\_MTR & 0.0011 & 0.0074 \\
         1001 & HAMILTON\_LIB\_PH\_III\_MCC\_AC1\_MTR & 0.0008 & 0.0073 \\
         1001 & HAMILTON\_LIB\_PH\_III\_MCC\_AC2\_MTR & 0.0008 & 0.0074 \\
         1002 & POST\_MAIN\_2 & 0.0017 & 0.0068 \\
         1003 & KELLER\_HALL\_MAIN\_MTR & 0.0005 & 0.0073 \\
         1021 & MARINE\_SCIENCE\_MAIN\_A\_MTR & 0.0008 & 0.0082 \\
         1021 & MARINE\_SCIENCE\_MAIN\_B\_MTR & 0.0004 & 0.0082 \\
-        1021 & MARINE\_SCIENCE\_MAIN\_B\_MTR & 0.0004 & 0.0082 \\
+        1021 & MARINE\_SCIENCE\_MCC\_MTR & 0.0004 & 0.0082 \\
         1022 & AG\_ENGINEERING\_MAIN\_MTR & 0.0020 & 0.0079 \\
         1022 & AG\_ENGINEERING\_MCC\_MTR & 0.0010 & 0.0079 \\
         1023 & LAW\_LIB\_MAIN\_MTR & 0.0004 & 0.0076 \\
@@ -530,7 +531,73 @@ In order to compare OPQ Box Voltages against UHM Voltages, a combination of Volt
     \label{eq:gt_vrms}
 \end{equation}
 
+As an example, Figure~\ref{fig:v_hist} provides the difference in $V_{RMS}$ between OPQ Box 1000 and the UHM POST\_MAIN\_1 meter.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{figures/v_hist_1000_POST_MAIN_1.png}
+    \caption{Voltage OPQ Box 1000 vs POST\_MAIN\_1}
+    \label{fig:v_hist}
+\end{figure}
+
+Box 1000 averages about .9V higher than what is observed at the ground truth meter.
+
+Some of the difference comparisons display multiple distributions which might be explained by the cycling of Voltage conditioning equipment and by larger loads on the grid during day time hours. However, I do not have enough information about the UH micro-grid detailed operations to be completely certain about these claims.
+
+For example, Figure~\ref{fig:v_hist_ii} compares Box 1001 in POST to the POST\_MAIN\_1 meter.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{figures/v_hist_1002_POST_MAIN_1.png}
+    \caption{Voltage OPQ Box 1002 vs POST\_MAIN\_1}
+    \label{fig:v_hist_ii}
+\end{figure}
+
+The green Gaussian fit shows Voltages collected during night time hours where the orange Gaussian fit shows values collected during the day time hours. It's interesting that Box 1000 and Box 1002 show such different results even though the Boxes are located on the same floor within the same building. The Boxes are however opposite each other within the building. I suspect that these Boxes are serviced by different electrical mains within the building. These claims are further supported by THD ground truth analysis in the following section which contains THD data for each electrical main.
+
+Even more interesting is that several of our Voltage comparisons show three separate Gaussian distributions. As example, Figure~\ref{fig:v_hist_iii} compares Voltage values between Box 1021 and the MARINE\_SCIENCE\_MAIN\_A\_MTR.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{figures/v_hist_1021_MARINE_SCIENCE_MAIN_A_MTR.png}
+    \caption{Voltage OPQ Box 1021 vs MARINE\_SCIENCE\_MAIN\_A\_MTR}
+    \label{fig:v_hist_iii}
+\end{figure}
+
+Here we can see that most of our values average about 1V higher than that of the ground truth with other peaks at 0.3V and 1.4V above the ground truth data.
+
+Table~\ref{table:gt_v} summarizes the Voltage comparisons.
+
+\begin{table}[H]
+    \centering
+    \caption{Voltage Trend Comparisons}
+    \begin{tabularx}{\textwidth}{lXll}
+        \toprule
+        \textbf{OPQ Box} & \textbf{UHM Ground Truth Sensor} & \boldmath{$\mu$} & \boldmath{$\sigma$} \\
+        \midrule
+        1000 & POST\_MAIN\_1 & -0.9035 & 0.1095 \\
+        1001 & HAMILTON\_LIB..CH\_1 & -2.8185 -2.1806 -1.5687 & 0.2291 0.1521 0.2378 \\
+        1001 & HAMILTON\_LIB..CH\_2 & -3.0240 -2.3887 -1.7720 & 0.2310 0.1519 0.2342 \\
+        1001 & HAMILTON\_LIB..CH\_3 & -2.6481 -2.0279 -1.4323 & 0.2428 0.1421 0.2313 \\
+        1001 & HAMILTON\_LIB..MAIN\_1 & -2.5356 -1.9140 -1.3161 & 0.2348 0.1398 0.2416 \\
+        1001 & HAMILTON\_LIB..MAIN\_2 & -2.3652 -1.7216 -1.0987 & 0.2395 0.1522 0.2205 \\
+        1001 & HAMILTON\_LIB..MCC\_AC1 & -2.7607 -2.0742 -1.4239 & 0.2242 0.1893 0.2160 \\
+        1001 & HAMILTON\_LIB..MCC\_AC2 & -2.6979 -2.0380 -1.4195 & 0.2415 0.1678 0.2181 \\
+        1002 & POST\_MAIN\_1 & -2.8144 -1.7618 & 0.1115 0.1055 \\
+        1021 & MARINE\_SCIENCE..A & -1.4288 -1.0046 -0.3442 & 0.0846 0.1408 0.1817 \\
+        1021 & MARINE\_SCIENCE..B & 0.9880 1.14075 2.0483 & 0.0722 0.1319 0.2074 \\
+        1021 & MARINE\_SCIENCE\_MCC & -1.6298 -1.2124 -0.5727 & 0.0884 0.1300 0.1908 \\
+        1022 & AG\_ENGINEERING\_MAIN & 0.0948 & 0.1717 \\
+        1022 & AG\_ENGINEERING\_MCC & 0.0482 & 0.1717 \\
+        1023 & LAW\_LIB\_MAIN & 0.6315 & 0.1857 \\
+        \bottomrule
+    \end{tabularx}
+    \label{table:gt_v}
+\end{table}
+
+In general, most OPQ Boxes observe Voltages that are slightly higher than what was observed by ground truth. The POST (1000), MSB, Ag. Engineering, and MSB buildings provide the most accurate comparisons to ground truth with averages differences between .5V and 1V.
+
+Hamilton Library is a major outlier in that the ground truth comparisons are generally off by around 1.5 to 2 Volts. Hamilton Library is fed by at least three electrical mains each with multiple channels. Ground truth data is only collected on Hamilton Ph III. I suspect that our Box in Hamilton is serviced by one of the other phases. This claim is further supported by the THD comparison in the next section.
 
 \subsubsection{THD Ground Truth Analysis}
 
@@ -540,14 +607,14 @@ The multiple distributions appear to be related to time of day and point towards
 
 Figure~\ref{fig:gt_thd_i} compares THD between the Pacific Ocean Science and Technology building (POST) OPQ Boxes and POST UHM sensors.
 
-\begin{figure}
+\begin{figure}[h]
     \begin{tabular}{cc}
-        \subfloat[1000 vs. POST\_MAIN\_1]{\includegraphics[width = 0.5\linewidth]{figures/thd_hist_1000_POST_MAIN_1.png}} &
-        \subfloat[1000 vs. POST\_MAIN\_2]{\includegraphics[width = 0.5\linewidth]{figures/thd_hist_1000_POST_MAIN_2.png}} \\
-        \subfloat[1002 vs. POST\_MAIN\_1]{\includegraphics[width = 0.5\linewidth]{figures/thd_hist_1002_POST_MAIN_1.png}} &
-        \subfloat[1002 vs. POST\_MAIN\_2]{\includegraphics[width = 0.5\linewidth]{figures/thd_hist_1002_POST_MAIN_2.png}} \\
+        \subfloat[1000 vs. POST\_MAIN\_1]{\includegraphics[width = 0.45\linewidth]{figures/thd_hist_1000_POST_MAIN_1.png}} &
+        \subfloat[1000 vs. POST\_MAIN\_2]{\includegraphics[width = 0.45\linewidth]{figures/thd_hist_1000_POST_MAIN_2.png}} \\
+        \subfloat[1002 vs. POST\_MAIN\_1]{\includegraphics[width = 0.45\linewidth]{figures/thd_hist_1002_POST_MAIN_1.png}} &
+        \subfloat[1002 vs. POST\_MAIN\_2]{\includegraphics[width = 0.45\linewidth]{figures/thd_hist_1002_POST_MAIN_2.png}} \\
     \end{tabular}
-    \caption{UHM THD vs. OPQ THD I}
+    \caption{UHM THD vs. OPQ THD (POST)}
     \label{fig:gt_thd_i}
 \end{figure}
 
@@ -555,22 +622,24 @@ The THD comparisons within the POST building provides several interesting featur
 
 First, POST has two ground truth meters (POST\_MAIN\_1 and POST\_MAIN\_2) and two OPQ Boxes (1000 in the Collaborative Software Development Lab (CSDL) and 1002 in ICSpace). Both OPQ Boxes are on the third floor, roughly opposite each other in the building. As mentioned previously, I do not know exactly which electrical subsystem each OPQ Box is on when there are multiple electrical mains servicing a single building. In the case of POST, there are two electrical mains. I believe it's possible to guess which OPQ Box corresponds with which main by looking at the ground truth comparisons.
 
-For instance, OPQ Box 1000 vs. POST\_MAIN\_2 provides a much smaller spread in THD difference (about .25\% THD) than OPQ Box 1000 vs. POST\_MAIN\_2 which has a spread of close to 1\% THD. I speculate that OPQ Box 1000 is on the same main as the POST\_MAIN\_2 meter. The opposite holds true for OPQ Box 1002. The spread for Box 1002 is smaller for POST\_MAIN\_1 (about 0.3\% THD) than it is for POST\_MAIN\_2 (about 0.6\% THD) which leads me to speculate that Box 1002 may be serviced by the same electrical main as the POST\_MAIN\_1 meter.
+For instance, OPQ Box 1000 vs. POST\_MAIN\_2 provides a much smaller spread in THD difference (about .25\% THD) than OPQ Box 1000 vs. POST\_MAIN\_2 which has a spread of close to 1\% THD. I speculate that OPQ Box 1000 is on the same main as the POST\_MAIN\_2 meter. The opposite holds true for OPQ Box 1002. The spread for Box 1002 is smaller for POST\_MAIN\_1 (about 0.3\% THD) than it is for POST\_MAIN\_2 (about 0.6\% THD) which leads me to speculate that Box 1002 may be serviced by the same electrical main as the POST\_MAIN\_1 meter. These assumptions fit with assumptions made about the Voltage comparisons in the previous sections providing credence to the idea that 1000 and 1002 are serviced by separate mains with POST.
 
 
 \subsubsection{Mauka Event Ground Truth Analysis}
 
-Events contain metadata and a window of raw data that may or may not contain signals of interest. Events are produced in OPQ by two components. Mauka's threshold based Event detector and Napali's statistical based Event detector. This section focuses on Mauka's threshold based Event detection and compares it to the UHM ground truth data.
+Events contain metadata and a window of raw data that may or may not contain signals of interest. Events are produced in OPQ by two components. Mauka's threshold based Event detector and Napali's statistical based Event detector. This section focuses on Mauka's threshold based Event detection methods as the Napali Event Trigger is the focus of another Ph.D. dissertation in our research group.
 
-The ground truth data does not provide the concept of Events. However, I apply the same thresholds used by Mauka to the ground truth data to determine where Events would have been observed if the UHM data had similar thresholds.
+Events generated by Mauka do not store information about which metric was used to generate that Event (Frequency, Voltage, or THD). When Mauka's Event detector was implemented, this seemed reasonable as Events aren't supposed to make any type of assumption about what is non-nominal about the data, only that something non-nominal was observed. Future implementations of the Mauka Event detector should store extra metadata about which metric was used to create an Event. This metric would be useful when comparing Events generated by Mauka to ground truth data using thresholding analysis.
 
-Events are generated by Mauka using common power quality thresholds for three different metrics, RMS Voltage, Frequency, and THD. Event metadata does not contain information about which metric was over threshold like Inicdent data does. Instead, I applied all three thresholds to the OPQ ground truth data and then compared that to the Events that were recorded by Mauka within OPQ.
+Because Mauka's Events are generated directly from Measurements and Trends using a simple threshold for each feature, we use the results from the previous sections analyzing Measurements and Trends to support the fact that Mauka's threshold based Event generation matches the ground truth data. Since the Measurements and Trends that are generated by OPQ compare nicely with the ground truth data, creating Events based off this data using basic thresholds should match the ground truth data.
+
+To motivate this assumption, Figure compares Events generated by Mauka Events that would have been generated by the ground truth data using similar thresholding metrics.
 
 \subsubsection{Mauka Incident Ground Truth Analysis}
 
-The OPQ ground truth data does not contain concepts that are related to Laha Incidents. Instead, I use apply thresholding to the ground truth data to determine where Incidents should have been observed verses when they were actually observed by Mauka. To complicate the matter, the OPQ ground truth data only provides features at a granularity of one minute. Therefore, I bin each invidvidual Incident by minute and only count the number of bins that contain Incidents.
+The OPQ ground truth data does not contain concepts that are related to Laha Incidents. Instead, I apply thresholding to the ground truth data to determine where Incidents should have been observed verses when they were actually observed by Mauka. To complicate the matter, the OPQ ground truth data only provides features at a granularity of one minute. Therefore, I bin each individual Incident by minute and only count the number of bins that contain Incidents.
 
-Using thresholding breaks down for many of the Incident types that rely on the duration of a disturbance to apply a classification.
+Using thresholding breaks down for many of the Incident types that rely on the duration of a disturbance to apply a classification. For instance, all IEEE defined PQ classifications rely on accurate durations of anomalous signals to apply a classification. This also holds true for Incidents that utilize industry standards such as ITIC or Semi-F47. These Incident types can not be compared to the ground truth data since ground truth data does not provide any metric of duration and only averages values over a one minute time window which is much too large for almost all of Mauka's Incident classifications.
 
 \paragraph{Frequency Incidents Comparison}
 
