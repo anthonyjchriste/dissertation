@@ -459,7 +459,8 @@ def plot_voltage(opq_start_ts_s: int,
         ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
     else:
         n, bins, patches = ax.hist(diffs, bins=400, density=True)
-        ax.plot(bins, normal(mean_diff, mean_stddev, bins, 1.0), label=f"\n$\mu$={mean_diff:.4f} $\sigma$={mean_stddev:.4f}")
+        ax.plot(bins, normal(mean_diff, mean_stddev, bins, 1.0),
+                label=f"\n$\mu$={mean_diff:.4f} $\sigma$={mean_stddev:.4f}")
 
     ax.set_xlabel("RMS Difference V (UHM - OPQ)")
     ax.set_ylabel("% Density")
@@ -468,6 +469,115 @@ def plot_voltage(opq_start_ts_s: int,
 
     # fig.show()
     fig.savefig(f"{out_dir}/thd_hist_{opq_box_id}_{uhm_sensor}.png", bbox_inches='tight')
+
+
+def plot_voltage_incidents(opq_start_ts_s: int,
+                             opq_end_ts_s: int,
+                             opq_box_id: str,
+                             ground_truth_root: str,
+                             uhm_sensor: str,
+                             mongo_client: pymongo.MongoClient,
+                             out_dir: str) -> str:
+    f_types: List[str] = ["VOLTAGE_INTERRUPTION", "VOLTAGE_SAG", "VOLTAGE_SWELL"]
+
+    db: pymongo.database.Database = mongo_client["opq"]
+    coll: pymongo.collection.Collection = db["incidents"]
+    query: Dict = {
+        "box_id": opq_box_id,
+        "start_timestamp_ms": {"$gte": opq_start_ts_s * 1000},
+        "end_timestamp_ms": {"$lte": opq_end_ts_s * 1000},
+        "classifications": {"$in": f_types}
+    }
+
+    cursor: pymongo.cursor.Cursor = coll.find(query, projection=io.Incident.projection())
+    incidents: List[io.Incident] = list(map(io.Incident.from_doc, list(cursor)))
+
+    ground_truth_path_vab: str = f"{ground_truth_root}/{uhm_sensor}/VAB"
+    uhm_data_points_vab: List[io.DataPoint] = io.parse_file(ground_truth_path_vab)
+    # vab_vals_min = list(map(lambda data_point: data_point.min_v, uhm_data_points_vab))
+    # vab_vals_max = list(map(lambda data_point: data_point.max_v, uhm_data_points_vab))
+
+    ground_truth_path_vbc: str = f"{ground_truth_root}/{uhm_sensor}/VBC"
+    uhm_data_points_vbc: List[io.DataPoint] = io.parse_file(ground_truth_path_vbc)
+    # vbc_vals_min = list(map(lambda data_point: data_point.min_v, uhm_data_points_vbc))
+    # vbc_vals_max = list(map(lambda data_point: data_point.max_v, uhm_data_points_vbc))
+
+    ground_truth_path_vca: str = f"{ground_truth_root}/{uhm_sensor}/VCA"
+    uhm_data_points_vca: List[io.DataPoint] = io.parse_file(ground_truth_path_vca)
+    # vca_vals_min = list(map(lambda data_point: data_point.min_v, uhm_data_points_vca))
+    # vca_vals_max = list(map(lambda data_point: data_point.max_v, uhm_data_points_vca))
+
+    series: List[align.SeriesSpec] = [align.SeriesSpec(uhm_data_points_vab,
+                               lambda data_point: datetime.datetime.utcfromtimestamp(data_point.ts_s),
+                               lambda data_point: data_point),
+              align.SeriesSpec(uhm_data_points_vbc,
+                               lambda data_point: datetime.datetime.utcfromtimestamp(data_point.ts_s),
+                               lambda data_point: data_point),
+              align.SeriesSpec(uhm_data_points_vca,
+                               lambda data_point: datetime.datetime.utcfromtimestamp(data_point.ts_s),
+                               lambda data_point: data_point),]
+
+    aligned_data: List[Tuple[np.ndarray, np.ndarray]] = align.align_data_multi(series)
+
+    aligned_vab: Tuple[np.ndarray, np.ndarray] = aligned_data[0]
+    aligned_vbc: Tuple[np.ndarray, np.ndarray] = aligned_data[1]
+    aligned_vca: Tuple[np.ndarray, np.ndarray] = aligned_data[2]
+
+    vab_dts: np.ndarray = aligned_vab[0]
+    vab_vals: np.ndarray = aligned_vab[1]
+    vbc_dts: np.ndarray = aligned_vbc[0]
+    vbc_vals: np.ndarray = aligned_vbc[1]
+    vca_dts: np.ndarray = aligned_vca[0]
+    vca_vals: np.ndarray = aligned_vca[1]
+
+    vab_vals_min: np.ndarray = np.array(list(map(lambda data_point: data_point.min_v, vab_vals)))
+    vab_vals_max: np.ndarray = np.array(list(map(lambda data_point: data_point.max_v, vab_vals)))
+    vbc_vals_min: np.ndarray = np.array(list(map(lambda data_point: data_point.min_v, vbc_vals)))
+    vbc_vals_max: np.ndarray = np.array(list(map(lambda data_point: data_point.max_v, vbc_vals)))
+    vca_vals_min: np.ndarray = np.array(list(map(lambda data_point: data_point.min_v, vca_vals)))
+    vca_vals_max: np.ndarray = np.array(list(map(lambda data_point: data_point.max_v, vca_vals)))
+
+    eq_left: float = (1.0 / (np.sqrt(3) * 3.9985))
+    sq_sum_min = np.square(vab_vals_min) + np.square(vbc_vals_min) + np.square(vca_vals_min)
+    sq_sum_max = np.square(vab_vals_max) + np.square(vbc_vals_max) + np.square(vca_vals_max)
+    vrms_vals_min: np.ndarray = eq_left * np.sqrt(sq_sum_min)
+    vrms_vals_max: np.ndarray = eq_left * np.sqrt(sq_sum_max)
+
+    # Plot
+    fig, ax = plt.subplots(1, 1, figsize=(16, 9))
+    fig: plt.Figure = fig
+    ax: plt.Axes = ax
+
+    ax.plot(vab_dts, vrms_vals_min, label="UHM Min. Voltage", color="blue")
+    ax.plot(vab_dts, vrms_vals_max, label="UHM Max. Voltage", color="red")
+
+    freq_threshold_low = 120.0 - (120.0 * .025)
+    freq_threshold_high = 120.0 + (120.0 * .025)
+
+    ax.plot(vab_dts, [freq_threshold_low for _ in vab_dts], linestyle="--", color="blue")
+    ax.plot(vab_dts, [freq_threshold_high for _ in vab_dts], linestyle="--", color="red")
+
+    incident_sags: List[io.Incident] = list(
+        filter(lambda incident: "VOLTAGE_SAG" in incident.classifications, incidents))
+    incident_sag_dts: np.ndarray = np.array(list(
+        map(lambda incident: datetime.datetime.utcfromtimestamp(incident.start_timestamp_ms / 1000.0), incident_sags)))
+    incident_sag_vals: np.ndarray = np.array(
+        list(map(lambda incident: 60 - incident.deviation_from_nominal, incident_sags)))
+    ax.scatter(incident_sag_dts, incident_sag_vals, label="OPQ Voltage Sags", color="blue", s=10)
+
+    incident_swells: List[io.Incident] = list(
+        filter(lambda incident: "VOLTAGE_SWELL" in incident.classifications, incidents))
+    incident_swell_dts: np.ndarray = np.array(list(
+        map(lambda incident: datetime.datetime.utcfromtimestamp(incident.start_timestamp_ms / 1000.0),
+            incident_swells)))
+    incident_swell_vals: np.ndarray = np.array(
+        list(map(lambda incident: 60 - incident.deviation_from_nominal, incident_swells)))
+    ax.scatter(incident_swell_dts, incident_swell_vals, label="OPQ Voltage Swells", color="red", s=10)
+
+    ax.legend()
+    fig.show()
+
+    return ""
 
 
 def compare_vrms(opq_start_ts_s: int,
@@ -488,3 +598,27 @@ def compare_vrms(opq_start_ts_s: int,
                              out_dir)
             except Exception as e:
                 print(e, "...ignoring...")
+
+
+def compare_vrms_incidents(opq_start_ts_s: int,
+                           opq_end_ts_s: int,
+                           ground_truth_root: str,
+                           mongo_client: pymongo.MongoClient,
+                           out_dir: str):
+    paths: List[str] = []
+
+    for opq_box, uhm_meters in util.opq_box_to_uhm_meters.items():
+        for uhm_meter in uhm_meters:
+            try:
+                print(f"plot_voltage_incident {opq_box} {uhm_meter}")
+                path = plot_voltage_incidents(opq_start_ts_s,
+                                                opq_end_ts_s,
+                                                opq_box,
+                                                ground_truth_root,
+                                                uhm_meter,
+                                                mongo_client,
+                                                out_dir)
+                paths.append(path)
+            except Exception as e:
+                print(e, "...ignoring...")
+    util.latex_figure_table_source(paths, 3, 2)

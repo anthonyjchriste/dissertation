@@ -1,5 +1,37 @@
+import dataclasses
 from dataclasses import dataclass
 from typing import Dict, List, Optional, Union
+
+@dataclass
+class Incident:
+    incident_id: int
+    event_id: int
+    box_id: str
+    start_timestamp_ms: int
+    end_timestamp_ms: int
+    measurement_type: str
+    deviation_from_nominal: float
+    classifications: List[str]
+
+    @staticmethod
+    def field_names() -> List[str]:
+        return list(map(lambda field: field.name, dataclasses.fields(Incident)))
+
+    @staticmethod
+    def from_doc(doc: Dict) -> 'Incident':
+        field_vals: List = list(map(lambda field_name: doc[field_name], Incident.field_names()))
+        return Incident(*field_vals)
+
+    @staticmethod
+    def projection() -> Dict[str, bool]:
+        doc: Dict[str, bool] = {
+            "_id": False
+        }
+
+        for field_name in Incident.field_names():
+            doc[field_name] = True
+
+        return doc
 
 
 @dataclass

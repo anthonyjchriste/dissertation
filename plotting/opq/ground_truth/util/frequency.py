@@ -115,3 +115,85 @@ def compare_frequencies(opq_start_ts_s: int,
                     print(e, "...ignoring...")
 
     util.latex_figure_table_source(paths, 3, 2)
+
+
+def plot_frequency_incidents(opq_start_ts_s: int,
+                             opq_end_ts_s: int,
+                             opq_box_id: str,
+                             ground_truth_root: str,
+                             uhm_sensor: str,
+                             mongo_client: pymongo.MongoClient,
+                             out_dir: str) -> str:
+    f_types: List[str] = ["FREQUENCY_INTERRUPTION", "FREQUENCY_SAG", "FREQUENCY_SWELL"]
+
+    db: pymongo.database.Database = mongo_client["opq"]
+    coll: pymongo.collection.Collection = db["incidents"]
+    query: Dict = {
+        "box_id": opq_box_id,
+        "start_timestamp_ms": {"$gte": opq_start_ts_s * 1000},
+        "end_timestamp_ms": {"$lte": opq_end_ts_s * 1000},
+        "classifications": {"$in": f_types}
+    }
+
+    cursor: pymongo.cursor.Cursor = coll.find(query, projection=io.Incident.projection())
+    incidents: List[io.Incident] = list(map(io.Incident.from_doc, list(cursor)))
+
+    ground_truth_path: str = f"{ground_truth_root}/{uhm_sensor}/Frequency"
+    uhm_data_points: List[io.DataPoint] = io.parse_file(ground_truth_path)
+
+    uhm_dts: np.ndarray = np.array(list(map(lambda data_point: datetime.datetime.utcfromtimestamp(data_point.ts_s), uhm_data_points)))
+    uhm_vals_max: np.ndarray = np.array(list(map(lambda data_point: data_point.max_v, uhm_data_points)))
+    uhm_vals_min: np.ndarray = np.array(list(map(lambda data_point: data_point.min_v, uhm_data_points)))
+
+    # Plot
+    fig, ax = plt.subplots(1, 1, figsize=(16, 9))
+    fig: plt.Figure = fig
+    ax: plt.Axes = ax
+
+    ax.plot(uhm_dts, uhm_vals_min, label="UHM Min. Frequency", color="blue")
+    ax.plot(uhm_dts, uhm_vals_max, label="UHM Max. Frequency", color="red")
+
+    freq_threshold_low = 60.0 - (60.0 * .0016)
+    freq_threshold_high = 60.0 + (60.0 * .0016)
+
+    ax.plot(uhm_dts, [freq_threshold_low for _ in uhm_dts], linestyle="--", color="blue")
+    ax.plot(uhm_dts, [freq_threshold_high for _ in uhm_dts], linestyle="--", color="red")
+
+    incident_sags: List[io.Incident] = list(filter(lambda incident: "FREQUENCY_SAG" in incident.classifications, incidents))
+    incident_sag_dts: np.ndarray = np.array(list(map(lambda incident: datetime.datetime.utcfromtimestamp(incident.start_timestamp_ms / 1000.0), incident_sags)))
+    incident_sag_vals: np.ndarray = np.array(list(map(lambda incident: 60 - incident.deviation_from_nominal, incident_sags)))
+    ax.scatter(incident_sag_dts, incident_sag_vals, label="OPQ Frequency Sags", color="blue", s=1)
+
+    incident_swells: List[io.Incident] = list(filter(lambda incident: "FREQUENCY_SWELL" in incident.classifications, incidents))
+    incident_swell_dts: np.ndarray = np.array(list(map(lambda incident: datetime.datetime.utcfromtimestamp(incident.start_timestamp_ms / 1000.0), incident_swells)))
+    incident_swell_vals: np.ndarray = np.array(list(map(lambda incident: 60 - incident.deviation_from_nominal, incident_swells)))
+    ax.scatter(incident_swell_dts, incident_swell_vals, label="OPQ Frequency Swells", color="red", s=1)
+
+    ax.legend()
+    fig.show()
+
+    return ""
+
+
+def compare_frequency_incidents(opq_start_ts_s: int,
+                                opq_end_ts_s: int,
+                                ground_truth_root: str,
+                                mongo_client: pymongo.MongoClient,
+                                out_dir: str):
+    paths: List[str] = []
+
+    for opq_box, uhm_meters in util.opq_box_to_uhm_meters.items():
+        for uhm_meter in uhm_meters:
+            try:
+                print(f"plot_frequency_incident {opq_box} {uhm_meter}")
+                path = plot_frequency_incidents(opq_start_ts_s,
+                                                opq_end_ts_s,
+                                                opq_box,
+                                                ground_truth_root,
+                                                uhm_meter,
+                                                mongo_client,
+                                                out_dir)
+                paths.append(path)
+            except Exception as e:
+                print(e, "...ignoring...")
+    util.latex_figure_table_source(paths, 3, 2)

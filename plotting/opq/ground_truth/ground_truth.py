@@ -37,10 +37,15 @@ def main():
     gt_root: str = "/Users/anthony/scrap/ground_truth_data"
     out_dir: str = "/Users/anthony/Development/dissertation/src/figures"
 
+    # find_ground_truth_data_range(gt_root)
+
     # frequency.compare_frequencies(start_ts_s, end_ts_s, gt_root, mongo_client, out_dir)
     # thd.compare_thds(start_ts_s, end_ts_s, gt_root, mongo_client, out_dir)
-    voltage.compare_vrms(start_ts_s, end_ts_s, gt_root, mongo_client, out_dir)
-    # find_ground_truth_data_range(gt_root)
+    # voltage.compare_vrms(start_ts_s, end_ts_s, gt_root, mongo_client, out_dir)
+
+    # frequency.compare_frequency_incidents(start_ts_s, end_ts_s, gt_root, mongo_client, out_dir)
+    # voltage.compare_vrms_incidents(start_ts_s, end_ts_s, gt_root, mongo_client, out_dir)
+    thd.compare_thd_incidents(start_ts_s, end_ts_s, gt_root, mongo_client, out_dir)
 
 
 if __name__ == "__main__":
