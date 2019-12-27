@@ -468,7 +468,7 @@ def plot_voltage(opq_start_ts_s: int,
     ax.legend()
 
     # fig.show()
-    fig.savefig(f"{out_dir}/thd_hist_{opq_box_id}_{uhm_sensor}.png", bbox_inches='tight')
+    fig.savefig(f"{out_dir}/v_hist_{opq_box_id}_{uhm_sensor}.png", bbox_inches='tight')
 
 
 def plot_voltage_incidents(opq_start_ts_s: int,

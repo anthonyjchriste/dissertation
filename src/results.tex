@@ -426,21 +426,23 @@ The bottom panel shows the number of active OPQ Boxes sending over time. There d
 
 \subsection{Ground Truth Analysis: OPQ}
 
-The UHM Office of Energy Management provided out team with access to data collected by high quality power meters installed at the mains of selected campus buildings. This data set provides the basis of the ground truth data that I collected.
+The UHM Office of Energy Management provided our team with access to data collected by high quality power meters installed at the mains of selected campus buildings. This data set provides the basis of the ground truth data that I compare against.
 
 Ground truth data was scraped from an UHM internal server over the duration of the OPQ deployment. I collected ground truth data containing 15 features for each of the ground truth meters that are co-located with an OPQ Box. The ground truth data is mostly complete, however, there are a few missing features for some meters.
 
-The provided ground truth data is similar to OPQ Trends in that it provides rolled up summary statistics for features over a window of 60 seconds. The included statistics include the actual, minimum, maximum, average, and standard deviation of the features measured.
+The provided ground truth data is similar to OPQ Trends in that it provides rolled up summary statistics for features over a window of 60 seconds. The included statistics include the actual, minimum, maximum, average, and standard deviation of the features measured. Unfortunately, the ground truth data does not provide a count of how many measurements were rolled into their one minute window. Because of this, I do not know the window sized used when computing things such as Frequency or THD.
 
-I collected the following available features for ground truth: ``Frequency", ``Average Voltage THD", ``VAB", ``VAN", ``VBC", ``VBN", ``VCA", ``VCN", ``Voltage CN THD", ``Voltage AN THD", ``Voltage BN THD", and ``Voltage CN THD".
+I collected the following available features for ground truth data: ``Frequency", ``Average Voltage THD", ``VAB", ``VAN", ``VBC", ``VBN", ``VCA", ``VCN", ``Voltage CN THD", ``Voltage AN THD", ``Voltage BN THD", and ``Voltage CN THD".
 
-The Frequency and THD measurements are in units that similar to what OPQ collects (Frequency @ 60Hz and \% THD), but the Voltage values are in RMS at 420V and 240V where OPQ collects RMS at 120V. This means that the Voltage values can not be compared directly and that we either need to scale the Voltage values or use straight thresholds for determining Events and Incidents. Further, the ground truth values for Voltage are provided for each of the three Voltage phases whereas OPQ Boxes compute RMS Voltage from a combination of three phases. This needs to be considered before comparing ground truth Voltage to OPQ Voltage measurements.
+The Frequency and THD measurements are in units that are similar to what OPQ collects (Frequency @ 60Hz and \% THD), but the Voltage values are in RMS at 420V and 240V where OPQ collects RMS at 120V. This means that the Voltage values can not be compared directly and that we either need to scale the Voltage values or use straight thresholds for determining Events and Incidents. Further, the ground truth values for Voltage are provided for each of the three Voltage phases whereas OPQ Boxes compute RMS Voltage from a combination of three phases. This needs to be considered before comparing ground truth Voltage to OPQ Voltage measurements.
+
+Although the Frequency and THD ground truth measurements are scaled the same as OPQ observations, it's not clear what size of computation window the ground truth sensors utilize to make these calculations. I expect to see slight differences between what Mauka observed and what the UHM meters observed due to these differences.
 
 To complicate things, we do not have a UHM meter co-located with every OPQ Box and several of our Boxes are co-located with multiple UHM meters making the determination of which combination of Box and Meter to compare arduous.
 
-Finally, it should be noted that because of OPQ's TTL, Measurements are only stored for a day and Trends are only stored for two weeks. This means that we can not compare the ground truth trends directly (unless they were saved by an Event, Incident, or Phenomena) for more than a period of 2 weeks.
+Finally, it should be noted that because of OPQ's TTL, Measurements are only stored for a day and Trends are only stored for two weeks. This means that we can not compare the ground truth trends directly (unless they were saved by an Event, Incident, or Phenomena) for more than a period of 2 weeks. This only affects comparing ground truth data to OPQ Measurements and Trends and should not affect the comparison of Events and Incidents.
 
-Table~\ref{table:gt} provides the mapping from OPQ Boxes to co-located UHM meters.
+Table~\ref{table:gt} provides a mapping from OPQ Boxes to co-located UHM meters.
 
 \begin{table}[H]
     \centering
@@ -468,52 +470,73 @@ Table~\ref{table:gt} provides the mapping from OPQ Boxes to co-located UHM meter
     \label{table:gt}
 \end{table}
 
-\subsubsection{Frequency Ground Truth Analysis}
+As can be observed, several OPQ Boxes do not have a co-located UHM sensor and several OPQ Boxes are co-located with multiple UHM sensors.
 
-Frequency can be compared one-to-one with the UH ground truth meters. In the following Figures, I compare the observed OPQ Frequencies to the observed co-located UHM meter Frequencies. Since there are 14 comparisons made, I will break these comparisons up into multiple Figures and sub-Figures as shown in Figures~\ref{fig:gt_freq_i}, \ref{fig:gt_freq_ii}, and~\ref{fig:gt_freq_iii}.
+\subsubsection{Frequency Measurement and Trend Ground Truth Analysis}
 
-For each Frequency comparison, I aligned and subtracted two weeks of OPQ observed Frequencies from the UHM observed Frequencies. I then plot the differences as a histogram and finally model a best fit of a Normal Distribution on top of the histogram.
+Measurements and Trends are both computed on-board OPQ Boxes using the same algorithms. Since Trends live longer than Measurements, we will perform these comparisons using Trends only for Frequency, THD, and Voltage. A comparison directly to Measurements would yield similar results since Trends are computed directly from the Measurements.
 
-\begin{figure}
-    \begin{tabular}{cc}
-        \subfloat{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1000_POST_MAIN_2.png}} &
-        \subfloat{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1001_HAMILTON_LIB_PH_III_CH_1_MTR.png}} \\
-        \subfloat{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1001_HAMILTON_LIB_PH_III_CH_2_MTR.png}} &
-        \subfloat{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1001_HAMILTON_LIB_PH_III_CH_3_MTR.png}} \\
-        \subfloat{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1001_HAMILTON_LIB_PH_III_MCC_AC1_MTR.png}} &
-        \subfloat{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1001_HAMILTON_LIB_PH_III_MCC_AC2_MTR.png}} \\
-    \end{tabular}
-    \caption{UHM Frequency vs. OPQ Frequency I}
-    \label{fig:gt_freq_i}
+Frequency Trends can be compared one-to-one with the UH ground truth meters using the ``Frequency" feature provided by ground truth sensors. In the following Figures, I compare the observed OPQ Frequencies to the observed co-located UHM meter Frequencies.
+
+For each Frequency comparison, I aligned the two series by minute and then subtracted two weeks of OPQ observed Frequencies from the UHM observed Frequencies. I then plotted the differences as a histogram and finally model a best fit of a Normal Distribution on top of the histogram. This approach is also used when comparing against Voltages and THD Trends.
+
+As an example, Figure~\ref{fig:f_hist} shows the Frequency observed by OPQ Box 1000 in POST compared to the UHM POST\_MAIN\_1 meter.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{figures/f_hist_1000_POST_MAIN_2.png}
+    \caption{Frequency OPQ Box 1000 vs POST\_MAIN\_1}
+    \label{fig:f_hist}
 \end{figure}
 
-\begin{figure}
-    \begin{tabular}{cc}
-        \subfloat[1002 vs. POST\_MAIN\_2]{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1002_POST_MAIN_2.png}} &
-        \subfloat[1003 vs. KELLER\_HALL\_MAIN\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1003_KELLER_HALL_MAIN_MTR.png}} \\
-        \subfloat[1021 vs. MARINE\_SCIENCE\_MAIN\_A\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1021_MARINE_SCIENCE_MAIN_A_MTR.png}} &
-        \subfloat[1021 vs. MARINE\_SCIENCE\_MAIN\_B\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1021_MARINE_SCIENCE_MAIN_B_MTR.png}} \\
-        \subfloat[1022 vs. AG\_ENGINEERING\_MAIN\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1022_AG_ENGINEERING_MAIN_MTR.png}} &
-        \subfloat[1022 vs. AG\_ENGINEERING\_MCC\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1022_AG_ENGINEERING_MCC_MTR.png}} \\
-    \end{tabular}
-    \caption{UHM Frequency vs. OPQ Frequency II}
-    \label{fig:gt_freq_ii}
-\end{figure}
+The rest of the Frequency comparisons look very similar and the results are summarized in Table~\ref{table:gt_f}.
 
-\begin{figure}
-    \begin{tabular}{cc}
-        \subfloat[1023 vs. LAW\_LIB\_MAIN\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1023_LAW_LIB_MAIN_MTR.png}} &
-        \subfloat[1025 vs. KENNEDY\_THEATRE\_MAIN\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/f_hist_1025_KENNEDY_THEATRE_MAIN_MTR.png}} \\
-    \end{tabular}
-    \caption{UHM Frequency vs. OPQ Frequency III}
-    \label{fig:gt_freq_iii}
-\end{figure}
+\begin{table}[H]
+    \centering
+    \caption{Frequency Trend Comparisons}
+    \begin{tabularx}{\textwidth}{lXll}
+        \toprule
+        \textbf{OPQ Box} & \textbf{UHM Ground Truth Sensor} & \boldmath{$\mu$} & \boldmath{$\sigma$} \\
+        \midrule
+        1000 & POST\_MAIN\_2 & 0.0016 & 0.0077 \\
+        1001 & HAMILTON\_LIB\_PH\_III\_CH\_1\_MTR & 0.0006 & 0.0074 \\
+        1001 & HAMILTON\_LIB\_PH\_III\_CH\_2\_MTR & 0.0009 & 0.0074 \\
+        1001 & HAMILTON\_LIB\_PH\_III\_MCC\_AC1\_MTR & 0.0008 & 0.0073 \\
+        1001 & HAMILTON\_LIB\_PH\_III\_MCC\_AC2\_MTR & 0.0008 & 0.0074 \\
+        1002 & POST\_MAIN\_2 & 0.0017 & 0.0068 \\
+        1003 & KELLER\_HALL\_MAIN\_MTR & 0.0005 & 0.0073 \\
+        1021 & MARINE\_SCIENCE\_MAIN\_A\_MTR & 0.0008 & 0.0082 \\
+        1021 & MARINE\_SCIENCE\_MAIN\_B\_MTR & 0.0004 & 0.0082 \\
+        1021 & MARINE\_SCIENCE\_MAIN\_B\_MTR & 0.0004 & 0.0082 \\
+        1022 & AG\_ENGINEERING\_MAIN\_MTR & 0.0020 & 0.0079 \\
+        1022 & AG\_ENGINEERING\_MCC\_MTR & 0.0010 & 0.0079 \\
+        1023 & LAW\_LIB\_MAIN\_MTR & 0.0004 & 0.0076 \\
+        1025 & KENNEDY\_THEATRE\_MAIN\_MTR & 0.0014 & 0.0088 \\
+        \bottomrule
+    \end{tabularx}
+    \label{table:gt_f}
+\end{table}
 
-As can be observed, the OPQ Boxes that we have co-located with UHM ground sensors track the Frequency quite accurately. In general we rarely see differences outside of 0.02 Hz and most sensors show a mean difference on the order of a mHz.
+As can be observed, the OPQ Boxes that we have co-located with UHM ground sensors track the Frequency quite accurately. In general we rarely see differences outside of 0.02 Hz and most sensors show a mean difference on the order of a mHz. These results are expected as grid stability relies heavily on the Frequency. Further, Frequency is generally affected at global scales rather than local scales, so we expect all UHM meters and OPQ Boxes to observe similar Frequency trends across the UHM micro-grid.
+
+\subsubsection{Voltage Ground Truth Analysis}
+
+OPQ Boxes measure RMS Voltage as a combination of three Voltage phases at 120 Volts. UHM ground truth meters measure RMS Voltage for each individual phase at different Voltages (480, 240, and 270). Because of these differences, the Voltages can not be compared directly and can only be performed for a small subset of our Boxes due to available ground truth data (those that contain Voltage channels for ``AB", ``BC", and ``CA").
+
+In order to compare OPQ Box Voltages against UHM Voltages, a combination of Voltage values must exist within the ground truth data for each sensor with the following configurations: Voltage from phase A to phase B, Voltage from phase B to phase C, and Voltage from phase C to phase A. If these metrics exist, then the RMS value for the ground truth can be found by Equation~\ref{eq:gt_vrms} as described by Horowitz\cite{Horowitz:2015:AE:2960712} where $V_{AB}$, $V_{BC}$, and $V_{CA}$ provide the inter-phase Voltages reported by the UHM meters and $C$ is a constant dependent on the transformer configuration and the final step down Voltage. $C$ was empirically found to be 3.9985 for our data sets.
+
+\begin{equation}
+    V_{RMS} = \frac{1}{\sqrt{3}C} \sqrt{V_{AB}^2 + V_{BC}^2 + V_{CA}^2}
+    \label{eq:gt_vrms}
+\end{equation}
+
+
 
 \subsubsection{THD Ground Truth Analysis}
 
 Total Harmonic Distortion (THD) is collected by both OPQ Boxes and UHM ground truth sensors. The feature that was used to make THD comparisons is the AVERAGE\_VOLTAGE\_THD from the ground truth data. Similar to the Frequency comparison, I subtracted the OPQ THD observations from the UHM THD observations and created histograms of the differences. I also attempted to fit the data with a Normal Distribution, but had less success than with the Frequency. This is due to the fact that several of the distribution do not follow a Gaussian, but instead present two separate Gaussian distributions.
+
+The multiple distributions appear to be related to time of day and point towards either power conditioning equipment cycling on and off or an increased electrical load causing higher amounts of THD during the day (or perhaps both). When there are multiple THD distributions, the distribution throughout the night time hours is more accurate than the distribution created during day time hours.
 
 Figure~\ref{fig:gt_thd_i} compares THD between the Pacific Ocean Science and Technology building (POST) OPQ Boxes and POST UHM sensors.
 
@@ -528,59 +551,12 @@ Figure~\ref{fig:gt_thd_i} compares THD between the Pacific Ocean Science and Tec
     \label{fig:gt_thd_i}
 \end{figure}
 
-The THD comparison within the POST building provides several interesting features to discuss.
+The THD comparisons within the POST building provides several interesting features to discuss.
 
 First, POST has two ground truth meters (POST\_MAIN\_1 and POST\_MAIN\_2) and two OPQ Boxes (1000 in the Collaborative Software Development Lab (CSDL) and 1002 in ICSpace). Both OPQ Boxes are on the third floor, roughly opposite each other in the building. As mentioned previously, I do not know exactly which electrical subsystem each OPQ Box is on when there are multiple electrical mains servicing a single building. In the case of POST, there are two electrical mains. I believe it's possible to guess which OPQ Box corresponds with which main by looking at the ground truth comparisons.
 
 For instance, OPQ Box 1000 vs. POST\_MAIN\_2 provides a much smaller spread in THD difference (about .25\% THD) than OPQ Box 1000 vs. POST\_MAIN\_2 which has a spread of close to 1\% THD. I speculate that OPQ Box 1000 is on the same main as the POST\_MAIN\_2 meter. The opposite holds true for OPQ Box 1002. The spread for Box 1002 is smaller for POST\_MAIN\_1 (about 0.3\% THD) than it is for POST\_MAIN\_2 (about 0.6\% THD) which leads me to speculate that Box 1002 may be serviced by the same electrical main as the POST\_MAIN\_1 meter.
 
-Figures~\ref{fig:gt_thd_ii} and~\ref{fig:gt_thd_iii} compares THD with OPQ Box 1001 in Hamilton Library to all available UHM ground truth meters at Hamilton. Unfortunately, I only have ground truth data for Hamilton's Phase III electrical main and I do not know which main Box 1001 is on. The THD comparison for Hamilton provides less than spectacular results with THD differences reaching close to 2\% THD. Because the other OPQ Boxes track THD so well, this leads me to believe that OPQ Box 1001 tracks THD on a difference electrical main than that of the Hamilton Phase III meters.
-
-\begin{figure}
-    \begin{tabular}{cc}
-        \subfloat[1001 vs. HAMILTON\_LIB\_PH\_III\_CH\_1\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/thd_hist_1001_HAMILTON_LIB_PH_III_CH_1_MTR.png}} &
-        \subfloat[1001 vs. HAMILTON\_LIB\_PH\_III\_CH\_2\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/thd_hist_1001_HAMILTON_LIB_PH_III_CH_2_MTR.png}} \\
-        \subfloat[1001 vs. HAMILTON\_LIB\_PH\_III\_CH\_3\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/thd_hist_1001_HAMILTON_LIB_PH_III_CH_3_MTR.png}} \\
-    \end{tabular}
-    \caption{UHM THD vs. OPQ THD II}
-    \label{fig:gt_thd_ii}
-\end{figure}
-
-\begin{figure}
-    \begin{tabular}{cc}
-        \subfloat[1001 vs. HAMILTON\_LIB\_PH\_III\_MAIN\_1\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/thd_hist_1001_HAMILTON_LIB_PH_III_MAIN_1_MTR.png}} &
-        \subfloat[1001 vs. HAMILTON\_LIB\_PH\_III\_MAIN\_2\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/thd_hist_1001_HAMILTON_LIB_PH_III_MAIN_2_MTR.png}} \\
-        \subfloat[1001 vs. HAMILTON\_LIB\_PH\_III\_MCC\_AC1\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/thd_hist_1001_HAMILTON_LIB_PH_III_MCC_AC1_MTR.png}} &
-        \subfloat[1001 vs. HAMILTON\_LIB\_PH\_III\_MCC\_AC2\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/thd_hist_1001_HAMILTON_LIB_PH_III_MCC_AC2_MTR.png}} \\
-    \end{tabular}
-    \caption{UHM THD vs. OPQ THD III}
-    \label{fig:gt_thd_iii}
-\end{figure}
-
-Figure~\ref{fig:gt_thd_iv} shows THD comparisons between OPQ Boxes at the Marine Science Building (MSB) and the Agriculture Engineering building.
-
-\begin{figure}
-    \begin{tabular}{cc}
-        \subfloat[1021 vs. MARINE\_SCIENCE\_MAIN\_A\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/thd_hist_1021_MARINE_SCIENCE_MAIN_A_MTR.png}} &
-        \subfloat[1021 vs. MARINE\_SCIENCE\_MAIN\_B\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/thd_hist_1021_MARINE_SCIENCE_MAIN_B_MTR.png}} \\
-        \subfloat[1021 vs. MARINE\_SCIENCE\_MCC\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/thd_hist_1021_MARINE_SCIENCE_MCC_MTR.png}} &
-        \subfloat[1022 vs. AG\_ENGINEERING\_MAIN\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/thd_hist_1022_AG_ENGINEERING_MAIN_MTR.png}} \\
-        \subfloat[1022 vs. AG\_ENGINEERING\_MCC\_MTR]{\includegraphics[width = 0.5\linewidth]{figures/thd_hist_1022_AG_ENGINEERING_MCC_MTR.png}} \\
-    \end{tabular}
-    \caption{UHM THD vs. OPQ THD IV}
-    \label{fig:gt_thd_iv}
-\end{figure}
-
-\subsubsection{Voltage Ground Truth Analysis}
-
-OPQ Boxes measure RMS Voltage as a combination of three Voltage phases at 120 Volts. UHM ground truth meters measure RMS Voltage for each individual phase at different Voltages (480, 270). Because of these differences, the Voltages can not be compared directly and can only be performed for a small subset of our Boxes due to available ground truth data.
-
-In order to compare OPQ Box Voltages against UHM Voltages, a combination of Voltage values must exist within the ground truth data for each sensor with the following configurations: Voltage from phase A to phase B, Voltage from phase B to phase C, and Voltage from phase C to phase A. If these metrics exist, then the RMS value for the ground truth can be found by Equation~\ref{eq:gt_vrms} as described by Horowitz\cite{Horowitz:2015:AE:2960712} where $V_{AB}$, $V_{BC}$, and $V_{CA}$ provide the inter-phase Voltages reported by the UHM meters and $C$ is a constant dependent on the transformer configuration and the final step down Voltage. $C$ was empirically found to be 3.9985.
-
-\begin{equation}
-    V_{RMS} = \frac{1}{\sqrt{3}C} \sqrt{V_{AB}^2 + V_{BC}^2 + V_{CA}^2}
-    \label{eq:gt_vrms}
-\end{equation}
 
 \subsubsection{Mauka Event Ground Truth Analysis}
 
@@ -602,6 +578,14 @@ Using thresholding breaks down for many of the Incident types that rely on the d
 
 \paragraph{THD Incidents Comparison}
 
+I compared THD observed by the UHM ground truth meters to THD observed by OPQ Boxes.
 
+The THD Incident plugin computes THD per electrical cycle. The OPQ Box computes THD over a window of six cycles. The window size that the UHM ground truth sensors utilize for THD calculations is unknown. Because the Mauka THD plugin computes THD per electrical cycle, I expect the THD generated by Mauka to be slightly higher than that of the OPQ Box Measurements or Trends which compute THD over a larger window.
+
+This is caused by using a smaller THD computation window which has less of a chance to average out noise. On one hand, this provides THD per cycle which better exemplifies small transients in the data which would otherwise be averaged out using larger window lengths. On the other hand, measured THD will be higher due to added noise in the signal.
+
+The ground truth data trends very closely to the generated THD Incidents. Excessive THD Incidents generated by Mauka average about .75\% THD higher than the ground truth data. Because of this, I assume that the THD window length that Mauka uses is smaller than that of the UHM ground truth meters, but this is only a guess.
+
+OPQ THD Incidents track closely with the peaks of OPQ ground truth THD observations above 4.5\% THD. For example
 
 \paragraph{Other Incidents Comparison}

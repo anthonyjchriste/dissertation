@@ -256,6 +256,13 @@ def plot_thd_incidents(opq_start_ts_s: int,
         "classifications": {"$in": f_types}
     }
 
+    measurements = list(db["trends"].find({"box_id": opq_box_id,
+                                           "timestamp_ms": {"$gte": opq_start_ts_s * 1000,
+                                                            "$lte": opq_end_ts_s * 1000}}))
+
+    m_dts = list(map(lambda m: datetime.datetime.utcfromtimestamp(m["timestamp_ms"] / 1000.0), measurements))
+    m_val = list(map(lambda m: m["thd"]["max"] * 100.0, measurements))
+
     cursor: pymongo.cursor.Cursor = coll.find(query, projection=io.Incident.projection())
     incidents: List[io.Incident] = list(map(io.Incident.from_doc, list(cursor)))
 
@@ -263,7 +270,7 @@ def plot_thd_incidents(opq_start_ts_s: int,
     uhm_data_points: List[io.DataPoint] = io.parse_file(ground_truth_path)
 
     uhm_dts: np.ndarray = np.array(
-        list(map(lambda data_point: datetime.datetime.utcfromtimestamp(data_point.ts_s), uhm_data_points)))
+        list(map(lambda data_point: datetime.datetime.utcfromtimestamp(data_point.ts_s) - datetime.timedelta(hours=0), uhm_data_points)))
     uhm_vals_max: np.ndarray = np.array(list(map(lambda data_point: data_point.max_v, uhm_data_points)))
     uhm_vals_min: np.ndarray = np.array(list(map(lambda data_point: data_point.min_v, uhm_data_points)))
 
@@ -272,20 +279,24 @@ def plot_thd_incidents(opq_start_ts_s: int,
     fig: plt.Figure = fig
     ax: plt.Axes = ax
 
-    ax.plot(uhm_dts, uhm_vals_min, label="UHM Min. THD", color="blue")
+    # ax.plot(uhm_dts, uhm_vals_min, label="UHM Min. THD", color="blue")
     ax.plot(uhm_dts, uhm_vals_max, label="UHM Max. THD", color="red")
+
+    # ax.plot(m_dts, m_val)
 
     # freq_threshold_low = 60.0 - (60.0 * .0016)
     # freq_threshold_high = 60.0 + (60.0 * .0016)
 
     # ax.plot(uhm_dts, [freq_threshold_low for _ in uhm_dts], linestyle="--", color="blue")
-    ax.plot(uhm_dts, [5.0 for _ in uhm_dts], linestyle="--", color="red")
+    ax.plot(uhm_dts, [4 for _ in uhm_dts], linestyle="--", color="red")
+
+    ax.set_title(f"THD Incidents Comparison OPQ Box {opq_box_id} vs UHM Sensor {uhm_sensor}")
 
     incident_dts: np.ndarray = np.array(list(map(lambda incident: datetime.datetime.utcfromtimestamp(
     incident.start_timestamp_ms / 1000.0), incidents)))
     incident_vals: np.ndarray = np.array(list(map(lambda incident: incident.deviation_from_nominal, incidents)))
 
-    ax.scatter(incident_dts, [5 for _ in incident_dts])
+    ax.scatter(incident_dts, [4 for _ in incident_dts])
 
     ax.legend()
     fig.show()
