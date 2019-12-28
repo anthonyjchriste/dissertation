@@ -18,6 +18,14 @@ def normal(mu: float, sigma: float, bins: np.ndarray, percent_density: float) ->
     return ((1 / (np.sqrt(2 * np.pi) * sigma)) *
             np.exp(-0.5 * (1 / sigma * (bins - mu)) ** 2)) * percent_density
 
+def print_tex_table(opq_box_id: str,
+                    uhm_meter: str,
+                    mus: List[float],
+                    sigmas: List[float]) -> None:
+    mu_strs = list(map(lambda mu: f"{mu:.4f}", mus))
+    sigma_strs = list(map(lambda sigma: f"{sigma:.4f}", sigmas))
+
+    print(f"{opq_box_id} & {uhm_meter} & {' '.join(mu_strs)} & {' '.join(sigma_strs)} \\\\")
 
 def plot_thd(opq_start_ts_s: int,
              opq_end_ts_s: int,
@@ -103,6 +111,7 @@ def plot_thd(opq_start_ts_s: int,
 
         ax.plot(low_bins, y_low, label=f"\n$\mu$={low_mu:.4f} $\sigma$={low_sigma:.4f}")
         ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
+        print_tex_table(opq_box_id, uhm_sensor, [low_mu, high_mu], [low_sigma, high_sigma])
     elif opq_box_id == "1000" and uhm_sensor == "POST_MAIN_2":
         split: float = 0.07
         low: np.ndarray = diffs[diffs < split]
@@ -127,6 +136,7 @@ def plot_thd(opq_start_ts_s: int,
 
         ax.plot(low_bins, y_low, label=f"\n$\mu$={low_mu:.4f} $\sigma$={low_sigma:.4f}")
         ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
+        print_tex_table(opq_box_id, uhm_sensor, [low_mu, high_mu], [low_sigma, high_sigma])
     elif opq_box_id == "1002" and uhm_sensor == "POST_MAIN_1":
         split: float = 0.15
         low: np.ndarray = diffs[diffs < split]
@@ -151,6 +161,7 @@ def plot_thd(opq_start_ts_s: int,
 
         ax.plot(low_bins, y_low, label=f"\n$\mu$={low_mu:.4f} $\sigma$={low_sigma:.4f}")
         ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
+        print_tex_table(opq_box_id, uhm_sensor, [low_mu, high_mu], [low_sigma, high_sigma])
     elif opq_box_id == "1002" and uhm_sensor == "POST_MAIN_2":
         split: float = 0.5
         low: np.ndarray = diffs[diffs < split]
@@ -175,6 +186,7 @@ def plot_thd(opq_start_ts_s: int,
 
         ax.plot(low_bins, y_low, label=f"\n$\mu$={low_mu:.4f} $\sigma$={low_sigma:.4f}")
         ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
+        print_tex_table(opq_box_id, uhm_sensor, [low_mu, high_mu], [low_sigma, high_sigma])
     elif opq_box_id == "1001" and uhm_sensor == "HAMILTON_LIB_PH_III_MAIN_2_MTR":
         split: float = 1.20
         low: np.ndarray = diffs[diffs < split]
@@ -199,6 +211,7 @@ def plot_thd(opq_start_ts_s: int,
 
         ax.plot(low_bins, y_low, label=f"\n$\mu$={low_mu:.4f} $\sigma$={low_sigma:.4f}")
         ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
+        print_tex_table(opq_box_id, uhm_sensor, [low_mu, high_mu], [low_sigma, high_sigma])
     elif opq_box_id == "1021" and uhm_sensor == "MARINE_SCIENCE_MAIN_B_MTR":
         split: float = 0.45
         low: np.ndarray = diffs[diffs < split]
@@ -223,11 +236,13 @@ def plot_thd(opq_start_ts_s: int,
 
         ax.plot(low_bins, y_low, label=f"\n$\mu$={low_mu:.4f} $\sigma$={low_sigma:.4f}")
         ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
+        print_tex_table(opq_box_id, uhm_sensor, [low_mu, high_mu], [low_sigma, high_sigma])
     else:
         n, bins, patches = ax.hist(diffs, bins=250, density=True)
         x = np.linspace(diffs.min(), diffs.max(), 100)
         ax.plot(x, stats.norm.pdf(x, mean_diff, mean_stddev),
                 label=f"\n$\mu$={mean_diff:.4f} $\sigma$={mean_stddev:.4f}")
+        print_tex_table(opq_box_id, uhm_sensor, [mean_diff], [mean_stddev])
 
     ax.set_xlabel("THD Difference  (UHM - OPQ)")
     ax.set_ylabel("% Density")
@@ -313,7 +328,7 @@ def compare_thds(opq_start_ts_s: int,
     for opq_box, uhm_meters in util.opq_box_to_uhm_meters.items():
         for uhm_meter in uhm_meters:
             try:
-                print(f"plot_thd {opq_box} {uhm_meter}")
+                # print(f"plot_thd {opq_box} {uhm_meter}")
                 path = plot_thd(opq_start_ts_s,
                                 opq_end_ts_s,
                                 opq_box,

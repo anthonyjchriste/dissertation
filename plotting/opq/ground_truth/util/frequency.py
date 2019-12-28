@@ -80,6 +80,8 @@ def plot_frequency(opq_start_ts_s: int,
     x = np.linspace(diffs.min(), diffs.max(), 100)
     ax.plot(x, stats.norm.pdf(x, mean_diff, mean_stddev), label=f"$\mu$={mean_diff:.4f} $\sigma$={mean_stddev:.4f}")
 
+    print(f"{opq_box_id} & {uhm_sensor} & {mean_diff:.4f} & {mean_stddev:.4f}")
+
     ax.set_xlabel("Frequency Difference Hz (UHM - OPQ)")
     ax.set_ylabel("% Density")
     ax.legend(loc="upper left")
@@ -101,7 +103,7 @@ def compare_frequencies(opq_start_ts_s: int,
         for opq_box, uhm_meters in util.opq_box_to_uhm_meters.items():
             for uhm_meter in uhm_meters:
                 try:
-                    print(f"plot_frequency {opq_box} {uhm_meter}")
+                    # print(f"plot_frequency {opq_box} {uhm_meter}")
                     path = plot_frequency(opq_start_ts_s,
                                           opq_end_ts_s,
                                           opq_box,
@@ -185,7 +187,7 @@ def compare_frequency_incidents(opq_start_ts_s: int,
     for opq_box, uhm_meters in util.opq_box_to_uhm_meters.items():
         for uhm_meter in uhm_meters:
             try:
-                print(f"plot_frequency_incident {opq_box} {uhm_meter}")
+                # print(f"plot_frequency_incident {opq_box} {uhm_meter}")
                 path = plot_frequency_incidents(opq_start_ts_s,
                                                 opq_end_ts_s,
                                                 opq_box,

@@ -16,6 +16,15 @@ def normal(mu: float, sigma: float, bins: np.ndarray, percent_density: float) ->
     return ((1 / (np.sqrt(2 * np.pi) * sigma)) *
             np.exp(-0.5 * (1 / sigma * (bins - mu)) ** 2)) * percent_density
 
+def print_tex_table(opq_box_id: str,
+                    uhm_meter: str,
+                    mus: List[float],
+                    sigmas: List[float]) -> None:
+    mu_strs = list(map(lambda mu: f"{mu:.4f}", mus))
+    sigma_strs = list(map(lambda sigma: f"{sigma:.4f}", sigmas))
+
+    print(f"{opq_box_id} & {uhm_meter} & {' '.join(mu_strs)} & {' '.join(sigma_strs)}")
+
 
 def plot_voltage(opq_start_ts_s: int,
                  opq_end_ts_s: int,
@@ -127,6 +136,7 @@ def plot_voltage(opq_start_ts_s: int,
 
         ax.plot(low_bins, y_low, label=f"\n$\mu$={low_mu:.4f} $\sigma$={low_sigma:.4f}")
         ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
+        print_tex_table(opq_box_id, uhm_sensor, [low_mu, high_mu], [low_sigma, high_sigma])
     elif opq_box_id == "1001" and uhm_sensor == "HAMILTON_LIB_PH_III_MAIN_1_MTR":
         split_low: float = -2.2
         split_high: float = -1.65
@@ -160,6 +170,7 @@ def plot_voltage(opq_start_ts_s: int,
         ax.plot(low_bins, y_low, label=f"\n$\mu$={low_mu:.4f} $\sigma$={low_sigma:.4f}")
         ax.plot(mid_bins, y_mid, label=f"\n$\mu$={mid_mu:.4f} $\sigma$={mid_sigma:.4f}")
         ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
+        print_tex_table(opq_box_id, uhm_sensor, [low_mu, mid_mu, high_mu], [low_sigma, mid_sigma, high_sigma])
     elif opq_box_id == "1001" and uhm_sensor == "HAMILTON_LIB_PH_III_MAIN_2_MTR":
         split_low: float = -2.0
         split_high: float = -1.40
@@ -193,6 +204,7 @@ def plot_voltage(opq_start_ts_s: int,
         ax.plot(low_bins, y_low, label=f"\n$\mu$={low_mu:.4f} $\sigma$={low_sigma:.4f}")
         ax.plot(mid_bins, y_mid, label=f"\n$\mu$={mid_mu:.4f} $\sigma$={mid_sigma:.4f}")
         ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
+        print_tex_table(opq_box_id, uhm_sensor, [low_mu, mid_mu, high_mu], [low_sigma, mid_sigma, high_sigma])
     elif opq_box_id == "1001" and uhm_sensor == "HAMILTON_LIB_PH_III_MCC_AC1_MTR":
         split_low: float = -2.45
         split_high: float = -1.7
@@ -226,6 +238,7 @@ def plot_voltage(opq_start_ts_s: int,
         ax.plot(low_bins, y_low, label=f"\n$\mu$={low_mu:.4f} $\sigma$={low_sigma:.4f}")
         ax.plot(mid_bins, y_mid, label=f"\n$\mu$={mid_mu:.4f} $\sigma$={mid_sigma:.4f}")
         ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
+        print_tex_table(opq_box_id, uhm_sensor, [low_mu, mid_mu, high_mu], [low_sigma, mid_sigma, high_sigma])
     elif opq_box_id == "1001" and uhm_sensor == "HAMILTON_LIB_PH_III_MCC_AC2_MTR":
         split_low: float = -2.35
         split_high: float = -1.70
@@ -259,6 +272,7 @@ def plot_voltage(opq_start_ts_s: int,
         ax.plot(low_bins, y_low, label=f"\n$\mu$={low_mu:.4f} $\sigma$={low_sigma:.4f}")
         ax.plot(mid_bins, y_mid, label=f"\n$\mu$={mid_mu:.4f} $\sigma$={mid_sigma:.4f}")
         ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
+        print_tex_table(opq_box_id, uhm_sensor, [low_mu, mid_mu, high_mu], [low_sigma, mid_sigma, high_sigma])
     elif opq_box_id == "1001" and uhm_sensor == "HAMILTON_LIB_PH_III_CH_1_MTR":
         split_low: float = -2.5
         split_high: float = -1.90
@@ -292,6 +306,7 @@ def plot_voltage(opq_start_ts_s: int,
         ax.plot(low_bins, y_low, label=f"\n$\mu$={low_mu:.4f} $\sigma$={low_sigma:.4f}")
         ax.plot(mid_bins, y_mid, label=f"\n$\mu$={mid_mu:.4f} $\sigma$={mid_sigma:.4f}")
         ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
+        print_tex_table(opq_box_id, uhm_sensor, [low_mu, mid_mu, high_mu], [low_sigma, mid_sigma, high_sigma])
     elif opq_box_id == "1001" and uhm_sensor == "HAMILTON_LIB_PH_III_CH_2_MTR":
         split_low: float = -2.7
         split_high: float = -2.1
@@ -325,6 +340,7 @@ def plot_voltage(opq_start_ts_s: int,
         ax.plot(low_bins, y_low, label=f"\n$\mu$={low_mu:.4f} $\sigma$={low_sigma:.4f}")
         ax.plot(mid_bins, y_mid, label=f"\n$\mu$={mid_mu:.4f} $\sigma$={mid_sigma:.4f}")
         ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
+        print_tex_table(opq_box_id, uhm_sensor, [low_mu, mid_mu, high_mu], [low_sigma, mid_sigma, high_sigma])
     elif opq_box_id == "1001" and uhm_sensor == "HAMILTON_LIB_PH_III_CH_3_MTR":
         split_low: float = -2.3
         split_high: float = -1.75
@@ -358,6 +374,7 @@ def plot_voltage(opq_start_ts_s: int,
         ax.plot(low_bins, y_low, label=f"\n$\mu$={low_mu:.4f} $\sigma$={low_sigma:.4f}")
         ax.plot(mid_bins, y_mid, label=f"\n$\mu$={mid_mu:.4f} $\sigma$={mid_sigma:.4f}")
         ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
+        print_tex_table(opq_box_id, uhm_sensor, [low_mu, mid_mu, high_mu], [low_sigma, mid_sigma, high_sigma])
     elif opq_box_id == "1021" and uhm_sensor == "MARINE_SCIENCE_MAIN_A_MTR":
         split_low: float = -1.3
         split_high: float = -0.6
@@ -391,6 +408,7 @@ def plot_voltage(opq_start_ts_s: int,
         ax.plot(low_bins, y_low, label=f"\n$\mu$={low_mu:.4f} $\sigma$={low_sigma:.4f}")
         ax.plot(mid_bins, y_mid, label=f"\n$\mu$={mid_mu:.4f} $\sigma$={mid_sigma:.4f}")
         ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
+        print_tex_table(opq_box_id, uhm_sensor, [low_mu, mid_mu, high_mu], [low_sigma, mid_sigma, high_sigma])
     elif opq_box_id == "1021" and uhm_sensor == "MARINE_SCIENCE_MAIN_B_MTR":
         split_low: float = 1.1
         split_high: float = 1.75
@@ -424,6 +442,7 @@ def plot_voltage(opq_start_ts_s: int,
         ax.plot(low_bins, y_low, label=f"\n$\mu$={low_mu:.4f} $\sigma$={low_sigma:.4f}")
         ax.plot(mid_bins, y_mid, label=f"\n$\mu$={mid_mu:.4f} $\sigma$={mid_sigma:.4f}")
         ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
+        print_tex_table(opq_box_id, uhm_sensor, [low_mu, mid_mu, high_mu], [low_sigma, mid_sigma, high_sigma])
     elif opq_box_id == "1021" and uhm_sensor == "MARINE_SCIENCE_MCC_MTR":
         split_low: float = -1.5
         split_high: float = -0.85
@@ -457,10 +476,12 @@ def plot_voltage(opq_start_ts_s: int,
         ax.plot(low_bins, y_low, label=f"\n$\mu$={low_mu:.4f} $\sigma$={low_sigma:.4f}")
         ax.plot(mid_bins, y_mid, label=f"\n$\mu$={mid_mu:.4f} $\sigma$={mid_sigma:.4f}")
         ax.plot(high_bins, y_high, label=f"\n$\mu$={high_mu:.4f} $\sigma$={high_sigma:.4f}")
+        print_tex_table(opq_box_id, uhm_sensor, [low_mu, mid_mu, high_mu], [low_sigma, mid_sigma, high_sigma])
     else:
         n, bins, patches = ax.hist(diffs, bins=400, density=True)
         ax.plot(bins, normal(mean_diff, mean_stddev, bins, 1.0),
                 label=f"\n$\mu$={mean_diff:.4f} $\sigma$={mean_stddev:.4f}")
+        print_tex_table(opq_box_id, uhm_sensor, [mean_diff], [mean_stddev])
 
     ax.set_xlabel("RMS Difference V (UHM - OPQ)")
     ax.set_ylabel("% Density")
@@ -588,7 +609,7 @@ def compare_vrms(opq_start_ts_s: int,
     for opq_box, uhm_meters in util.opq_box_to_uhm_meters.items():
         for uhm_meter in uhm_meters:
             try:
-                print(f"plot_voltages {opq_box} {uhm_meter}")
+                # print(f"plot_voltages {opq_box} {uhm_meter}")
                 plot_voltage(opq_start_ts_s,
                              opq_end_ts_s,
                              opq_box,
