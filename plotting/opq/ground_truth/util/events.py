@@ -122,10 +122,12 @@ def events(opq_start_ts_s: int,
     events_cursor: pymongo.cursor.Cursor = coll.find(query, projection=projection)
     event_docs: List[Dict] = list(events_cursor)
 
-    print(len(event_docs))
+    event_dts_all = list(map(lambda doc: datetime.datetime.utcfromtimestamp(doc["target_event_start_timestamp_ms"] / 1000.0), event_docs))
+    binned_event_dts = set(map(align.bin_dt_by_min, event_dts_all))
+    event_dts = list(binned_event_dts)
+    print(f"event_dts_all={len(event_dts_all)} num_event_dts={len(event_dts)}")
 
-    event_dts = list(map(lambda doc: datetime.datetime.utcfromtimestamp(doc["target_event_start_timestamp_ms"] / 1000.0), event_docs))
-    print(event_dts)
+
 
     # Plot
     fig, ax = plt.subplots(3, 1, figsize=(16, 9))
@@ -133,22 +135,34 @@ def events(opq_start_ts_s: int,
     ax: List[plt.Axes] = ax
 
     # Frequency
+    f_min_thresh: float = 60.0 - (60.0 * 0.0016)
+    f_max_thresh: float = 60.0 + (60.0 * 0.0016)
     f_ax: plt.Axes = ax[0]
     f_ax.plot(dts, f_mins, label="Min. Frequency")
     f_ax.plot(dts, f_maxes, label="Max Frequency")
-    f_ax.plot(dts, [60.0 - (60.0 * 0.0016) for _ in dts], label="Min Voltage Threshold", linestyle="--")
-    f_ax.plot(dts, [60.0 + (60.0 * 0.0016) for _ in dts], label="Max Voltage Threshold", linestyle="--")
+    f_ax.plot(dts, [f_min_thresh for _ in dts], label="Min Voltage Threshold", linestyle="--")
+    f_ax.plot(dts, [f_max_thresh for _ in dts], label="Max Voltage Threshold", linestyle="--")
+
+    num_f_min = len(f_mins[f_mins <= f_min_thresh])
+    num_f_max = len(f_maxes[f_maxes >= f_max_thresh])
+    print(f"{opq_box_id} {uhm_sensor} f_above_max={num_f_max} f_below_min={num_f_min} f_total={num_f_min + num_f_max}")
 
     # f_ax.scatter(event_dts, [60.0 for _ in event_dts], color="red")
 
     f_ax.legend()
 
     # Voltage
+    v_min_thresh: float = 120.0 - (120.0 * 0.025)
+    v_max_thresh: float = 120.0 + (120.0 * 0.025)
     v_ax: plt.Axes = ax[1]
     v_ax.plot(dts, vrms_vals_min, label="Min. Voltage")
     v_ax.plot(dts, vrms_vals_max, label="Max Voltage")
-    v_ax.plot(dts, [120.0 - (120.0 * 0.025) for _ in dts], label="Min Voltage Threshold", linestyle="--")
-    v_ax.plot(dts, [120.0 + (120.0 * 0.025) for _ in dts], label="Max Voltage Threshold", linestyle="--")
+    v_ax.plot(dts, [v_min_thresh for _ in dts], label="Min Voltage Threshold", linestyle="--")
+    v_ax.plot(dts, [v_max_thresh for _ in dts], label="Max Voltage Threshold", linestyle="--")
+
+    num_v_min = len(vrms_vals_min[vrms_vals_min <= v_min_thresh])
+    num_v_max = len(vrms_vals_max[vrms_vals_max >= v_max_thresh])
+    print(f"{opq_box_id} {uhm_sensor} v_above_max={num_v_max} v_below_min={num_v_min} v_total={num_v_min + num_v_max}")
 
     v_ax.scatter(event_dts, [120.0 for _ in event_dts], color="red")
 
@@ -159,6 +173,10 @@ def events(opq_start_ts_s: int,
     thd_ax.plot(dts, thd_mins, label="Min. THD")
     thd_ax.plot(dts, thd_maxes, label="Max THD")
     thd_ax.plot(dts, [3.0 for _ in dts], label="THD Threshold", linestyle="--")
+
+    thd_above = len(thd_maxes[thd_maxes > 3.0])
+    zero_crossings = np.where(np.diff(np.sign(thd_maxes - 3.0)))[0]
+    print(f"THD above={thd_above} zeroes={len(zero_crossings)}")
 
     thd_ax.legend()
 
