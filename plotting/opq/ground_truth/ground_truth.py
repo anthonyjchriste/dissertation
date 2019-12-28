@@ -10,6 +10,7 @@ import util.frequency as frequency
 import util.io as io
 import util.thd as thd
 import util.voltage as voltage
+import util.events as events
 
 
 def find_ground_truth_data_range(ground_truth_root: str):
@@ -40,7 +41,7 @@ def main():
     # find_ground_truth_data_range(gt_root)
 
     # frequency.compare_frequencies(start_ts_s, end_ts_s, gt_root, mongo_client, out_dir)
-    thd.compare_thds(start_ts_s, end_ts_s, gt_root, mongo_client, out_dir)
+    # thd.compare_thds(start_ts_s, end_ts_s, gt_root, mongo_client, out_dir)
     # voltage.compare_vrms(start_ts_s, end_ts_s, gt_root, mongo_client, out_dir)
 
     # frequency.compare_frequency_incidents(start_ts_s, end_ts_s, gt_root, mongo_client, out_dir)
@@ -48,6 +49,7 @@ def main():
     # thd.compare_thd_incidents(start_ts_s, end_ts_s, gt_root, mongo_client, out_dir)
     # thd.plot_thd_incidents(start_ts_s, end_ts_s, "1001", gt_root, "HAMILTON_LIB_PH_III_CH_1_MTR", mongo_client, out_dir)
 
+    events.compare_events(start_ts_s, end_ts_s, gt_root, mongo_client, out_dir)
 
 if __name__ == "__main__":
     main()
