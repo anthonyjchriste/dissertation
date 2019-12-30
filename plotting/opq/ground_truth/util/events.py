@@ -19,6 +19,10 @@ def events(opq_start_ts_s: int,
            uhm_sensor: str,
            mongo_client: pymongo.MongoClient,
            out_dir: str) -> None:
+    # if opq_box_id != "1021" and uhm_sensor != "MARINE_SCIENCE_MCC_MTR":
+    #     return
+
+
     ground_truth_path_f: str = f"{ground_truth_root}/{uhm_sensor}/Frequency"
     uhm_data_points_f: List[io.DataPoint] = io.parse_file(ground_truth_path_f)
 
@@ -92,11 +96,17 @@ def events(opq_start_ts_s: int,
     vca_mins: np.ndarray = vca_min_data[1]
     vca_maxes: np.ndarray = vca_max_data[1]
 
+    # thd_maxes += 0.7
+
+
     eq_left: float = (1.0 / (np.sqrt(3) * 3.9985))
     sq_sum_min = np.square(vab_mins) + np.square(vbc_mins) + np.square(vca_mins)
     vrms_vals_min: np.ndarray = eq_left * np.sqrt(sq_sum_min)
     sq_sum_max = np.square(vab_maxes) + np.square(vbc_maxes) + np.square(vca_maxes)
     vrms_vals_max: np.ndarray = eq_left * np.sqrt(sq_sum_max)
+
+    # vrms_max_adj = vrms_vals_max + 1.7
+    # vrms_min_adj = vrms_vals_min + 1.7
 
     # OPQ data
 
@@ -127,12 +137,17 @@ def events(opq_start_ts_s: int,
     event_dts = list(binned_event_dts)
     print(f"event_dts_all={len(event_dts_all)} num_event_dts={len(event_dts)}")
 
-
-
     # Plot
-    fig, ax = plt.subplots(3, 1, figsize=(16, 9))
+    fig, ax = plt.subplots(3, 1, figsize=(16, 9), sharex="all")
     fig: plt.Figure = fig
     ax: List[plt.Axes] = ax
+
+    fig.suptitle(
+            f"Grount Truth "
+            f"({dts[0].strftime('%m-%d')} to "
+            f"{dts[-1].strftime('%m-%d')})"
+            f"\n{opq_box_id} vs {uhm_sensor}"
+    )
 
     # Frequency
     f_min_thresh: float = 60.0 - (60.0 * 0.0016)
@@ -142,6 +157,9 @@ def events(opq_start_ts_s: int,
     f_ax.plot(dts, f_maxes, label="Max Frequency")
     f_ax.plot(dts, [f_min_thresh for _ in dts], label="Min Voltage Threshold", linestyle="--")
     f_ax.plot(dts, [f_max_thresh for _ in dts], label="Max Voltage Threshold", linestyle="--")
+    f_ax.set_ylabel("Hz")
+
+    f_ax.set_title("Frequency")
 
     num_f_min = len(f_mins[f_mins <= f_min_thresh])
     num_f_max = len(f_maxes[f_maxes >= f_max_thresh])
@@ -157,14 +175,17 @@ def events(opq_start_ts_s: int,
     v_ax: plt.Axes = ax[1]
     v_ax.plot(dts, vrms_vals_min, label="Min. Voltage")
     v_ax.plot(dts, vrms_vals_max, label="Max Voltage")
+    # v_ax.plot(dts, vrms_max_adj, label="Adjusted", linestyle=":", color="red")
     v_ax.plot(dts, [v_min_thresh for _ in dts], label="Min Voltage Threshold", linestyle="--")
     v_ax.plot(dts, [v_max_thresh for _ in dts], label="Max Voltage Threshold", linestyle="--")
+    v_ax.set_title("Voltage")
+    v_ax.set_ylabel("RMS")
 
     num_v_min = len(vrms_vals_min[vrms_vals_min <= v_min_thresh])
     num_v_max = len(vrms_vals_max[vrms_vals_max >= v_max_thresh])
     print(f"{opq_box_id} {uhm_sensor} v_above_max={num_v_max} v_below_min={num_v_min} v_total={num_v_min + num_v_max}")
 
-    v_ax.scatter(event_dts, [120.0 for _ in event_dts], color="red")
+    # v_ax.scatter(event_dts, [120.0 for _ in event_dts], color="red")
 
     v_ax.legend()
 
@@ -173,6 +194,9 @@ def events(opq_start_ts_s: int,
     thd_ax.plot(dts, thd_mins, label="Min. THD")
     thd_ax.plot(dts, thd_maxes, label="Max THD")
     thd_ax.plot(dts, [3.0 for _ in dts], label="THD Threshold", linestyle="--")
+    thd_ax.set_title("THD")
+    thd_ax.set_ylabel("% THD")
+    thd_ax.set_xlabel("Time (UTC)")
 
     thd_above = len(thd_maxes[thd_maxes > 3.0])
     zero_crossings = np.where(np.diff(np.sign(thd_maxes - 3.0)))[0]
@@ -180,7 +204,33 @@ def events(opq_start_ts_s: int,
 
     thd_ax.legend()
 
-    fig.show()
+    # fig.show()
+    fig.savefig(f"{out_dir}/gt_all_{opq_box_id}_{uhm_sensor}.png", bbox_inches='tight')
+
+    # fig2, ax2 = plt.subplots(1, 1, figsize=(16, 9))
+    # ax2.plot(dts, thd_maxes + .7, label="Adjusted Max THD")
+    # ax2.plot(dts, [3.0 for _ in dts], label="THD Threshold", linestyle="--")
+    # # ax2.plot(dts, vrms_min_adj, label="Adjusted Min. Voltage")
+    # # ax2.plot(dts, vrms_max_adj, label="Adjusted Max Voltage")
+    # # ax2.plot(dts, [v_min_thresh for _ in dts], label="Min Voltage Threshold", linestyle="--")
+    # # ax2.plot(dts, [v_max_thresh for _ in dts], label="Max Voltage Threshold", linestyle="--")
+    # ax2.set_ylabel("% THD")
+    # ax2.set_xlabel("Time (UTC)")
+    #
+    # ax2.set_title(
+    #         f"Grount Truth Adjusted THD "
+    #         f"({dts[0].strftime('%m-%d')} to "
+    #         f"{dts[-1].strftime('%m-%d')})"
+    #         f"\n{opq_box_id} vs {uhm_sensor}"
+    # )
+    #
+    # # zero_crossings = np.where(np.diff(np.sign(vrms_max_adj - v_max_thresh)))[0]
+    # # print(f"adj vmax zeros={len(zero_crossings)}")
+    #
+    # ax2.legend()
+    #
+    # # fig2.show()
+    # fig2.savefig(f"{out_dir}/gt_adj_{opq_box_id}_{uhm_sensor}.png", bbox_inches='tight')
 
 
 def compare_events(opq_start_ts_s: int,
