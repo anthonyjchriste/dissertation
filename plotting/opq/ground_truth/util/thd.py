@@ -295,7 +295,7 @@ def plot_thd_incidents(opq_start_ts_s: int,
     ax: plt.Axes = ax
 
     # ax.plot(uhm_dts, uhm_vals_min, label="UHM Min. THD", color="blue")
-    ax.plot(uhm_dts, uhm_vals_max, label="UHM Max. THD", color="red")
+    ax.plot(uhm_dts, uhm_vals_max + .50, label="UHM Max. THD", color="red")
 
     # ax.plot(m_dts, m_val)
 
@@ -303,7 +303,7 @@ def plot_thd_incidents(opq_start_ts_s: int,
     # freq_threshold_high = 60.0 + (60.0 * .0016)
 
     # ax.plot(uhm_dts, [freq_threshold_low for _ in uhm_dts], linestyle="--", color="blue")
-    ax.plot(uhm_dts, [4 for _ in uhm_dts], linestyle="--", color="red")
+    ax.plot(uhm_dts, [5 for _ in uhm_dts], linestyle="--", color="red")
 
     ax.set_title(f"THD Incidents Comparison OPQ Box {opq_box_id} vs UHM Sensor {uhm_sensor}")
 
@@ -311,8 +311,15 @@ def plot_thd_incidents(opq_start_ts_s: int,
     incident.start_timestamp_ms / 1000.0), incidents)))
     incident_vals: np.ndarray = np.array(list(map(lambda incident: incident.deviation_from_nominal, incidents)))
 
-    ax.scatter(incident_dts, [4 for _ in incident_dts])
+    incident_dts_binned = set(map(align.bin_dt_by_min, incident_dts))
 
+    ax.scatter(incident_dts, [5 for _ in incident_dts])
+    n = len(uhm_vals_max[uhm_vals_max > 5.0])
+    m = len(uhm_vals_max[(uhm_vals_max + .50) > 5.0])
+    zero_crossings = np.where(np.diff(np.sign((uhm_vals_max + .50) - 5.0)))[0]
+    # print(f"thd incidents={len(incidents)} binned={len(incident_dts_binned)} uhm={n}")
+    uhm_tex = uhm_sensor.replace("_", "\\_")
+    print(f"{opq_box_id} & {uhm_tex} & {len(incident_dts_binned)} & {len(zero_crossings)} \\\\")
     ax.legend()
     fig.show()
 
@@ -352,7 +359,7 @@ def compare_thd_incidents(opq_start_ts_s: int,
     for opq_box, uhm_meters in util.opq_box_to_uhm_meters.items():
         for uhm_meter in uhm_meters:
             try:
-                print(f"plot_frequency_incident {opq_box} {uhm_meter}")
+                # print(f"plot_frequency_incident {opq_box} {uhm_meter}")
                 path = plot_thd_incidents(opq_start_ts_s,
                                           opq_end_ts_s,
                                           opq_box,
@@ -363,4 +370,4 @@ def compare_thd_incidents(opq_start_ts_s: int,
                 paths.append(path)
             except Exception as e:
                 print(e, "...ignoring...")
-    util.latex_figure_table_source(paths, 3, 2)
+    # util.latex_figure_table_source(paths, 3, 2)
