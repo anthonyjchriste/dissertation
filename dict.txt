@@ -504,3 +504,25 @@ BN
 VCN
 CN
 offline
+MTR
+MCC
+AC1
+AC2
+THEATRE
+lXll
+mHz
+1V
+3V
+4V
+thresholding
+Gaussians
+lXllll
+Ph
+F47
+5V
+MSB
+sinusoid
+Ph
+9V
+"Ph "
+Ph
