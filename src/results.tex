@@ -756,13 +756,54 @@ The next section will compare Mauka Incidents to ground truth data.
 
 \subsubsection{Mauka Incident Ground Truth Analysis}
 
-The OPQ ground truth data does not contain concepts that are related to Laha Incidents. Instead, I apply thresholding to the ground truth data to determine where Incidents should have been observed verses when they were actually observed by Mauka. To complicate the matter, the OPQ ground truth data only provides features at a granularity of one minute. Therefore, I bin each individual Incident by minute and only count the number of bins that contain Incidents.
+The OPQ ground truth data does not contain concepts that are related to Laha Incidents. In fact, the further we get away from the metrics that the ground truth provides (rolled-up one minute summaries), the harder it is to compare to higher levels in the Mauka hierarchy.
 
-Using thresholding breaks down for many of the Incident types that rely on the duration of a disturbance to apply a classification. For instance, all IEEE defined PQ classifications rely on accurate durations of anomalous signals to apply a classification. This also holds true for Incidents that utilize industry standards such as ITIC or Semi-F47. These Incident types can not be compared to the ground truth data since ground truth data does not provide any metric of duration and only averages values over a one minute time window which is much too large for almost all of Mauka's Incident classifications.
+Instead, I apply thresholding to the ground truth data to determine where Incidents should have been observed verses when they were actually observed by Mauka. To complicate the matter, the OPQ ground truth data only provides features at a granularity of one minute. Therefore, I bin each individual Incident by minute and only count the number of bins that contain Incidents, similar to what was done for Events.
+
+Using thresholding breaks down for many of the Incident types that rely on the duration of a disturbance to apply a classification (which is almost all of them). For instance, all IEEE defined PQ classifications rely on accurate durations of anomalous signals to apply a classification. This also holds true for Incidents that utilize industry standards such as ITIC or Semi-F47. These Incident types can not be compared to the ground truth data directly since ground truth data does not provide any notion of duration and only averages values over a one minute time window which is much too large for almost all of Mauka's Incident classifications. The best I can do for comparing Incidents is attempting to ensure that the threshold bounds make sense.
 
 \paragraph{Frequency Incidents Comparison}
 
 \paragraph{Voltage Incidents Comparison}
+
+Voltage Incidents include Voltage sags, swells and interruptions as well as Semi-F47 and ITIC classifications. All Voltage Incidents rely on the duration of the Incident in order to provide an accurate classification. Duration information is not provided by ground truth data. Instead, I use thresholding to determine where OPQ Inicdents might have been observed. It's important to note here that Incidents observed by the ground truth data may not meet the duration thresholds to be classfied by OPQ. I attempt to motivate this point using data from Events.
+
+Table~\ref{table:gt_v_incidents} summarizes the results for the Voltage Incidents comparisons. Please note the abbreviations in the table where ``O." stands for an OPQ Box and ``U." stands for a UHM sensor.
+
+\begin{table}[H]
+    \centering
+    \caption{Voltage Incidents Comparisons}
+    \begin{tabularx}{\textwidth}{lXllll}
+        \toprule
+        \textbf{OPQ Box} & \textbf{UHM Ground Truth Sensor} & \textbf{O.Sags} & \textbf{O.Swells} & \textbf{U.Sags} & \textbf{U.Swells} \\
+        \midrule
+        1000 & POST\_MAIN\_1 & 0 & 0 & 2 & 108 \\
+        1000 & POST\_MAIN\_2 & 0 & 0 & 2 & 346 \\
+        1001 & HAMILTON\_LIB..CH\_1 & 34 & 0 & 90 & 8 \\
+        1001 & HAMILTON\_LIB..CH\_2 & 34 & 0 & 104 & 2 \\
+        1001 & HAMILTON\_LIB..CH\_3 & 34 & 0 & 82 & 10 \\
+        1001 & HAMILTON\_LIB..MAIN\_1 & 34 & 0 & 80 & 12 \\
+        1001 & HAMILTON\_LIB..MAIN\_2 & 34 & 0 & 38 & 18 \\
+        1001 & HAMILTON\_LIB..MAIN\_AC1 & 34 & 0 & 90 & 12\\
+        1001 & HAMILTON\_LIB..MAIN\_AC2 & 34 & 0 & 84 & 10\\
+        1002 & POST\_MAIN\_1 & 2 & 0 & 2 & 108 \\
+        1002 & POST\_MAIN\_2 & 2 & 0 & 2 & 346 \\
+        1021 & MARINE\_SCIENCE\_MAIN\_A & 8 & 0 & 296 & 0 \\
+        1021 & MARINE\_SCIENCE\_MAIN\_B & 8 & 0 & 2 & 62 \\
+        1021 & MARINE\_SCIENCE\_MCC & 8 & 0 & 664 & 0 \\
+        1022 & AG\_ENGINEERING\_MAIN & 8 & 0 & 48 & 10 \\
+        1022 & AG\_ENGINEERING\_MCC & 8 & 0 & 52 & 10 \\
+        1023 & LAW\_LIB\_MAIN & 0 & 0 & 30 & 10 \\
+        \bottomrule
+    \end{tabularx}
+    \label{table:gt_v_incidents}
+\end{table}
+
+There are a couple of things to note here. Mauka did observe 8 Voltage swells over this time period all for Box 1008. However, we do not have ground truth data for this location and Mauka did not observe any other Voltage swells with co-located ground truth sensors.
+
+All counts for OPQ are less than the counts shown by the OPQ ground truth data. This is important because the ground truth data does not provide any metric for swell or sag duration. This means that some percentage of the ground truth sags and swells durations are less than what is required to classify the data as an Incident by OPQ Mauka.
+
+One of the reasons Mauka likely did not classify many Voltage swells is because they are much less common in general. Further, according to Power Standards Lab\cite{power_standards_lab_2017}, Voltage swells tend to be much smaller in duration compared to Voltage sags. This is due to the fact that Voltage swells are almost always caused by an abrupt decrease in load on the grid followed by rapid stabilization. Voltage sags on the other hand are caused by an increased load on the grid and last for as long as that load continues to persist. It's likely the Voltage spikes observed by the UHM sensors did not last long enough in duration to be classified as Mauka Incidents, however without more detailed ground truth data, this is only a hypothesis.
 
 \paragraph{THD Incidents Comparison}
 
@@ -777,3 +818,5 @@ The ground truth data trends very closely to the generated THD Incidents. Excess
 OPQ THD Incidents track closely with the peaks of OPQ ground truth THD observations above 4.5\% THD. For example
 
 \paragraph{Other Incidents Comparison}
+
+Mauka provides many other Incidents that rely on much more than just simple thresholds.

@@ -499,7 +499,7 @@ def plot_voltage_incidents(opq_start_ts_s: int,
                              uhm_sensor: str,
                              mongo_client: pymongo.MongoClient,
                              out_dir: str) -> str:
-    f_types: List[str] = ["VOLTAGE_INTERRUPTION", "VOLTAGE_SAG", "VOLTAGE_SWELL"]
+    f_types: List[str] = ["VOLTAGE_INTERRUPTION", "VOLTAGE_SAG", "VOLTAGE_SWELL", "ITIC_PROHIBITED", "ITIC_NO_DAMAGE", "SEMI_F47_VIOLATION"]
 
     db: pymongo.database.Database = mongo_client["opq"]
     coll: pymongo.collection.Collection = db["incidents"]
@@ -512,6 +512,7 @@ def plot_voltage_incidents(opq_start_ts_s: int,
 
     cursor: pymongo.cursor.Cursor = coll.find(query, projection=io.Incident.projection())
     incidents: List[io.Incident] = list(map(io.Incident.from_doc, list(cursor)))
+    print(f"{opq_box_id} {uhm_sensor} total_voltage_incidents={len(incidents)}")
 
     ground_truth_path_vab: str = f"{ground_truth_root}/{uhm_sensor}/VAB"
     uhm_data_points_vab: List[io.DataPoint] = io.parse_file(ground_truth_path_vab)
@@ -580,20 +581,30 @@ def plot_voltage_incidents(opq_start_ts_s: int,
 
     incident_sags: List[io.Incident] = list(
         filter(lambda incident: "VOLTAGE_SAG" in incident.classifications, incidents))
-    incident_sag_dts: np.ndarray = np.array(list(
-        map(lambda incident: datetime.datetime.utcfromtimestamp(incident.start_timestamp_ms / 1000.0), incident_sags)))
-    incident_sag_vals: np.ndarray = np.array(
-        list(map(lambda incident: 60 - incident.deviation_from_nominal, incident_sags)))
-    ax.scatter(incident_sag_dts, incident_sag_vals, label="OPQ Voltage Sags", color="blue", s=10)
+    # incident_sag_dts: np.ndarray = np.array(list(
+    #     map(lambda incident: datetime.datetime.utcfromtimestamp(incident.start_timestamp_ms / 1000.0), incident_sags)))
+    # incident_sag_vals: np.ndarray = np.array(
+    #     list(map(lambda incident: 60 - incident.deviation_from_nominal, incident_sags)))
+    # ax.scatter(incident_sag_dts, incident_sag_vals, label="OPQ Voltage Sags", color="blue", s=10)
 
     incident_swells: List[io.Incident] = list(
         filter(lambda incident: "VOLTAGE_SWELL" in incident.classifications, incidents))
-    incident_swell_dts: np.ndarray = np.array(list(
-        map(lambda incident: datetime.datetime.utcfromtimestamp(incident.start_timestamp_ms / 1000.0),
-            incident_swells)))
-    incident_swell_vals: np.ndarray = np.array(
-        list(map(lambda incident: 60 - incident.deviation_from_nominal, incident_swells)))
-    ax.scatter(incident_swell_dts, incident_swell_vals, label="OPQ Voltage Swells", color="red", s=10)
+    # incident_swell_dts: np.ndarray = np.array(list(
+    #     map(lambda incident: datetime.datetime.utcfromtimestamp(incident.start_timestamp_ms / 1000.0),
+    #         incident_swells)))
+    # incident_swell_vals: np.ndarray = np.array(
+    #     list(map(lambda incident: 60 - incident.deviation_from_nominal, incident_swells)))
+    # ax.scatter(incident_swell_dts, incident_swell_vals, label="OPQ Voltage Swells", color="red", s=10)
+
+    sag_zero_crossings = np.where(np.diff(np.sign(vrms_vals_min - freq_threshold_low)))[0]
+    swell_zero_crossings = np.where(np.diff(np.sign(vrms_vals_max - freq_threshold_high)))[0]
+
+    print(f"sag zeroes={len(sag_zero_crossings)}")
+    print(f"swell zeroes={len(swell_zero_crossings)}")
+    print(f"sag incidents={len(incident_sags)}")
+    print(f"swell incidents={len(incident_swells)}")
+
+    ax.set_title(f"{opq_box_id} {uhm_sensor} uhm_sags={len(sag_zero_crossings)} opq_sags={len(incident_sags)} uhm_swells={len(swell_zero_crossings)} opq_swells={len(incident_swells)}")
 
     ax.legend()
     fig.show()
