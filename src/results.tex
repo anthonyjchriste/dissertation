@@ -422,9 +422,11 @@ The bottom panel shows the number of active OPQ Boxes sending over time. There d
 
 \subsubsection{DSN System Requirements Lokahi: PL}
 
-\subsection{Ground Truth Analysis}
+\section{Ground Truth Analysis}\label{sec:ground-truth-analysis}
 
-\subsection{Ground Truth Analysis: OPQ}
+Ground truth analysis compares data collected by the OPQ and Lokahi networks to data that is assumed to be correct. The collected data is compared to the ground truth data in order to determine how similar it is to the ``correct" data. The analysis performed in the next sections attempt to provide evidence that the Lokahi and OPQ networks collect data that is as close to correct as possible and provides discussions on when and why this data doesn't always exactly match the ground truth data.
+
+\subsection{Ground Truth Analysis: OPQ}\label{subsec:ground-truth-analysis:-opq}
 
 The UHM Office of Energy Management provided our team with access to data collected by high quality power meters installed at the mains of selected campus buildings. This data set provides the basis of the ground truth data that I compare against.
 
@@ -438,9 +440,9 @@ The Frequency and THD measurements are in units that are similar to what OPQ col
 
 Although the Frequency and THD ground truth measurements are scaled the same as OPQ observations, it's not clear what size of computation window the ground truth sensors utilize to make these calculations. I expect to see slight differences between what Mauka observed and what the UHM meters observed due to these differences.
 
-To complicate things, we do not have a UHM meter co-located with every OPQ Box and several of our Boxes are co-located with multiple UHM meters making the determination of which combination of Box and Meter to compare arduous.
+To complicate things, we do not have a UHM meter co-located with every OPQ Box and several of our Boxes are co-located with multiple UHM meters making the determination of which combination of Box and Meter to compare not straight forward.
 
-Finally, it should be noted that because of OPQ's TTL, Measurements are only stored for a day and Trends are only stored for two weeks. This means that we can not compare the ground truth trends directly (unless they were saved by an Event, Incident, or Phenomena) for more than a period of 2 weeks. This only affects comparing ground truth data to OPQ Measurements and Trends and should not affect the comparison of Events and Incidents.
+Finally, it should be noted that due to OPQ's default TTL values, Measurements are only stored for a day and Trends are only stored for two weeks. This means that we can not compare the ground truth trends directly (unless they were saved by an Event, Incident, or Phenomena) for more than a period of 2 weeks. This only affects comparing ground truth data to OPQ Measurements and Trends and should not affect the comparison of Events and Incidents.
 
 Table~\ref{table:gt} provides a mapping from OPQ Boxes to co-located UHM meters.
 
@@ -726,7 +728,7 @@ From the previous section, we saw Box 1021 observed THD that averages 0.7\% high
 
 Adding the average .7\% to the ground truth data increased the number of observed ground truth THD Events from 391 to 1252 bringing the total ground truth Events to 1562.
 
-Perhaps the THD threshold is a bit too aggressive for Event generation and future work should look at relaxing this threshold a bit and obs how that affects the results.
+Perhaps the THD threshold is a bit too aggressive for Event generation and future work should look at relaxing this threshold a bit and observe how that affects the results.
 
 The results for Box 1002 can also be explained using similar methodology. Figure~\ref{fig:gt_all_post_1} shows the ground truth readings at POST\_MAIN\_1.
 
@@ -737,7 +739,7 @@ The results for Box 1002 can also be explained using similar methodology. Figure
     \label{fig:gt_all_post_1}
 \end{figure}
 
-This time, THD is not the cause of the large difference in the comparison. Instead, it's the Voltage readings. Box 1002 reads on average 1.7 Volts highers that what is reported by ground truth. Figure~\ref{fig:gt_adj_post_1} shows the ground truth data adjusted to be 1.7 Volts higher.
+This time, THD is not the cause of the large difference in the comparison. Instead, it's the Voltage readings. Box 1002 reads on average 1.7 Volts higher than what is reported by ground truth. Figure~\ref{fig:gt_adj_post_1} shows the ground truth data adjusted to be 1.7 Volts higher.
 
 \begin{figure}[H]
     \centering
@@ -750,7 +752,7 @@ Here, we can observe that the Voltage values are often passing the high Voltage 
 
 What these results show is that the ground truth comparisons are largely affected by observed readings of THD and Voltage values by OPQ Boxes. These results also show that OPQ Boxes that produce large numbers of Events are caused by readings that hover near the feature thresholds that are utilized for Event creation.
 
-I'm generally pretty happy with the Event ground truth comparison. The results show that although we may not be reading exactly what the ground truth sensors are reading, when adjusted for differences in low level metrics, expected Mauka Events match that of the ground truth data.
+The results from Event ground truth comparison are encouraging. The results show that although we may not be reading exactly what the ground truth sensors are reading, when adjusted for differences in low level metrics, expected Mauka Events match that of the ground truth data.
 
 The next section will compare Mauka Incidents to ground truth data.
 
@@ -843,7 +845,7 @@ I empirically found that THD values calculated by Mauka add .5\% THD to the OPQ 
     \label{table:gt_thd_incidents}
 \end{table}
 
-These results are not too surprising. Similar to the Voltage Incidents, we observe that OPQ Boxes track less THD Incidents than the UHM ground truth meters. This is to be expected due to the fact that the Incidents are only classified when signals are non-nominal for specified durations. It's likely (yet unknown due to lack of detailed ground truth data) that the extraneous THD Incidents that were observed by the ground truth sensors did not meet the duration requirements for classification.
+These results are not surprising. Similar to the Voltage Incidents, we observe that OPQ Boxes track less THD Incidents than the UHM ground truth meters. This is to be expected due to the fact that the Incidents are only classified when signals are non-nominal for specified durations. It's likely (yet unknown due to lack of detailed ground truth data) that the extraneous THD Incidents that were observed by the ground truth sensors did not meet the duration requirements for classification.
 
 Boxes 1000 and 1002 provide the only surprising results in that the THD Incidents observed by Mauka were not observed by the UHM ground truth sensors. The Incidents correspond to high peaks in THD at those locations, but the peaks do not cross the THD threshold of 5\%. Since these Incidents correspond with peaks in the ground truth data, it is possible that the smaller THD computation window and added noise created these false positives.
 
@@ -898,6 +900,24 @@ Events were compared to UHM ground truth data by applying thresholding on the da
 
 Incidents were compared to UHM ground truth data by applying thresholding to the data and correcting for differences in noise generation. Voltage and THD Incidents are well characterized, but Frequency Incidents were not as accurate.
 
-Other than Frequency Incidents, I feel confident that the OPQ Mauka system provides accurate measurements as compared to the ground truth. By the rule of transitivity, I would like to say that all other Incidents that rely on features not collected by the UHM ground truth sensors are hopefully well characterized by virtue of the fact that all of the data feeding into those Incidents are well characterized.
+Other than Frequency Incidents, these results provide evidence that the OPQ Mauka system provides accurate measurements as compared to the ground truth. By the rule of transitivity, I would like to say that all other Incidents that rely on features not collected by the UHM ground truth sensors are hopefully well characterized by virtue of the fact that all of the data feeding into those Incidents are well characterized.
 
 Future work should seek to find ground truth options that provide more details such as the duration of anomalies or something similar to Events so that Incidents can be more easily and more directly compared to the ground truth data.
+
+\section{Phenomena Results}
+
+\subsection{Annotation Phenomena}
+
+\subsection{Periodic Phenomena}
+
+\subsection{Future Phenomena}
+
+\subsection{Similarity Phenomena}
+
+\subsection{Location Phenomena}
+
+\section{Comparing Laha and Lokahi}
+
+\section{Summary of Results}
+
+\section{Future Directions}
