@@ -492,7 +492,7 @@ In Asmar's dissertation, the author compared Infrasound signals obtained by mobi
 
 Figure~\ref{fig:asmar_1} shows the noise power spectral density levels between a mobile sensor with an iPrecision microphone and a B\&K ground truth sensor.
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{figures/asmar_1.png}
     \caption{Noise power spectral density levels with 95\% confidence interval (CI) [1.9, -1.6] dB re 1 $Pa^2$/Hz for iMic and B\&K across 0.97 to 22.4 Hz.}
@@ -501,7 +501,7 @@ Figure~\ref{fig:asmar_1} shows the noise power spectral density levels between a
 
 Figure~\ref{fig:asmar_2} shows the noise coherence results between a mobile sensor with an iPrecision microphone and a B\&K ground truth sensor.
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{figures/asmar_2.png}
     \caption{Noise coherence results for iMic and B\&K across 0.97 to 22.4 Hz. The solid line represents the coherence between the sensors. The filled circles represent 1/3-octave band averaging.}
@@ -510,7 +510,7 @@ Figure~\ref{fig:asmar_2} shows the noise coherence results between a mobile sens
 
 Figure~\ref{fig:asmar_3} shows the noise response results between a mobile sensor with an iPrecision microphone and a B\&K ground truth sensor.
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{figures/asmar_3.png}
     \caption{Noise response results for iMic relative to B\&K across 0.97 to 22.4 Hz. (a) Relative amplitude between the sensors, computed as the ratio of their response corrected spectra. (b) Relative phase, computed as the angle of the response corrected cross-spectrum. Raw computations are represented by a solid line, while 1/3-octave band averaging is represented by the filled circles.}
@@ -519,7 +519,7 @@ Figure~\ref{fig:asmar_3} shows the noise response results between a mobile senso
 
 In summary, these results show that distributed mobile devices meet the standards provided by the International Monitoring System (IMS) and can be used to supplement the IMS network with mobile distributed infrasound data. The data recorded by the mobile sensors trend nicely with data collected by ground truth sensors.
 
-This shows that not only are Detections and Incidents accounted for within Lokahi, but the underlying sensors are able to accurately record infrasound levels. Asmar concluded her dissertation by providing methods for calibrating other mobile sensors that don't make sure of the iPrecision microphone. These conclusions have since been adapted and many of Lokahi's other mobile sensors are accurately calibrated to the ground truth sensors.
+This shows that not only are Detections and Incidents accounted for within Lokahi, but the underlying sensors are able to accurately record infrasound levels. Asmar concluded her dissertation by providing methods for calibrating other mobile sensors that don't make use of the iPrecision microphones. These calibration methods have since been adapted and many of Lokahi's other mobile sensors are accurately calibrated to the ground truth sensors.
 
 \section{Results of Generality of this Framework}\label{sec:results-of-generality-of-this-framework}
 
@@ -529,17 +529,165 @@ I have claimed that the Laha framework is general enough to to be suitable for u
 
 I claimed in the Evaluation chapter that the OPQ network must be able to observe common power quality issues including Voltages sags and swells, Frequency sags and swells, excessive THD, and transients. These features were described and shown to exist within OPQ in the previous section on validating collected data by deployments. I will summarize these results here.
 
+Table summarizes the relevant Incidents over the three month deployment.
+
 I also claimed in the Evaluation chapter that the OPQ network is capable of detecting grid wide signals of interest. I had hoped to see at least one grid wide signal during out deployment, but am happy to report that we actually see many grid wide signals daily.
+
+Table summarizes the counts of local, semi-grid-wide, and grid-wide Events.
 
 \subsection{Results of Laha Generality for Lokahi}\label{subsec:results-of-laha-generality-for-lokahi}
 
 I claimed in the Evaluation chapter that the Lokahi infrasound network is able to securely detect infrasonic signals of interest from a wide variety of heterogeneous mobile devices. The Lokahi network has successfully detected many signatures of interest with different modalities. These include rocket launches, aircraft operations, explosions, and signals created from objects reentering the Earth's atmosphere.
+
+I will now summarize and showcase some of the most interesting data that was collected from Lokahi that meets the requirements set forth in the Evaluation chapter. In particular, I hope to show that Lokahi is able to detect infrasonic signals generated from a diverse set of sources.
+
+
+\subsubsection{Big Island Earth Quake}
+Figures~\ref{fig:quake_1} and~\ref{fig:quake_2} show a magnitude 4.5 earth quake (USGS\cite{usgs_quake}) that was detected in the infrasound range and by accelerometers on the Big Island of Hawaii on August 12 2019. The earth quake was observed by four sensors. I show only one sensor here (and the rest of this section) for brevity. The full results for all examples are publicly available online\cite{redvox_reports}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/quake_1.png}
+    \caption{Infrasound of Earth Quake}
+    \label{fig:quake_1}
+\end{figure}
+
+The above Figure shows the infrasound spike created by the earth quake.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/quake_2.png}
+    \caption{Accelerometer of Earth Quake}
+    \label{fig:quake_2}
+\end{figure}
+
+The above Figure shows the anomalous accelerometer readings during the earth quake.
+
+Figure~\ref{fig:quake_3} shows the map of the earth quake epicenter (in red) and the location of the sensors (white are iPhones and green are Android phones) when the earthquake occurred.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.50\linewidth]{figures/quake_3.png}
+    \caption{Location of Earth Quake and Sensors}
+    \label{fig:quake_3}
+\end{figure}
+
+It should be noted that there are two sensors on top of each other in Kailua-Kona that are not visible in the above map.
+
+\subsubsection{Meteor Entry Over Hawaiian Islands}
+On July 25 2019, a meteor entered the atmosphere above the Hawaiian islands as reported by the American Meteor Society\cite{ams}. The Lokahi network observed the event on 19 sensors stationed on the islands of Oahu, Maui, and the Big Island.
+
+Figure~\ref{fig:meteor_1} shows the infrasound as recorded by device 1637610019:1472585716. A large spike can be observed in the infrasound range showing the meteor entering Earth's atmosphere.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/meteor_1.png}
+    \caption{Infrasound of Meteor Entry}
+    \label{fig:meteor_1}
+\end{figure}
+
+Figure~\ref{fig:meteor_2} shows the locations of sensors that observed the meteor entry.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.75\linewidth]{figures/meteor_2.png}
+    \caption{Meteor Entry Sensor Locations}
+    \label{fig:meteor_2}
+\end{figure}
+
+\subsubsection{Falcon 9 Launch and First Stage Landing}
+
+On November 11 2019, SpaceX launched its Falcon 9 rocket on a mission to deploy 60 Starlink satelites\cite{spacex}. The Lokahi network observed the launch and landing of the fist stage on a barge off the coast of Florida in the infrasound range with four sensors located near Cape Canaveral, Florida.
+
+Figure~\ref{fig:spacex_1} shows the infrasound signal for the launch and the first stage landing.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/spacex_1.png}
+    \caption{Infrasound of Meteor Entry}
+    \label{fig:spacex_1}
+\end{figure}
+
+The initial launch can be observed around 14:58 UTC with the stage 1 landing occurring near 15:02 UTC.
+
+Figure~\ref{fig:spacex_2} shows the locations of the source and sensors for the SpaceX launch.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.5\linewidth]{figures/spacex_2.png}
+    \caption{Infrasound of Meteor Entry}
+    \label{fig:spacex_2}
+\end{figure}
+
+\subsubsection{Hurricane Lane}
+
+Hurricane Lane was a major hurricane that passed close to the Hawaiian islands on August 24, 2018\cite{wiki:Hurricane_Lane}. The Lokahi network observed the passing of the storm using its barometer sensors (which is still considered to be in the infrasound range) with 12 sensors stationed on Oahu and the Big Island.
+
+Figure~\ref{fig:hurricane_1} displays the barometer readings over a 24 hour window showing the storm's arrival and departure in the infrasound range.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/hurricane_1.png}
+    \caption{Barometer Readings of Hurricane Lane}
+    \label{fig:hurricane_1}
+\end{figure}
+
+I've provided evidence that Lokahi is able to characterize infrasound signals over a wide variety of source modalities including infrasound caused by ground movement, storms, rocket launches, and atmospheric entries.
+
+\subsubsection{Availability of Lokahi}
+
+One of Lokahi's goals is to ensure data delivery in the face of network outages. Lokahi achieves this by buffering recorded data on board the mobile sensors until a time that a network becomes available. Luckily, most Lokahi based sensors are mobile phones which provide gigabytes of storage space. Depending on the sensor, it is possible to store weeks worth of data when a network is absent or restricted.
+
+Lokahi only stores metrics on data received and does not know if a sensor is trying to send data, but is not able to. Because of this restriction, I setup a controlled experiment with 5 Lokahi based sensors. Over the course of the week, I disabled network access on the sensors for periods of 1 minute, 1 hour, 4 hours, and 1 day. I confirmed that the network outage data was missing and then re-enabled network access. I then confirmed that 100\% of originally missing data was backfilled to the Lokahi servers.
+
+At least in a controlled environment, Lokahi was able to restore 100\% of its data. Anecdotally, we've observed issues in other deployments where networks have been spotty rather than either fully present or fully not present. We've encountered small amounts of data loss (on the order of minutes) in such situations. It is possible to suffer data loss in situations with incredibly spotty networks, but in my experience, this is quite rare.
+
+\subsubsection{Other Claims Supporting the Generality of the Lokahi Network}\label{subsec:other-claims-supporting-the-generality-of-the-lokahi-network}
+
+I've showcased a multitude of signals that the Lokahi framework has generated, but I believe there are other tangibles to consider.
+
+The Lokahi framework supported the Hawaiian Volcano Observatory during the 2018 lower Puna eruption by supplementing scientists with infrasound data produced by venting gases from magma champers.
+
+The Lokahi network directly supports several national laboratories (Idaho National Labs, Lawrence Livermore National Labs, Oakridge National Labs, and Lawrence Berkeley National Labs) by providing a secure channel to share real time infrasound data from strategically placed sensors. This data is consumed by the national labs and then analyzed and fused with other data streams in an effort to support the Labs' missions. The research group responsible for working with the Lokahi network works directly with the national labs providing guidance and support on the data.
+
+The Lokahi network also supports several private groups by providing secure real-time data collected from strategically placed sensors.
+
+Finally, the Lokahi network has served as the basis for several students to receive their graduate degrees. Julie Schncurr received her Masters degree in 2017 for her thesis ``Air Blasts: Explosion Yield Estimation and Waveform Modeling"\cite{julie} using data in part collected by Lokahi. Karina Asmar received her Ph.D\cite{asmar19} in 2019 using data collected by the Lokahi network.
 
 I also claimed that Lokahi is able to store infrasound data under conditions where the communications network is weak or non-existent.
 
 \subsection{Discussion on Types of DSNs Laha is Suitable For}\label{subsec:discussion-on-types-of-dsns-laha-is-suitable-for}
 
 \section{Results of Converting Primitive Data into Actionable Insights}\label{sec:results-of-converting-primitie-data-into-actional-insights}
+
+Converting primitive data into actionable insights in one of the main tenants of this framework. This is accomplished within Laha by moving data upwards through Laha's hierarchy.
+
+Within Laha, raw sampled signals (IML) are first converted into low fidelity feature streams (AML). This provides context by extracting known features from the signal and providing a summary statistics view of those features. Within OPQ, raw ADC samples are converted to feature streams that contain minimum, maximum, and average values for Voltage, Frequency and THD. Within Lokahi, raw ADC samples are converted to feature streams that include summary statistics about the sampled data as well as a summary statistics for other fields (such as location and timing accuracy). In, both networks, raw samples are converted to feature streams which add context to the original data. These feature streams provide actionable insights in the form of informing higher levels in the hierarchy if a nominal signal is likely within that stream. This brings us to the Detections Level (DL).
+
+The DL is responsible for identifying Detections which provide a window that includes metadata, IML, and AML data which may or may not include signals of interest. Detections add context to the AML in the form of metadata (such as window length and sensors affected). Detections are found either manually (in the case of Lokahi) or using a triggering algorithms (OPQ). Detections provide actionable insights by providing the Incidents Level (IL) with the chance to classify known signals of interest from the Detection window. Without Detections, Incidents could not be found as easily. Once a Detection has been observed, the data is forwarded to the IL where signal classification occurs.
+
+The IL is responsible for classifying signals of interest against known signals. Multiple Incidents can be found within a single detection. The IL provides added context in the form of these classifications. These classifications are actionable because they inform us about anomalous conditions on the network. These conditions are useful for others who might want to further investigate why anomalous signals were observed. For example, if many Voltage sags are observed by OPQ for a single device, it alerts others that there may be a power issue somewhere in the building that the sensor is located. This issue may or may not need to be addressed, but it is actionable.
+
+Perhaps the most interesting actionable insights Laha gathered are from Phenomena.
+
+\subsection{Results of Phenomena}\label{subsec:results-of-phenomena}
+
+When I first conceptualized Phenomena, I expected them to be useful for providing context to data that didn't exist at lower levels. Being able to determine if a signal is periodic or not is interesting. Being able to decide if Incidents are similar is interesting. Being able to create Future/Predictive Phenomena is interesting. All of these Phenomena are interesting in their own right, but I believe the greater discovery is that Phenomena provide a way to filter out the signal from the noise. They provide a way of grouping lots of similar signals together so that they can be discussed as a group. This is something that all Phenomena have in common, they take collections of signals found at lower levels which have been grouped in such a way that they can be discussed as a grouping of data.
+
+\subsubsection{Results of Annotation Phenomena}
+
+\subsubsection{Results of Periodic Phenomena}
+
+\subsubsection{Results of Future/Predictive Phenomena}
+
+
+\subsubsection{Results of Similarity Phenomena}
+
+\subsubsection{Results of Location Phenomena}
+
+\subsubsection{Summary of Results for Converting Raw Data into Actionable Insights}
+
+I've shown in previous sections that data for both the OPQ and Lokahi networks utilize the Laha hierarchy and that primitive data is indeed converted into actionable insights at higher levels within the hierarchy. I've shown how raw ADC samples are converted from level to level and provided discussion on what types of actionable insights can be gathered from each level within the Laha hierarchy.
 
 \section{Results of Tiered Management of Big Data}\label{sec:dsn-system-requirements}
 
