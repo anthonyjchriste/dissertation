@@ -171,7 +171,7 @@ By understanding the general locality of Incidents and building a statistical mo
 Locality Phenomena can also tune the sampling rate or send rate of features from sensors. Certain signals may only be observed at certain sampling rates due to the Nyquist-Shannon sampling theorem\cite{landau1967sampling} which states that signals with a frequency $F$ can only be observed by sampling at at a rate of $2F$. Knowing that signals attenuate as a function of their distance from the source, the sampling rate of sensors can be modified to ensure that signals of interest are captured at difference distances from the signal source.
 
 \subsection{Periodic Phenomena} \label{subsec:periodicity-phenomena}
-Periodic Phenomena consists of data that exhibit repetitive behavior, that is, the same types of Measurements, Trends, Events, or Incidents appearing in cycles from single or multiple devices. Periodicity allows for the easy creation of Predictive Phenomena.
+Periodic Phenomena consists of data that exhibits repetitive behavior, that is, the same types of Measurements, Trends, Events, or Incidents appearing in cycles from single or multiple devices. Periodicity allows for the easy creation of Future Phenomena.
 
 Periodic Phenomena allow us to either tune our network to find periodic data or tune the network to ignore periodic data depending on if the periodic signals are of interest. Periodic Phenomena are especially useful in conjunction with Annotation Phenomena as Laha can assign causality to the periodic signal.
 
@@ -181,7 +181,7 @@ For each feature in the Measurement and Trend data (Frequency, Voltage, and THD)
 
 The plugin only classifies data as periodic if at least 3 peaks were found and the standard deviation of the period ($\sigma$) is less than 600 seconds (10 minutes). Once a positive identification has been made, peak detection is performed on the original signal using the $\mu$ and $\sigma$ parameters found from autocorrelation to parameterize the peak detection algorithm. The peaks of the original signal represent the times and deviations from nominal for that feature.
 
-Once the plugin has the times and deviations from nominal of the periodic signal of interest, the plugin can group Measurements, Trends, Events, and Incidents that were created during the periodic signals together as part of the Periodic Phenomena.
+Once the plugin has the timestamps and deviations from nominal of the periodic signal of interest, the plugin can group Measurements, Trends, Events, and Incidents that were created during the periodic signals together as part of the Periodic Phenomena.
 
 As an example, Figure~\ref{fig:periodic_example} shows Periodic Voltage sags observed at Box 1021.
 
@@ -194,7 +194,7 @@ As an example, Figure~\ref{fig:periodic_example} shows Periodic Voltage sags obs
 
 The top panel shows the original signal. The middle panel shows the filtered signal. The bottom panel shows the results of autocorrelation. In this example, we can see how the filtered data was autocorrelated and then peak detection was performed on the autocorrelated signal to find the mean period in seconds ($\mu$ = 2045.2 seconds) and the standard deviation in seconds ($\sigma$ = 204.5 seconds). This is shown in the third panel. The periodicity metrics are then used to find all peaks in the original data that are at least $mu$ - $sigma$ seconds apart. These peaks are shown in the first panel.
 
-The Periodicity Plugin also performs several pieces of housekeeping. It's possible that a Periodic Phenomena already exists in the database for the same sensor and feature set. If that is the case, the original Periodic Phenomena is updated if the newly identified period contains more autocorrelation peaks and a smaller standard deviation than the one that is already stored. In the event that the plugin stops seeing periodic data for Phenomena that already exists, the plugin sets the original data as ``no longer active" signaling that the Periodic Phenomena is no longer observing the periodic signal of interest.
+The Periodicity Plugin also performs several pieces of housekeeping. It's possible that a Periodic Phenomena already exists in the database for the same sensor and feature set. If that is the case, the original Periodic Phenomena is updated if the newly identified period contains more autocorrelation peaks and a smaller standard deviation than the one that is already stored. In the event that the plugin stops seeing periodic data for Phenomena that already exists, the plugin sets the Phenomena as ``no longer active" signaling that the Periodic Phenomena is no longer observing the periodic signal of interest.
 
 Periodic Phenomena are instrumental in creating Future Phenomena. Periodic Phenomena are used to create Future Phenomena which attempt to predict Incident arrivals at future dates. Periodic Phenomena produce Future Phenomena for all devices that are shown to be periodic. Periodic Phenomena will continue to produce Future Phenomena until consecutive Future Phenomena no longer observe the predicted signals of interest.
 
