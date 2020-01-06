@@ -529,11 +529,64 @@ I have claimed that the Laha framework is general enough to to be suitable for u
 
 I claimed in the Evaluation chapter that the OPQ network must be able to observe common power quality issues including Voltages sags and swells, Frequency sags and swells, excessive THD, and transients. These features were described and shown to exist within OPQ in the previous section on validating collected data by deployments. I will summarize these results here.
 
-Table summarizes the relevant Incidents over the three month deployment.
+Table~\ref{table:incidents_summary} summarizes the relevant Incidents over the three month deployment.
 
-I also claimed in the Evaluation chapter that the OPQ network is capable of detecting grid wide signals of interest. I had hoped to see at least one grid wide signal during out deployment, but am happy to report that we actually see many grid wide signals daily.
+\begin{table}[H]
+    \centering
+    \caption{Summary of OPQ Incidents}
+    \begin{tabularx}{\textwidth}{Xll}
+        \toprule
+        \textbf{Incident Classification} & \textbf{Total Observed} & \textbf{Mean Observed / Day} \\
+        \midrule
+        FREQUENCY\_SWELL & 291235 & 3235.94 \\
+        FREQUENCY\_SAG & 244286 & 2714.29 \\
+        EXCESSIVE\_THD & 21395 & 237.72 \\
+        VOLTAGE\_SAG & 620 & 6.89 \\
+        ITIC\_NO\_DAMAGE & 93 & 1.03 \\
+        SEMI\_F47\_VIOLATION & 24 & 0.27 \\
+        VOLTAGE\_INTERRUPTION & 16 & 0.18 \\
+        FREQUENCY\_INTERRUPTION & 14 & 0.16 \\
+        VOLTAGE\_SWELL & 8 & 0.09 \\
+        \bottomrule
+    \end{tabularx}
+    \label{table:incidents_summary}
+\end{table}
 
-Table summarizes the counts of local, semi-grid-wide, and grid-wide Events.
+As can be observed, Laha was able to detect the types of Incidents as defined by the Evaluation chapter. I will now examine several of these Incidents in greater detail.
+
+I also claimed in the Evaluation chapter that the OPQ network is capable of detecting grid wide signals of interest. I had hoped to see at least one grid wide signal during out deployment, but am happy to report that we actually see many grid wide signals daily. One such way of looking for grid wide signals is to utilize Napali's triggering results which are provided by Sergey Negrashov's dissertation. These results provide anomalous signals of interest that were observed by more than one OPQ Box. Table~\ref{table:global_summary} summarizes the number of signals observed by one Box and multiples Boxes.
+
+\begin{table}[H]
+    \centering
+    \caption{Summary of Global and Semi-Global Events}
+    \begin{tabularx}{\textwidth}{ll}
+        \toprule
+        \textbf{Total Events} & \textbf{Number of Boxes that Observed the Events} \\
+        \midrule
+        170925 & 1 \\
+        1654 & 2 \\
+        1109 & 3 \\
+        853 & 4 \\
+        593 & 5 \\
+        416 & 6 \\
+        354 & 7 \\
+        246 & 8 \\
+        203 & 9 \\
+        160 & 10 \\
+        162 & 11 \\
+        130 & 12 \\
+        169 & 13 \\
+        210 & 14 \\
+        477 & 15 \\
+        463 & 16 \\
+        \bottomrule
+    \end{tabularx}
+    \label{table:global_summary}
+\end{table}
+
+As can be observed, most Events that were triggered were only triggered from a single Box. These were triggered by Mauka's triggering algorithm. All Events that were triggered by more than one Box were triggered by Napali's triggering algorithm. Local Events, or those that were only observed by a single Box make up close to 96\% of the observed Events. The other 4\% are either semi-global or global. We see that 463 of the Events triggered were triggered on all available Boxes and I consider these to be global Events. Events that were triggered by 2 to 15 Boxes I consider semi-global Events.
+
+These results provide evidence that Laha as implemented by OPQ can accurately identify semi-global and global power signals-of-interest.
 
 \subsection{Results of Laha Generality for Lokahi}\label{subsec:results-of-laha-generality-for-lokahi}
 
