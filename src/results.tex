@@ -892,6 +892,72 @@ When I first conceptualized Phenomena, I expected them to be useful for providin
 
 \subsubsection{Results of Periodic Phenomena}
 
+Mauka has identified four periodic Phenomena. Table~\ref{table:periodic_summary} summarizes the results of observed Periodic Phenomena.
+
+\begin{table}[H]
+    \centering
+    \caption{Summary of Periodic Phenomena}
+    \begin{tabularx}{\textwidth}{Xlllllll}
+        \toprule
+        \textbf{Box} & \textbf{Period} & \textbf{Std} & \textbf{Peaks} & \textbf{Periods} & \textbf{Events} & \textbf{Incidents} & \textbf{Mean Deviation} \\
+        \midrule
+        1021 & 2127.55 & 8.81 & 41 & 463 & 332 & 4 & -3.14 \\
+        1003 & 1406.75 & 81.66 & 17 & 263 & 11 & 4 & 1.03 \\
+        1023 & 2017.0 & 60.21 & 5 & 298 & 47 & 0 & -1.25 \\
+        2001 & 2760.0 & 123.75 & 5 & 236 & 0 & 0 & 1.61 \\
+        \bottomrule
+    \end{tabularx}
+    \label{table:periodic_summary}
+\end{table}
+
+The major metrics utilized for evaluating the quality of periodic Phenomena are the number of peaks identified in the autocorrelated signal and the standard deviation of those peaks. A single peak or two peaks does not provide any information about if a signal if periodic or not. Two peaks could be periodic, but it could also just be a coincidence. Three peaks is the minimum amount of peaks that classify something as potentially periodic, however the confidence would be extremely low.
+
+In the Table above, we see that Box 1021 has a periodic signal with 41 peaks, Box 1003 observed 17 peaks, and Boxes 1023 and 2001 only display 5 peaks. From this data, I'm only confident that Boxes 1021 and 1003 provide enough peaks to classify the data as truly periodic. Boxes 1023 and 2001 do not provide enough peaks to be confident enough that these are actually Periodic Phenomena.
+
+It should be noted that Box 2001 is not part of the OPQ UH micro-grid deployment. This Box was sent to EPRI for evaluation purposes. Other than the summary provided above, I will leave Box 2001 from these results due to lack of ground truth data and due to the fact that this Box is not officially part of the deployment designed for this dissertation.
+
+Because Box 1021 provides the best metrics in terms of both peaks and standard deviation, I will focus my results to that sensor.
+
+Box 1021 in MSB experiences periodic Voltages sags as shown in the second panel of the Trend data presented in Figure~\ref{fig:v_perio}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/v_perio.png}
+    \caption{Periodic Voltage Sags}
+    \label{fig:v_perio}
+\end{figure}
+
+The above figure shows many periodic Voltage sags over the course of one week. These Voltages sags have been present over the entire deployment of the OPQ network and were not observed by Boxes outside of MSB.
+
+These Voltage sags were identified as periodic within Mauka's Periodicity Plugin. The original signal had its DC offset removed by subtracting the mean of the signal from the signal. Then the signal was filtered using a 4th order Butterworth highpass filter. The filtered signal was then autocorrelated with itself. The distance between the peaks of the autocorrelation provide the period between peaks in the original signal. The mean of the peaks is the mean period of the Periodic signal. The Periodicity Plugin also finds the standard deviation of of the peaks found during autocorrelation. The combination of the mean period and the standard deviation of the period are then used to find the original times of the peaks and to produce Future Phenomena.
+
+Once the plugin has a measure of mean period and standard deviation of the period, peak finding is employed to find the peaks of the original signal (as opposed to the autocorrelated signal). The peak finding algorithm is parameterized to not find peaks with a width less than that of the mean period minus the standard deviation of the period. These newly identified peaks provide timestamps and deviations from nominal for original periodic signal.
+
+Figure~\ref{fig:periodic_example_2} shows an example of the Periodic Phenomena observed by Box 1021.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{figures/periodic_example.png}
+    \caption{Periodic Phenomena Example}
+    \label{fig:periodic_example_2}
+\end{figure}
+
+The above figure shows the original signal in the top panel, the filtered signal in the middle panel, and the autocorrelated signal in the bottom panel. The mean and standard deviation of the autocorrelation peaks were used to identify the Voltage sag peaks in the original signal on the first panel. The timestamps and deviations from nominal are then extracted from the peaks in the first panel and stored in the database to be utilized by Future Phenomena.
+
+Phenomena are designed to provide adaptive optimizations to the DSN. Periodic Phenomena provide optimizations in several ways. First, Periodic Phenomena get better over time. Because of the stability of the signal, consecutive runs of the Periodicity Plugin provide more accurate results during times when there is less noise in the periodic signal. Over time, the plugin is able to identify periodic signals with smaller standard deviations than previous runs. As the standard deviation becomes smaller, the accuracy of detecting periodic signals becomes higher.
+
+As an example, when the periodic signal at Box 1021 was originally identified, the plugin identified a signal with a period of 45 minutes and a standard deviation of close to 9 minutes. Over the course of about a week, the Periodic Phenomena self optimized and now provides a period of about 35.5 minutes and a standard deviation on the order of 8 seconds. This matches what I observed empirically and in the ground truth data.
+
+Periodic Phenomena also self-optimizes by utilizing data gathered from Future Phenomena. Future Phenomena adjust the underlying Event thresholds and the Measurement and Trend rates of OPQ Boxes. During the time window of a future Phenomena, Measurement and Trend rates are increased while Event thresholds are decreased. The net result of this is the ability to detect Events that would not have otherwise been detected. More importantly, by increasing the Measurement rate, the periodicity plugin gains higher fidelity data from the increased data rate which in turn provides Periodic Phenomena the ability to better classify periodic signals of interest, thus decreasing the standard deviation and increasing the accuracy of the plugin. The Periodicity Plugin and Future Plugins work in conjunction to optimize each other. The more accurate the Periodic Phenomena become, the more accurate the Future Phenomena become and vice versa.
+
+One of the tenants of Periodic Phenomena (or one of the tenants of Phenomena in general) is to identify groupings of Events and Incidents that occurred during the period identified by the Phenomena. The summary Table presented in the beginning of this section provides counts for the number of Events and the number of Incidents that correspond with periodic signals of interest. For example, OPQ Box 1021 identified a total of 463 periods that should have observed a Voltage drops. Of those 463 periods, 332 (or about 72\%) of the periods contained Events that were identified by Mauka. Four Voltage sag Incidents were also observed during these periods. This is to be expected as most of the Voltage sags observed by 1021 do cross the Event thresholds, but the deviation from nominal is not large enough to pass the Voltage Incident thresholds. This Phenomena provides groupings of Events and Incidents that are related to the periodic signal of the sensor. This is important because previously these were just Voltage sags Events and Voltage sag Incidents. This Phenomena adds context to these Events and Incidents by providing a grouping that shows that they were part of a periodic signal rather than individual PQ issues. The next section will show how Future Phenomena modifies Event thresholds in order to capture Events that might otherwise be missed due to not passing the Event thresholds.
+
+I have attempted unsuccessfully to determine the cause of the periodic Voltage sags at this location. My original hypothesis was that the cycling of the building's HVAC units caused the Voltage sags. If that was the case, then it should be possible to see pressure changes in the infrasound range as the HVAC system cycled on and off. Going off of this assumption, I co-located a Lokahi sensor with the OPQ Box in MSB in an attempt to measure the HVAC cycles using the onboard barometer of the Lokahi sensor. After collecting data for one week, I was not able to observe any signals in the barometer data that correlated with the Voltages sags.
+
+It is possible that the HVAC system is constantly pushing air through the building, but the coolant machinery kicks in once every 34 minutes. If this is the case, then the Lokahi sensor would not be able to identify changes in air pressure. One way to test this would be to install a temperature sensor on the OPQ Box to track changes in temperature. This would make for an interesting future direction allowing OPQ to track if changes in the environment are related to changes in PQ readings.
+
+It should be noted that although Lokahi sensors record the temperature, they mainly record the internal temperature of the sensor's processor and these readings are generally not affected by the ambient temperature that the sensor resides in.
+
 \subsubsection{Results of Future/Predictive Phenomena}
 
 
