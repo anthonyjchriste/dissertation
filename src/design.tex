@@ -130,7 +130,6 @@ The following sections investigate the details of Phenomena and how they are imp
 		Locality & Provides context on how Incidents are related in time and space \\
 		Periodicity & Designation for Incidents that exhibit repetitive or periodic behavior \\
 		Similarity & Subset of Incidents found using grouping and community detection algorithms \\
-		Predictive & Subset of Incidents characterized by predictive or forecasting models\\
 		Future & Incidents scheduled to occur in the future\\
 		\bottomrule
 	\end{tabularx}
@@ -175,29 +174,11 @@ Periodic Phenomena consists of data that exhibits repetitive behavior, that is, 
 
 Periodic Phenomena allow us to either tune our network to find periodic data or tune the network to ignore periodic data depending on if the periodic signals are of interest. Periodic Phenomena are especially useful in conjunction with Annotation Phenomena as Laha can assign causality to the periodic signal.
 
-Periodic Phenomena are identified using the following approach. Using a configurable interval, the Periodicity Plugin loads Measurements and Trends for all active OPQ devices over a configurable time window. A time window of 24 hours (the default TTL of Measurements) is used to find periodic signals in Measurements. A time window of two weeks (the default TTL of Trends) is used to find periodic signals in Trends.
+Periodic Phenomena are identified using the following approach. Using a configurable interval, the Periodicity Plugin loads Measurements and Trends for all active sensors over a configurable time window. A time window of 24 hours (the default TTL of Measurements) is used to find periodic signals in Measurements. A time window of two weeks (the default TTL of Trends) is used to find periodic signals in Trends. Larger time windows can be used for Events, Incidents, and Phenomena.
 
-For each feature in the Measurement and Trend data (Frequency, Voltage, and THD), the Periodicity plugin first removes the DC offset from the data by subtracting the mean. Next, the plugin filters the signal using a 4th order highpass filter to filter out noise. The plugin then performs autocorrelation on the signal followed by finding the peaks of the autocorrelation. The mean distance between the peaks of the autocorrelation ($\mu$) provides the period of the signal.
-
-The plugin only classifies data as periodic if at least 3 peaks were found and the standard deviation of the period ($\sigma$) is less than 600 seconds (10 minutes). Once a positive identification has been made, peak detection is performed on the original signal using the $\mu$ and $\sigma$ parameters found from autocorrelation to parameterize the peak detection algorithm. The peaks of the original signal represent the times and deviations from nominal for that feature.
-
-Once the plugin has the timestamps and deviations from nominal of the periodic signal of interest, the plugin can group Measurements, Trends, Events, and Incidents that were created during the periodic signals together as part of the Periodic Phenomena.
-
-As an example, Figure~\ref{fig:periodic_example} shows Periodic Voltage sags observed at Box 1021.
-
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=\linewidth]{figures/periodic_example.png}
-	\caption{Periodic Phenomena Example}
-	\label{fig:periodic_example}
-\end{figure}
-
-The top panel shows the original signal. The middle panel shows the filtered signal. The bottom panel shows the results of autocorrelation. In this example, we can see how the filtered data was autocorrelated and then peak detection was performed on the autocorrelated signal to find the mean period in seconds ($\mu$ = 2045.2 seconds) and the standard deviation in seconds ($\sigma$ = 204.5 seconds). This is shown in the third panel. The periodicity metrics are then used to find all peaks in the original data that are at least $mu$ - $sigma$ seconds apart. These peaks are shown in the first panel.
-
-The Periodicity Plugin also performs several pieces of housekeeping. It's possible that a Periodic Phenomena already exists in the database for the same sensor and feature set. If that is the case, the original Periodic Phenomena is updated if the newly identified period contains more autocorrelation peaks and a smaller standard deviation than the one that is already stored. In the event that the plugin stops seeing periodic data for Phenomena that already exists, the plugin sets the Phenomena as ``no longer active" signaling that the Periodic Phenomena is no longer observing the periodic signal of interest.
+For each feature in the Measurement and Trend data (e.g. Frequency, Voltage, and THD), the Periodicity plugin first removes the DC offset from the data by subtracting the mean. Next, the plugin filters the signal using a 4th order highpass filter to filter out noise. The plugin then performs autocorrelation on the signal followed by finding the peaks of the autocorrelation. The mean distance between the peaks of the autocorrelation ($\mu$) provides the period of the signal.
 
 Periodic Phenomena are instrumental in creating Future Phenomena. Periodic Phenomena are used to create Future Phenomena which attempt to predict Incident arrivals at future dates. Periodic Phenomena produce Future Phenomena for all devices that are shown to be periodic. Periodic Phenomena will continue to produce Future Phenomena until consecutive Future Phenomena no longer observe the predicted signals of interest.
-
 
 \subsection{Similarity Phenomena}\label{subsec:similarity-phenomena}
 Similarity Phenomena utilize grouping and community detection algorithms to group Incidents together by their features. Common features used for grouping include time, location, Incident type, Incident duration, or Incident features.
@@ -211,7 +192,6 @@ To compare the similarity between signals, the above mentioned features are used
 K-Means clustering is used on the high-level features to create clusters of related features based on the distance from the mean values of those features. These features include a combination of Incident duration, Incident classification, Incident magnitude, and Sensor location.
 
 From these clusters, this Phenomena creates a similarity metric. The metric is defined as $similarity = D*\alpha_1 + C\alpha_2 + M*\alpha_3 + L*\alpha_4 + Z*\alpha_5$ where $D$ is the duration metrics, $C$ is the classification metric, $M$ is the magnitude metric, $L$ is the location metric, and $Z$ is the correlation metric. The $\alpha$ values are a configurable weighting of the importance of each metric in determining similarity.
-
 
 \subsection{Future Phenomena}\label{subsec:future-phenomena}
 Future Phenomena are a statistical model of the likelihood of seeing an Incident or Incidents at future points in time. Knowing that a signal may occur with some probability allows those affected by those signals time to prepare for the signals.
@@ -1059,6 +1039,32 @@ The ``IEEE1159VoltagePlugin" is a plugin that is able to classify voltage Incide
 
 This plugin is capable of classifying voltage sags, swells, and interruptions as defined by the standard. The plugin works by identifying sags, swells, and interruptions and determining the duration of those events. If the duration or delta is large enough, a voltage Incident is created and a GC\_UPDATE message is sent to the LahaGcPlugin asking it to update the TTL for all measurements, trends, and events that belong to this new Incident.
 
+\paragraph{AnnotationPlugin}
+
+The ``AnnotationPlugin" is responsible for creating and storing Annotation Phenomena within Mauka. The Annotation Plugin subscribes to ``AnnotationRequest" messages which include a start and end timestamp, a list of affected OPQ Boxes, a list of related Event Ids, and a list of related Incident Ids.
+
+When an AnnotationRequest is received, the request is parsed and the data is stored and structured in the database using the Phenomena data model.
+
+At the time of writing, AnnotationRequests are generated manually and inserted into the system using the MockPlugin which allows any type of message to be constructured and produced to any other plugins. Annotations are created when users of the OPQ network can correctly identify the source of a PQ signal.
+
+\paragraph{BoxOptimizationPlugin}
+
+The ``BoxOptimizationPlugin" is responsible for sending and receiving typed messages to and from OPQ Boxes from OPQ Mauka. This plugin is capable of requesting the state of each OPQ Box (e.g. uptime, measurement rate, security keys, etc). This plugin is also capable of adjusting the state of indvidual OPQ Boxes by changing things such as the measurement and trend rate or the sampling rate that the Box is sampling at.
+
+This plugin subscribes to two topics, ``BoxOptimizationRequest" and "BoxMeasurementRateRequest". When a BoxOptimizationRateRequest is received by the plugin, the plugin queries the Boxes specified in the request for data about their state. Because this is completely asynchronous, a seperate thread is spawned to receive the response from the Boxes. When a response is received in the spawned thread, the response is produced to any plugins that are subscribed to the response and interested in the result.
+
+When a BoxMeasurementRateRequest is received, the plugin sends a message to all Boxes marked in the request along with new Measurement and Trends rates (in cycles) that the Box should adjust to use. It's important to note that Makai caches these values for a maximum of one minute. Therefore, to adjust the Measurement or Trend rate at time $T$, the adjustment should really take place at $T - 60$ so that the new value is utilized by the Box and not the cached value over the duration of change. Once the rates have been changed, the Box sends an asynchronous response back to Mauka which is received in a separately spawned thread, a MeasurementRateResponse is created and forwarded to interested plugins.
+
+\paragraph{FuturePhenomenaPlugin}
+
+The ``FuturePhenomenaPlugin" is responsible for creating Future or Predictive Phenomena. These Phenomena are used to predict Events and Incidents that may occur in the future. This plugin does not subscribe to any messages, but instead utilizes timers to perform its work. By default, this plugin runs every 10 minutes.
+
+When the plugin runs, it loads any active Periodic Phenomena found in the database. If Periodic Phenomena are found, this plugin extrapolates possible Events and Incidents by first examining the timestamps of previous periods and then extrapolating into the future using the mean period and the standard deviation. For each timestamp in the periodic phenomena, the mean period is added. If the resulting timestamp is in the future, a Future Phenomena is created using the time range of the future timestamp $\pm$ standard deviation of the Periodic Phenomena.
+
+When a Future Phenomena is created, a timers are started in a separate thread signifying the start and end timestamps of the Future Phenomena. When the first timer runs, messages are sent to the BoxOptimizationPlugin and the ThresholdOptimizationPlugin instructing Event thresholds to be set lower and Box Measurement rates to be set higher. This increases the chance of seeing an Event over the predicted time window. When the second timer runs, these values are reset to their default values. Thus, the plugin increases fidelity and decreases thresholds over the period of a Future Phenomena.
+
+This plugin also tracks the number of Events and Incidents that were identified utilizing Future Phenomena. If a Future Phenomena does not detect any Events or Incidents, I say that the Phenomena is not realized. If it does detect Events or Incidents, I say that the plugin is realized.
+
 \paragraph{ITICPlugin}
 The ``ITICPlugin" analyzes $V_{rms}$ to determine where it falls within the ITIC curve\cite{thallam2000power}. The ITIC curve is a power acceptability curve that plots time on the x-axis and $V_{rms}$ on the y-axis. The ITIC curve is displayed in Figure~\ref{fig:IticCurve}.
 
@@ -1149,6 +1155,29 @@ The ``MockPlugin" is a special plugin that can be instantiated at run time and s
 The ``OutagePlugin" classifies power outages. Since no real power data is produced during an outage, this plugin only subscribes to its own heartbeats. When a heartbeat is received, the outage plugin looks up in the database all OPQBoxes that are marked ``down" by OPQHealth and not marked as ``unplugged" in the database. This plugin keeps track of current outages so that if an OPQBox is already in an outage state a new outage Incident is not created on each subsequent heartbeat.
 
 When outage Incidents are created, TTL update messages are not sent because there is no data during the time period of an outage to adjust the TTL for.
+
+\paragraph{PeriodicityPlugin}
+
+The ``Periodicity Plugin" is responsible for detecting periodic signals in power data. This plugin does not subscribe to any messages, but instead runs off of a configurable timer. The plugin is set to run by default once an hour and every hour it scrapes the last 24 hours worth of data and attempts to find periods in the Measurements over that duration.
+
+For each feature in the Measurement and Trend data (e.g. Frequency, Voltage, and THD), the Periodicity plugin first removes the DC offset from the data by subtracting the mean. Next, the plugin filters the signal using a 4th order highpass filter to filter out noise. The plugin then performs autocorrelation on the signal followed by finding the peaks of the autocorrelation. The mean distance between the peaks of the autocorrelation ($\mu$) provides the period of the signal.
+
+The plugin only classifies data as periodic if at least 3 peaks were found and the standard deviation of the period ($\sigma$) is less than 600 seconds (10 minutes). Once a positive identification has been made, peak detection is performed on the original signal using the $\mu$ and $\sigma$ parameters found from autocorrelation to parameterize the peak detection algorithm. The peaks of the original signal represent the times and deviations from nominal for that feature.
+
+Once the plugin has the timestamps and deviations from nominal of the periodic signal of interest, the plugin can group Measurements, Trends, Events, and Incidents that were created during the periodic signals together as part of the Periodic Phenomena.
+
+As an example, Figure~\ref{fig:periodic_example} shows Periodic Voltage sags observed at Box 1021.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\linewidth]{figures/periodic_example.png}
+	\caption{Periodic Phenomena Example}
+	\label{fig:periodic_example}
+\end{figure}
+
+The top panel shows the original signal. The middle panel shows the filtered signal. The bottom panel shows the results of autocorrelation. In this example, we can see how the filtered data was autocorrelated and then peak detection was performed on the autocorrelated signal to find the mean period in seconds ($\mu$ = 2045.2 seconds) and the standard deviation in seconds ($\sigma$ = 204.5 seconds). This is shown in the third panel. The periodicity metrics are then used to find all peaks in the original data that are at least $mu$ - $sigma$ seconds apart. These peaks are shown in the first panel.
+
+The Periodicity Plugin also performs several pieces of housekeeping. It's possible that a Periodic Phenomena already exists in the database for the same sensor and feature set. If that is the case, the original Periodic Phenomena is updated if the newly identified period contains more autocorrelation peaks and a smaller standard deviation than the one that is already stored. In the event that the plugin stops seeing periodic data for Phenomena that already exists, the plugin sets the Phenomena as ``no longer active" signaling that the Periodic Phenomena is no longer observing the periodic signal of interest. The plugin also identifies Events and Incidents that have taken place during the reported periodic signals.
 
 \paragraph{PrintPlugin}
 The ``PrintPlugin" is a special plugin that is mainly used for debugging. It subscribes to all topics and simply prints the contents of the message to STDOUT. This is useful in development or when bringing up a new Mauka system to ensure that the communications infrastructure is in place. It can also be enabled at runtime from the Mauka CLI to debug all communication channels for all plugins.
