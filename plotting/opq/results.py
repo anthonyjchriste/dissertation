@@ -47,7 +47,8 @@ def incidents_summary():
 
     projection: Dict[str, bool] = {"_id": False,
                                    "start_timestamp_ms": True,
-                                   "classifications": True}
+                                   "classifications": True,
+                                   "incident_id": True}
 
     incidents_cursor: pymongo.cursor.Cursor = incidents_coll.find(query, projection=projection)
     incident_docs: List[Dict] = list(incidents_cursor)
@@ -58,10 +59,17 @@ def incidents_summary():
         classification: str = incident_doc["classifications"][0]
         incident_classification_to_cnt[classification] += 1
 
+        if classification == "VOLTAGE_INTERRUPTION":
+            print(incident_doc["incident_id"])
+
+        # if classification == "FREQUENCY_SWELL":
+        #     incident_id: int = incident_doc["incident_id"]
+        #     print(f"plot_voltage_incident({incident_id}, '.', mongo_client)")
+
     for k, v in incident_classification_to_cnt.items():
         print(f"{k} & {v} & {v / 90.0:.2f}")
 
 
 if __name__ == "__main__":
-    # incidents_summary()
-    global_events_summary()
+    incidents_summary()
+    # global_events_summary()

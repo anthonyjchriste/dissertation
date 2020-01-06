@@ -554,6 +554,90 @@ Table~\ref{table:incidents_summary} summarizes the relevant Incidents over the t
 
 As can be observed, Laha was able to detect the types of Incidents as defined by the Evaluation chapter. I will now examine several of these Incidents in greater detail.
 
+\subsubsection{Example OPQ Incidents}
+
+Figure~\ref{fig:vsag_semi_itic} shows a Voltage sag with associated Semi-F47 and ITIC violations. Note, this is the only such Incident where the Voltage sag created both a Semi-F47 violation and an ITIC violation. This occurred during a power outage on the UHM campus on November 9, 2019.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/semi_itic.png}
+    \caption{Voltage Sag with Associated Semi-F47 and ITIC Violation}
+    \label{fig:vsag_semi_itic}
+\end{figure}
+
+Figure~\ref{fig:vsag_semi} provides an example of both a large Voltage sag and a related Semi-47 violation, but no ITIC violation. This is much more common in the data.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/voltage-incident-129525.png}
+    \caption{Voltage Sag with Associated Semi-F47 Violation}
+    \label{fig:vsag_semi}
+\end{figure}
+
+Figures~\ref{fig:vsag_1} and~\ref{fig:vsag_2} show a Voltage sag that was observed by multiple OPQ Boxes.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/vsag_1.png}
+    \caption{Co-Observed Voltage Sag A}
+    \label{fig:vsag_1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/vsag_2.png}
+    \caption{Co-Observed Voltage Sag B}
+    \label{fig:vsag_2}
+\end{figure}
+
+Figure~\ref{fig:vswell} shows an example of a Voltage swell. You will note that the Semi-F47 does not classify Voltage swells which is why there is a value absent for the bottom panel.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/voltage-incident-419206.png}
+    \caption{Voltage Swell}
+    \label{fig:vswell}
+\end{figure}
+
+Figure~\ref{fig:thd} shows an example of an excessive THD Incident.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/thd.png}
+    \caption{Excessive THD}
+    \label{fig:thd}
+\end{figure}
+
+Figure~\ref{fig:transients} shows an example of a transient that was recorded on Oct 7, 2019.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/transient.png}
+    \caption{Detected Transients: Box 1001}
+    \label{fig:transients}
+\end{figure}
+
+Figure~\ref{fig:fsag} shows an example of a Frequency sag.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/incident-556626.png}
+    \caption{Frequency Sag}
+    \label{fig:fsag}
+\end{figure}
+
+Figure~\ref{fig:fswell} shows an example of a Frequency swell.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/incident-582690.png}
+    \caption{Frequency Swell}
+    \label{fig:fswell}
+\end{figure}
+
+
+\subsubsection{Local, Semi-Global, and Global Incidents}
+
 I also claimed in the Evaluation chapter that the OPQ network is capable of detecting grid wide signals of interest. I had hoped to see at least one grid wide signal during out deployment, but am happy to report that we actually see many grid wide signals daily. One such way of looking for grid wide signals is to utilize Napali's triggering results which are provided by Sergey Negrashov's dissertation. These results provide anomalous signals of interest that were observed by more than one OPQ Box. Table~\ref{table:global_summary} summarizes the number of signals observed by one Box and multiples Boxes.
 
 \begin{table}[H]
@@ -587,6 +671,12 @@ I also claimed in the Evaluation chapter that the OPQ network is capable of dete
 As can be observed, most Events that were triggered were only triggered from a single Box. These were triggered by Mauka's triggering algorithm. All Events that were triggered by more than one Box were triggered by Napali's triggering algorithm. Local Events, or those that were only observed by a single Box make up close to 96\% of the observed Events. The other 4\% are either semi-global or global. We see that 463 of the Events triggered were triggered on all available Boxes and I consider these to be global Events. Events that were triggered by 2 to 15 Boxes I consider semi-global Events.
 
 These results provide evidence that Laha as implemented by OPQ can accurately identify semi-global and global power signals-of-interest.
+
+\subsubsection{Examples of Semi-Global and Global Events}
+
+\subsubsection{Summary of Laha Generality for OPQ}
+
+In this section, I showed that the OPQ network meets and surpasses the minimum requirements set out in the Evaluation chapter to show the generality of the Laha framework as implemented by OPQ. I showed that OPQ is able to detect common PQ issues and also showed that it is able to detect semi-global and global signals-of-interest.
 
 \subsection{Results of Laha Generality for Lokahi}\label{subsec:results-of-laha-generality-for-lokahi}
 
