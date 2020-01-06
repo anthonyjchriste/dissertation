@@ -565,6 +565,8 @@ Figure~\ref{fig:vsag_semi_itic} shows a Voltage sag with associated Semi-F47 and
     \label{fig:vsag_semi_itic}
 \end{figure}
 
+Here, the initial voltage waveform and $V_{RMS}$ show a sag on the order of $10^3$ cycles. This is just long enough in duration and low enough in Voltage that is breaches the Semi-F47 threshold and barely surpasses the ITIC threshold.
+
 Figure~\ref{fig:vsag_semi} provides an example of both a large Voltage sag and a related Semi-47 violation, but no ITIC violation. This is much more common in the data.
 
 \begin{figure}[H]
@@ -590,6 +592,8 @@ Figures~\ref{fig:vsag_1} and~\ref{fig:vsag_2} show a Voltage sag that was observ
     \label{fig:vsag_2}
 \end{figure}
 
+These two figures show a semi-global Incident that was detected by two OPQ Boxes. The first Box was located Keller while the other was located in Kennedy Theater. There are both Voltage and Frequency deviations that were tracked by both Boxes.
+
 Figure~\ref{fig:vswell} shows an example of a Voltage swell. You will note that the Semi-F47 does not classify Voltage swells which is why there is a value absent for the bottom panel.
 
 \begin{figure}[H]
@@ -607,6 +611,8 @@ Figure~\ref{fig:thd} shows an example of an excessive THD Incident.
     \caption{Excessive THD}
     \label{fig:thd}
 \end{figure}
+
+THD exceeds 5\% for a period of near 20 seconds.
 
 Figure~\ref{fig:transients} shows an example of a transient that was recorded on Oct 7, 2019.
 
@@ -635,6 +641,7 @@ Figure~\ref{fig:fswell} shows an example of a Frequency swell.
     \label{fig:fswell}
 \end{figure}
 
+These examples provide evidence to the types of PQ issues OPQ Mauka is able to detect utilizing the Laha framework. This is just a small subset showcasing different types of PQ issues Mauka can classify. All Incidents are publicly available through OPQ View.
 
 \subsubsection{Local, Semi-Global, and Global Incidents}
 
@@ -673,6 +680,44 @@ As can be observed, most Events that were triggered were only triggered from a s
 These results provide evidence that Laha as implemented by OPQ can accurately identify semi-global and global power signals-of-interest.
 
 \subsubsection{Examples of Semi-Global and Global Events}
+
+First, let's look at an example of a semi-global Event as shown in Figures~\ref{fig:sg_events} and~\ref{fig:sg_events_1}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/events_1.png}
+    \caption{Semi-Global Events I}
+    \label{fig:sg_events}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/events_2.png}
+    \caption{Semi-Global Events II}
+    \label{fig:sg_events_1}
+\end{figure}
+
+This collection of Events was recorded on November 9, 2019 and observed by 15 OPQ Boxes over a duration of 5 seconds. There are two Voltages sags that drop to about 80 Volts.  These sags were observed by 15 OPQ Boxes. I only show two devices above for brevity. The rest look similar.
+
+Next, let's examine an example of a semi-global Incident. Figure~\ref{fig:i_1} and Figure~\ref{fig:i_2} show examples of a Voltage sag Incident observed across 7 OPQ Boxes on November 23, 2019.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/vsag_g_1.png}
+    \caption{Semi-Global Incidents I}
+    \label{fig:i_1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/vsag_g_2.png}
+    \caption{Semi-Global Incidents II}
+    \label{fig:i_2}
+\end{figure}
+
+Here, each Box observes a sag of down to near 100 Volts. You'll note other Voltage sags in the Event waveform. These were also classified as semi-global Incidents. Only two Boxes are shown for brevity.
+
+In summary, I've shown examples of several interesting semi-global Events and Incidents.
 
 \subsubsection{Summary of Laha Generality for OPQ}
 
