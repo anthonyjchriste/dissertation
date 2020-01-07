@@ -946,9 +946,9 @@ The above figure shows the original signal in the top panel, the filtered signal
 
 Phenomena are designed to provide adaptive optimizations to the DSN. Periodic Phenomena provide optimizations in several ways. First, Periodic Phenomena get better over time. Because of the stability of the signal, consecutive runs of the Periodicity Plugin provide more accurate results during times when there is less noise in the periodic signal. Over time, the plugin is able to identify periodic signals with smaller standard deviations than previous runs. As the standard deviation becomes smaller, the accuracy of detecting periodic signals becomes higher.
 
-As an example, when the periodic signal at Box 1021 was originally identified, the plugin identified a signal with a period of 45 minutes and a standard deviation of close to 9 minutes. Over the course of about a week, the Periodic Phenomena self optimized and now provides a period of about 35.5 minutes and a standard deviation on the order of 8 seconds. This matches what I observed empirically and in the ground truth data.
+As an example, when the periodic signal at Box 1021 was originally identified, the plugin identified a signal with a period of 44 minutes and a standard deviation of close to 9 minutes. Over the course of about a week, the Periodic Phenomena self optimized and now provides a period of about 35.5 minutes and a standard deviation on the order of 8 seconds. This matches what I observed empirically and in the ground truth data.
 
-Periodic Phenomena also self-optimizes by utilizing data gathered from Future Phenomena. Future Phenomena adjust the underlying Event thresholds and the Measurement and Trend rates of OPQ Boxes. During the time window of a future Phenomena, Measurement and Trend rates are increased while Event thresholds are decreased. The net result of this is the ability to detect Events that would not have otherwise been detected. More importantly, by increasing the Measurement rate, the periodicity plugin gains higher fidelity data from the increased data rate which in turn provides Periodic Phenomena the ability to better classify periodic signals of interest, thus decreasing the standard deviation and increasing the accuracy of the plugin. The Periodicity Plugin and Future Plugins work in conjunction to optimize each other. The more accurate the Periodic Phenomena become, the more accurate the Future Phenomena become and vice versa.
+Periodic Phenomena self-optimizes by utilizing data gathered from Future Phenomena. Future Phenomena adjust the underlying Event thresholds and the Measurement and Trend rates of OPQ Boxes. During the time window of a future Phenomena, Measurement and Trend rates are increased while Event thresholds are decreased. The net result of this is the ability to detect Events that would not have otherwise been detected. More importantly, by increasing the Measurement rate, the periodicity plugin gains higher fidelity data from the increased data rate which in turn provides Periodic Phenomena the ability to better classify periodic signals of interest, thus decreasing the standard deviation and increasing the accuracy of the plugin. The Periodicity Plugin and Future Plugins work in conjunction to optimize each other. The more accurate the Periodic Phenomena become, the more accurate the Future Phenomena become and vice versa.
 
 One of the tenants of Periodic Phenomena (or one of the tenants of Phenomena in general) is to identify groupings of Events and Incidents that occurred during the period identified by the Phenomena. The summary Table presented in the beginning of this section provides counts for the number of Events and the number of Incidents that correspond with periodic signals of interest. For example, OPQ Box 1021 identified a total of 463 periods that should have observed a Voltage drops. Of those 463 periods, 332 (or about 72\%) of the periods contained Events that were identified by Mauka. Four Voltage sag Incidents were also observed during these periods. This is to be expected as most of the Voltage sags observed by 1021 do cross the Event thresholds, but the deviation from nominal is not large enough to pass the Voltage Incident thresholds. This Phenomena provides groupings of Events and Incidents that are related to the periodic signal of the sensor. This is important because previously these were just Voltage sags Events and Voltage sag Incidents. This Phenomena adds context to these Events and Incidents by providing a grouping that shows that they were part of a periodic signal rather than individual PQ issues. The next section will show how Future Phenomena modifies Event thresholds in order to capture Events that might otherwise be missed due to not passing the Event thresholds.
 
@@ -958,8 +958,61 @@ It is possible that the HVAC system is constantly pushing air through the buildi
 
 It should be noted that although Lokahi sensors record the temperature, they mainly record the internal temperature of the sensor's processor and these readings are generally not affected by the ambient temperature that the sensor resides in.
 
+I've provided evidence in this section that show OPQ Mauka was able to identify Periodic Phenomena. I also showed how this Phenomena is able to provide optimizations to the DSN. I've shown the Periodic Phenomena is able to provide groupings for Events and Incidents, providing added context and actionalble insights.
+
 \subsubsection{Results of Future/Predictive Phenomena}
 
+Future Phenomena are generated from Periodic Phenomena. Future Phenomena predict when signals of interest should be observed by a particular sensor. Future Phenomena store information about its time window, the OPQ Boxes affected, and the expected feature that is predicted to be non-nominal. Future Phenomena also directly perform optimizations on the OPQ network. They are capable of modifying Event thresholds for the Frequency, Voltage, and THD features as well as modifying the data rate of OPQ Boxes. Because the Future Phenomena is capable of modifying the system, I expected to detech Events that would have otherwise been missed due to the threshold being too high.
+
+The Periodic Phenomena that were discussed in the previous section play an important role in creating Future Phenomena. Future Phenomena are created based off of the mean period and standard deviation of the period from the Periodic Phenomena. Future Phenomena attempt to predict four hours of Events and Incidents from the last known timestamp of a Periodic Phenomena.
+
+Future Phenomena were generated from all four of the previous Periodic Phenomena discussed in the previous section. Table~\ref{table:future_summary} summarizes the results of Future Phenomena as implemented by OPQ Mauka.
+
+\begin{table}[H]
+    \centering
+    \caption{Summary of Future Phenomena}
+    \begin{tabularx}{\textwidth}{llll}
+        \toprule
+        \textbf{Box} & \textbf{Future Phenomena} &\textbf{Unrealized} & \textbf{Realized} \\
+        \midrule
+        1021 & 395 & 185 & 210 \\
+        1003 & 113 & 52 & 61 \\
+        1023 & 173 & 113 & 60 \\
+        2001 & 91 & 91 & 0 \\
+        \bottomrule
+    \end{tabularx}
+    \label{table:future_summary}
+\end{table}
+
+I use the term ``realized" to specify whether a Future Phenomena observed Events or Incidents. If a Future Phenomena does not contain any Events or Incidents, I use the term ``unrealized". The summary above shows that just over 53\% of all Future Phenomena for Box 1021 are realized. I had hoped that this value would be higher, but not all is lost. First, the amount of realized Events increases over time as the Future Phenomena self-optimize in conjunction with Periodic Phenomena.
+
+Figure~\ref{fig:future_opt} shows the percentage of realized Future Phenomena over time.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{figures/future_opt.png}
+    \caption{Future Phenomena Self-Optimization}
+    \label{fig:future_opt}
+\end{figure}
+
+The Figure above shows that initially, the percentage of realized Events is fairly sporadic. Over time, as Future Phenomena and Periodic Phenomena apply optimizations to the underlying DSN, the amount of realized Future Phenomena increase.
+
+Future Phenomena provide multiple optimizations to the underlying DSN. Future Phenomena can modify Event thresholds and data rates. These modifications increase data fidelity (which in turn helps to produce more accurate Periodic Phenomena), and also decrease Event thresholds. Because of the decreased Event thresholds, I expect Mauka to detect Events that would otherwise not have been detected.
+
+Of the 210 realized Future Phenomena for Box 1021, exactly 37 of them contained sub-threshold Events, that is Voltage sag Events that are smaller than the default sag threshold of 2.5\% or 117.0 Volts. These 37 Events would not have been captured by the default Event trigger without modifications applied by Future Phenomena. Not only were these Events found using Future Phenomena, but they are also part of the Periodic Phenomena data set that created the Future Phenomena in the first place.
+
+Figure~\ref{fig:sub_thresh_event} shows an example of a sub-threshold Event found utilizing Future Phenomena.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{figures/event-single-464912.png}
+    \caption{Sub-Threshold Event}
+    \label{fig:sub_thresh_event}
+\end{figure}
+
+Here we can observe a Voltage sag of of just over 1\% deviation from nominal. This Voltage sag would not have been observed without modifying the Event thresholds using this Future Phenomena.
+
+I have provided evidence that shows that the Future Phenomena are able to predict Future Events better than half of the time. I have shown that the Future Phenomena are capable of improving over time based off of optimizations applied by the Periodic Phenomena and Future Phenomena. I have shown that Future Phenomena are capable of detecting sub-threshold Events that would have otherwise been missed by normal triggering algorithms.
 
 \subsubsection{Results of Similarity Phenomena}
 
