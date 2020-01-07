@@ -905,17 +905,21 @@ The OPQ network has far fewer Annotation Phenomena. The reason for this is that 
         \toprule
         \textbf{Description} & \textbf{Time (UTC)} & \textbf{Boxes} & \textbf{Events} & \textbf{Incidents}  \\
         \midrule
+        Oahu Storm & 2019-10-11 00:00 & 16 & 4 & 400 \\
+        Makiki Power Outage & 2019-10-16 22:37 & 16 & 1 & 143 \\
         Manoa Power Outage & 2019-11-23 20:02 & 15 & 1 & 168 \\
         \bottomrule
     \end{tabularx}
     \label{table:annotation_summary}
 \end{table}
 
+Annotation Phenomena within OPQ has allowed me to provide context and groupings for a total of 35 Events and 711 Incidents that otherwise would just be ``just another Event or Incident" and are now ``Events and Incidents caused by storms and power outages".
+
 Annotations not only provide extra context on top of groupings of data, but they also affect the data that is stored. If an Annotation is created early enough, all Measurements, Trends, Events, and Incidents related to the Annotation will have their TTL values updated to be the same as the Annotation Phenomena. The end result is that the data that is grouped by the Annotation is saved for as long as the Annotation, allowing further analysis and saving data that has been contextualized. This is true of all Phenomena discussed in this section.
 
 At this stage, Annotation Phenomena provide a way to discuss related Events, Incidents, and sensors. In networks that have large amounts of Events and Incidents, this can be a valuable tool to assign context to related data and help filter the signal from the noise. Annotations are essentially fancy labels with some metadata to describe the data. This would be incredibly useful for any future work that intends to add machine learning to the Laha framework.
 
-I admit that this Phenomena is somewhat simple, however, I believe it adds great value in terms of contextualizing a large amount of Events and Incidents and for providing actionable insights that is useful to the consumers or this data. As an example, it's much more informative to say ``Lokahi observed a rocket launch" than it is to say ``Lokahi observed a non-nominal spike in the infrasound range". In a similar vain, it's much more informative to say "OPQ observed PQ signals relating to a power outage in Manoa from these sensors" than it is to say ``OPQ observed Voltage sags across multiple sensors".
+I admit that this Phenomena is somewhat simple, however, I believe it adds great value in terms of contextualizing a large amount of Events and Incidents and for providing actionable insights that are useful to the consumers or this data. As an example, it's much more informative to say ``Lokahi observed a rocket launch" than it is to say ``Lokahi observed a non-nominal spike in the infrasound range". In a similar vain, it's much more informative to say ``OPQ observed Voltage sags relating to a power outage in Manoa" than it is to say ``OPQ observed Voltage sags across multiple sensors".
 
 I would have liked to integrate Annotation Phenomena with other Phenomena such as Periodic or Similarity Phenomena. However, a lack of known signal sources for OPQ and a lack of Incidents for Lokahi made this incredibly difficult. Annotation Phenomena are most useful when an observed signal has a known source or when there are a large amount of Annotations in conjunction with a large amount of Events and Incidents. Future work should examine how to better integrate Annotation Phenomena with other Phenomena in an attempt to provide automatic Annotation classifications.
 
