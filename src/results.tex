@@ -1558,4 +1558,24 @@ I detailed 3 tertiary goals in the Evaluation chapter including adaptive optimiz
 
 \section{Summary of Results}\label{sec:summary-of-results}
 
+I designed, built, and deployed two Laha compatible DSNs. The Lokahi network collects signals in the infrasound range and is able to identify a large variety of source modalities such as rocket launches, earthquakes, atmospheric entries, storms, and explosions. The OPQ network was designed to detect anomalous signals in PQ data such as Frequency sags and swells, Voltage sags and swells, transients, and excessive THD.
+
+I evaluated these DSNs as described in the Evaluation chapter.
+
+First, I showed results comparing ground truth data to the OPQ network. I showed comparisons for collected metrics such a Frequency, Voltage, and THD, and I also provided results that compare how well Events and Incidents match what was observed by ground truth sensors. I found that most of the OPQ network accurately track the ground truth data with the largest deviations taking place within Frequency Incidents.
+
+Next, I provided evidence to show how well Lokahi tracks ground truth data. I used results from Asmar's dissertation to show that infrasound signals are able to be detected with mobile sensors within accordance of the International Monitoring System.
+
+I then provided results showing that the generality of Laha framework allows it to be used in multiple domains all the while fulfilling the requirements of those domains. Within the OPQ network, I showed examples of classified Incidents for common PQ issues and the ability to detect local, semi-global, and global signals-of-interest. Within the Lokahi network I provided Incidents that showcase the wide variety of source signal modalities that the network is able to accurately detect. Finally, I provided other tangible claims showing the usefulness and generality of the Lokahi network.
+
+I then provided an in-depth discussion on the types of DSNs that the Laha framework would be suitable followed by a discussion on the Laha level hierarchy.
+
+Next, I provided evidence that the system is able to convert primitive data into actionable insights by discussing the transformations of data at each level in the Laha hierarchy and examining the results of Phenomena which directly provide actionable insights. I examined each Phenomena is detail and discussed what value it adds and how it is able to optimize the underlying system.
+
+Then, I provided results for tiered management of big data which focused on determining data storage requirements and system requirements in systems with TTL and without TTL. I compared results scraped from the data to estimations and simulations that were designed in the Evaluation chapter. I showed that Laha is able to reduce storage and computational requirements by removing noise from the system using garbage collection.
+
+Finally, I provided results of the tertiary goals stated in the Evaluation chapter. I showed that adaptive optimizations of both triggering and detections take place and help to further improve the system's accuracy.
+
+These items provide evidence that the Laha framework is a generally useful framework for distributed sensor networks in select domains, providing data storage management, actionable insights, and self-optimizing capabilities. 
+
 \section{Future Directions}\label{sec:future-directions}
