@@ -182,10 +182,32 @@ def annotation_summary():
         print(phenomea_doc)
         print(f"{desc} & {start_dt_str} & {boxes_affected} & {events} & {incidents} \\\\")
 
+def future_added():
+    mongo_client: pymongo.MongoClient = pymongo.MongoClient()
+    db: pymongo.database.Database = mongo_client["opq"]
+    phenomena_coll: pymongo.collection.Collection = db["phenomena"]
+
+    query: Dict = {
+        "phenomena_type.type": "future",
+    }
+
+    phenomena_cursor: pymongo.cursor.Cursor = phenomena_coll.find(query)
+    phenomena_docs: List[Dict] = list(phenomena_cursor)
+
+    total_s: float = 0.0
+    for phenomena_doc in phenomena_docs:
+        start_ts_s: float = phenomena_doc["start_ts_ms"] / 1000.0
+        end_ts_s: float = phenomena_doc["end_ts_ms"] / 1000.0
+        duration_s: float = end_ts_s - start_ts_s
+        total_s += duration_s
+
+    print(total_s * 145 * 6)
+
 if __name__ == "__main__":
     # incidents_summary()
     # global_events_summary()
     # periodic_phenomena_summary()
     # future_phenomena_summary()
 
-    annotation_summary()
+    # annotation_summary()
+    future_added()

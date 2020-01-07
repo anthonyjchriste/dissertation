@@ -872,6 +872,30 @@ I believe that Laha would be useful in many distributed sensing domains that col
 
 In summary, I believe Laha would be a great fit for long running networks that provide high data rates and multiple classification possibilities. These include networks that perform earth quake monitoring, environmental monitoring, traffic monitoring, and security monitoring to name a few. As network speeds increase and as the avialability  Laha is not well suited for networks with low data rates or simple classifications schemes.
 
+\subsection{Discussion of Laha Levels}\label{subsec:discussion-of-laha-levels}
+
+Now that I've had the chance to implement Laha levels in two separate DSNs, I want to discuss my thoughts on the layout of the levels and the individual levels themselves.
+
+To summarize, Laha utilizes 5 levels. The Instantaneous Measurements Level (IML) includes sampled raw data waveforms. The Aggregate Measurements Level (AML) contains summary statistics about features extracted from the IML. The Detection Level (DL) utilizes Events to define windows of data that may or may not contain signals of interest. The Incident Level (IL) contains data and metadata for classified signals of interest. The Phenomena Level (PL) provides context to groupings of subsets of data and also provides the ability to predict Future signals of interest all the while providing optimizations for the rest of the levels below it.
+
+I believe that these original levels worked well in both DSN domains that I analyzed, however, there are a few things that would be interesting to experiment with in future work.
+
+The IML is a bit contrived for some networks. Take OPQ as an example. The IML solely exists on the OPQ Boxes themselves bounded by the available memory. This is in contrast to all other levels which co-exist within a single cloud infrastructure. It feels like the IML is a bit removed from the rest of the levels because of this.
+
+When Events are found, the IML data is copied into the Event. Similarly, IML data is copied into Incidents. This is in contrast to all other levels which do not perform any copying and merely ``point" to the data. For example, Incidents and Events simply point to a range of Measurements and Trends instead of copying those values into those levels. This is possible because the TTL values of those Measurements and Trends match those of the Events, Incidents, or Phenomena.
+
+I think it would be useful to add another level under the IML called the Sensor Measurement Level (SML). This level would signify all of the raw data that is currently living on the sensors themselves and hasn't been sent to a central server for analysis. I would keep the IML, but this level would contain all of the raw samples that were sent from sensors to a central server. Instead of copying data into Events and Incidents, the data would remain in the IML and simply be referenced from Events and Incidents.
+
+I believe the AML is critical and I'm not sure that I would make any changes to it directly. It alone is responsible for providing the triggering architecture required for detecting Events. However, I would consider adding a new level between the AML and the DL called the Data Fusion Level (DFL).
+
+The DFL would be responsible for collecting AML data from heterogeneous sources. For instance, I found myself wishing that I had a way to feed ground truth data into OPQ alongside the OPQ Box data in an attempt to perform real time validation of our data. It would also be interesting to fuse other data sources such as temperature data, weather data, or power usage data in an attempt to find correlations between other data streams and what was observed by the OPQ Boxes. I would place the DFL between the AML and DL because I would like the DL an IL to be abstracted over AML values.
+
+In certain instances, I believe the DL and IL could be combined into a single level. The main difference between Events and Incidents is that Incidents provide a known classification and only reference a subset of the Event data. It would be easy to combine these levels into a single Detection Level that has parameters listing known classifications within the Event along with timestamps. This would require less housekeeping and potential data savings by not copying the Incident waveform from the Event waveform.
+
+I would not make many changes to the PL. I believe the PL is fundamentally important for providing context for large amounts of Events and Incidents.
+
+I think there is room to create sub-levels within the main levels. For example, sub-levels could be added to perform compression, encryption, metric collection, quality assurance, or logging. These are currently handled by individual Actors within the levels, but in certain instances, I think it could be helpful to promote these ideas to sub-levels as useful parts of the Laha hierarchy.
+
 \section{Results of Converting Primitive Data into Actionable Insights}\label{sec:results-of-converting-primitie-data-into-actional-insights}
 
 Converting primitive data into actionable insights in one of the main tenants of this framework. This is accomplished within Laha by moving data upwards through Laha's hierarchy.
@@ -1008,7 +1032,7 @@ Future Phenomena were generated from all four of the previous Periodic Phenomena
         \toprule
         \textbf{Box} & \textbf{Future Phenomena} &\textbf{Unrealized} & \textbf{Realized} \\
         \midrule
-        1021 & 395 & 185 & 210 \\
+        1021 & 9 & 185 & 210 \\
         1003 & 113 & 52 & 61 \\
         1023 & 173 & 113 & 60 \\
         2001 & 91 & 91 & 0 \\
@@ -1480,6 +1504,57 @@ The bottom panel shows the number of active OPQ Boxes sending over time. There d
 \subsubsection{DSN System Requirements Lokahi: PL}
 
 \section{Results of Tertiary Goals}\label{sec:results-of-tertiary-goals}
+
+In the Evaluation chapter, I provided three tertiary goals for the Laha framework. In general, two out of the three tertiary goals were implemented to some degree. Not all of the results mentioned in the Evaluation chapter for the tertiary goals were fulfilled. This section examines to what extent the tertiary goals were fulfilled and discusses how these results might be improved.
+
+\subsection{Results of Adaptive Optimizations for Triggering}\label{subsec:results-of-adaptive-optimizations-for-triggering}
+
+In the previous discussion on Future Phenomena, I showed how Future Phenomena have the ability to modify the Measurement and Trend rates for OPQ Boxes. These rates are increased over the duration that a Future Phenomena signal is predicted. The measurement rate is increased from one Measurement per 60 cycles to one Measurement per 10 cycles. Once the Future Phenomena duration ends, the rates are adjusted back to default values.
+
+This increase in fidelity provides triggering algorithms with more data to work with and provides a smaller window ($\frac{1}{6}$ of a second compared to 1 second) in which deviations can be identified. This increases the network's chance of observing Events and Incidents that may have originally been missed.
+
+The increased fidelity during Future Phenomena adds a small overhead cost in terms of bandwidth and storage. As shown in the Evaluation of Tiered Management of Big Data chapter, the mean size of a Measurement is 145 bytes. The added overhead can be found by Equation~\ref{eq:added_overhead} where $P_i$ is a given Future Phenomena and $D$ is a function that returns the duration of the Phenomena in seconds.
+
+\begin{equation}
+    added\_overhead\_bytes = \sum_{i=1}^{P_{N}} D(P_i) * 145 * 6
+    \label{eq:added_overhead}
+\end{equation}
+
+Over a period of one week, 772 Future Phenomena were created for four OPQ Boxes. These contributed to an increase of 130.51 MB of data transferred from OPQ Boxes under Future Phenomena. Considering that four OPQ Boxes transfer 365.50 MB in Measurements and Trends without Future Phenomena, this is about a 35\% increase in data transfer for OPQ Boxes utilizing Future Phenomena for adaptive triggering optimizations.
+
+These optimizations were designed to increase fidelity and reduce window size, providing triggering algorithms the chance to better identify Events. Future directions should include looking to information theory for ideas on how to decrease fidelity while still maintaining a high signal-to-noise ratio. Another future direction should experiment with modifying the sampling rates of the sensors themselves to determine if possible to decreases bandwidth and storage requirements while increasing signal-to-noise.
+
+\subsection{Results of Adaptive Optimizations for Detection and Classification}\label{subsec:results-of-adaptive-optimizations-for-detection-and-classification}
+
+In the previous discussion on Future Phenomena, I showed that Future Phenomena are capable of optimizing the classification of Events by dynamically modifying the feature thresholds used for detecting Events. This is in contrast to what I claimed I would do in the Evaluation section which stated that I would change the window sizes to dynamically increase or decrease signal-to-noise.
+
+I decided to switch directions with optimizations for Events because the time windows for Events and Incidents are already well characterized and I don't believe modifying these windows would provide any additional benefits. For instance, Event windows are characterized by the times that thresholds crossed from nominal into non-nominal and back. We could increase the size of the Event window to provide a buffer of data on either end, but Event windows are already large enough to provide valid Incidents. Incident windows are strictly defined by the start and stop of the classified signal. If Incident windows were smaller, we would miss data that is important to characterizing the Incident. The Incident window does not need to be increased, because the Incident data is a subset of the Event data. The Event waveform will live for as long as the Incident, making it possible to look up data around the Incident from the Event that generated it.
+
+I decided to dynamically alter detection thresholds in an attempt to provide Event detection with the ability to detect sub-threshold Events predicted by Future Phenomena that would have otherwise not been detected.
+
+As discussed in the Results for Future Phenomena, out of 210 Future Phenomena, 37 Events were sub-threshold and would not have been identified without these adaptive optimizations.
+
+Future directions should look at providing a signal-to-noise parameter that is used to dynamically adjust detection thresholds based on the required signal compared to the noise of a particular data stream.
+
+\subsection{Results of Model of Underlying Sensor Field Topology}\label{subsec:results-of-model-of-underlying-sensor-field-topology}
+
+I had difficulties finding a model that accurately predicts the underlying sensor field topology and as such do not have any results for this tertiary goal. I attempted to use Voltage sags and swells because they tend to show the largest differences in readings between Boxes at any one time. This is compared to THD and Frequency which tend to track more similarly between Boxes. I expected the signal caused by Voltage fluctuations to attenuate as a function of the distance from the source signal. This in conjunction with a map of the UH micro-grid provided the basis for me to explore this hypothesis.
+
+I attempted to find the amount of ``hops" from each OPQ Box to every other OPQ Box on the UHM micro-grid. I did this by counting the number of buildings each main electrical line went through in order to go from an OPQ Box to every other OPQ Box. The UHM micro-grid is serviced by two sub-stations, one on upper campus and one on lower campus. This complicated counting the hops because different electrical routes are taken dependent on the substation that was servicing the micro-grid at any one time. I do not have any metrics on when each substation was active.
+
+I compared the number of hops to the amount of attenuation observed in Voltage signals and was not able to identify any clear correlation. For certain pairs of sensors, the data made sense, but the correlation broke down for the vast majority of Voltage signals analyzed using this method leading me to believe that the small set of data points that did make sense are likely just coincidence.
+
+There are also a lot of electrical switches, filters, and transformers that exist between each building and sometimes within buildings that further complicate counting hops. Also, just because a sensor observes a large Voltage signal that attenuates as it reaches other sensors does not mean that the source signal originated at the sensor with the largest signal. It could have originated in a near by building that does not have a OPQ Box inside of it.
+
+I think one of the largest issues with this tertiary goal is my lack of knowledge relating to electrical engineering. I simply don't understand the movement of electricity within a grid well enough to be able to model the topology of the grid correctly only based off of Voltage signals and a map of the grid.
+
+Although the OPQ Box deployment attempts to cover large parts of the campus, a larger deployment would make it much easier to follow signals as they propagate through the micro-grid. I suspect that a Box per building would almost make this a trivial problem, even with my lack of knowledge in the electrical engineering domain.
+
+Multiple commercial software packages provide electrical grid simulation. It would be interesting to attempt to convert provided blueprints of the UHM micro-grid into a power grid simulation. With the ability to control signal sources, amplitudes, and locations of simulated sensors, I suspect this would provide an enlightening view of how power signals propagate through a grid. This could provide a fascinating future study on how and where renewable energy sources affect PQ based on the topology of the grid.
+
+\subsection{Summary of Tertiary Goals}\label{subsec:summary-of-tertiary-goals}
+
+I detailed 3 tertiary goals in the Evaluation chapter including adaptive optimizations of triggering, adaptive optimizations of detections and classification, and attempting to model the topology of a sensor field. I showed that adaptive triggering optimizations occur in the form of modifying data rates from OPQ Boxes. I showed that adaptive detection optimizations occur in the form of modifying detection thresholds. I was not able to provide a valid result for modeling the topology of the sensing field, but instead provides discussions on those results could be improved.
 
 \section{Summary of Results}\label{sec:summary-of-results}
 
