@@ -890,6 +890,18 @@ When I first conceptualized Phenomena, I expected them to be useful for providin
 
 \subsubsection{Results of Annotation Phenomena}
 
+Annotation Phenomena provide the means to add context to groupings of Events, Incidents, and sensors. Annotations contain a description grouping together related data as well as meta-data further describing the related data. Annotations add context on top of general classifications. As an example, Incidents within OPQ only provide information related to the PQ classification that it was assigned. However, this tells us nothing more about how the Incidents might be related (or if they even are related) and tells us nothing about the source of the anomalous signals.
+
+Annotation Phenomena were added to both the OPQ and Lokahi networks. Table summarizes the results of Annotation Phenomena present in these systems.
+
+Because Incidents within the Lokahi network require human vetting before publishing, all Incidents are assigned Annotations by default. These Annotations include a description of the signal source and also provide meta-data for linking the signals to known publications. For example, in previous sections, I showed that Lokahi was able to detect a meteor entry into the Earth's atmosphere above the Hawaiian islands. The Annotation for this Incident provides information about the source as well as provides links to third-party sources that verify the signal of interest.
+
+At this stage, Annotation Phenomena provide a way to discuss related Events, Incidents, and sensors. In networks that have large amounts of Events and Incidents, this can be a valuable tool to assign context to related data and help filter the signal from the noise. Annotations are essentially fancy labels with some metadata to describe the data. This would be incredibly useful for any future work that intends to add machine learning to the Laha framework.
+
+I admit that this Phenomena is somewhat simple, however, I believe it adds great value in terms of contextualizing a large amount of Events and Incidents and for providing actionable insights that is useful to the consumers or this data. As an example, it's much more informative to say ``Lokahi observed a rocket launch" than it is to say ``Lokahi observed a non-nominal spike in the infrasound range". In a similar vain, it's much more informative to say "OPQ observed PQ signals relating to a power outage in Manoa from these sensors" than it is to say ``OPQ observed Voltage sags across multiple sensors".
+
+I would have liked to integrate Annotation Phenomena with other Phenomena such as Periodic or Similarity Phenomena. However, a lack of known signal sources for OPQ and a lack of Incidents for Lokahi made this incredibly difficult. Annotation Phenomena are most useful when an observed signal has a known source or when there are a large amount of Annotations in conjunction with a large amount of Events and Incidents. Future work should examine how to better integrate Annotation Phenomena with other Phenomena in an attempt to provide automatic Annotation classifications.
+
 \subsubsection{Results of Periodic Phenomena}
 
 Mauka has identified four periodic Phenomena. Table~\ref{table:periodic_summary} summarizes the results of observed Periodic Phenomena.
@@ -1021,6 +1033,8 @@ I have provided evidence that shows that the Future Phenomena are able to predic
 \subsubsection{Summary of Results for Converting Raw Data into Actionable Insights}
 
 I've shown in previous sections that data for both the OPQ and Lokahi networks utilize the Laha hierarchy and that primitive data is indeed converted into actionable insights at higher levels within the hierarchy. I've shown how raw ADC samples are converted from level to level and provided discussion on what types of actionable insights can be gathered from each level within the Laha hierarchy.
+
+I've shown that Phenomena add context to groups of Events and Incidents and that they are able to provide optimizations to the DSN which in turn increases the accuracy of the Phenomena.
 
 \section{Results of Tiered Management of Big Data}\label{sec:dsn-system-requirements}
 
