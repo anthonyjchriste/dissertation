@@ -160,9 +160,32 @@ def future_phenomena_summary():
     # print(box_id_to_unrealized_future_phenomena)
     # print(box_id_to_realized_future_phenomena)
 
+def annotation_summary():
+    mongo_client: pymongo.MongoClient = pymongo.MongoClient()
+    db: pymongo.database.Database = mongo_client["opq"]
+    phenomena_coll: pymongo.collection.Collection = db["phenomena"]
+
+    query: Dict = {
+        "phenomena_type.type": "annotation"
+    }
+
+    phenomena_cursor: pymongo.cursor.Cursor = phenomena_coll.find(query)
+    phenomea_docs: List[Dict] = list(phenomena_cursor)
+
+    for phenomea_doc in phenomea_docs:
+        desc: str = phenomea_doc["phenomena_type"]["annotation"]
+        start_dt = datetime.datetime.utcfromtimestamp(phenomea_doc["start_ts_ms"] / 1000.0)
+        start_dt_str = start_dt.strftime("%Y-%m-%d %H:%M")
+        boxes_affected: int = len(phenomea_doc["affected_opq_boxes"])
+        events: int = len(phenomea_doc["related_event_ids"])
+        incidents: int = len(phenomea_doc["related_incident_ids"])
+        print(phenomea_doc)
+        print(f"{desc} & {start_dt_str} & {boxes_affected} & {events} & {incidents} \\\\")
 
 if __name__ == "__main__":
     # incidents_summary()
     # global_events_summary()
-    periodic_phenomena_summary()
+    # periodic_phenomena_summary()
     # future_phenomena_summary()
+
+    annotation_summary()
