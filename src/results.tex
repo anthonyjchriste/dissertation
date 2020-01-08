@@ -1503,7 +1503,20 @@ The requirements of the Lokahi network stipulate that all data be saved. This is
 
 I've shown in the previous section the data savings OPQ experienced against estimated data growth and simulated data growth. In this section, I will show the amount of data actually stored in Lokahi versus how much data could have been saved using TTL. This will compare the actual data collected from the Lokahi network to the estimated and simulated data found in the Evaluation chapter.
 
+Data was scraped from the Lokahi servers over the same time period as the OPQ data, October 1 to December 15, 2019. The first sample of all data sets are subtracted from subsequent data in order to ``zero out" the data at the origin and show data growth from zero rather than data growth from an unknown previous point.
+
 \subsubsection{DSN System Requirements Lokahi: IML}
+
+The Instantaneous Measurements Level (IML) contains raw samples collected by sensors. Because Lokahi does not utilize a TTL, the IML data is stored indefinitely. Here, I only consider IML data collected by microphone sensors which is the focus of the Lokahi deployment.
+
+Figure~\ref{fig:active_lokahi_sensors} shows the number of active Lokahi sensors at different sampling rates over the period of the deployment.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/lokahi_num_sensors.png}
+    \caption{Active Lokahi Sensors}
+    \label{fig:active_lokahi_sensors}
+\end{figure}
 
 \subsubsection{DSN System Requirements Lokahi: AML}
 
