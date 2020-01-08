@@ -3,14 +3,15 @@ from typing import List, Set
 import numpy as np
 
 
-def intersect_lists(lists: List[List]) -> Set:
-    sets: List[Set] = list(map(set, lists))
-    return set.intersection(*sets)
+def sum_series(series: np.ndarray) -> np.ndarray:
+    result: List[int] = []
+    for i in range(1, len(series)):
+        result.append(sum(series[:i]))
+
+    return np.array(result)
 
 
 if __name__ == "__main__":
-    a = [1, 2, 3]
-    b = [2, 3, 4]
-    c = [3, 4, 5]
-
-    print(np.array({1, 2, 3}))
+    a = [1, 2, 3, 4, 5, 6, 7]
+    a = np.array(a)
+    print(sum_series(a))

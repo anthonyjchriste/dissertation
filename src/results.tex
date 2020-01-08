@@ -1518,7 +1518,47 @@ Figure~\ref{fig:active_lokahi_sensors} shows the number of active Lokahi sensors
     \label{fig:active_lokahi_sensors}
 \end{figure}
 
+The above Figure shows the number of active Lokahi sensors at different sampling rates. Unlike OPQ, the Lokahi network provides sensors that can be configured to sample at 80, 800, or 8000 Hz depending on the target signal of interest. Differences in sampling rates affect both the IML and the AML. IML data is affected because more samples require more storage. The AML is affected because Trend rates are dependent on the sampling rate. At any one time, the Lokahi network observed a mean of close to 100 active sensors. Sensors recording at 800 Hz are most prevalent, followed by sensors at 80 Hz, and finally sensors at 8000 Hz.
+
+Figure~\ref{fig:lokahi_actual_iml} shows the actual data growth of the IML over the course of the Lokahi deployment.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/lokahi_actual_iml.png}
+    \caption{IML Growth: Lokahi}
+    \label{fig:lokahi_actual_iml}
+\end{figure}
+
+A linear regression has been fitted to the total IML growth size and is provided by Equation~\ref{eq:lokahi_iml_lr}.
+
+\begin{equation}
+    y = 0.0002934630429487022 * x + -460888.760172118
+    \label{eq:lokahi_iml_lr}
+\end{equation}
+
+Most of the IML data is made up of 800 Hz sampled data. This is unsurprising since most active sensors are sampling at 800 Hz. Over a period of two and a half months, the total IML size reaches near 2 TB.
+
 \subsubsection{DSN System Requirements Lokahi: AML}
+
+The Aggregate Measurements Level (AML) stores summary statistics from feature extracted streams and metadata relating to the data streams. In Lokahi, the AML only contains Trends whereas OPQ contains both Measurements and Trends. Trend rates vary depending on IML sampling rate.
+
+Figure~\ref{fig:lokahi_actual_aml} shows the actual AML growth of the Lokahi network over its deployment.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/lokahi_actual_aml.png}
+    \caption{AML Growth: Lokahi}
+    \label{fig:lokahi_actual_aml}
+\end{figure}
+
+Equation~\ref{eq:lokahi_aml_lr} provides the linear regression found for the total AML data growth.
+
+\begin{equation}
+    y = 5.309751501193485e-06 * x + -8339.047270943533
+    \label{eq:lokahi_aml_lr}
+\end{equation}
+
+Over the course of the Lokahi deployment, the total size of the AML grew to just over 35 GB.
 
 \subsubsection{DSN System Requirements Lokahi: DL}
 
