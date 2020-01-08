@@ -1531,6 +1531,8 @@ Figure~\ref{fig:lokahi_actual_iml} shows the actual data growth of the IML over 
 
 A linear regression has been fitted to the total IML growth size and is provided by Equation~\ref{eq:lokahi_iml_lr}.
 
+Next, I will examine how the actual data compares to the estimated data and the simulated data found in the Evaluation chapter.
+
 \begin{equation}
     y = 0.0002934630429487022 * x + -460888.760172118
     \label{eq:lokahi_iml_lr}
@@ -1559,6 +1561,23 @@ Equation~\ref{eq:lokahi_aml_lr} provides the linear regression found for the tot
 \end{equation}
 
 Over the course of the Lokahi deployment, the total size of the AML grew to just over 35 GB.
+
+Next, I will examine how the actual data compares to the estimated data and the simulated data found in the Evaluation chapter.
+
+Figure~\ref{fig:lokahi_actual_iml_vs_est} shows the actual IML growth versus the estimated growth.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/lokahi_actual_iml_vs_est.png}
+    \caption{IML Growth: Actual vs. Estimated}
+    \label{fig:lokahi_actual_iml_vs_est}
+\end{figure}
+
+The actual data growth for the IML concludes with about 1 TB less data compared to the estimated growth. This is caused by the fact that the estimated growth uses the mean number of active sensors rather than the actual number of active sensors sending data.
+
+Next I will compare the IML data growth to the simulated data growth. It should be noted that the simulated data includes TTL values, however, Lokahi does not make use of TTL due to network requirements. This provides interesting insights on how the IML data could be bounded within Lokahi assuming TTL were used.
+
+
 
 \subsubsection{DSN System Requirements Lokahi: DL}
 
