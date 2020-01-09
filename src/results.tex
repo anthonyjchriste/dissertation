@@ -1610,9 +1610,97 @@ Simulated data provides upwards of 20 GB in data savings utilizing TTL compared 
 
 \subsubsection{DSN System Requirements Lokahi: DL}
 
+The Detections Level (DL) is responsible for bounding data with a window that may or may not contain signals of interest. Figure~\ref{fig:lokahi_actual_dl} shows the actual growth of the DL within Lokahi over the deployment duration.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/lokahi_actual_dl.png}
+    \caption{Lokahi DL Growth}
+    \label{fig:lokahi_actual_dl}
+\end{figure}
+
+Equation~\ref{eq:lokahi_dl_lr} provides the linear regression found for the total DL data growth.
+
+\begin{equation}
+    y = 4.241184190694421e-07 * x + -0.29152838226742694
+    \label{eq:lokahi_dl_lr}
+\end{equation}
+
+Over the deployment duration, the DL has grown over 2.5 GB with over 200 Events.
+
+Next I will compare the actual DL data growth to the estimated and simulated data growth from the Evaluation chapter. Figure~\ref{fig:lokahi_actual_dl_vs_est} compares the actual Lokahi DL to the estimated DL.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/lokahi_actual_dl_vs_est.png}
+    \caption{Lokahi DL Growth vs Estimated Growth}
+    \label{fig:lokahi_actual_dl_vs_est}
+\end{figure}
+
+The actual DL growth matches the estimated DL growth almost perfectly. The difference between the two trends towards 0 GB.
+
+Figure~\ref{fig:lokahi_actual_dl_vs_sim} compares the simulated DL to the actual DL.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/lokahi_actual_dl_vs_sim.png}
+    \caption{Lokahi DL Growth vs Simulated Growth}
+    \label{fig:lokahi_actual_dl_vs_sim}
+\end{figure}
+
+The simulated DL is about 1.5 GB smaller than the actual DL. This is due to the simulated DL utilizing TTL while the actual DL for Lokahi does not. This provides evidence that TTL based approaches can provide data savings within the DL.
+
 \subsubsection{DSN System Requirements Lokahi: IL}
 
+The Incidents Level (IL) is responsible for bounding data with a window that contains classified signals of interest. Figure~\ref{fig:lokahi_actual_il} shows the actual growth of the IL within Lokahi over the deployment duration.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/lokahi_actual_il.png}
+    \caption{Lokahi IL Growth}
+    \label{fig:lokahi_actual_il}
+\end{figure}
+
+Equation~\ref{eq:lokahi_il_lr} provides the linear regression found for the total IL data growth.
+
+\begin{equation}
+    y = 1.982441768799792e-08 * x + -0.02980347263345723
+    \label{eq:lokahi_il_lr}
+\end{equation}
+
+Over the deployment duration, the IL has grown to about 0.125 GB consisting of 6 Incidents. Incidents are much more rare in Lokahi as compared to OPQ.
+
+Next I will compare the actual IL data growth to the estimated and simulated data growth from the Evaluation chapter. Figure~\ref{fig:lokahi_actual_il_vs_est} compares the actual Lokahi IL to the estimated IL.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/lokahi_actual_il_vs_est.png}
+    \caption{Lokahi IL Growth vs Estimated Growth}
+    \label{fig:lokahi_actual_il_vs_est}
+\end{figure}
+
+The actual IL trends closely with the estimated IL.
+
+Figure~\ref{fig:lokahi_actual_il_vs_sim} compares the simulated IL to the actual IL.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/lokahi_actual_il_vs_sim.png}
+    \caption{Lokahi IL Growth vs Simulated Growth}
+    \label{fig:lokahi_actual_il_vs_sim}
+\end{figure}
+
+The simulated IL is just slightly smaller than the actual IL. Over this time period, the simulated IL does not have a good opportunity to show off the data savings provided by TTL. I suspect that if the deployment were long enough, we would see similar simulated data savings to what was displayed for the IML, AML, and DL. Although the simulated TTL is not in use here, Laha is designed to work for extremely long durations. In those scenarios, the larger TTL of Incidents will come into play. 
+
 \subsubsection{DSN System Requirements Lokahi: PL}
+
+% TODO
+TODO
+
+\subsubsection{DSN System Requirements Lokahi: Laha}
+
+% TODO
+TODO
 
 \section{Results of Tertiary Goals}\label{sec:results-of-tertiary-goals}
 

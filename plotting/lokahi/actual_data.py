@@ -31,7 +31,7 @@ def bin_dt_by_min(dt: datetime.datetime) -> datetime.datetime:
 
 
 def bin_dt_by_day(dt: datetime.datetime) -> datetime.datetime:
-    return datetime.datetime(dt.year, dt.month, dt.day, 0, 0, 0, 0, tzinfo=datetime.timezone.utc)
+    return datetime.datetime(dt.year, dt.month, dt.day, 0, 0, 0, 0)
 
 
 def intersect_lists(lists: List[List[datetime.datetime]]) -> Set[datetime.datetime]:
@@ -154,6 +154,39 @@ def parse_file(path: str) -> List[Data]:
 
 
 @dataclass
+class ReportMetric:
+    binned_ts: str
+    total_events: int
+    event_bytes: int
+    total_incidents: int
+    incident_bytes: int
+
+    @staticmethod
+    def from_line(line: str) -> 'ReportMetric':
+        split_line: List[str] = line.split(" ")
+        binned_ts: str = split_line[0]
+        typed_line: List[int] = list(map(int, split_line[1:]))
+        return ReportMetric(binned_ts, *typed_line)
+
+    def dt(self) -> datetime.datetime:
+        split_date: List[str] = self.binned_ts.split("-")
+        year: int = int(split_date[0])
+        month: int = int(split_date[1])
+        day: int = int(split_date[2])
+        return datetime.datetime(year, month, day, 0, 0, 0)
+
+    def ts(self) -> int:
+        return int(self.dt().timestamp())
+
+
+def parse_report_metrics(path: str) -> List[ReportMetric]:
+    with open(path, "r") as fin:
+        lines: List[str] = fin.readlines()
+        filtered_lines: List[str] = list(map(str.strip, lines))
+        return list(map(ReportMetric.from_line, filtered_lines))
+
+
+@dataclass
 class DailyMetric:
     binned_ts: str
     total_80hz_packets: int
@@ -193,7 +226,7 @@ class DailyMetric:
         year: int = int(split_date[0])
         month: int = int(split_date[1])
         day: int = int(split_date[2])
-        return datetime.datetime(year, month, day, 0, 0, 0, tzinfo=datetime.timezone.utc)
+        return datetime.datetime(year, month, day, 0, 0, 0)
 
     def ts(self) -> int:
         return int(self.dt().timestamp())
@@ -210,11 +243,11 @@ def plot_active_sensors(daily_metrics: List[DailyMetric]):
     # Data
     dts: np.ndarray = np.array(list(map(DailyMetric.dt, daily_metrics)))
     total_devices_80hz: np.ndarray = np.array(
-            list(map(lambda daily_metric: daily_metric.total_devices_80hz, daily_metrics)))
+        list(map(lambda daily_metric: daily_metric.total_devices_80hz, daily_metrics)))
     total_devices_800hz: np.ndarray = np.array(
-            list(map(lambda daily_metric: daily_metric.total_devices_800hz, daily_metrics)))
+        list(map(lambda daily_metric: daily_metric.total_devices_800hz, daily_metrics)))
     total_devices_8000hz: np.ndarray = np.array(
-            list(map(lambda daily_metric: daily_metric.total_devices_8000hz, daily_metrics)))
+        list(map(lambda daily_metric: daily_metric.total_devices_8000hz, daily_metrics)))
     total_devices: np.ndarray = np.array(list(map(lambda daily_metric: daily_metric.total_devices, daily_metrics)))
 
     # Plot
@@ -262,19 +295,30 @@ def plot_iml(daily_metrics: List[DailyMetric]):
     dts: np.ndarray = np.array(list(map(DailyMetric.dt, daily_metrics)))
 
     total_data_bytes_80hz: np.ndarray = np.array(
-            list(map(lambda daily_metric: daily_metric.total_data_bytes_80hz, daily_metrics)))
+        list(map(lambda daily_metric: daily_metric.total_data_bytes_80hz, daily_metrics)))
     total_data_gb_80hz = total_data_bytes_80hz / 1_000_000_000.0
 
     total_data_bytes_800hz: np.ndarray = np.array(
-            list(map(lambda daily_metric: daily_metric.total_data_bytes_800hz, daily_metrics)))
+        list(map(lambda daily_metric: daily_metric.total_data_bytes_800hz, daily_metrics)))
     total_data_gb_800hz = total_data_bytes_800hz / 1_000_000_000.0
 
     total_data_bytes_8000hz: np.ndarray = np.array(
-            list(map(lambda daily_metric: daily_metric.total_data_bytes_8000hz, daily_metrics)))
+        list(map(lambda daily_metric: daily_metric.total_data_bytes_8000hz, daily_metrics)))
     total_data_gb_8000hz = total_data_bytes_8000hz / 1_000_000_000.0
 
     total_data_bytes: np.ndarray = total_data_bytes_80hz + total_data_bytes_800hz + total_data_bytes_8000hz
     total_data_gb = total_data_bytes / 1_000_000_000.0
+
+    total_samples_80: np.ndarray = np.array(
+        list(map(lambda daily_metric: daily_metric.total_80hz_packets, daily_metrics))) * 4096
+
+    total_samples_800: np.ndarray = np.array(
+        list(map(lambda daily_metric: daily_metric.total_80hz_packets, daily_metrics))) * 32768
+
+    total_samples_8000: np.ndarray = np.array(
+        list(map(lambda daily_metric: daily_metric.total_80hz_packets, daily_metrics))) * 262144
+
+    total_samples: np.ndarray = total_samples_80 + total_samples_800 + total_samples_8000
 
     xs = np.array(list(map(lambda dt: dt.timestamp(), dts[1:])))
     # xs = xs - xs[0]
@@ -299,6 +343,15 @@ def plot_iml(daily_metrics: List[DailyMetric]):
                       f"{std_err:.5f})",
                 color="black", linestyle=":")
 
+    twin_ax: plt.Axes = ax.twinx()
+    twin_ax.plot(dts[1:], sum_series(total_samples_80), label="Total Samples 80 Hz", color="blue", linestyle="--")
+    twin_ax.plot(dts[1:], sum_series(total_samples_800), label="Total Samples 800 Hz", color="green", linestyle="--")
+    twin_ax.plot(dts[1:], sum_series(total_samples_8000), label="Total Samples 8000 Hz", color="orange", linestyle="--")
+    twin_ax.plot(dts[1:], sum_series(total_samples), label="Total Samples", color="red", linestyle="--")
+
+    twin_ax.legend(loc="lower left")
+    twin_ax.set_ylabel("# Samples")
+
     ax.legend()
     ax.set_title("Lokahi IML Growth")
     ax.set_xlabel("Time (UTC)")
@@ -313,19 +366,30 @@ def plot_aml(daily_metrics: List[DailyMetric]):
     dts: np.ndarray = np.array(list(map(DailyMetric.dt, daily_metrics)))
 
     total_data_bytes_80hz: np.ndarray = np.array(
-            list(map(lambda daily_metric: daily_metric.aml_size_bytes_80hz(), daily_metrics)))
+        list(map(lambda daily_metric: daily_metric.aml_size_bytes_80hz(), daily_metrics)))
     total_data_gb_80hz = total_data_bytes_80hz / 1_000_000_000.0
 
     total_data_bytes_800hz: np.ndarray = np.array(
-            list(map(lambda daily_metric: daily_metric.aml_size_bytes_800hz(), daily_metrics)))
+        list(map(lambda daily_metric: daily_metric.aml_size_bytes_800hz(), daily_metrics)))
     total_data_gb_800hz = total_data_bytes_800hz / 1_000_000_000.0
 
     total_data_bytes_8000hz: np.ndarray = np.array(
-            list(map(lambda daily_metric: daily_metric.aml_size_bytes_8000hz(), daily_metrics)))
+        list(map(lambda daily_metric: daily_metric.aml_size_bytes_8000hz(), daily_metrics)))
     total_data_gb_8000hz = total_data_bytes_8000hz / 1_000_000_000.0
 
     total_data_bytes: np.ndarray = total_data_bytes_80hz + total_data_bytes_800hz + total_data_bytes_8000hz
     total_data_gb = total_data_bytes / 1_000_000_000.0
+
+    total_trends_80: np.ndarray = np.array(
+        list(map(lambda daily_metric: daily_metric.total_80hz_packets, daily_metrics)))
+
+    total_trends_800: np.ndarray = np.array(
+        list(map(lambda daily_metric: daily_metric.total_800hz_packets, daily_metrics)))
+
+    total_trends_8000: np.ndarray = np.array(
+        list(map(lambda daily_metric: daily_metric.total_8000hz_packets, daily_metrics)))
+
+    total_trends: np.ndarray = total_trends_80 + total_trends_800 + total_trends_8000
 
     xs = np.array(list(map(lambda dt: dt.timestamp(), dts[1:])))
     # xs = xs - xs[0]
@@ -355,8 +419,100 @@ def plot_aml(daily_metrics: List[DailyMetric]):
     ax.set_xlabel("Time (UTC)")
     ax.set_ylabel("Size GB")
 
+    twin_ax: plt.Axes = ax.twinx()
+    twin_ax.plot(dts[1:], sum_series(total_trends_80), label="Total Trends 80 Hz", color="blue", linestyle="--")
+    twin_ax.plot(dts[1:], sum_series(total_trends_800), label="Total Trends 800 Hz", color="green", linestyle="--")
+    twin_ax.plot(dts[1:], sum_series(total_trends_8000), label="Total Trends 8000 Hz", color="orange", linestyle="--")
+    twin_ax.plot(dts[1:], sum_series(total_trends), label="Total Trends", color="red", linestyle="--")
+
+    twin_ax.legend(loc="lower left")
+    twin_ax.set_ylabel("# Trends")
+
     fig.show()
     fig.savefig("/home/opq/Documents/anthony/dissertation/src/figures/lokahi_actual_aml.png")
+
+
+def plot_dl(report_metrics: List[ReportMetric]):
+    # Data
+    dts: np.ndarray = np.array(list(map(ReportMetric.dt, report_metrics)))
+    total_events: np.ndarray = np.array(list(map(lambda report_metric: report_metric.total_events, report_metrics)))
+    event_bytes: np.ndarray = np.array(list(map(lambda report_metric: report_metric.event_bytes, report_metrics)))
+
+    sum_dts: np.ndarray = dts[1:]
+    sum_total_events: np.ndarray = sum_series(total_events)
+    sum_event_bytes: np.ndarray = sum_series(event_bytes)
+    sum_event_gb: np.ndarray = sum_event_bytes / 1_000_000_000.0
+
+    xs = np.array(list(map(lambda dt: dt.timestamp(), dts[1:])))
+    xs = xs - xs[0]
+    slope, intercept, r_value, p_value, std_err = stats.linregress(xs, sum_event_gb)
+    print("dl", slope_intercept(slope, intercept))
+
+    # Plot
+    fig, ax = plt.subplots(1, 1, figsize=(16, 9), sharex="all")
+    fig: plt.Figure = fig
+    ax: plt.Axes = ax
+
+    ax.plot(sum_dts, sum_event_gb, label="DL Size")
+
+    ax.errorbar(dts[1:], intercept + slope * xs, yerr=std_err,
+                label=f"AML Total GB LR ($m$={slope:.5f} $b$={intercept:.5f} $R^2$={r_value ** 2:.5f} $\s"
+                      f"igma$={std_err:.5f})",
+                color="black", linestyle=":")
+
+    ax.legend(loc="upper left")
+    ax.set_ylabel("Size GB")
+    ax.set_xlabel("Time (UTC)")
+    ax.set_title("Lokahi DL Data Growth")
+
+    twin_ax: plt.Axes = ax.twinx()
+    twin_ax.plot(sum_dts, sum_total_events, label="# Events", linestyle="--")
+    twin_ax.legend(loc="lower left")
+    twin_ax.set_ylabel("# Events")
+
+    # fig.show()
+    fig.savefig("/home/opq/Documents/anthony/dissertation/src/figures/lokahi_actual_dl.png")
+
+
+def plot_il(report_metrics: List[ReportMetric]):
+    # Data
+    dts: np.ndarray = np.array(list(map(ReportMetric.dt, report_metrics)))
+    total_events: np.ndarray = np.array(list(map(lambda report_metric: report_metric.total_incidents, report_metrics)))
+    event_bytes: np.ndarray = np.array(list(map(lambda report_metric: report_metric.incident_bytes, report_metrics)))
+
+    sum_dts: np.ndarray = dts[1:]
+    sum_total_events: np.ndarray = sum_series(total_events)
+    sum_event_bytes: np.ndarray = sum_series(event_bytes)
+    sum_event_gb: np.ndarray = sum_event_bytes / 1_000_000_000.0
+
+    xs = np.array(list(map(lambda dt: dt.timestamp(), dts[1:])))
+    xs = xs - xs[0]
+    slope, intercept, r_value, p_value, std_err = stats.linregress(xs, sum_event_gb)
+    print("il", slope_intercept(slope, intercept))
+
+    # Plot
+    fig, ax = plt.subplots(1, 1, figsize=(16, 9), sharex="all")
+    fig: plt.Figure = fig
+    ax: plt.Axes = ax
+
+    ax.plot(sum_dts, sum_event_gb, label="IL Size")
+    ax.errorbar(dts[1:], intercept + slope * xs, yerr=std_err,
+                label=f"AML Total GB LR ($m$={slope:.5f} $b$={intercept:.5f} $R^2$={r_value ** 2:.5f} $\s"
+                      f"igma$={std_err:.5f})",
+                color="black", linestyle=":")
+
+    ax.legend(loc="upper left")
+    ax.set_ylabel("Size GB")
+    ax.set_xlabel("Time (UTC)")
+    ax.set_title("Lokahi IL Data Growth")
+
+    twin_ax: plt.Axes = ax.twinx()
+    twin_ax.plot(sum_dts, sum_total_events, label="# Incidents", linestyle="--")
+    twin_ax.legend(loc="lower left")
+    twin_ax.set_ylabel("# Incidents")
+
+    # fig.show()
+    fig.savefig("/home/opq/Documents/anthony/dissertation/src/figures/lokahi_actual_il.png")
 
 
 def plot_iml_vs_est(daily_metrics: List[DailyMetric]):
@@ -366,13 +522,13 @@ def plot_iml_vs_est(daily_metrics: List[DailyMetric]):
     tss = tss - tss[0]
 
     total_data_bytes_80hz: np.ndarray = np.array(
-            list(map(lambda daily_metric: daily_metric.total_data_bytes_80hz, daily_metrics)))
+        list(map(lambda daily_metric: daily_metric.total_data_bytes_80hz, daily_metrics)))
 
     total_data_bytes_800hz: np.ndarray = np.array(
-            list(map(lambda daily_metric: daily_metric.total_data_bytes_800hz, daily_metrics)))
+        list(map(lambda daily_metric: daily_metric.total_data_bytes_800hz, daily_metrics)))
 
     total_data_bytes_8000hz: np.ndarray = np.array(
-            list(map(lambda daily_metric: daily_metric.total_data_bytes_8000hz, daily_metrics)))
+        list(map(lambda daily_metric: daily_metric.total_data_bytes_8000hz, daily_metrics)))
 
     total_data_bytes: np.ndarray = total_data_bytes_80hz + total_data_bytes_800hz + total_data_bytes_8000hz
     total_data_gb = sum_series(total_data_bytes / 1_000_000_000.0)
@@ -428,13 +584,13 @@ def plot_iml_vs_sim(dts: np.ndarray,
     # Data
 
     total_data_bytes_80hz: np.ndarray = np.array(
-            list(map(lambda daily_metric: daily_metric.total_data_bytes_80hz, aligned_daily_metrics)))
+        list(map(lambda daily_metric: daily_metric.total_data_bytes_80hz, aligned_daily_metrics)))
 
     total_data_bytes_800hz: np.ndarray = np.array(
-            list(map(lambda daily_metric: daily_metric.total_data_bytes_800hz, aligned_daily_metrics)))
+        list(map(lambda daily_metric: daily_metric.total_data_bytes_800hz, aligned_daily_metrics)))
 
     total_data_bytes_8000hz: np.ndarray = np.array(
-            list(map(lambda daily_metric: daily_metric.total_data_bytes_8000hz, aligned_daily_metrics)))
+        list(map(lambda daily_metric: daily_metric.total_data_bytes_8000hz, aligned_daily_metrics)))
 
     total_data_bytes: np.ndarray = total_data_bytes_80hz + total_data_bytes_800hz + total_data_bytes_8000hz
     total_data_gb = sum_series(total_data_bytes / 1_000_000_000.0)
@@ -462,7 +618,6 @@ def plot_iml_vs_sim(dts: np.ndarray,
     sim_ax.set_title("Simulated IML")
     sim_ax.set_ylabel("Size GB")
 
-
     actual_ax = ax[1]
     actual_ax.plot(dts[1:], total_data_gb, label="Actual IML Size")
 
@@ -482,9 +637,6 @@ def plot_iml_vs_sim(dts: np.ndarray,
     diff_ax.set_xlabel("Time (UTC)")
     diff_ax.set_ylabel("Size GB")
 
-
-
-
     fig.savefig("/home/opq/Documents/anthony/dissertation/src/figures/lokahi_actual_iml_vs_sim.png")
 
 
@@ -495,13 +647,13 @@ def plot_aml_vs_est(daily_metrics: List[DailyMetric]):
     tss = tss - tss[0]
 
     total_data_bytes_80hz: np.ndarray = np.array(
-            list(map(lambda daily_metric: daily_metric.aml_size_bytes_80hz(), daily_metrics)))
+        list(map(lambda daily_metric: daily_metric.aml_size_bytes_80hz(), daily_metrics)))
 
     total_data_bytes_800hz: np.ndarray = np.array(
-            list(map(lambda daily_metric: daily_metric.aml_size_bytes_800hz(), daily_metrics)))
+        list(map(lambda daily_metric: daily_metric.aml_size_bytes_800hz(), daily_metrics)))
 
     total_data_bytes_8000hz: np.ndarray = np.array(
-            list(map(lambda daily_metric: daily_metric.aml_size_bytes_8000hz(), daily_metrics)))
+        list(map(lambda daily_metric: daily_metric.aml_size_bytes_8000hz(), daily_metrics)))
 
     total_data_bytes: np.ndarray = total_data_bytes_80hz + total_data_bytes_800hz + total_data_bytes_8000hz
     total_data_gb = total_data_bytes / 1_000_000_000.0
@@ -548,6 +700,7 @@ def plot_aml_vs_est(daily_metrics: List[DailyMetric]):
     # fig.show()
     fig.savefig("/home/opq/Documents/anthony/dissertation/src/figures/lokahi_actual_aml_vs_est.png")
 
+
 def plot_aml_vs_sim(dts: np.ndarray,
                     aligned_daily_metrics: np.ndarray,
                     aligned_sim_80: np.ndarray,
@@ -556,13 +709,13 @@ def plot_aml_vs_sim(dts: np.ndarray,
     # Data
 
     total_data_bytes_80hz: np.ndarray = np.array(
-            list(map(lambda daily_metric: daily_metric.aml_size_bytes_80hz(), aligned_daily_metrics)))
+        list(map(lambda daily_metric: daily_metric.aml_size_bytes_80hz(), aligned_daily_metrics)))
 
     total_data_bytes_800hz: np.ndarray = np.array(
-            list(map(lambda daily_metric: daily_metric.aml_size_bytes_800hz(), aligned_daily_metrics)))
+        list(map(lambda daily_metric: daily_metric.aml_size_bytes_800hz(), aligned_daily_metrics)))
 
     total_data_bytes_8000hz: np.ndarray = np.array(
-            list(map(lambda daily_metric: daily_metric.aml_size_bytes_8000hz(), aligned_daily_metrics)))
+        list(map(lambda daily_metric: daily_metric.aml_size_bytes_8000hz(), aligned_daily_metrics)))
 
     total_data_bytes: np.ndarray = total_data_bytes_80hz + total_data_bytes_800hz + total_data_bytes_8000hz
     total_data_gb = sum_series(total_data_bytes / 1_000_000_000.0)
@@ -613,13 +766,252 @@ def plot_aml_vs_sim(dts: np.ndarray,
     fig.savefig("/home/opq/Documents/anthony/dissertation/src/figures/lokahi_actual_aml_vs_sim.png")
 
 
+def plot_dl_vs_est(report_metrics: List[ReportMetric]):
+    # Data
+    dts: np.ndarray = np.array(list(map(ReportMetric.dt, report_metrics)))
+    tss: np.ndarray = np.array(list(map(ReportMetric.ts, report_metrics))[1:])
+    tss = tss - tss[0]
+
+    total_events: np.ndarray = np.array(list(map(lambda report_metric: report_metric.total_events, report_metrics)))
+    event_bytes: np.ndarray = np.array(list(map(lambda report_metric: report_metric.event_bytes, report_metrics)))
+
+    sum_dts: np.ndarray = dts[1:]
+    sum_total_events: np.ndarray = sum_series(total_events)
+    sum_event_bytes: np.ndarray = sum_series(event_bytes)
+    sum_event_gb: np.ndarray = sum_event_bytes / 1_000_000_000.0
+
+    # est_data_80hz = 402.81624834955454 * 38 * tss
+    # est_data_800hz = 402.81624834955454 * 99 * tss
+    # est_data_8000hz = 402.81624834955454 * 5 * tss
+    # est_data_total = (est_data_80hz + est_data_800hz + est_data_8000hz) / 1_000_000_000.0
+    est_data_total = (402.81624834955454 * tss) / 1_000_000_000.0
+    max_y = max(sum_event_gb)
+
+    # Plot
+    fig, ax = plt.subplots(3, 1, figsize=(16, 9), sharex="all")
+    fig: plt.Figure = fig
+    ax: List[plt.Axes] = ax
+
+    fig.suptitle("Lokahi: Estimated DL vs Actual DL")
+
+    est_ax = ax[0]
+    est_ax.plot(sum_dts, est_data_total, label="Estimated DL Size")
+
+    est_ax.set_ylim(ymax=max_y)
+    est_ax.set_title("Estimated DL")
+    est_ax.set_ylabel("Size GB")
+    est_ax.legend()
+
+    actual_ax = ax[1]
+    actual_ax.plot(sum_dts, sum_event_gb, label="Actual DL Size")
+
+    actual_ax.set_ylim(ymax=max_y)
+    actual_ax.set_title("Actual DL")
+    actual_ax.set_ylabel("Size GB")
+    actual_ax.legend()
+
+    diff_ax = ax[2]
+    diff_ax.plot(sum_dts, est_data_total - sum_event_gb, label="Difference")
+
+    diff_ax.set_ylim(ymax=max_y)
+    diff_ax.set_title("Difference (Estimated - Actual)")
+    diff_ax.set_xlabel("Time (UTC)")
+    diff_ax.set_ylabel("Size GB")
+    diff_ax.legend()
+
+    # fig.show()
+    fig.savefig("/home/opq/Documents/anthony/dissertation/src/figures/lokahi_actual_dl_vs_est.png")
+
+
+def plot_il_vs_est(report_metrics: List[ReportMetric]):
+    # Data
+    dts: np.ndarray = np.array(list(map(ReportMetric.dt, report_metrics)))
+    tss: np.ndarray = np.array(list(map(ReportMetric.ts, report_metrics))[1:])
+    tss = tss - tss[0]
+
+    total_incidents: np.ndarray = np.array(
+        list(map(lambda report_metric: report_metric.total_incidents, report_metrics)))
+    incident_bytes: np.ndarray = np.array(list(map(lambda report_metric: report_metric.incident_bytes, report_metrics)))
+
+    sum_dts: np.ndarray = dts[1:]
+    sum_total_incidents: np.ndarray = sum_series(total_incidents)
+    sum_incident_bytes: np.ndarray = sum_series(incident_bytes)
+    sum_incident_gb: np.ndarray = sum_incident_bytes / 1_000_000_000.0
+
+    est_data_total = (37.11652361890925 * tss) / 1_000_000_000.0
+    max_y = max(est_data_total)
+
+    # Plot
+    fig, ax = plt.subplots(3, 1, figsize=(16, 9), sharex="all")
+    fig: plt.Figure = fig
+    ax: List[plt.Axes] = ax
+
+    fig.suptitle("Lokahi: Estimated IL vs Actual IL")
+
+    est_ax = ax[0]
+    est_ax.plot(sum_dts, est_data_total, label="Estimated IL Size")
+
+    est_ax.set_ylim(ymax=max_y)
+    est_ax.set_title("Estimated IL")
+    est_ax.set_ylabel("Size GB")
+    est_ax.legend()
+
+    actual_ax = ax[1]
+    actual_ax.plot(sum_dts, sum_incident_gb, label="Actual IL Size")
+
+    actual_ax.set_ylim(ymax=max_y)
+    actual_ax.set_title("Actual IL")
+    actual_ax.set_ylabel("Size GB")
+    actual_ax.legend()
+
+    diff_ax = ax[2]
+    diff_ax.plot(sum_dts, est_data_total - sum_incident_gb, label="Difference")
+
+    diff_ax.set_ylim(ymax=max_y)
+    diff_ax.set_title("Difference (Estimated - Actual)")
+    diff_ax.set_xlabel("Time (UTC)")
+    diff_ax.set_ylabel("Size GB")
+    diff_ax.legend()
+
+    # fig.show()
+    fig.savefig("/home/opq/Documents/anthony/dissertation/src/figures/lokahi_actual_il_vs_est.png")
+
+
+def plot_dl_vs_sim(dts: np.ndarray,
+                    aligned_daily_metrics: np.ndarray,
+                    aligned_sim_80: np.ndarray,
+                    aligned_sim_800: np.ndarray,
+                    aligned_sim_8000: np.ndarray):
+    # Data
+    total_events: np.ndarray = np.array(list(map(lambda report_metric: report_metric.total_events, aligned_daily_metrics)))
+    event_bytes: np.ndarray = np.array(list(map(lambda report_metric: report_metric.event_bytes, aligned_daily_metrics)))
+
+    sum_dts: np.ndarray = dts[1:]
+    sum_total_events: np.ndarray = sum_series(total_events)
+    sum_event_bytes: np.ndarray = sum_series(event_bytes)
+    sum_event_gb: np.ndarray = sum_event_bytes / 1_000_000_000.0
+
+    # Sim data
+    # sim_80_bytes = np.array(list(map(lambda data: data.total_dl_b, aligned_sim_80))) * 38
+    sim_80_bytes = np.array(list(map(lambda data: data.total_dl_b, aligned_sim_80)))
+    sim_800_bytes = np.array(list(map(lambda data: data.total_dl_b, aligned_sim_800))) * 99
+    sim_8000_bytes = np.array(list(map(lambda data: data.total_dl_b, aligned_sim_8000))) * 5
+    # sim_total_bytes = sim_80_bytes + sim_800_bytes + sim_8000_bytes
+    sim_total_bytes = sim_80_bytes
+    sim_total_gb = sim_total_bytes / 1_000_000_000.0
+
+    # Plot
+    fig, ax = plt.subplots(3, 1, figsize=(16, 9), sharex="all")
+    fig: plt.Figure = fig
+    ax: List[plt.Axes] = ax
+
+    fig.suptitle("Lokahi: Simulated DL vs Actual DL")
+
+    sim_ax = ax[0]
+    sim_ax.plot(dts, sim_total_gb, label="Simulated DL Size")
+
+    # sim_ax.set_yscale("log")
+    sim_ax.set_ylim(ymax=max(sum_event_gb))
+    sim_ax.legend()
+    sim_ax.set_title("Simulated DL")
+    sim_ax.set_ylabel("Size GB")
+
+    actual_ax = ax[1]
+    actual_ax.plot(dts[1:], sum_event_gb, label="Actual DL Size")
+
+    # actual_ax.set_yscale("log")
+    actual_ax.set_ylim(ymax=max(sum_event_gb))
+    actual_ax.legend()
+    actual_ax.set_title("Actual DL")
+    actual_ax.set_ylabel("Size GB")
+
+    diff_ax = ax[2]
+    diff_ax.plot(dts[1:], sim_total_gb[1:] - sum_event_gb, label="Difference")
+
+    diff_ax.legend()
+    # diff_ax.set_yscale("log")
+    # diff_ax.set_ylim(ymax=max(total_data_gb))
+    diff_ax.set_title("Difference (Simulated - Actual)")
+    diff_ax.set_xlabel("Time (UTC)")
+    diff_ax.set_ylabel("Size GB")
+
+    # fig.show()
+    fig.savefig("/home/opq/Documents/anthony/dissertation/src/figures/lokahi_actual_dl_vs_sim.png")
+
+
+def plot_il_vs_sim(dts: np.ndarray,
+                   aligned_daily_metrics: np.ndarray,
+                   aligned_sim_80: np.ndarray,
+                   aligned_sim_800: np.ndarray,
+                   aligned_sim_8000: np.ndarray):
+    # Data
+    total_incidents: np.ndarray = np.array(list(map(lambda report_metric: report_metric.total_incidents, aligned_daily_metrics)))
+    incident_bytes: np.ndarray = np.array(list(map(lambda report_metric: report_metric.incident_bytes, aligned_daily_metrics)))
+
+    sum_dts: np.ndarray = dts[1:]
+    sum_total_events: np.ndarray = sum_series(total_incidents)
+    sum_event_bytes: np.ndarray = sum_series(incident_bytes)
+    sum_event_gb: np.ndarray = sum_event_bytes / 1_000_000_000.0
+
+    # Sim data
+    # sim_80_bytes = np.array(list(map(lambda data: data.total_dl_b, aligned_sim_80))) * 38
+    sim_80_bytes = np.array(list(map(lambda data: data.total_il_b, aligned_sim_80)))
+    sim_800_bytes = np.array(list(map(lambda data: data.total_dl_b, aligned_sim_800))) * 99
+    sim_8000_bytes = np.array(list(map(lambda data: data.total_dl_b, aligned_sim_8000))) * 5
+    # sim_total_bytes = sim_80_bytes + sim_800_bytes + sim_8000_bytes
+    sim_total_bytes = sim_80_bytes
+    sim_total_gb = sim_total_bytes / 1_000_000_000.0
+
+    # Plot
+    fig, ax = plt.subplots(3, 1, figsize=(16, 9), sharex="all")
+    fig: plt.Figure = fig
+    ax: List[plt.Axes] = ax
+
+    fig.suptitle("Lokahi: Simulated IL vs Actual IL")
+
+    sim_ax = ax[0]
+    sim_ax.plot(dts, sim_total_gb, label="Simulated IL Size")
+
+    # sim_ax.set_yscale("log")
+    sim_ax.set_ylim(ymax=max(sum_event_gb))
+    sim_ax.legend()
+    sim_ax.set_title("Simulated IL")
+    sim_ax.set_ylabel("Size GB")
+
+    actual_ax = ax[1]
+    actual_ax.plot(dts[1:], sum_event_gb, label="Actual IL Size")
+
+    # actual_ax.set_yscale("log")
+    actual_ax.set_ylim(ymax=max(sum_event_gb))
+    actual_ax.legend()
+    actual_ax.set_title("Actual IL")
+    actual_ax.set_ylabel("Size GB")
+
+    diff_ax = ax[2]
+    diff_ax.plot(dts[1:], sim_total_gb[1:] - sum_event_gb, label="Difference")
+
+    diff_ax.legend()
+    # diff_ax.set_yscale("log")
+    # diff_ax.set_ylim(ymax=max(total_data_gb))
+    diff_ax.set_title("Difference (Simulated - Actual)")
+    diff_ax.set_xlabel("Time (UTC)")
+    diff_ax.set_ylabel("Size GB")
+
+    # fig.show()
+    fig.savefig("/home/opq/Documents/anthony/dissertation/src/figures/lokahi_actual_il_vs_sim.png")
+
+
+
 def main():
     daily_metrics: List[DailyMetric] = load_daily_metrics("metrics.txt")
     sim_data_80: List[Data] = parse_file("sim_data_80.txt")
     sim_data_800: List[Data] = parse_file("sim_data_800.txt")
     sim_data_8000: List[Data] = parse_file("sim_data_8000.txt")
+    report_metrics: List[ReportMetric] = sorted(parse_report_metrics("dl_il_metrics.txt"),
+                                                key=lambda report_metric: report_metric.dt())
 
     first_metric_timestamp: int = daily_metrics[0].ts()
+    first_report_timestamp: int = report_metrics[0].ts()
 
     series_specs: List[SeriesSpec] = [
         SeriesSpec(daily_metrics,
@@ -648,10 +1040,39 @@ def main():
     aligned_sim_800: np.ndarray = aligned_sim_800_data[1]
     aligned_sim_8000: np.ndarray = aligned_sim_8000_data[1]
 
+    series_specs_reports: List[SeriesSpec] = [
+        SeriesSpec(report_metrics,
+                   lambda report_metric: report_metric.dt(),
+                   lambda report_metric: report_metric),
+        SeriesSpec(sim_data_80,
+                   lambda data: datetime.datetime.utcfromtimestamp(data.time + first_report_timestamp),
+                   lambda data: data),
+        SeriesSpec(sim_data_800,
+                   lambda data: datetime.datetime.utcfromtimestamp(data.time + first_report_timestamp),
+                   lambda data: data),
+        SeriesSpec(sim_data_8000,
+                   lambda data: datetime.datetime.utcfromtimestamp(data.time + first_report_timestamp),
+                   lambda data: data),
+    ]
+
+    aligned_data_reports: List[Tuple[np.ndarray, np.ndarray]] = align_data_multi(series_specs_reports)
+    aligned_metric_data_reports: Tuple[np.ndarray, np.ndarray] = aligned_data_reports[0]
+    aligned_sim_80_data_reports: Tuple[np.ndarray, np.ndarray] = aligned_data_reports[1]
+    aligned_sim_800_data_reports: Tuple[np.ndarray, np.ndarray] = aligned_data_reports[2]
+    aligned_sim_8000_data_reports: Tuple[np.ndarray, np.ndarray] = aligned_data_reports[3]
+
+    aligned_dts_reports: np.ndarray = aligned_metric_data_reports[0]
+    aligned_daily_metrics_reports: np.ndarray = aligned_metric_data_reports[1]
+    aligned_sim_80_reports: np.ndarray = aligned_sim_80_data_reports[1]
+    aligned_sim_800_reports: np.ndarray = aligned_sim_800_data_reports[1]
+    aligned_sim_8000_reports: np.ndarray = aligned_sim_8000_data_reports[1]
+
+
+    # print(report_metrics)
 
     # plot_active_sensors(daily_metrics)
-    plot_iml(daily_metrics)
-    plot_aml(daily_metrics)
+    # plot_iml(daily_metrics)
+    # plot_aml(daily_metrics)
 
     # plot_iml_vs_est(daily_metrics)
 
@@ -668,6 +1089,26 @@ def main():
     #                 aligned_sim_80,
     #                 aligned_sim_800,
     #                 aligned_sim_8000)
+
+    # plot_dl(report_metrics)
+    # plot_il(report_metrics)
+
+    # plot_dl_vs_est(report_metrics)
+    # plot_il_vs_est(report_metrics)
+
+    plot_dl_vs_sim(aligned_dts_reports,
+                   aligned_daily_metrics_reports,
+                   aligned_sim_80_reports,
+                   aligned_sim_800_reports,
+                   aligned_sim_8000_reports)
+
+    plot_il_vs_sim(aligned_dts_reports,
+                   aligned_daily_metrics_reports,
+                   aligned_sim_80_reports,
+                   aligned_sim_800_reports,
+                   aligned_sim_8000_reports)
+
+
 
 if __name__ == "__main__":
     main()
