@@ -1090,7 +1090,7 @@ def plot_laha(dts: np.ndarray,
     ax.plot(dts, sum_incident_gb, label="IL")
     ax.plot(dts, total_gb, label="Total")
 
-    # ax.set_yscale("log")
+    ax.set_yscale("log")
     ax.set_title("Lokahi: Laha Data Growth")
     ax.set_ylabel("Size GB")
     ax.set_xlabel("Time (UTC)")
@@ -1173,6 +1173,8 @@ def plot_laha_vs_est(dts: np.ndarray,
 
     est_total = est_data_total_iml + est_data_total_aml + est_data_total_dl + est_data_total_il
 
+    max_y = max(est_total)
+
     # Plot
     fig, ax = plt.subplots(3, 1, figsize=(16, 9), sharex="all")
     fig: plt.Figure = fig
@@ -1183,7 +1185,7 @@ def plot_laha_vs_est(dts: np.ndarray,
     est_ax = ax[0]
     est_ax.plot(dts[1:], est_total, label="Estimated Laha Size")
 
-    # est_ax.set_ylim(ymax=max_y)
+    est_ax.set_ylim(ymax=max_y)
     est_ax.set_title("Estimated Laha")
     est_ax.set_ylabel("Size GB")
     est_ax.legend()
@@ -1191,13 +1193,132 @@ def plot_laha_vs_est(dts: np.ndarray,
     actual_ax = ax[1]
     actual_ax.plot(dts, total_gb, label="Actual Laha Size")
 
-    # actual_ax.set_ylim(ymax=max_y)
+    actual_ax.set_ylim(ymax=max_y)
     actual_ax.set_title("Actual Laha")
     actual_ax.set_ylabel("Size GB")
     actual_ax.legend()
 
     diff_ax = ax[2]
     diff_ax.plot(dts[1:], est_total - total_gb[1:], label="Difference")
+
+    diff_ax.set_ylim(ymax=max_y)
+    diff_ax.set_title("Difference (Estimated - Actual)")
+    diff_ax.set_xlabel("Time (UTC)")
+    diff_ax.set_ylabel("Size GB")
+    diff_ax.legend()
+
+    # fig.show()
+    fig.savefig("/home/opq/Documents/anthony/dissertation/src/figures/lokahi_actual_laha_vs_est.png")
+
+
+def plot_laha_vs_sim(dts: np.ndarray,
+                     daily_metrics: np.ndarray,
+                     report_metrics: np.ndarray,
+                     aligned_sim_80: np.ndarray,
+                     aligned_sim_800: np.ndarray,
+                     aligned_sim_8000: np.ndarray,):
+    # Data
+    # sum_dts: np.ndarray = dts[1:]
+    # IML
+    total_data_bytes_80hz_iml: np.ndarray = np.array(
+        list(map(lambda daily_metric: daily_metric.total_data_bytes_80hz, daily_metrics)))
+
+    total_data_bytes_800hz_iml: np.ndarray = np.array(
+        list(map(lambda daily_metric: daily_metric.total_data_bytes_800hz, daily_metrics)))
+
+    total_data_bytes_8000hz_iml: np.ndarray = np.array(
+        list(map(lambda daily_metric: daily_metric.total_data_bytes_8000hz, daily_metrics)))
+
+    total_data_bytes_iml: np.ndarray = total_data_bytes_80hz_iml + total_data_bytes_800hz_iml + total_data_bytes_8000hz_iml
+    total_data_gb_iml = total_data_bytes_iml / 1_000_000_000.0
+
+    sum_total_data_gb_iml = total_data_gb_iml
+    print(sum_total_data_gb_iml[-1])
+
+    # AML
+    total_data_bytes_80hz_aml: np.ndarray = np.array(
+        list(map(lambda daily_metric: daily_metric.aml_size_bytes_80hz(), daily_metrics)))
+
+    total_data_bytes_800hz_aml: np.ndarray = np.array(
+        list(map(lambda daily_metric: daily_metric.aml_size_bytes_800hz(), daily_metrics)))
+
+    total_data_bytes_8000hz_aml: np.ndarray = np.array(
+        list(map(lambda daily_metric: daily_metric.aml_size_bytes_8000hz(), daily_metrics)))
+
+    total_data_bytes_aml: np.ndarray = total_data_bytes_80hz_aml + total_data_bytes_800hz_aml + total_data_bytes_8000hz_aml
+    total_data_gb_aml = total_data_bytes_aml / 1_000_000_000.0
+
+    sum_total_data_gb_aml = total_data_gb_aml
+
+    # DL
+    event_bytes: np.ndarray = np.array(list(map(lambda report_metric: report_metric.event_bytes, report_metrics)))
+    sum_event_bytes: np.ndarray = event_bytes
+    sum_event_gb: np.ndarray = sum_event_bytes / 1_000_000_000.0
+
+    # IL
+    incident_bytes: np.ndarray = np.array(list(map(lambda report_metric: report_metric.incident_bytes, report_metrics)))
+    sum_incident_bytes: np.ndarray = incident_bytes
+    sum_incident_gb: np.ndarray = sum_incident_bytes / 1_000_000_000.0
+
+    # Total
+    total_gb = sum_total_data_gb_iml + sum_total_data_gb_aml + sum_event_gb + sum_incident_gb
+
+    # Sim Data
+    # Sim IML
+    sim_80_bytes_iml = np.array(list(map(lambda data: data.total_samples * 4, aligned_sim_80))) * 38
+    sim_800_bytes_iml = np.array(list(map(lambda data: data.total_samples * 4, aligned_sim_800))) * 99
+    sim_8000_bytes_iml = np.array(list(map(lambda data: data.total_samples * 4, aligned_sim_8000))) * 5
+    sim_total_bytes_iml = sim_80_bytes_iml + sim_800_bytes_iml + sim_8000_bytes_iml
+    sim_total_gb_iml = sim_total_bytes_iml / 1_000_000_000.0
+
+    # Sim AML
+    sim_80_bytes_aml = np.array(list(map(lambda data: data.total_trends_b, aligned_sim_80))) * 38
+    sim_800_bytes_aml = np.array(list(map(lambda data: data.total_trends_b, aligned_sim_800))) * 99
+    sim_8000_bytes_aml = np.array(list(map(lambda data: data.total_trends_b, aligned_sim_8000))) * 5
+    sim_total_bytes_aml = sim_80_bytes_aml + sim_800_bytes_aml + sim_8000_bytes_aml
+    sim_total_gb_aml = sim_total_bytes_aml / 1_000_000_000.0
+
+    # Sim DL
+    sim_80_bytes_dl = np.array(list(map(lambda data: data.total_dl_b, aligned_sim_80)))
+    sim_total_bytes_dl = sim_80_bytes_dl
+    sim_total_gb_dl = sim_total_bytes_dl / 1_000_000_000.0
+
+    # Sim IL
+    sim_80_bytes_il = np.array(list(map(lambda data: data.total_il_b, aligned_sim_80)))
+    sim_total_bytes_il = sim_80_bytes_il
+    sim_total_gb_il = sim_total_bytes_il / 1_000_000_000.0
+
+    sim_total_gb = sim_total_gb_iml + sim_total_gb_aml + sim_total_gb_dl + sim_total_gb_il
+
+    max_y = max(total_gb)
+
+    # Plot
+    fig, ax = plt.subplots(3, 1, figsize=(16, 9), sharex="all")
+    fig: plt.Figure = fig
+    ax: List[plt.Axes] = ax
+
+    fig.suptitle("Lokahi: Simulated Laha vs Actual Laha")
+
+    est_ax = ax[0]
+    est_ax.plot(dts, sim_total_gb, label="Simulated Laha Size")
+
+    est_ax.set_yscale("log")
+    est_ax.set_ylim(ymax=max_y)
+    est_ax.set_title("Estimated Laha")
+    est_ax.set_ylabel("Size GB")
+    est_ax.legend()
+
+    actual_ax = ax[1]
+    actual_ax.plot(dts, total_gb, label="Actual Laha Size")
+
+    actual_ax.set_yscale("log")
+    actual_ax.set_ylim(ymax=max_y)
+    actual_ax.set_title("Actual Laha")
+    actual_ax.set_ylabel("Size GB")
+    actual_ax.legend()
+
+    diff_ax = ax[2]
+    diff_ax.plot(dts, sim_total_gb - total_gb, label="Difference")
 
     # diff_ax.set_ylim(ymax=max_y)
     diff_ax.set_title("Difference (Estimated - Actual)")
@@ -1206,7 +1327,7 @@ def plot_laha_vs_est(dts: np.ndarray,
     diff_ax.legend()
 
     # fig.show()
-    fig.savefig("/home/opq/Documents/anthony/dissertation/src/figures/lokahi_actual_laha_vs_est.png")
+    fig.savefig("/home/opq/Documents/anthony/dissertation/src/figures/lokahi_actual_laha_vs_sim.png")
 
 
 def reduce_fn(accumulator: List, value) -> List:
@@ -1382,10 +1503,17 @@ def main():
     plot_laha(aligned_laha_dts,
               aligned_laha_daily_metrics,
               aligned_laha_report_metrics)
+    #
+    # plot_laha_vs_est(aligned_all_dts,
+    #                  aligned_all_daily_metrics,
+    #                  aligned_all_report_metrics)
 
-    plot_laha_vs_est(aligned_all_dts,
-                     aligned_all_daily_metrics,
-                     aligned_all_report_metrics)
+    # plot_laha_vs_sim(aligned_all_dts,
+    #                  aligned_all_daily_metrics,
+    #                  aligned_all_report_metrics,
+    #                  aligned_all_sim_80_metrics,
+    #                  aligned_all_sim_800_metrics,
+    #                  aligned_all_sim_8000_metrics)
 
 
 if __name__ == "__main__":
