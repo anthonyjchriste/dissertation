@@ -1000,6 +1000,73 @@ def plot_il_vs_sim(dts: np.ndarray,
     # fig.show()
     fig.savefig("/home/opq/Documents/anthony/dissertation/src/figures/lokahi_actual_il_vs_sim.png")
 
+def plot_laha(dts: np.ndarray,
+              daily_metrics: np.ndarray,
+              report_metrics: np.ndarray):
+    sum_dts: np.ndarray = dts[1:]
+    # IML
+    total_data_bytes_80hz_iml: np.ndarray = np.array(
+        list(map(lambda daily_metric: daily_metric.total_data_bytes_80hz, daily_metrics)))
+
+    total_data_bytes_800hz_iml: np.ndarray = np.array(
+        list(map(lambda daily_metric: daily_metric.total_data_bytes_800hz, daily_metrics)))
+
+    total_data_bytes_8000hz_iml: np.ndarray = np.array(
+        list(map(lambda daily_metric: daily_metric.total_data_bytes_8000hz, daily_metrics)))
+
+    total_data_bytes_iml: np.ndarray = total_data_bytes_80hz_iml + total_data_bytes_800hz_iml + total_data_bytes_8000hz_iml
+    total_data_gb_iml = total_data_bytes_iml / 1_000_000_000.0
+
+    sum_total_data_gb_iml = sum_series(total_data_gb_iml)
+
+    # AML
+    total_data_bytes_80hz_aml: np.ndarray = np.array(
+        list(map(lambda daily_metric: daily_metric.aml_size_bytes_80hz(), daily_metrics)))
+
+    total_data_bytes_800hz_aml: np.ndarray = np.array(
+        list(map(lambda daily_metric: daily_metric.aml_size_bytes_800hz(), daily_metrics)))
+
+    total_data_bytes_8000hz_aml: np.ndarray = np.array(
+        list(map(lambda daily_metric: daily_metric.aml_size_bytes_8000hz(), daily_metrics)))
+
+    total_data_bytes_aml: np.ndarray = total_data_bytes_80hz_aml + total_data_bytes_800hz_aml + total_data_bytes_8000hz_aml
+    total_data_gb_aml = total_data_bytes_aml / 1_000_000_000.0
+
+    sum_total_data_gb_aml = sum_series(total_data_gb_aml)
+
+    # DL
+    event_bytes: np.ndarray = np.array(list(map(lambda report_metric: report_metric.event_bytes, report_metrics)))
+    sum_event_bytes: np.ndarray = sum_series(event_bytes)
+    sum_event_gb: np.ndarray = sum_event_bytes / 1_000_000_000.0
+
+    # IL
+    incident_bytes: np.ndarray = np.array(list(map(lambda report_metric: report_metric.incident_bytes, report_metrics)))
+    sum_incident_bytes: np.ndarray = sum_series(incident_bytes)
+    sum_incident_gb: np.ndarray = sum_incident_bytes / 1_000_000_000.0
+
+    # Total
+    total_gb = sum_total_data_gb_iml + sum_total_data_gb_aml + sum_event_gb + sum_incident_gb
+
+    # Plot
+    fig, ax = plt.subplots(1, 1, figsize=(16, 9), sharex="all")
+    fig: plt.Figure = fig
+    ax: plt.Axes = ax
+
+    ax.plot(sum_dts, sum_total_data_gb_iml, label="IML")
+    ax.plot(sum_dts, sum_total_data_gb_aml, label="AML")
+    ax.plot(sum_dts, sum_event_gb, label="DL")
+    ax.plot(sum_dts, sum_incident_gb, label="IL")
+    ax.plot(sum_dts, total_gb, label="Total")
+
+    ax.set_yscale("log")
+    ax.set_title("Lokahi: Laha Data Growth")
+    ax.set_ylabel("Size GB")
+    ax.set_xlabel("Time (UTC)")
+    ax.legend()
+
+    # fig.show()
+    fig.savefig("/home/opq/Documents/anthony/dissertation/src/figures/lokahi_actual_laha.png")
+
 
 
 def main():
@@ -1013,6 +1080,7 @@ def main():
     first_metric_timestamp: int = daily_metrics[0].ts()
     first_report_timestamp: int = report_metrics[0].ts()
 
+    # Align daily metrics and sim data
     series_specs: List[SeriesSpec] = [
         SeriesSpec(daily_metrics,
                    lambda daily_metric: daily_metric.dt(),
@@ -1040,6 +1108,7 @@ def main():
     aligned_sim_800: np.ndarray = aligned_sim_800_data[1]
     aligned_sim_8000: np.ndarray = aligned_sim_8000_data[1]
 
+    # Align report metrics and sim data
     series_specs_reports: List[SeriesSpec] = [
         SeriesSpec(report_metrics,
                    lambda report_metric: report_metric.dt(),
@@ -1066,6 +1135,24 @@ def main():
     aligned_sim_80_reports: np.ndarray = aligned_sim_80_data_reports[1]
     aligned_sim_800_reports: np.ndarray = aligned_sim_800_data_reports[1]
     aligned_sim_8000_reports: np.ndarray = aligned_sim_8000_data_reports[1]
+
+    # Align daily metrics and report metrics
+    series_specs_laha: List[SeriesSpec] = [
+        SeriesSpec(daily_metrics,
+                   lambda daily_metric: daily_metric.dt(),
+                   lambda daily_metric: daily_metric),
+        SeriesSpec(report_metrics,
+                   lambda report_metric: report_metric.dt(),
+                   lambda report_metric: report_metric),
+    ]
+
+    aligned_laha_data: List[Tuple[np.ndarray, np.ndarray]] = align_data_multi(series_specs_laha)
+    aligned_laha_daily: Tuple[np.ndarray, np.ndarray] = aligned_laha_data[0]
+    aligned_laha_report: Tuple[np.ndarray, np.ndarray] = aligned_laha_data[1]
+
+    aligned_laha_dts: np.ndarray = aligned_laha_daily[0]
+    aligned_laha_daily_metrics: np.ndarray = aligned_laha_daily[1]
+    aligned_laha_report_metrics: np.ndarray = aligned_laha_report[1]
 
 
     # print(report_metrics)
@@ -1096,17 +1183,21 @@ def main():
     # plot_dl_vs_est(report_metrics)
     # plot_il_vs_est(report_metrics)
 
-    plot_dl_vs_sim(aligned_dts_reports,
-                   aligned_daily_metrics_reports,
-                   aligned_sim_80_reports,
-                   aligned_sim_800_reports,
-                   aligned_sim_8000_reports)
+    # plot_dl_vs_sim(aligned_dts_reports,
+    #                aligned_daily_metrics_reports,
+    #                aligned_sim_80_reports,
+    #                aligned_sim_800_reports,
+    #                aligned_sim_8000_reports)
+    #
+    # plot_il_vs_sim(aligned_dts_reports,
+    #                aligned_daily_metrics_reports,
+    #                aligned_sim_80_reports,
+    #                aligned_sim_800_reports,
+    #                aligned_sim_8000_reports)
 
-    plot_il_vs_sim(aligned_dts_reports,
-                   aligned_daily_metrics_reports,
-                   aligned_sim_80_reports,
-                   aligned_sim_800_reports,
-                   aligned_sim_8000_reports)
+    plot_laha(aligned_laha_dts,
+              aligned_laha_daily_metrics,
+              aligned_laha_report_metrics)
 
 
 
