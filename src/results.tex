@@ -1531,14 +1531,36 @@ Figure~\ref{fig:lokahi_actual_iml} shows the actual data growth of the IML over 
 
 A linear regression has been fitted to the total IML growth size and is provided by Equation~\ref{eq:lokahi_iml_lr}.
 
-Next, I will examine how the actual data compares to the estimated data and the simulated data found in the Evaluation chapter.
-
 \begin{equation}
     y = 0.0002934630429487022 * x + -460888.760172118
     \label{eq:lokahi_iml_lr}
 \end{equation}
 
 Most of the IML data is made up of 800 Hz sampled data. This is unsurprising since most active sensors are sampling at 800 Hz. Over a period of two and a half months, the total IML size reaches near 2 TB.
+
+Next, I will examine how the actual data compares to the estimated data and the simulated data found in the Evaluation chapter.
+
+Figure~\ref{fig:lokahi_actual_iml_vs_est} compares the estimated IML data to the actual IML data.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/lokahi_actual_iml_vs_est.png}
+    \caption{IML Growth: Estimated vs Actual}
+    \label{fig:lokahi_actual_iml_vs_est}
+\end{figure}
+
+As can be observed, the estimated IML data ends up being close to 1 TB larger than that of the actual IML data. This is attributed to the fact that the estimated data only works with the mean number of active sensors whereas the actual data uses the actual number of active sensors.
+
+Figure~\ref{fig:lokahi_actual_iml_vs_sim} compares the simulated IML data to the actual IML data.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/lokahi_actual_iml_vs_sim.png}
+    \caption{IML Growth: Simulated vs Actual}
+    \label{fig:lokahi_actual_iml_vs_sim}
+\end{figure}
+
+Here, the simulated data shows data savings of near 2 TB. This makes sense because the simulated data utilizes TTL whereas the actual Lokahi network does not. This provides evidence that TTL within the IML provides for significant data savings.
 
 \subsubsection{DSN System Requirements Lokahi: AML}
 
@@ -1564,20 +1586,27 @@ Over the course of the Lokahi deployment, the total size of the AML grew to just
 
 Next, I will examine how the actual data compares to the estimated data and the simulated data found in the Evaluation chapter.
 
-Figure~\ref{fig:lokahi_actual_iml_vs_est} shows the actual IML growth versus the estimated growth.
+Figure~\ref{fig:lokahi_actual_aml_vs_est} shows the estimated AML versus the actual AML.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth]{figures/lokahi_actual_iml_vs_est.png}
-    \caption{IML Growth: Actual vs. Estimated}
-    \label{fig:lokahi_actual_iml_vs_est}
+    \includegraphics[width=\linewidth]{figures/lokahi_actual_aml_vs_est.png}
+    \caption{AML Growth: Estimated vs Actual}
+    \label{fig:lokahi_actual_aml_vs_est}
 \end{figure}
 
-The actual data growth for the IML concludes with about 1 TB less data compared to the estimated growth. This is caused by the fact that the estimated growth uses the mean number of active sensors rather than the actual number of active sensors sending data.
+Actual AML data ends up being about 15 GB smaller that the estimated data. Again, this is likely caused by the fact that the estimated data uses the mean number of active sensors while the actual data uses the actual number of active sensors for any period of time.
 
-Next I will compare the IML data growth to the simulated data growth. It should be noted that the simulated data includes TTL values, however, Lokahi does not make use of TTL due to network requirements. This provides interesting insights on how the IML data could be bounded within Lokahi assuming TTL were used.
+Figure~\ref{fig:lokahi_actual_aml_vs_sim} shows the simulated AML compared to the actual AML.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/lokahi_actual_aml_vs_sim.png}
+    \caption{AML Growth: Simulated vs Actual}
+    \label{fig:lokahi_actual_aml_vs_sim}
+\end{figure}
 
+Simulated data provides upwards of 20 GB in data savings utilizing TTL compared to the actual AML data which does not utilize TTL. This provides evidence that a TTL approach could provide signficant data savings for the AML.
 
 \subsubsection{DSN System Requirements Lokahi: DL}
 
