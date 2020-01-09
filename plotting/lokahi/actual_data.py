@@ -1,5 +1,6 @@
 import collections
 import datetime
+import functools
 import os
 import os.path
 from dataclasses import dataclass
@@ -178,6 +179,15 @@ class ReportMetric:
     def ts(self) -> int:
         return int(self.dt().timestamp())
 
+    def sum(self, other: 'ReportMetric') -> 'ReportMetric':
+        return ReportMetric(
+                other.binned_ts,
+                self.total_events + other.total_events,
+                self.event_bytes + other.event_bytes,
+                self.total_incidents + other.total_incidents,
+                self.incident_bytes + other.incident_bytes
+        )
+
 
 def parse_report_metrics(path: str) -> List[ReportMetric]:
     with open(path, "r") as fin:
@@ -230,6 +240,23 @@ class DailyMetric:
 
     def ts(self) -> int:
         return int(self.dt().timestamp())
+
+    def sum(self, other: 'DailyMetric') -> 'DailyMetric':
+        return DailyMetric(
+                other.binned_ts,
+                self.total_80hz_packets + other.total_80hz_packets,
+                self.total_800hz_packets + other.total_800hz_packets,
+                self.total_8000hz_packets + other.total_8000hz_packets,
+                self.total_packets + other.total_packets,
+                self.total_data_bytes_80hz + other.total_data_bytes_80hz,
+                self.total_data_bytes_800hz + other.total_data_bytes_800hz,
+                self.total_data_bytes_8000hz + other.total_data_bytes_8000hz,
+                self.total_data_bytes + other.total_data_bytes,
+                self.total_devices_80hz + other.total_devices_80hz,
+                self.total_devices_800hz + other.total_devices_800hz,
+                self.total_devices_8000hz + other.total_devices_8000hz,
+                self.total_devices + other.total_devices,
+        )
 
 
 def load_daily_metrics(path: str) -> List[DailyMetric]:
@@ -1244,6 +1271,9 @@ def main():
     aligned_sim_8000_reports: np.ndarray = aligned_sim_8000_data_reports[1]
 
     # Align daily metrics and report metrics
+    summed_daily_metrics: List[DailyMetric] = list(functools.reduce(DailyMetric.sum, daily_metrics, daily_metrics[0]))
+
+    print(summed_daily_metrics)
     series_specs_laha: List[SeriesSpec] = [
         SeriesSpec(daily_metrics,
                    lambda daily_metric: daily_metric.dt(),
@@ -1333,9 +1363,9 @@ def main():
     #                aligned_sim_800_reports,
     #                aligned_sim_8000_reports)
 
-    plot_laha(aligned_laha_dts,
-              aligned_laha_daily_metrics,
-              aligned_laha_report_metrics)
+    # plot_laha(aligned_laha_dts,
+    #           aligned_laha_daily_metrics,
+    #           aligned_laha_report_metrics)
 
     # plot_laha_vs_est(aligned_all_dts,
     #                  aligned_all_daily_metrics,

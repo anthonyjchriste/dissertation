@@ -1,17 +1,15 @@
+import datetime
 from functools import reduce
-from typing import List, Set
+from typing import List, Set, Callable, Any, Tuple
 import numpy as np
 
 
-def sum_series(series: np.ndarray) -> np.ndarray:
-    result: List[int] = []
-    for i in range(1, len(series)):
-        result.append(sum(series[:i]))
-
-    return np.array(result)
+def resample(from_series: List,
+             to_series: List,
+             from_series_dt_fn: Callable[[Any], datetime.datetime],
+             to_series_dt_fn: Callable[[Any], datetime.datetime]) -> Tuple[List[datetime.datetime], List, List]:
+    pass
 
 
 if __name__ == "__main__":
-    a = [1, 2, 3, 4, 5, 6, 7]
-    a = np.array(a)
-    print(sum_series(a))
+
