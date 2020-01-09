@@ -785,7 +785,7 @@ Figure~\ref{fig:meteor_2} shows the locations of sensors that observed the meteo
 
 \subsubsection{Falcon 9 Launch and First Stage Landing}
 
-On November 11 2019, SpaceX launched its Falcon 9 rocket on a mission to deploy 60 Starlink satelites\cite{spacex}. The Lokahi network observed the launch and landing of the fist stage on a barge off the coast of Florida in the infrasound range with four sensors located near Cape Canaveral, Florida.
+On November 11 2019, SpaceX launched its Falcon 9 rocket on a mission to deploy 60 Starlink satellites\cite{spacex}. The Lokahi network observed the launch and landing of the fist stage on a barge off the coast of Florida in the infrasound range with four sensors located near Cape Canaveral, Florida.
 
 Figure~\ref{fig:spacex_1} shows the infrasound signal for the launch and the first stage landing.
 
@@ -840,17 +840,17 @@ The Lokahi network directly supports several national laboratories (Idaho Nation
 
 The Lokahi network also supports several private groups by providing secure real-time data collected from strategically placed sensors.
 
-Finally, the Lokahi network has served as the basis for several students to receive their graduate degrees. Julie Schncurr received her Masters degree in 2017 for her thesis ``Air Blasts: Explosion Yield Estimation and Waveform Modeling"\cite{julie} using data in part collected by Lokahi. Karina Asmar received her Ph.D\cite{asmar19} in 2019 using data collected by the Lokahi network.
+Finally, the Lokahi network has served as the basis for several students to receive their graduate degrees. Julie Schnurr received her Masters degree in 2017 for her thesis ``Air Blasts: Explosion Yield Estimation and Waveform Modeling"\cite{julie} using data in part collected by Lokahi. Karina Asmar received her Ph.D\cite{asmar19} in 2019 using data collected by the Lokahi network.
 
 \subsection{Discussion on Types of DSNs Laha is Suitable For}\label{subsec:discussion-on-types-of-dsns-laha-is-suitable-for}
 
 Working with two different DSNs in two different domains has provided me the opportunity to think about Laha's strengths and weaknesses compared to the domain that it is being utilized in. It's also given me the opportunity to think about other domains that Laha would be useful for. I will first discuss the strengths and weaknesses as compared to OPQ and Lokahi directly.
 
-I find Laha's data savings in the lower levels of the Laha hierarchy to be useful in situations where the sensors have high sampling rates and where the raw data will eventually be sent to the cloud for analysis. This is true of both OPQ and Lokahi who have sampling rates of 12,000 Hz and upto 8,000 Hz respectively. In both cases, the raw data is sent to the cloud for further analysis. In OPQ, this takes place when triggering algorithms detect an Event. In Lokahi, the raw data is sent along with the high level AML feature extracted data. When TTL is implemented for these networks, we observe a large decrease in stored data and an increase in stored signal-to-noise ratio.
+I find Laha's data savings in the lower levels of the Laha hierarchy to be useful in situations where the sensors have high sampling rates and where the raw data will eventually be sent to the cloud for analysis. This is true of both OPQ and Lokahi who have sampling rates of 12,000 Hz and up to 8,000 Hz respectively. In both cases, the raw data is sent to the cloud for further analysis. In OPQ, this takes place when triggering algorithms detect an Event. In Lokahi, the raw data is sent along with the high level AML feature extracted data. When TTL is implemented for these networks, we observe a large decrease in stored data and an increase in stored signal-to-noise ratio.
 
 Networks with low sampling rates (on the order of seconds to minutes and higher) would not see as large of benefit in terms of storage savings due to the low sampling rate. In fact, networks with low sampling rates may benefit from a store everything approach if the resources are available.
 
-Laha's data savings at higher levels in the hierarchy are only achievable for long running networks. Further, Laha's self-optimization capabilities only kick in over longer durations of network uptime. Because of this, Laha is better suited for networks with longer lasting deployments. Laha would be too cumbersom and not provide enough benefits for short lived, ad-hoc networks.
+Laha's data savings at higher levels in the hierarchy are only achievable for long running networks. Further, Laha's self-optimization capabilities only kick in over longer durations of network uptime. Because of this, Laha is better suited for networks with longer lasting deployments. Laha would be too cumbersome and not provide enough benefits for short lived, ad-hoc networks.
 
 Laha is incredibly well suited for networks that experience a low signal to noise ratio. When most of the data is noise, Laha's data management combined with its ability to filter out noise in analysis puts it in a unique position to deal with large volumes of noisy data. Networks with a high signal-to-noise ratio would not gain the data saving benefits that Laha provides.
 
@@ -870,7 +870,7 @@ Lokahi on the other hand has goals of providing a secure and stable Infrasound n
 
 I believe that Laha would be useful in many distributed sensing domains that collect large amounts of data and provide opportunities for many different types of signal classifications. Although not part of my direct research, Lokahi is experimenting with including other sensor data other than infrasound such as magnetometer, accelerometer, gyroscope, light, and barometer in order to provide more sensing modalities. Laha provides a basis for integrating and analyzing these new sensing modalities.
 
-In summary, I believe Laha would be a great fit for long running networks that provide high data rates and multiple classification possibilities. These include networks that perform earth quake monitoring, environmental monitoring, traffic monitoring, and security monitoring to name a few. As network speeds increase and as the avialability  Laha is not well suited for networks with low data rates or simple classifications schemes.
+In summary, I believe Laha would be a great fit for long running networks that provide high data rates and multiple classification possibilities. These include networks that perform earth quake monitoring, environmental monitoring, traffic monitoring, and security monitoring to name a few. As network speeds increase and as the availability  Laha is not well suited for networks with low data rates or simple classifications schemes.
 
 \subsection{Discussion of Laha Levels}\label{subsec:discussion-of-laha-levels}
 
@@ -986,7 +986,7 @@ Box 1021 in MSB experiences periodic Voltages sags as shown in the second panel 
 
 The above figure shows many periodic Voltage sags over the course of one week. These Voltages sags have been present over the entire deployment of the OPQ network and were not observed by Boxes outside of MSB.
 
-These Voltage sags were identified as periodic within Mauka's Periodicity Plugin. The original signal had its DC offset removed by subtracting the mean of the signal from the signal. Then the signal was filtered using a 4th order Butterworth highpass filter. The filtered signal was then autocorrelated with itself. The distance between the peaks of the autocorrelation provide the period between peaks in the original signal. The mean of the peaks is the mean period of the Periodic signal. The Periodicity Plugin also finds the standard deviation of of the peaks found during autocorrelation. The combination of the mean period and the standard deviation of the period are then used to find the original times of the peaks and to produce Future Phenomena.
+These Voltage sags were identified as periodic within Mauka's Periodicity Plugin. The original signal had its DC offset removed by subtracting the mean of the signal from the signal. Then the signal was filtered using a 4th order Butterworth high-pass filter. The filtered signal was then autocorrelated with itself. The distance between the peaks of the autocorrelation provide the period between peaks in the original signal. The mean of the peaks is the mean period of the Periodic signal. The Periodicity Plugin also finds the standard deviation of of the peaks found during autocorrelation. The combination of the mean period and the standard deviation of the period are then used to find the original times of the peaks and to produce Future Phenomena.
 
 Once the plugin has a measure of mean period and standard deviation of the period, peak finding is employed to find the peaks of the original signal (as opposed to the autocorrelated signal). The peak finding algorithm is parameterized to not find peaks with a width less than that of the mean period minus the standard deviation of the period. These newly identified peaks provide timestamps and deviations from nominal for original periodic signal.
 
@@ -1015,11 +1015,11 @@ It is possible that the HVAC system is constantly pushing air through the buildi
 
 It should be noted that although Lokahi sensors record the temperature, they mainly record the internal temperature of the sensor's processor and these readings are generally not affected by the ambient temperature that the sensor resides in.
 
-I've provided evidence in this section that show OPQ Mauka was able to identify Periodic Phenomena. I also showed how this Phenomena is able to provide optimizations to the DSN. I've shown the Periodic Phenomena is able to provide groupings for Events and Incidents, providing added context and actionalble insights.
+I've provided evidence in this section that show OPQ Mauka was able to identify Periodic Phenomena. I also showed how this Phenomena is able to provide optimizations to the DSN. I've shown the Periodic Phenomena is able to provide groupings for Events and Incidents, providing added context and actionable insights.
 
 \subsubsection{Results of Future/Predictive Phenomena}
 
-Future Phenomena are generated from Periodic Phenomena. Future Phenomena predict when signals of interest should be observed by a particular sensor. Future Phenomena store information about its time window, the OPQ Boxes affected, and the expected feature that is predicted to be non-nominal. Future Phenomena also directly perform optimizations on the OPQ network. They are capable of modifying Event thresholds for the Frequency, Voltage, and THD features as well as modifying the data rate of OPQ Boxes. Because the Future Phenomena is capable of modifying the system, I expected to detech Events that would have otherwise been missed due to the threshold being too high.
+Future Phenomena are generated from Periodic Phenomena. Future Phenomena predict when signals of interest should be observed by a particular sensor. Future Phenomena store information about its time window, the OPQ Boxes affected, and the expected feature that is predicted to be non-nominal. Future Phenomena also directly perform optimizations on the OPQ network. They are capable of modifying Event thresholds for the Frequency, Voltage, and THD features as well as modifying the data rate of OPQ Boxes. Because the Future Phenomena is capable of modifying the system, I expected to detect Events that would have otherwise been missed due to the threshold being too high.
 
 The Periodic Phenomena that were discussed in the previous section play an important role in creating Future Phenomena. Future Phenomena are created based off of the mean period and standard deviation of the period from the Periodic Phenomena. Future Phenomena attempt to predict four hours of Events and Incidents from the last known timestamp of a Periodic Phenomena.
 
@@ -1606,7 +1606,7 @@ Figure~\ref{fig:lokahi_actual_aml_vs_sim} shows the simulated AML compared to th
     \label{fig:lokahi_actual_aml_vs_sim}
 \end{figure}
 
-Simulated data provides upwards of 20 GB in data savings utilizing TTL compared to the actual AML data which does not utilize TTL. This provides evidence that a TTL approach could provide signficant data savings for the AML.
+Simulated data provides upwards of 20 GB in data savings utilizing TTL compared to the actual AML data which does not utilize TTL. This provides evidence that a TTL approach could provide significant data savings for the AML.
 
 \subsubsection{DSN System Requirements Lokahi: DL}
 
@@ -1708,7 +1708,7 @@ Figure~\ref{fig:lokahi_actual_laha} shows the total size of all levels collected
     \label{fig:lokahi_actual_laha}
 \end{figure}
 
-The total size of the Lokahi deployment reaches close to 3 TB over two and a half months. Next I will compare the total size of Laha to the estimated and simulated results from the Evaluation chapter.
+The total size of the Lokahi deployment reaches close to 2 TB over two and a half months. This is mostly due to the large IML that this network produces. Next I will compare the total size of Laha to the estimated and simulated results from the Evaluation chapter.
 
 Figure~\ref{fig:lokahi_actual_laha_vs_est} shows actual Laha growth compared to estimated Laha growth.
 
@@ -1719,6 +1719,8 @@ Figure~\ref{fig:lokahi_actual_laha_vs_est} shows actual Laha growth compared to 
     \label{fig:lokahi_actual_laha_vs_est}
 \end{figure}
 
+The actual data growth of Laha is close to 1 TB smaller than that of the estimated data growth. This should come as no surprise since these match estimated results for all of the sub-levels that make up the Laha hierarchy.
+
 Figure~\ref{fig:lokahi_actual_laha_vs_sim} shows actual Laha growth versus simulated Laha growth.
 
 \begin{figure}[H]
@@ -1727,6 +1729,10 @@ Figure~\ref{fig:lokahi_actual_laha_vs_sim} shows actual Laha growth versus simul
     \caption{Lokahi Laha Growth vs Simulated Laha Growth}
     \label{fig:lokahi_actual_laha_vs_sim}
 \end{figure}
+
+The estimated data growth of Laha for Lokahi ends at close to 2 TB smaller that the actual data growth. As discussed for the previous levels, this is due to the fact that Lokahi doesn't implement TTL whereas the simulated does implement TTL. This provides evidence that a TTL approach would be useful in networks similar to Lokahi to achieve substantial data savings.
+
+In this section, I have compared the actual amount of data collected to estimated data and simulated data outlined in the Evaluation chapter. The estimated data tends to be slightly larger than the actual data for all instances. This difference was caused by errors in the estimations due to utilizing the mean number of active sensors rather than the actual number of active sensors. The simulated results showed that a TTL approach would be useful in providing data savings.
 
 \section{Results of Tertiary Goals}\label{sec:results-of-tertiary-goals}
 
@@ -1823,7 +1829,7 @@ I believe Laha could do a better job at collecting metrics about system performa
 
 Future deployments should investigate utilizing more detailed ground truth metrics. The ground truth metrics utilized by OPQ only provided high level trends for Voltage, Frequency, and THD. It would be useful to have ground truth metrics that include some sort of indication of anomalous PQ events.
 
-I would like to do a direct study on how intermittent renewable energy sources affect PQ on the grid. The Hawaiian islands are a perfect testbed for this and the Laha framework is capable of providing insights into this issue.
+I would like to do a direct study on how intermittent renewable energy sources affect PQ on the grid. The Hawaiian islands are a perfect test bed for this and the Laha framework is capable of providing insights into this issue.
 
 Finally, I would like to develop and deploy more sensors for OPQ outside of the UHM micro-grid. It would be useful to discover the interactions in PQ between multiple grids, island wide, and between islands even.
 
