@@ -242,7 +242,7 @@ def plot_active_sensors(daily_metrics: List[DailyMetric]):
 
     fig.show()
 
-    fig.savefig("/Users/anthony/Development/dissertation/src/figures/lokahi_num_sensors.png")
+    fig.savefig("/home/opq/Documents/anthony/dissertation/src/figures/lokahi_num_sensors.png")
 
 
 def sum_series(series: np.ndarray) -> np.ndarray:
@@ -417,7 +417,7 @@ def plot_iml_vs_est(daily_metrics: List[DailyMetric]):
     diff_ax.legend()
 
     # fig.show()
-    fig.savefig("/Users/anthony/Development/dissertation/src/figures/lokahi_actual_iml_vs_est.png")
+    fig.savefig("/home/opq/Documents/anthony/dissertation/src/figures/lokahi_actual_iml_vs_est.png")
 
 
 def plot_iml_vs_sim(dts: np.ndarray,
@@ -485,7 +485,7 @@ def plot_iml_vs_sim(dts: np.ndarray,
 
 
 
-    fig.savefig("/Users/anthony/Development/dissertation/src/figures/lokahi_actual_iml_vs_sim.png")
+    fig.savefig("/home/opq/Documents/anthony/dissertation/src/figures/lokahi_actual_iml_vs_sim.png")
 
 
 def plot_aml_vs_est(daily_metrics: List[DailyMetric]):
@@ -546,7 +546,7 @@ def plot_aml_vs_est(daily_metrics: List[DailyMetric]):
     diff_ax.legend()
 
     # fig.show()
-    fig.savefig("/Users/anthony/Development/dissertation/src/figures/lokahi_actual_aml_vs_est.png")
+    fig.savefig("/home/opq/Documents/anthony/dissertation/src/figures/lokahi_actual_aml_vs_est.png")
 
 def plot_aml_vs_sim(dts: np.ndarray,
                     aligned_daily_metrics: np.ndarray,
@@ -610,7 +610,7 @@ def plot_aml_vs_sim(dts: np.ndarray,
     diff_ax.set_ylabel("Size GB")
 
     # fig.show()
-    fig.savefig("/Users/anthony/Development/dissertation/src/figures/lokahi_actual_aml_vs_sim.png")
+    fig.savefig("/home/opq/Documents/anthony/dissertation/src/figures/lokahi_actual_aml_vs_sim.png")
 
 
 def main():
@@ -650,8 +650,8 @@ def main():
 
 
     # plot_active_sensors(daily_metrics)
-    # plot_iml(daily_metrics)
-    # plot_aml(daily_metrics)
+    plot_iml(daily_metrics)
+    plot_aml(daily_metrics)
 
     # plot_iml_vs_est(daily_metrics)
 
@@ -663,11 +663,11 @@ def main():
 
     # plot_aml_vs_est(daily_metrics)
 
-    plot_aml_vs_sim(aligned_dts,
-                    aligned_daily_metrics,
-                    aligned_sim_80,
-                    aligned_sim_800,
-                    aligned_sim_8000)
+    # plot_aml_vs_sim(aligned_dts,
+    #                 aligned_daily_metrics,
+    #                 aligned_sim_80,
+    #                 aligned_sim_800,
+    #                 aligned_sim_8000)
 
 if __name__ == "__main__":
     main()
