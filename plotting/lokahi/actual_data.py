@@ -1271,7 +1271,7 @@ def main():
     aligned_sim_8000_reports: np.ndarray = aligned_sim_8000_data_reports[1]
 
     # Align daily metrics and report metrics
-    summed_daily_metrics: List[DailyMetric] = list(functools.reduce(DailyMetric.sum, daily_metrics, daily_metrics[0]))
+    summed_daily_metrics: List[DailyMetric] = list(functools.reduce(lambda l, v: l.append(l[-1].sum(v)), daily_metrics[1:], [daily_metrics[0]]))
 
     print(summed_daily_metrics)
     series_specs_laha: List[SeriesSpec] = [
