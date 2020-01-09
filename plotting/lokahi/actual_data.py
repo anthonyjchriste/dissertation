@@ -1058,14 +1058,14 @@ def plot_laha(dts: np.ndarray,
     ax.plot(sum_dts, sum_incident_gb, label="IL")
     ax.plot(sum_dts, total_gb, label="Total")
 
-    ax.set_yscale("log")
+    # ax.set_yscale("log")
     ax.set_title("Lokahi: Laha Data Growth")
     ax.set_ylabel("Size GB")
     ax.set_xlabel("Time (UTC)")
     ax.legend()
 
-    # fig.show()
-    fig.savefig("/home/opq/Documents/anthony/dissertation/src/figures/lokahi_actual_laha.png")
+    fig.show()
+    # fig.savefig("/home/opq/Documents/anthony/dissertation/src/figures/lokahi_actual_laha.png")
 
 def plot_laha_vs_est(dts: np.ndarray,
                      daily_metrics: np.ndarray,
@@ -1333,13 +1333,13 @@ def main():
     #                aligned_sim_800_reports,
     #                aligned_sim_8000_reports)
 
-    # plot_laha(aligned_laha_dts,
-    #           aligned_laha_daily_metrics,
-    #           aligned_laha_report_metrics)
+    plot_laha(aligned_laha_dts,
+              aligned_laha_daily_metrics,
+              aligned_laha_report_metrics)
 
-    plot_laha_vs_est(aligned_all_dts,
-                     aligned_all_daily_metrics,
-                     aligned_all_report_metrics)
+    # plot_laha_vs_est(aligned_all_dts,
+    #                  aligned_all_daily_metrics,
+    #                  aligned_all_report_metrics)
 
 
 
