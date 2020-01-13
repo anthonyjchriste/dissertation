@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>UH OPQ Deployment 2019.kmz</name>
+	<StyleMap id="m_ylw-pushpin00">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#s_ylw-pushpin0</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#s_ylw-pushpin_hl1</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="m_ylw-pushpin">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#s_ylw-pushpin</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#s_ylw-pushpin_hl0</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="s_ylw-pushpin_hl">
+		<IconStyle>
+			<scale>1.3</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+	</Style>
+	<Style id="s_ylw-pushpin0">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+	</Style>
+	<Style id="s_ylw-pushpin_hl0">
+		<IconStyle>
+			<scale>1.3</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+	</Style>
+	<Style id="s_ylw-pushpin">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+	</Style>
+	<Style id="s_ylw-pushpin00">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+	</Style>
+	<StyleMap id="m_ylw-pushpin0">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#s_ylw-pushpin00</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#s_ylw-pushpin_hl</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="s_ylw-pushpin_hl1">
+		<IconStyle>
+			<scale>1.3</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+	</Style>
+	<Folder>
+		<name>UH OPQ Deployment 2019</name>
+		<open>1</open>
+		<Placemark>
+			<name>POST 1 - 1000</name>
+			<LookAt>
+				<longitude>-157.8156661629125</longitude>
+				<latitude>21.29909346449091</latitude>
+				<altitude>0</altitude>
+				<heading>0.001131740526274538</heading>
+				<tilt>0</tilt>
+				<range>991.2739207730883</range>
+				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			</LookAt>
+			<styleUrl>#m_ylw-pushpin</styleUrl>
+			<Point>
+				<gx:drawOrder>1</gx:drawOrder>
+				<coordinates>-157.816237,21.297438,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Hamilton - 1001</name>
+			<LookAt>
+				<longitude>-157.8178177644453</longitude>
+				<latitude>21.29831914680059</latitude>
+				<altitude>0</altitude>
+				<heading>0.0003504897799361162</heading>
+				<tilt>0</tilt>
+				<range>1047.274460534301</range>
+				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			</LookAt>
+			<styleUrl>#m_ylw-pushpin</styleUrl>
+			<Point>
+				<gx:drawOrder>1</gx:drawOrder>
+				<coordinates>-157.816173,21.300332,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>POST 2 - 1002</name>
+			<LookAt>
+				<longitude>-157.8177567274448</longitude>
+				<latitude>21.29998430706169</latitude>
+				<altitude>0</altitude>
+				<heading>0.0003723855455783112</heading>
+				<tilt>0</tilt>
+				<range>1974.281642918604</range>
+				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			</LookAt>
+			<styleUrl>#m_ylw-pushpin</styleUrl>
+			<Point>
+				<gx:drawOrder>1</gx:drawOrder>
+				<coordinates>-157.816305,21.297663,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>LAVA - 1003</name>
+			<LookAt>
+				<longitude>-157.8152098079299</longitude>
+				<latitude>21.29964616936127</latitude>
+				<altitude>0</altitude>
+				<heading>-28.51871780275811</heading>
+				<tilt>0</tilt>
+				<range>163.1415169517857</range>
+				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			</LookAt>
+			<styleUrl>#m_ylw-pushpin0</styleUrl>
+			<Point>
+				<gx:drawOrder>1</gx:drawOrder>
+				<coordinates>-157.816034748669,21.29974948387028,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Parking Ph 2 - 1005</name>
+			<LookAt>
+				<longitude>-157.8184412287605</longitude>
+				<latitude>21.29577977078988</latitude>
+				<altitude>0</altitude>
+				<heading>0.0001237151272785158</heading>
+				<tilt>0</tilt>
+				<range>515.4127557473631</range>
+				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			</LookAt>
+			<styleUrl>#m_ylw-pushpin</styleUrl>
+			<Point>
+				<gx:drawOrder>1</gx:drawOrder>
+				<coordinates>-157.819234,21.296042,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Frog 1 - 1006</name>
+			<LookAt>
+				<longitude>-157.8225942841265</longitude>
+				<latitude>21.29836837959093</latitude>
+				<altitude>0</altitude>
+				<heading>-0.001384554463649957</heading>
+				<tilt>0</tilt>
+				<range>359.3680355707401</range>
+				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			</LookAt>
+			<styleUrl>#m_ylw-pushpin</styleUrl>
+			<Point>
+				<gx:drawOrder>1</gx:drawOrder>
+				<coordinates>-157.823122,21.29805,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Frog 2 - 1007</name>
+			<LookAt>
+				<longitude>-157.8225942841265</longitude>
+				<latitude>21.29836837959093</latitude>
+				<altitude>0</altitude>
+				<heading>-0.001384554463649957</heading>
+				<tilt>0</tilt>
+				<range>359.3680355707401</range>
+				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			</LookAt>
+			<styleUrl>#m_ylw-pushpin</styleUrl>
+			<Point>
+				<gx:drawOrder>1</gx:drawOrder>
+				<coordinates>-157.822819,21.298046,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Miles Office - 1008</name>
+			<LookAt>
+				<longitude>-157.8136801886228</longitude>
+				<latitude>21.30247464748933</latitude>
+				<altitude>0</altitude>
+				<heading>0.001853238584485208</heading>
+				<tilt>0</tilt>
+				<range>557.1921920636561</range>
+				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			</LookAt>
+			<styleUrl>#m_ylw-pushpin0</styleUrl>
+			<Point>
+				<gx:drawOrder>1</gx:drawOrder>
+				<coordinates>-157.8137681609306,21.30386147625208,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Watanabe - 1009</name>
+			<LookAt>
+				<longitude>-157.8170648275623</longitude>
+				<latitude>21.2986054452839</latitude>
+				<altitude>0</altitude>
+				<heading>0.0006237110957010148</heading>
+				<tilt>0</tilt>
+				<range>890.4510851715883</range>
+				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			</LookAt>
+			<styleUrl>#m_ylw-pushpin</styleUrl>
+			<Point>
+				<gx:drawOrder>1</gx:drawOrder>
+				<coordinates>-157.815817,21.298351,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Holmes - 1010</name>
+			<LookAt>
+				<longitude>-157.8170648275623</longitude>
+				<latitude>21.2986054452839</latitude>
+				<altitude>0</altitude>
+				<heading>0.0006237110957010148</heading>
+				<tilt>0</tilt>
+				<range>890.4510851715883</range>
+				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			</LookAt>
+			<styleUrl>#m_ylw-pushpin</styleUrl>
+			<Point>
+				<gx:drawOrder>1</gx:drawOrder>
+				<coordinates>-157.816104,21.297011,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>MSB - 1021</name>
+			<LookAt>
+				<longitude>-157.815946103969</longitude>
+				<latitude>21.2983816924662</latitude>
+				<altitude>0</altitude>
+				<heading>-22.5310413746393</heading>
+				<tilt>0</tilt>
+				<range>541.138031956471</range>
+				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			</LookAt>
+			<styleUrl>#m_ylw-pushpin00</styleUrl>
+			<Point>
+				<gx:drawOrder>1</gx:drawOrder>
+				<coordinates>-157.8156900462205,21.29789461271471,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Ag Engineering - 1022</name>
+			<LookAt>
+				<longitude>-157.8152671978453</longitude>
+				<latitude>21.30068166698129</latitude>
+				<altitude>0</altitude>
+				<heading>0.001276701291455597</heading>
+				<tilt>0</tilt>
+				<range>455.8883917812985</range>
+				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			</LookAt>
+			<styleUrl>#m_ylw-pushpin0</styleUrl>
+			<Point>
+				<gx:drawOrder>1</gx:drawOrder>
+				<coordinates>-157.8154874938278,21.30163608338939,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>UH Law Library - 1023</name>
+			<LookAt>
+				<longitude>-157.818556628562</longitude>
+				<latitude>21.29644382540153</latitude>
+				<altitude>0</altitude>
+				<heading>8.18532319014388e-05</heading>
+				<tilt>0</tilt>
+				<range>998.3093319786481</range>
+				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			</LookAt>
+			<styleUrl>#m_ylw-pushpin0</styleUrl>
+			<Point>
+				<gx:drawOrder>1</gx:drawOrder>
+				<coordinates>-157.817361,21.296328,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>IT Building - 1024</name>
+			<LookAt>
+				<longitude>-157.8173662676103</longitude>
+				<latitude>21.2987869655052</latitude>
+				<altitude>0</altitude>
+				<heading>0.0005141953083695573</heading>
+				<tilt>0</tilt>
+				<range>323.5924986720367</range>
+				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			</LookAt>
+			<styleUrl>#m_ylw-pushpin00</styleUrl>
+			<Point>
+				<gx:drawOrder>1</gx:drawOrder>
+				<coordinates>-157.816451,21.29886,0</coordinates>
+			</Point>
+		</Placemark>
+		<Placemark>
+			<name>Kenedy Theater - 1025</name>
+			<LookAt>
+				<longitude>-157.8170648275623</longitude>
+				<latitude>21.2986054452839</latitude>
+				<altitude>0</altitude>
+				<heading>0.0006237110957010148</heading>
+				<tilt>0</tilt>
+				<range>890.4510851715883</range>
+				<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+			</LookAt>
+			<styleUrl>#m_ylw-pushpin0</styleUrl>
+			<Point>
+				<gx:drawOrder>1</gx:drawOrder>
+				<coordinates>-157.815225,21.299282,0</coordinates>
+			</Point>
+		</Placemark>
+	</Folder>
+</Document>
+</kml>

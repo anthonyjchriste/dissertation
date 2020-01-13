@@ -16,33 +16,33 @@ The placement strategy I utilized aimed to maximize collecting distributed PQ ev
 	\caption{OPQ Deployment}
 	\begin{tabularx}{\textwidth}{lllX}
 		\toprule
-		\textbf{Box} & \textbf{Location} & \textbf{Coordinates} & \textbf{Description} \\
+		\textbf{Box} & \textbf{Location} & \textbf{Latitude} & \textbf{Longitude} \\
 		\midrule
-		1000 & POST (CSDL) & -157.816237,21.297438 & Same line as 1002, 1009, 1010, 1013. Sensitive computer equipment. \\
-		1001 & Hamilton (Basement 3F) & -157.816173,21.300332 & Same line as 1008. Ease of access. \\
-		1002 & POST (ICSpace) & -157.826327,21.30046 & Same line as 1000, 1009, 1010, 1013. Sensitive computer equipment.   \\
-		1003 & IT Building & -157.826327,21.30046 & Same line as 1004. Sensitive computer equipment. \\
-		1004 & Building 37 & -157.817821,21.298732 & Same line as 1003. LAVA Lab. \\
-		1005 & Parking Structure (Phase II) & -157.819234, 21.296042 & Same line as 1011, 1012. Proximity to PV. \\
-		1006 & Frog I & -157.823122,21.298050 & Same line as 1007, 1014. Proximity to PV. PV ground truth access. \\
-		1007 & Frog II & -157.822819,21.298046 & Same line as 1006, 1014. Proximity to PV. PV ground truth access.  \\
-		1008 & Ag. Engineering & -157.816107,21.301564 & Same line as 1001. Known PQ issues. \\
-		1009 & Watanabe & -157.815817,21.298351 & Same line as 1000, 1002, 1010, 1013. Sensitive physics instruments. \\
-		1010 & Holmes & -157.816104,21.297011 & Same line as 1000, 1002, 1009, 1013. Machining shops and electronic equipment. \\
-		1011 & Parking Structure (Phase I) & -157.817430,21.295338 & Same line as 1005, 1012. Proximity to PV. \\
-		1012 & Law Library & -157.817361,21.296328 & Same line as 1005, 1011. \\
-		1013  & Kennedy Theater & -157.815225,21.299282 & Same line as 1000, 1002, 1009, 1010. Demanding electronic equipment. \\
-		1014 & Sinclair Library & -157.820499,21.298475 & Same line as 1006, 1007. \\
-		1015 & Architecture Portables & -157.813644,21.301092 & Edge of campus. Portable buildings. \\
+		1000 & POST 1 & -157.816237 & 21.297438 \\
+		1001 & Hamilton & -157.816173 & 21.300332 \\
+		1002 & POST 2 & -157.816305 & 21.297663 \\
+		1003 & LAVA Lab & -157.816034748669 & 21.29974948387028 \\
+		1005 & Parking Structure Ph II & -157.819234 & 21.296042 \\
+		1006 & Frog 1 & -157.823122 & 21.29805 \\
+		1007 & Frog 2 & -157.822819 & 21.298046 \\
+		1008 & Mile's Office & -157.8137681609306 & 21.30386147625208 \\
+		1009 & Watanabe & -157.815817 & 21.298351 \\
+		1010 & Holmes & -157.816104 & 21.297011 \\
+		1021 & Marine Science Building & -157.8156900462205 & 21.29789461271471 \\
+		1022 & Ag. Engineering & -157.8154874938278 & 21.30163608338939 \\
+		1023 & Law Library & -157.817361 & 21.296328 \\
+		1024 & IT Building & -157.816451 & 21.29886 \\
+		1025 & Kennedy Theater & -157.815225 & 21.299282 \\
 		\bottomrule
 	\end{tabularx}
 	\label{table:OpqDeployment}
 \end{table}
+
 Determination of electrical lines was aided by the UH Manoa electrical blueprint as displayed in Figure~\ref{fig:UhGridTopo}.
 
 \begin{figure}
 	\centering
-	\includegraphics[width=\linewidth]{figures/uh_thesis_depoyment_v1.png}
+	\includegraphics[height=\textheight]{figures/uh_power_grid.pdf}
 	\caption{UH Deployment Grid Topology}
 	\label{fig:UhGridTopo}
 \end{figure}
