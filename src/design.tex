@@ -53,7 +53,7 @@ The Laha framework is made up of five levels that can be viewed conceptually as 
 %The aim is that if Laha can accurately provide a model of the underlying sensing field topology, this information can be used to optimize lower levels of the Laha hierarchy. For example, Laha can prime sensors for receiving or ignoring signals of interest by determining that a signal is supposed to arrive at a sensor before it does, i.e. Predictive Phenomena.
 
 \section{Big Data Management in Laha} \label{sec:big-data-management}
-The Laha framework acts as an adaptive sieve for filtering noise and uninteresting data collected from a DSN. In this way, each level only passes what it considers interesting to the level above it. In practice, ``higher" levels determine what is interesting and pull data from ``lower" levels. All data at a particular level is garbage collected at specific intervals relating to its important to the DSN\@.
+Big Data management was outlined in the introduction\ref{sec:big-data-management-in-dsns}. The Laha framework acts as an adaptive sieve for filtering noise and uninteresting data collected from a DSN. In this way, each level only passes what it considers interesting to the level above it. In practice, ``higher" levels determine what is interesting and pull data from ``lower" levels. All data at a particular level is garbage collected at specific intervals relating to its important to the DSN\@.
 
 Each level only keeps data for a specified amount of time before it is garbage collected. As data moves up the pyramid, it is generally considered more useful and therefore has a longer Time to Live (TTL), the amount of the time the data lives before it is garbage collected.  When a higher level detects ``something interesting", the data contained in the time window of ``something interesting" is copied into the levels above it and will still persist even though the original data is garbage collected. In this way, Laha preserves data from all levels if they are associated with interesting data. This also provides graceful degradation of services. The TTL is managed by the overall memory management of the system. Laha Actors are designed to work within the constraints of the TTL at different levels. If a constraint is broken, the Actor logs this issue. TTL can be optimized by Phenomena at each level to either tune for system performance or tune for decreasing of false positives and false negatives at different levels within the Laha hierarchy.
 
@@ -112,6 +112,8 @@ Not only do Phenomena provide interesting insight and analytics into the underly
 
 Phenomena are summarized in Table~\ref{phenomena-summary-table} and discussed in great detail in section~\ref{sec:phenomena}.
 
+Evaluation of utilizing these levels is provided in the Evaluation in Section~\ref{subsec:eval-big-data}. Results are provided in Section~\ref{sec:dsn-system-requirements}.
+
 \section{Phenomena: Providing Adaptive Optimizations in Laha}\label{sec:phenomena}
 
 Phenomena provide context and actionable insights on top of Incidents generated within a DSN. Where as an Incident provides a general classification of a signal of interest, Phenomena go beyond general classifications and provide context such as what caused the signal to appear, or identifying other characteristics of an Incident such as if it is cyclic, similar to other Incidents, or identifying an Incident that never would have been observed due to triggering thresholds.
@@ -136,6 +138,8 @@ The following sections investigate the details of Phenomena and how they are imp
 	\caption{Summary of Laha Phenomena}
 	\label{phenomena-summary-table}
 \end{table}
+
+Evaluation of Phenomena is provided in Section~\ref{subsec:evaluation-of-converting-primitive-data-into-actionable-insights}. Results of Phenomena are provided in Section~\ref{subsec:results-of-phenomena}.
 
 \subsection{Annotations Phenomena}\label{subsec:annotations-phenomena}
 Annotations provide context about an Incident or a set of Incidents. Annotations are generally user provided or sourced from other data sources to provide supporting context to Incidents. For example, Annotations might include ``Cloud Cover", ``Hurricane Hector", ``Dryer Turns On", etc.
