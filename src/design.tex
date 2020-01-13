@@ -57,7 +57,7 @@ Big Data management was outlined in the introduction\ref{sec:big-data-management
 
 Each level only keeps data for a specified amount of time before it is garbage collected. As data moves up the pyramid, it is generally considered more useful and therefore has a longer Time to Live (TTL), the amount of the time the data lives before it is garbage collected.  When a higher level detects ``something interesting", the data contained in the time window of ``something interesting" is copied into the levels above it and will still persist even though the original data is garbage collected. In this way, Laha preserves data from all levels if they are associated with interesting data. This also provides graceful degradation of services. The TTL is managed by the overall memory management of the system. Laha Actors are designed to work within the constraints of the TTL at different levels. If a constraint is broken, the Actor logs this issue. TTL can be optimized by Phenomena at each level to either tune for system performance or tune for decreasing of false positives and false negatives at different levels within the Laha hierarchy.
 
-A summary of how data management in Laha is provided in Table~\ref{data-managament-table}. Note that the TTL is configurable for each implementing network and Table~\ref{data-managament-table} provides default values.
+A summary of how data management in Laha is provided in Table~\ref{data-managament-table}.
 
 \begin{table}[h]
 	\centering
@@ -71,8 +71,8 @@ A summary of how data management in Laha is provided in Table~\ref{data-managame
 		Aggregate Measurements Level (AML) & Statistical aggregates of raw data  & 1 day  \\
 		Instantaneous Measurements Level (IML) & Raw sensor data  & 1 hour \\
 		\bottomrule
+		\label{data-managament-table}
 	\end{tabularx}
-    \label{data-managament-table}
 	\caption{Summary of data management and context addition in Laha}
 \end{table}
 
