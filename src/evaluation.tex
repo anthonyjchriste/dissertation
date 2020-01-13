@@ -80,6 +80,10 @@ Two types of validation are performed. First, we compared measurements and trend
 
 The second type of validation I performed was checking the bounds of Mauka generated Incidents. When a Voltage Incident is generated, the sag or swell is compared against the minimum and maximum ground truth trends. Differences larger than 5 percent were recorded. Validation for Frequency and THD was performed in a similar way.
 
+\subsection{Validate data collected by Lokahi deployment}\label{subsec:validate-data-collected-by-lokahi-deployment}
+
+Ground truth for Events and Incidents are provided by cross-referencing known source signals to data collected by the Lokahi network. Lolahi Events only become Incidents when they can be cross referenced with a known source signal. Because of this, all Incidents within Lokahi are trivially validated. Thus, it becomes a question of validating the Lokahi sensors' ability to characterize infrasonic signals of interest. To this end, I will examine results provided by Asmar~\cite{asmar19} which discuss the ability for the Lokahi sensors to be able to accurately quantify and characterize infrasound. These results can be found in Section~\ref{subsec:ground-truth-analysis:-lokahi}.
+
 \section{Use Laha deployments to evaluate the main goals of the framework}\label{sec:use-laha-deployments-to-evaluate-the-main-goals-of-the-framework}
 The Laha deployments for both OPQ and Lokahi were used to evaluate each of the main goals this framework claims to provide. Namely that Laha is a generally useful framework representation for DSNs. Second, Laha provides the ability to turn primitive sensor data into actionable data and insights. Third, Laha's tiered management of sensor data provides metrics on maximum bounds for storage requirements and graceful degradation of DSN performance.
 
