@@ -58,11 +58,16 @@ A graphical representation showing the complete coverage of Boxes on the UH Mano
 
 All devices were placed in a location that had access to UH Manoa's wireless network. As soon as they were installed, they started transmitting PQ data for that location.
 
-\subsection{Lokahi Reference Deployment}\label{subsec:lokahi-reference-deployment}
-%TODO
+\subsection{Lokahi Deployment}
+
+Over a period of three months, data was collected from over 100 Lokahi sensors at large distributed globally.
+
+% TODO Update me
 
 \section{Validate data collected by Laha deployment}\label{sec:validate-data-collected-by-laha-deployment}
-Data from both experimental deployments were validated against ground truth data. In the OPQ deployment, ground truth is provided by UH meters installed at the main of each building. In the Lokahi deployment, ground truth was provided by high-end calibrated microphones.
+Data from both experimental deployments were validated against ground truth data as described in the Introduction~\ref{subsec:anticipated-contributions}. In the OPQ deployment, ground truth is provided by UH meters installed at the main of each building. In the Lokahi deployment, ground truth was provided by high-end calibrated microphones.
+
+Results of data validation are provided in Section~\ref{sec:ground-truth-analysis}.
 
 \subsection{Validate data collected by OPQ deployment}\label{subsec:validate-data-collected-by-opq-deployment}
 
@@ -80,12 +85,14 @@ Two types of validation are performed. First, we compared measurements and trend
 
 The second type of validation I performed was checking the bounds of Mauka generated Incidents. When a Voltage Incident is generated, the sag or swell is compared against the minimum and maximum ground truth trends. Differences larger than 5 percent were recorded. Validation for Frequency and THD was performed in a similar way.
 
+Results of validating OPQ data are provided in Section~\ref{subsec:ground-truth-analysis:-opq}.
+
 \subsection{Validate data collected by Lokahi deployment}\label{subsec:validate-data-collected-by-lokahi-deployment}
 
 Ground truth for Events and Incidents are provided by cross-referencing known source signals to data collected by the Lokahi network. Lolahi Events only become Incidents when they can be cross referenced with a known source signal. Because of this, all Incidents within Lokahi are trivially validated. Thus, it becomes a question of validating the Lokahi sensors' ability to characterize infrasonic signals of interest. To this end, I will examine results provided by Asmar~\cite{asmar19} which discuss the ability for the Lokahi sensors to be able to accurately quantify and characterize infrasound. These results can be found in Section~\ref{subsec:ground-truth-analysis:-lokahi}.
 
 \section{Use Laha deployments to evaluate the main goals of the framework}\label{sec:use-laha-deployments-to-evaluate-the-main-goals-of-the-framework}
-The Laha deployments for both OPQ and Lokahi were used to evaluate each of the main goals this framework claims to provide. Namely that Laha is a generally useful framework representation for DSNs. Second, Laha provides the ability to turn primitive sensor data into actionable data and insights. Third, Laha's tiered management of sensor data provides metrics on maximum bounds for storage requirements and graceful degradation of DSN performance.
+The main goals of this network are provided in Section~\ref{sec:anticipated-contributions-of-laha}. The Laha deployments for both OPQ and Lokahi were used to evaluate each of the main goals this framework claims to provide. Namely that Laha is a generally useful framework representation for DSNs. Second, Laha provides the ability to turn primitive sensor data into actionable data and insights. Third, Laha's tiered management of sensor data provides metrics on maximum bounds for storage requirements and graceful degradation of DSN performance.
 
 Each deployment requires different techniques for performing evaluation.
 
@@ -93,7 +100,7 @@ In the OPQ deployment, OPQBoxes are deployed and co-located with industry standa
 
 In the Lokahi deployment, I had the opportunity to generate infrasound signals using a calibrated infrasound source~\cite{park2009rotary}.. The source can be tuned to produce infrasound at configurable frequencies and amplitudes. The source works by attaching a variable pitch propeller to an electric motor that can be driven by a waveform generator. The source can generate signals that can be observed at large stand off distances, over tens of kilometers. Similar to the OPQ deployment, sensors within the Lokahi deployment were co-located with industry standard, calibrated, infrasound sensors. These sensors can provide a metric of signals that were correctly observed, incorrectly observed, or not observed at all by the Lokahi deployment. Further, infrasound itself is characterized quite well by various geophysical equations. These equations can be used to predict if sensors deployed in the Lokahi deployment are likely to observe generated infrasound signals.
 
-Evaluation of the main goals of this network are provided in the following sections.
+Evaluation of the main goals of this network are provided in the following sections. Results of these evaluations can be found in Sections~\ref{sec:ground-truth-analysis}, \ref{sec:results-of-generality-of-this-framework}, \ref{sec:results-of-converting-primitie-data-into-actional-insights}, \ref{sec:dsn-system-requirements}, and \ref{sec:results-of-tertiary-goals}.
 
 \subsection{Evaluation of the Generality of this Framework}\label{subsec:evaluation-of-the-generality-of-this-framework}
 I claim that the Laha framework is useful and general enough to be applied to DSNs in different domains. To test this, I designed, developed, and deployed two DSNs. The first OPQ, measures distributed PQ signals on the electrical grid. The second, Lokahi, observes infrasound signals traveling through the atmosphere.
@@ -115,6 +122,8 @@ Further, as availability is a major priority of this network, network outages mu
 Finally, backed by the metrics for both deployments, I provide a critical discussion on what types of DSNs Laha is well suited for and what types of DSNs Laha is not well suited for. This includes a discussion on which parts of the Laha design are useful or a detriment to a given goal of the DSN\@.
 
 The following sections continue to discuss the evaluation strategies required to show that Laha is a generally useful representation for a DSN\@.
+
+Results providing evidence the the generality of the Laha framework can be found in Section~\ref{sec:results-of-generality-of-this-framework}.
 
 \subsection{Evaluation of Converting Primitive Data into Actionable Insights}\label{subsec:evaluation-of-converting-primitive-data-into-actionable-insights}
 An important goal of any DSN is to convert primitive sensor data into actionable insights. This is generally accomplished by adding some kind of context associated with the data such as classifications of a signal or linking the data with other data by comparing similarities in time, space, or other physical features.
@@ -145,6 +154,8 @@ A positive result would be to see the correct context applied to incidents more 
 
 I expect to see contextualization work better in DSNs where signals provide more measures for discrimination. For example, PQ networks contain many different types of classified PQ signals, however there is a small subset of causes attributed to each type of PQ signal classification.This decreases Laha's search space and in theory should make it easier to provide context.
 
+Results for converting primitive data into actionable insights are provided in Section~\ref{sec:results-of-converting-primitie-data-into-actional-insights}.
+
 \subsection{Evaluation of Tiered Management of Big Data}\label{subsec:eval-big-data}
 The goal of tiered management of Big Data is to add a mechanism that provides a maximum bounds on storage requirements of sensor data at each level in the Laha hierarchy while simultaneously reducing sensor noise as Laha Actors move ``interesting" data upwards. This in turn should decrease the amount of false positives since forwarded data is more likely to include signals of interest and less likely to be sensor noise.
 
@@ -155,10 +166,14 @@ It's possible that Laha threw away data that did contain signals of interest. In
 
 I evaluated the number of false positives and false negatives in detections, classifications, and Phenomena compared against industry standard reference sensors. A positive outcome for this metric would be a reduction in both false positives and false negatives compared to an approach that does not use tiered data management. A negative result would be an increase in either false positives or false negatives.
 
+Results comparing collected data to ground truth data can be found in Section~\ref{sec:ground-truth-analysis}.
+
 \subsubsection{Evaluation of DSN System Requirements}\label{sssec:eval_of_dsn_system_requirements}
 I examined theoretical data storage requirements for any DSN that utilizes Laha as an abstract model.
 
 Let us consider the theoretical bounds on storage requirements at each level in the Laha hierarchy. First we will consider the storage bounds when all parameters are known and then we will look at bounds using estimated parameters for each level.
+
+Results for DSN system requirements are provided in Section~\ref{sec:dsn-system-requirements}.
 
 \paragraph{IML Requirements}
 The IML level contains instantaneous samples from a sensor. These values are generally stored in memory on the sensors. We can calculate several useful metrics for this layer.
@@ -848,11 +863,11 @@ The Lokahi simulation showed that of all the Trends, about 87.86\% of them were 
 In this section, we evaluated the data storage requirements with and without TTL. We showed significant data savings when using TTL as compared to when TTL was not used. Parameters for these evaluations were found both by the physical properties of the sensors as well as the rate at which data is moved between Laha levels.
 
 \section{Evaluation of Tertiary Goals}\label{sec:evaluation-of-tertiary-goals}
-In order to achieve the main goals of this framework, I claim that either all or a subset of the following tertiary goals must be fulfilled. Optimization of triggering, detection, classification, sensor energy usage, bandwidth, predictive analytics, and the ability to derive models of the underlying sensing field topology.
+In order to achieve the main goals of this framework, I claim that either all or a subset of the following tertiary goals must be fulfilled as discussion in the introduction~\ref{subsec:tertiary-goals-and-claims}: optimization of triggering, detection, classification, sensor energy usage, bandwidth, predictive analytics, and the ability to derive models of the underlying sensing field topology.
 
 To evaluate these tertiary goals, I selected and implemented DSN optimization techniques from current literature. I then compared and contrasted the usefulness of different techniques and discuss how each of these techniques perform in the different sensor domains.
 
-Finally, I discuss how each of these tertiary goals make progress towards overall goals of this sensor network.
+Finally, I discuss how each of these tertiary goals make progress towards overall goals of this sensor network. Results of these evaluations are provided in Section~\ref{sec:results-of-tertiary-goals}.
 
 \subsection{Evaluation of Adaptive Optimizations for Triggering}\label{subsec:evaluation-of-adaptive-optimizations-for-triggering}
 Triggering is the act of observing a feature extracted data stream for interesting features and triggering sensors to provide raw data for a requested time window for higher level analysis. Adaptively optimizing triggering is a way to tune triggering algorithms and parameters with the aim of decreasing false positives and false negatives. In this context, a false positive is triggering on a data stream that does not contain a signal of interest and a false negative is not triggering on a data stream that does contain a signal of interest.
@@ -871,6 +886,8 @@ I hope to show that a side effect of Laha's optimized triggering is reduced band
 
 I further hope to show that another benefit of Laha's optimized triggering is reduced sensor energy requirements. The evaluation for this metric occurred with the Lokahi network where sensors can be dependent on batteries. I ran two experiments. For each experiment, all sensors were charged to battery level of 100\%. In the first experiment, I did not utilize optimized triggering. In the second experiment I did utilize optimized triggering. In both experiments, I measured the final battery level after the experiment and also measure how quickly the battery depletes for each sensor. This is possible because data in the Lokahi network contains timestamped entries with battery levels.
 
+Results of adaptive optimizations for triggering can be found in Section~\ref{subsec:results-of-adaptive-optimizations-for-triggering}.
+
 \subsection{Evaluation of Adaptive Optimizations for Detection and Classifications}\label{subsec:evaluation-of-adaptive-optimizations-for-detection-and-classifications}
 Detections occur when triggering observes something ``interesting" in the feature extracted data stream. A Detection is a contiguous window of raw sensor data that was requested by triggering that may or may not contain signals of interest. Optimizing detections involves optimized the window sizes to increase the signal-to-noise ratio of the window. Fine grained features are then computed by Detection Actors and moved to the Incidents Level where classification of signals takes place. Optimizing Detections involves trimming detection windows to increase signal-to-noise. Optimizing of classifications for Incidents involves tuning parameter sets for the underlying classification algorithms.
 
@@ -888,6 +905,8 @@ I collected and evaluated the number of false positives and false negatives for 
 
 I also calculated the signal-to-noise ratio in Detections to determine if optimization of detections is working. A positive outcome is an increase in the signal-to-noise ration and a negative outcome would be similar or a decrease in signal-to-noise ratio.
 
+Results of adaptive optimizations for detection are provided in Section~\ref{subsec:results-of-adaptive-optimizations-for-detection-and-classification}.
+
 \subsection{Evaluation of Model of Underlying Sensor Field Topology}\label{subsec:evaluation-of-model-of-underlying-sensor-field-topology}
 Laha should be able to build a model of the underlying sensing field topology. This is not the topology of the physical layout of the sensors (this is generally already known a priori or by collecting location information), but rather the topology by which signals travel. For example, in a PQ network the topology is the physical power grid and switches that PQ signals travel through. In an infrasound network, the topology is the atmosphere through which sound waves travel. Laha aims to build a statistical model of the distances between sensors according to the topology of the sensing field by observing recurrent incidents over time. This can perhaps shed some light on understanding the topology of a sensing field without knowing anything about it before hand.
 
@@ -904,3 +923,5 @@ A positive outcome would be to show that there is high correlation between the L
 Assuming high correlation and a statistical model of the sensing field, I evaluated if Laha is able to use this information to optimize triggering, classification, or predictive analytics. In order to evaluate this, I collected the number of false positives and false negatives at all levels in the Laha hierarchy while optimizing from topology and without optimizing from topology. I expect to see less false positives and less false negatives when utilizing topology optimizations. A negative result would be a larger number of false positives or false negatives.
 
 I expect to only see results in networks where signals travel fast enough to create a statistical difference between arrival times at the various sensors. In sensing fields where signals travel slowly and uniformly (i.e.\ a temperature collection DSN), it may be more difficult or impossible to actually determine the sensing field topology.
+
+Results of the underlying sensing field topology are provided in Section~\ref{subsec:results-of-model-of-underlying-sensor-field-topology}.
