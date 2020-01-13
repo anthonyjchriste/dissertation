@@ -2,11 +2,11 @@
 
 \section{Results of Validating Data Collected by Deployments}\label{sec:ground-truth-analysis}
 
-Ground truth analysis compares data collected by the OPQ and Lokahi networks to data that is assumed to be correct. The collected data is compared to the ground truth data in order to determine how similar it is to the ``correct" data. The analysis performed in the next sections attempt to provide evidence that the Lokahi and OPQ networks collect data that is as close to correct as possible and provides discussions on when and why this data doesn't always exactly match the ground truth data.
+Ground truth analysis compares data collected by the OPQ and Lokahi networks to data that is assumed to be correct. The collected data is compared to the ground truth data in order to determine how similar it is to the ``correct" data. The requirement to perform ground truth analysis was provided in Section~\ref{subsec:anticipated-contributions}. The analysis performed in the next sections utilized the evaluation~\ref{sec:validate-data-collected-by-laha-deployment} in an attempt to provide evidence that the Lokahi and OPQ networks collect data that is as close to correct as possible and provides discussions on when and why this data doesn't always exactly match the ground truth data.
 
 \subsection{Ground Truth Analysis: OPQ}\label{subsec:ground-truth-analysis:-opq}
 
-The UHM Office of Energy Management provided our team with access to data collected by high quality power meters installed at the mains of selected campus buildings. This data set provides the basis of the ground truth data that I compare against.
+The UHM Office of Energy Management provided our team with access to data collected by high quality power meters installed at the mains of selected campus buildings. This data set provides the basis of the ground truth data that I compare against using the evaluation outlined in~\ref{subsec:validate-data-collected-by-opq-deployment}.
 
 Ground truth data was scraped from an UHM internal server over the duration of the OPQ deployment. I collected ground truth data containing 15 features for each of the ground truth meters that are co-located with an OPQ Box. The ground truth data is mostly complete, however, there are a few missing features for some meters.
 
@@ -484,7 +484,7 @@ Future work should seek to find ground truth options that provide more details s
 
 \subsection{Ground Truth Analysis: Lokahi}\label{subsec:ground-truth-analysis:-lokahi}
 
-The Lokahi Infrasound network is unique in that most Events and Incidents are generated manually over known signals of interest. That is, something happens and an Event and possible an Incident are generated from a known signal. All public Incidents identified by Lokahi framework have been sourced and vetted. Thus, the question of sensor accuracy is: how well does Lokahi characterize Infrasound signals using mobile devices?
+The Lokahi Infrasound network is unique in that most Events and Incidents are generated manually over known signals of interest. That is, something happens and an Event and possible an Incident are generated from a known signal. All public Incidents identified by Lokahi framework have been sourced and vetted. Thus, the question of sensor accuracy is: how well does Lokahi characterize Infrasound signals using mobile devices? Results were found in accordance to the Evaluation section~\ref{subsec:lokahi-reference-deployment}.
 
 This topic was studied and discussed extensively in Asmar's dissertation ``Modernizing Infrasound Systems: Characterization and Analytics Approaches for Next-Generation Sensors"\cite{asmar19}.
 
@@ -523,11 +523,11 @@ This shows that not only are Detections and Incidents accounted for within Lokah
 
 \section{Results of Generality of this Framework}\label{sec:results-of-generality-of-this-framework}
 
-I have claimed that the Laha framework is general enough to to be suitable for use in multiple domains of DSNs. In the Evaluation chapter, I provided guidelines for evaluating Laha's generality across the OPQ and Lokahi distributed sensor networks. Next, I will revisit the evaluation guidelines and provide discussion and analysis that provides evidence that the Laha Framework is general enough to be useful in multiple domains while still meeting the requirements of the individual DSNs.
+I have claimed Section~\ref{subsec:generality-of-the-laha-framework} that the Laha framework is general enough to to be suitable for use in multiple domains of DSNs. In the Evaluation chapter~\ref(subsec:evaluation-of-the-generality-of-this-framework), I provided guidelines for evaluating Laha's generality across the OPQ and Lokahi distributed sensor networks. Next, I will revisit the evaluation guidelines and provide discussion and analysis that provides evidence that the Laha Framework is general enough to be useful in multiple domains while still meeting the requirements of the individual DSNs.
 
 \subsection{Results of Laha Generality for OPQ}\label{subsec:results-of-laha-generality-for-opq}
 
-I claimed in the Evaluation chapter that the OPQ network must be able to observe common power quality issues including Voltages sags and swells, Frequency sags and swells, excessive THD, and transients. These features were described and shown to exist within OPQ in the previous section on validating collected data by deployments. I will summarize these results here.
+I claimed in the Evaluation chapter~\ref{subsec:evaluation-of-the-generality-of-this-framework} that the OPQ network must be able to observe common power quality issues including Voltages sags and swells, Frequency sags and swells, excessive THD, and transients. These features were described and shown to exist within OPQ in the previous section on validating collected data by deployments. I will summarize these results here.
 
 Table~\ref{table:incidents_summary} summarizes the relevant Incidents over the three month deployment.
 
@@ -725,7 +725,7 @@ In this section, I showed that the OPQ network meets and surpasses the minimum r
 
 \subsection{Results of Laha Generality for Lokahi}\label{subsec:results-of-laha-generality-for-lokahi}
 
-I claimed in the Evaluation chapter that the Lokahi infrasound network is able to securely detect infrasonic signals of interest from a wide variety of heterogeneous mobile devices. The Lokahi network has successfully detected many signatures of interest with different modalities. These include rocket launches, aircraft operations, explosions, and signals created from objects reentering the Earth's atmosphere.
+I claimed in the Evaluation chapter~\ref{subsec:evaluation-of-the-generality-of-this-framework} that the Lokahi infrasound network is able to securely detect infrasonic signals of interest from a wide variety of heterogeneous mobile devices. The Lokahi network has successfully detected many signatures of interest with different modalities. These include rocket launches, aircraft operations, explosions, and signals created from objects reentering the Earth's atmosphere.
 
 I will now summarize and showcase some of the most interesting data that was collected from Lokahi that meets the requirements set forth in the Evaluation chapter. In particular, I hope to show that Lokahi is able to detect infrasonic signals generated from a diverse set of sources.
 
@@ -844,7 +844,7 @@ Finally, the Lokahi network has served as the basis for several students to rece
 
 \subsection{Discussion on Types of DSNs Laha is Suitable For}\label{subsec:discussion-on-types-of-dsns-laha-is-suitable-for}
 
-Working with two different DSNs in two different domains has provided me the opportunity to think about Laha's strengths and weaknesses compared to the domain that it is being utilized in. It's also given me the opportunity to think about other domains that Laha would be useful for. I will first discuss the strengths and weaknesses as compared to OPQ and Lokahi directly.
+In the Introduction Sections~\ref{subsec:anticipated-contributions} and~\ref{sec:anticipated-contributions-of-laha}, I stated that I would provide a discussion on the types of DSNs that Laha is suitable for. Working with two different DSNs in two different domains has provided me the opportunity to think about Laha's strengths and weaknesses compared to the domain that it is being utilized in. It's also given me the opportunity to think about other domains that Laha would be useful for. I will first discuss the strengths and weaknesses as compared to OPQ and Lokahi directly.
 
 I find Laha's data savings in the lower levels of the Laha hierarchy to be useful in situations where the sensors have high sampling rates and where the raw data will eventually be sent to the cloud for analysis. This is true of both OPQ and Lokahi who have sampling rates of 12,000 Hz and up to 8,000 Hz respectively. In both cases, the raw data is sent to the cloud for further analysis. In OPQ, this takes place when triggering algorithms detect an Event. In Lokahi, the raw data is sent along with the high level AML feature extracted data. When TTL is implemented for these networks, we observe a large decrease in stored data and an increase in stored signal-to-noise ratio.
 
@@ -874,7 +874,7 @@ In summary, I believe Laha would be a great fit for long running networks that p
 
 \subsection{Discussion of Laha Levels}\label{subsec:discussion-of-laha-levels}
 
-Now that I've had the chance to implement Laha levels in two separate DSNs, I want to discuss my thoughts on the layout of the levels and the individual levels themselves.
+In the Introduction Sections~\ref{subsec:anticipated-contributions} and~\ref{sec:anticipated-contributions-of-laha}, I stated that I would provide a discussion on Laha hierarchy. Now that I've had the chance to implement Laha levels in two separate DSNs, I want to discuss my thoughts on the layout of the levels and the individual levels themselves.
 
 To summarize, Laha utilizes 5 levels. The Instantaneous Measurements Level (IML) includes sampled raw data waveforms. The Aggregate Measurements Level (AML) contains summary statistics about features extracted from the IML. The Detection Level (DL) utilizes Events to define windows of data that may or may not contain signals of interest. The Incident Level (IL) contains data and metadata for classified signals of interest. The Phenomena Level (PL) provides context to groupings of subsets of data and also provides the ability to predict Future signals of interest all the while providing optimizations for the rest of the levels below it.
 
@@ -898,7 +898,7 @@ I think there is room to create sub-levels within the main levels. For example, 
 
 \section{Results of Converting Primitive Data into Actionable Insights}\label{sec:results-of-converting-primitie-data-into-actional-insights}
 
-Converting primitive data into actionable insights in one of the main tenants of this framework. This is accomplished within Laha by moving data upwards through Laha's hierarchy.
+Converting primitive data into actionable insights in one of the main tenants of this framework as described in Section~\ref{subsec:ability-to-convert-primitive-data-into-actional-insights}. This is accomplished within Laha by moving data upwards through Laha's hierarchy. Results for converting primitive data into actionable insights were found using the guidelines provided in the Evaluation Section~\ref{subsec:evaluation-of-converting-primitive-data-into-actionable-insights}.
 
 Within Laha, raw sampled signals (IML) are first converted into low fidelity feature streams (AML). This provides context by extracting known features from the signal and providing a summary statistics view of those features. Within OPQ, raw ADC samples are converted to feature streams that contain minimum, maximum, and average values for Voltage, Frequency and THD. Within Lokahi, raw ADC samples are converted to feature streams that include summary statistics about the sampled data as well as a summary statistics for other fields (such as location and timing accuracy). In, both networks, raw samples are converted to feature streams which add context to the original data. These feature streams provide actionable insights in the form of informing higher levels in the hierarchy if a nominal signal is likely within that stream. This brings us to the Detections Level (DL).
 
@@ -912,9 +912,11 @@ Perhaps the most interesting actionable insights Laha gathered are from Phenomen
 
 When I first conceptualized Phenomena, I expected them to be useful for providing context to data that didn't exist at lower levels. Being able to determine if a signal is periodic or not is interesting. Being able to decide if Incidents are similar is interesting. Being able to create Future/Predictive Phenomena is interesting. All of these Phenomena are interesting in their own right, but I believe the greater discovery is that Phenomena provide a way to filter out the signal from the noise. They provide a way of grouping lots of similar signals together so that they can be discussed as a group. This is something that all Phenomena have in common, they take collections of signals found at lower levels which have been grouped in such a way that they can be discussed as a grouping of data.
 
+The design of Phenomena can be found in Section~\ref{sec:phenomena} with implementation details outlined in Section~\ref{ssec:pq_plugins}. Evaluation guidelines can be found in Sections~\ref{subsec:evaluation-of-converting-primitive-data-into-actionable-insights} and~\ref{sec:evaluation-of-tertiary-goals}.
+
 \subsubsection{Results of Annotation Phenomena}
 
-Annotation Phenomena provide the means to add context to groupings of Events, Incidents, and sensors. Annotations contain a description grouping together related data as well as meta-data further describing the related data. Annotations add context on top of general classifications. As an example, Incidents within OPQ only provide information related to the PQ classification that it was assigned. However, this tells us nothing more about how the Incidents might be related (or if they even are related) and tells us nothing about the source of the anomalous signals.
+Annotation Phenomena provide the means to add context to groupings of Events, Incidents, and sensors as mentioned in Section~\ref{subsec:annotations-phenomena}). Annotations contain a description grouping together related data as well as meta-data further describing the related data. Annotations add context on top of general classifications. As an example, Incidents within OPQ only provide information related to the PQ classification that it was assigned. However, this tells us nothing more about how the Incidents might be related (or if they even are related) and tells us nothing about the source of the anomalous signals.
 
 Because Incidents within the Lokahi network require human vetting before publishing, all Incidents are assigned Annotations on Incident creation. These Annotations include a description of the signal source and also provide meta-data for linking the signals to known publications. For example, in previous sections, I showed that Lokahi was able to detect a meteor entry into the Earth's atmosphere above the Hawaiian islands. The Annotation for this Incident provides information about the source as well as provides links to third-party sources that verify the signal of interest. The Lokahi network contains 41 Annotations. Each Annotation in the Lokahi network groups one or more sensors that observed the same Incident.
 
@@ -947,7 +949,7 @@ I would like to integrate Annotation Phenomena with other Phenomena such as Peri
 
 \subsubsection{Results of Periodic Phenomena}
 
-Mauka has identified four periodic Phenomena. Table~\ref{table:periodic_summary} summarizes the results of observed Periodic Phenomena.
+Periodic Phenomena identify periodic signals of interest as described in Section~\ref{subsec:periodicity-phenomena}. Mauka has identified four periodic Phenomena. Table~\ref{table:periodic_summary} summarizes the results of observed Periodic Phenomena.
 
 \begin{table}[H]
     \centering
@@ -1017,7 +1019,7 @@ I've provided evidence in this section that show OPQ Mauka was able to identify 
 
 \subsubsection{Results of Future/Predictive Phenomena}
 
-Future Phenomena are generated from Periodic Phenomena. Future Phenomena predict when signals of interest should be observed by a particular sensor. Future Phenomena store information about its time window, the OPQ Boxes affected, and the expected feature that is predicted to be non-nominal. Future Phenomena also directly perform optimizations on the OPQ network. They are capable of modifying Event thresholds for the Frequency, Voltage, and THD features as well as modifying the data rate of OPQ Boxes. Because the Future Phenomena is capable of modifying the system, I expected to detect Events that would have otherwise been missed due to the threshold being too high.
+Future Phenomena are generated from Periodic Phenomena as described in Section~\ref{subsec:future-phenomena}. Future Phenomena predict when signals of interest should be observed by a particular sensor. Future Phenomena store information about its time window, the OPQ Boxes affected, and the expected feature that is predicted to be non-nominal. Future Phenomena also directly perform optimizations on the OPQ network. They are capable of modifying Event thresholds for the Frequency, Voltage, and THD features as well as modifying the data rate of OPQ Boxes. Because the Future Phenomena is capable of modifying the system, I expected to detect Events that would have otherwise been missed due to the threshold being too high.
 
 The Periodic Phenomena that were discussed in the previous section play an important role in creating Future Phenomena. Future Phenomena are created based off of the mean period and standard deviation of the period from the Periodic Phenomena. Future Phenomena attempt to predict four hours of Events and Incidents from the last known timestamp of a Periodic Phenomena.
 
@@ -1078,11 +1080,6 @@ I have provided evidence that shows that the Future Phenomena are able to predic
 % TODO
 TODO
 
-\subsubsection{Results of Location Phenomena}
-
-% TODO
-TODO
-
 \subsubsection{Summary of Results for Converting Raw Data into Actionable Insights}
 
 I've shown in previous sections that data for both the OPQ and Lokahi networks utilize the Laha hierarchy and that primitive data is indeed converted into actionable insights at higher levels within the hierarchy. I've shown how raw ADC samples are converted from level to level and provided discussion on what types of actionable insights can be gathered from each level within the Laha hierarchy.
@@ -1091,7 +1088,7 @@ I've shown that Phenomena add context to groups of Events and Incidents and that
 
 \section{Results of Tiered Management of Big Data}\label{sec:dsn-system-requirements}
 
-In the Evaluation chapter I examined the theoretical bounds of DSN system requirements both with TTL (Section~\ref{sssec:evaluation_of_ttl}) and without TTL (Section~\ref{sssec:eval_of_dsn_system_requirements}) for the OPQ and Lokahi networks.
+In the Introduction~\ref{subsec:tiered-big-data-management}, I provided tired management of big data as one of the major claims of Laha. In the Evaluation chapter~\ref{subsec:eval-big-data}, I examined the theoretical bounds of DSN system requirements both with TTL (Section~\ref{sssec:evaluation_of_ttl}) and without TTL (Section~\ref{sssec:eval_of_dsn_system_requirements}) for the OPQ and Lokahi networks.
 
 This section will focus on examining the actual DSN system requirements for the OPQ and Lokahi networks.
 
@@ -1099,7 +1096,7 @@ All results in this section were gathered directly from the OPQ and Lokahi netwo
 
 \subsection{DSN System Requirements: OPQ}\label{subsec:dsn-system-requirements:-opq}
 
-System utilization metrics were collected during the deployment of the OPQ DSN. The metrics that were collected are provided in the description of the SystemStatsPlugin (Section~\ref{lbl:SystemStatsPlugin}). In summary, I collected metrics on plugin utilization, system resource utilization, garbage collection, tunable Laha parameters, and storage requirements for each level within the Laha hierarchy.
+System utilization metrics were collected during the deployment of the OPQ DSN. The metrics that were collected are provided in the description of the SystemStatsPlugin (Section~\ref{lbl:SystemStatsPlugin}). In summary, I collected metrics on plugin utilization, system resource utilization, garbage collection, tunable Laha parameters, and storage requirements for each level within the Laha hierarchy. Evaluations for these results are provided in Sections~\ref{sssec:eval_of_dsn_system_requirements} and~\ref{sssec:evaluation_of_ttl}.
 
 There were several schema changes to the stored metric data, with the most significant change taking place on September 20, 2019. For these results, I only used metrics collected after this date as they contain the most useful data. Because of this, all actual data measurements have an offset that is greater than zero. That is, there was already data stored at each level before I started collecting detailed metrics. This offset is removed from the actual data when comparing to the theoretical data bounds in order to provide a more accurate comparison between the series.
 
@@ -1501,7 +1498,7 @@ The bottom panel shows the number of active OPQ Boxes sending over time. There d
 
 \subsection{DSN System Requirements: Lokahi}\label{subsec:dsn-system-requirements:-lokahi}
 
-The requirements of the Lokahi network stipulate that all data be saved. This is broadly due to the fact that many of our collaborators request data long after it would have been garbage collected by TTL. Because of this requirement, TTL was not implemented for the Lokahi network. I believe this is a feature, not a bug. This gave me the opportunity to compare a network that does utilize TTL (OPQ) to a network that does not utilize TTL (Lokahi).
+The requirements of the Lokahi network stipulate that all data be saved. This is broadly due to the fact that many of our collaborators request data long after it would have been garbage collected by TTL. Because of this requirement, TTL was not implemented for the Lokahi network. I believe this is a feature, not a bug. This gave me the opportunity to compare a network that does utilize TTL (OPQ) to a network that does not utilize TTL (Lokahi). Evaluations for these results are provided in Sections~\ref{sssec:eval_of_dsn_system_requirements} and~\ref{sssec:evaluation_of_ttl}.
 
 I've shown in the previous section the data savings OPQ experienced against estimated data growth and simulated data growth. In this section, I will show the amount of data actually stored in Lokahi versus how much data could have been saved using TTL. This will compare the actual data collected from the Lokahi network to the estimated and simulated data found in the Evaluation chapter.
 
@@ -1738,7 +1735,7 @@ In this section, I have compared the actual amount of data collected to estimate
 
 \section{Results of Tertiary Goals}\label{sec:results-of-tertiary-goals}
 
-In the Evaluation chapter, I provided three tertiary goals for the Laha framework. In general, two out of the three tertiary goals were implemented to some degree. Not all of the results mentioned in the Evaluation chapter for the tertiary goals were fulfilled. This section examines to what extent the tertiary goals were fulfilled and discusses how these results might be improved.
+In the introduction Section~\ref{subsec:tertiary-goals-and-claims}, I provided tertiary goals for the Laha framework. The evaluation of these tertiary goals were provided in Section~\ref{sec:evaluation-of-tertiary-goals}. In general, two out of the three tertiary goals were implemented to some degree. Not all of the results mentioned in the Evaluation chapter for the tertiary goals were fulfilled. This section examines to what extent the tertiary goals were fulfilled and discusses how these results might be improved.
 
 \subsection{Results of Adaptive Optimizations for Triggering}\label{subsec:results-of-adaptive-optimizations-for-triggering}
 
