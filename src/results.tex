@@ -876,11 +876,18 @@ In summary, I believe Laha would be a great fit for long running networks that p
 
 \subsection{Discussion of Laha Levels}\label{subsec:discussion-of-laha-levels}
 
-In the Introduction Sections~\ref{subsec:anticipated-contributions} and~\ref{sec:anticipated-contributions-of-laha}, I stated that I would provide a discussion on Laha hierarchy. Now that I've had the chance to implement Laha levels in two separate DSNs, I want to discuss my thoughts on the layout of the levels and the individual levels themselves.
+In the Introduction Sections~\ref{subsec:anticipated-contributions} and~\ref{sec:anticipated-contributions-of-laha}, I stated that I would provide a discussion on the Laha hierarchy. Now that I've had the chance to implement Laha levels in two separate DSNs, I want to discuss my thoughts on the layout of the levels and the individual levels themselves.
 
 To summarize, Laha utilizes 5 levels. The Instantaneous Measurements Level (IML) includes sampled raw data waveforms. The Aggregate Measurements Level (AML) contains summary statistics about features extracted from the IML. The Detection Level (DL) utilizes Events to define windows of data that may or may not contain signals of interest. The Incident Level (IL) contains data and metadata for classified signals of interest. The Phenomena Level (PL) provides context to groupings of subsets of data and also provides the ability to predict Future signals of interest all the while providing optimizations for the rest of the levels below it.
 
-I believe that these original levels worked well in both DSN domains that I analyzed, however, there are a few things that would be interesting to experiment with in future work.
+I believe that these original levels worked well in both DSN domains that I analyzed, however, there are a few things that would be interesting to experiment with in future work. Figure~\ref{fig:add_laha_levels} shows proposed changes to the Laha hierarchy.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{figures/add_laha_levels.png}
+    \caption{Proposed Changes to Laha Levels}
+    \label{fig:add_laha_levels}
+\end{figure}
 
 The IML is a bit contrived for some networks. Take OPQ as an example. The IML solely exists on the OPQ Boxes themselves bounded by the available memory. This is in contrast to all other levels which co-exist within a single cloud infrastructure. It feels like the IML is a bit removed from the rest of the levels because of this.
 
