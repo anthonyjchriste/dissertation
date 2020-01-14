@@ -731,7 +731,6 @@ Locations of Lokahi sensors during the period of the Lokahi deployment were prov
 
 I will now summarize and showcase some of the most interesting data that was collected from Lokahi that meets the requirements set forth in the Evaluation chapter. In particular, I hope to show that Lokahi is able to detect infrasonic signals generated from a diverse set of sources.
 
-
 \subsubsection{Big Island Earth Quake}
 Figures~\ref{fig:quake_1} and~\ref{fig:quake_2} show a magnitude 4.5 earth quake (USGS\cite{usgs_quake}) that was detected in the infrasound range and by accelerometers on the Big Island of Hawaii on August 12 2019. The earth quake was observed by four sensors. I show only one sensor here (and the rest of this section) for brevity. The full results for all examples are publicly available online\cite{redvox_reports}.
 
@@ -830,49 +829,86 @@ One of Lokahi's goals is to ensure data delivery in the face of network outages.
 
 Lokahi only stores metrics on data received and does not know if a sensor is trying to send data, but is not able to. Because of this restriction, I setup a controlled experiment with 5 Lokahi based sensors. Over the course of the week, I disabled network access on the sensors for periods of 1 minute, 1 hour, 4 hours, and 1 day. I confirmed that the network outage data was missing and then re-enabled network access. I then confirmed that 100\% of originally missing data was uploaded to the Lokahi servers.
 
-At least in a controlled environment, Lokahi was able to restore 100\% of its data. Anecdotally, we've observed issues in other deployments where networks have been spotty rather than either fully present or fully not present. We've encountered small amounts of data loss (on the order of minutes) in such situations. It is possible to suffer data loss in situations with incredibly spotty networks, but in my experience, this is quite rare.
+At least in a controlled environment, Lokahi was able to restore 100\% of its data. Anecdotally, we've observed issues in other deployments where networks have been spotty rather than either fully present or fully not present. We've encountered small amounts of data loss (on the order of minutes) in such situations. It is possible to suffer data loss in situations with spotty networks, but in my experience, this is quite rare.
 
-\subsubsection{Other Claims Supporting the Generality of the Lokahi Network}\label{subsec:other-claims-supporting-the-generality-of-the-lokahi-network}
-
-I've showcased a multitude of signals that the Lokahi framework has generated, but I believe there are other tangibles to consider.
-
-The Lokahi network supported the Hawaiian Volcano Observatory during the 2018 lower Puna eruption by supplementing scientists with infrasound data produced by venting gases from magma chambers.
-
-The Lokahi network directly supports several national laboratories (Idaho National Labs, Lawrence Livermore National Labs, Oakridge National Labs, and Lawrence Berkeley National Labs) by providing a secure channel to share real time infrasound data from strategically placed sensors. This data is consumed by the national labs and then analyzed and fused with other data streams in an effort to support the Labs' missions. The research group responsible for working with the Lokahi network works directly with the national labs providing guidance and support on the data.
-
-The Lokahi network also supports several private groups by providing secure real-time data collected from strategically placed sensors.
-
-Finally, the Lokahi network has served as the basis for several students to receive their graduate degrees. Julie Schnurr received her Masters degree in 2017 for her thesis ``Air Blasts: Explosion Yield Estimation and Waveform Modeling"\cite{julie} using data in part collected by Lokahi. Karina Asmar received her Ph.D\cite{asmar19} in 2019 using data collected by the Lokahi network.
+%\subsubsection{Other Claims Supporting the Generality of the Lokahi Network}\label{subsec:other-claims-supporting-the-generality-of-the-lokahi-network}
+%
+%I've showcased a multitude of signals that the Lokahi framework has generated, but I believe there are other tangibles to consider.
+%
+%The Lokahi network supported the Hawaiian Volcano Observatory during the 2018 lower Puna eruption by supplementing scientists with infrasound data produced by venting gases from magma chambers.
+%
+%The Lokahi network directly supports several national laboratories (Idaho National Labs, Lawrence Livermore National Labs, Oakridge National Labs, and Lawrence Berkeley National Labs) by providing a secure channel to share real time infrasound data from strategically placed sensors. This data is consumed by the national labs and then analyzed and fused with other data streams in an effort to support the Labs' missions. The research group responsible for working with the Lokahi network works directly with the national labs providing guidance and support on the data.
+%
+%The Lokahi network also supports several private groups by providing secure real-time data collected from strategically placed sensors.
+%
+%Finally, the Lokahi network has served as the basis for several students to receive their graduate degrees. Julie Schnurr received her Masters degree in 2017 for her thesis ``Air Blasts: Explosion Yield Estimation and Waveform Modeling"\cite{julie} using data in part collected by Lokahi. Karina Asmar received her Ph.D\cite{asmar19} in 2019 using data collected by the Lokahi network.
 
 \subsection{Discussion on Types of DSNs Laha is Suitable For}\label{subsec:discussion-on-types-of-dsns-laha-is-suitable-for}
 
 In the Introduction Sections~\ref{subsec:anticipated-contributions} and~\ref{sec:anticipated-contributions-of-laha}, I stated that I would provide a discussion on the types of DSNs that Laha is suitable for. Working with two different DSNs in two different domains has provided me the opportunity to think about Laha's strengths and weaknesses compared to the domain that it is being utilized in. It's also given me the opportunity to think about other domains that Laha would be useful for. I will first discuss the strengths and weaknesses as compared to OPQ and Lokahi directly.
 
+First, I provide a summary of Laha's strengths in relation to common DSN properties as shown in Table~\ref{table:summary_of_laha_viability}.
+
+\begin{table}[h]
+    \centering
+    \caption{Summary of Laha's Strengths and Weaknesses}
+    \begin{tabularx}{\textwidth}{lX}
+        \toprule
+        \textbf{Item} & \textbf{Strengths/Weaknesses} \\
+        \midrule
+        Sensor Sampling Rate & Higher sampling rates utilize the Laha Hierarchy more effectively for producing AML data and providing data savings. \\
+        Network Uptime & Longer network uptime provides Laha more ability to self-optimize and identify Phenomena. Data savings at higher levels require longer network uptime. \\
+        Signal-to-Noise & Laha is well suited for networks that have a low signal-to-noise ratio by utilizing the Laha hierarchy for filtering out noisy data. \\
+        Data Acquisition & Laha is better suited for networks that have the ability provide low level data required for higher level analysis. \\
+        Sensor Availability & Laha expects sensors to be networked and that sensors provide data in close to real-time for Event, Incident, and Phenomena generation. \\
+        Numerous Events & Laha's Phenomena rely on a large number of Events and Incidents to be present in the network to inform Phenomena. \\
+        Multiple Signal Classifications & Laha works best with multi-modal data that can be classified in more than two ways. \\
+        Designed For Laha & It's easier to design a network around Laha than it is to fit Laha into an existing network. \\
+        Other DSNs & Laha's benefits would be useful in any network that utilizes high volume and near real-time data transfer. Some examples include earthquake monitoring, environmental monitoring, and traffic monitoring. \\
+        \bottomrule
+    \end{tabularx}
+    \label{table:summary_of_laha_viability}
+\end{table}
+
+Next, I will provide a discussion of some of these topics in more detail.
+
+\subsubsection{DSN Sampling Rate}
 I find Laha's data savings in the lower levels of the Laha hierarchy to be useful in situations where the sensors have high sampling rates and where the raw data will eventually be sent to the cloud for analysis. This is true of both OPQ and Lokahi who have sampling rates of 12,000 Hz and up to 8,000 Hz respectively. In both cases, the raw data is sent to the cloud for further analysis. In OPQ, this takes place when triggering algorithms detect an Event. In Lokahi, the raw data is sent along with the high level AML feature extracted data. When TTL is implemented for these networks, we observe a large decrease in stored data and an increase in stored signal-to-noise ratio.
 
 Networks with low sampling rates (on the order of seconds to minutes and higher) would not see as large of benefit in terms of storage savings due to the low sampling rate. In fact, networks with low sampling rates may benefit from a store everything approach if the resources are available.
 
+\subsubsection{Network Uptime}
 Laha's data savings at higher levels in the hierarchy are only achievable for long running networks. Further, Laha's self-optimization capabilities only kick in over longer durations of network uptime. Because of this, Laha is better suited for networks with longer lasting deployments. Laha would be too cumbersome and not provide enough benefits for short lived, ad-hoc networks.
 
-Laha is incredibly well suited for networks that experience a low signal to noise ratio. When most of the data is noise, Laha's data management combined with its ability to filter out noise in analysis puts it in a unique position to deal with large volumes of noisy data. Networks with a high signal-to-noise ratio would not gain the data saving benefits that Laha provides.
+\subsubsection{Signal-to-Noise Ratio}
+Laha is well suited for networks that experience a low signal to noise ratio. When most of the data is noise, Laha's data management combined with its ability to filter out noise in analysis puts it in a unique position to deal with large volumes of noisy data. Networks with a high signal-to-noise ratio would not gain the data saving benefits that Laha provides.
 
+\subsubsection{Sensor Availability}
 Laha attempts to classify Events and Incidents in near real time. If Events and Incidents are not classified in a timely manner, the underlying data might be garbage collected. Because of this, Laha is suited for networks that send data features in a timely manner. Sensors within the Laha framework are expected to be networked. Laha is ill suited for networks that don't provide data in a timely manner such as those that require physical access to get the data or those that buffer the data for long durations before transmitting. Further, Laha expects all data to arrive at a central location for further processing. This requires a network where each sensor in the network is able to send its data to an analysis process. Laha is not suited for networks where data must be retrieved from each sensor.
 
+\subsubsection{Numerous Events}
 One of the major differences between OPQ and Lokahi is the number of identified Events and Incidents. Events and Incidents for OPQ are automatically found and classified and as it turns out, there is a lot going on on the UHM micro-grid in terms of PQ signals of interest. Contrast this to Lokahi which aims to classify significant signals observed in the infrasound range. Because the thresholds are higher for classifying Lokahi Events and Incidents, there are naturally less of them. This dichotomy is important because higher levels of the Laha hierarchy make use of large numbers of Events and Incidents to produce viable Phenomena. Because of that, Laha is better suited for networks that produce large amounts of Events and Incidents. These larges amounts of Events and Incidents provide Laha a greater opportunity to produce Phenomena and self-tune.
 
 An interesting consequence of the above is that data at different levels in the two networks appear to provide different weights of importance. For example, Events and Incidents are somewhat rare in the Lokahi network due to the high threshold required to become an Event or Incident. These Incidents are generally infrasonic events that are well characterized. Because of the high threshold and rarity of these data types, the Incidents that are classified by Lokahi tend to provide greater context than Events and Incidents in OPQ where there are many more Events and Incidents and I rely on Phenomena to find important signals of interest. This leads me to believe that networks with large amounts of Events and Incidents are better analyzed with Phenomena where networks with low amounts of Events and Incidents may not necessarily need Phenomena to provide use context and actionable insights.
 
+\subsubsection{Multiple Signal Classifications}
 Networks that require only binary classifications or a small number of classifications would not be well suited by Laha. As an example, a network of temperature sensors that only creates Events when a threshold is crossed is likely better served by edge processing or sending all the data and only saving high level metrics and thresholds event indications. Laha really shines when it has the ability to apply multiple classification to multimodal data and to act on those classifications with Phenomena.
 
+\subsubsection{Data Acquisition}
 Networks that only send high level metrics (e.g. AML values) would be a difficult fit for Laha as Laha relies on the fact that it can access high-fidelity data to perform analysis in the Detection and Incident levels. Laha can still be used (from the AML up), but I suspect the quality of the results to greatly suffer.
 
+\subsubsection{Designing for Laha vs Altering a Design for Laha}
 I found that it's much easier to build a Laha network from the ground up compared to integrating Laha into an existing network. OPQ was designed with the explicit purpose of being a Laha compatible network. Further, OPQ, being an academic project, had the freedom to allow me to make any changes required to fit the implementation to the theory.
 
 Lokahi on the other hand has goals of providing a secure and stable Infrasound network. Lokahi also provides much of the basis for work done at the Infrasound Laboratory in Kailua-Kona and at other institutions by our collaborators. Because of these requirements, it was more difficult to make sweeping changes specifically to fit Laha's model.
 
+\subsubsection{Other Fields Laha would be Useful For}
 I believe that Laha would be useful in many distributed sensing domains that collect large amounts of data and provide opportunities for many different types of signal classifications. Although not part of my direct research, Lokahi is experimenting with including other sensor data other than infrasound such as magnetometer, accelerometer, gyroscope, light, and barometer in order to provide more sensing modalities. Laha provides a basis for integrating and analyzing these new sensing modalities.
 
-In summary, I believe Laha would be a great fit for long running networks that provide high data rates and multiple classification possibilities. These include networks that perform earth quake monitoring, environmental monitoring, traffic monitoring, and security monitoring to name a few. As network speeds increase and as the availability  Laha is not well suited for networks with low data rates or simple classifications schemes.
+\subsubsection{Summary of Laha Benefits and Weaknesses}
+In summary, I believe Laha would be a great fit for long running networks that provide high data rates and multiple classification possibilities. These include networks that perform earth quake monitoring where signals are few and far between, environmental monitoring with multi-modal data, traffic monitoring and traffic incident detection, and security monitoring with security incident detection to name a few. As network speeds increase and as the availability of low cost networked embedded computers become more prevalent, Laha awaits to manage the distributed sensor networks of the future.
+
+Laha is not well suited for networks with low data rates or simple classifications schemes due to the added complexity. For simple networks such as these, traditional DSN optimization and management approaches are likely more useful.
 
 \subsection{Discussion of Laha Levels}\label{subsec:discussion-of-laha-levels}
 
@@ -880,30 +916,62 @@ In the Introduction Sections~\ref{subsec:anticipated-contributions} and~\ref{sec
 
 To summarize, Laha utilizes 5 levels. The Instantaneous Measurements Level (IML) includes sampled raw data waveforms. The Aggregate Measurements Level (AML) contains summary statistics about features extracted from the IML. The Detection Level (DL) utilizes Events to define windows of data that may or may not contain signals of interest. The Incident Level (IL) contains data and metadata for classified signals of interest. The Phenomena Level (PL) provides context to groupings of subsets of data and also provides the ability to predict Future signals of interest all the while providing optimizations for the rest of the levels below it.
 
-I believe that these original levels worked well in both DSN domains that I analyzed, however, there are a few things that would be interesting to experiment with in future work. Figure~\ref{fig:add_laha_levels} shows proposed changes to the Laha hierarchy.
+I believe that these original levels worked well in both DSN domains that I analyzed, however, there are a few things that would be interesting to experiment with in future work. Figure~\ref{fig:add_laha_levels} shows proposed changes to the Laha hierarchy with the proposed changes highlighted by red ovals.
 
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth]{figures/add_laha_levels.png}
+    \includegraphics[width=.60\linewidth]{figures/add_laha_levels.png}
     \caption{Proposed Changes to Laha Levels}
     \label{fig:add_laha_levels}
 \end{figure}
 
+Next, I will discuss these changes in detail.
+
+\subsubsection{Discussion of IML}
 The IML is a bit contrived for some networks. Take OPQ as an example. The IML solely exists on the OPQ Boxes themselves bounded by the available memory. This is in contrast to all other levels which co-exist within a single cloud infrastructure. It feels like the IML is a bit removed from the rest of the levels because of this.
 
 When Events are found, the IML data is copied into the Event. Similarly, IML data is copied into Incidents. This is in contrast to all other levels which do not perform any copying and merely ``point" to the data. For example, Incidents and Events simply point to a range of Measurements and Trends instead of copying those values into those levels. This is possible because the TTL values of those Measurements and Trends match those of the Events, Incidents, or Phenomena.
 
+\subsubsection{Discussion of New Level SML}
 I think it would be useful to add another level under the IML called the Sensor Measurement Level (SML). This level would signify all of the raw data that is currently living on the sensors themselves and hasn't been sent to a central server for analysis. I would keep the IML, but this level would contain all of the raw samples that were sent from sensors to a central server. Instead of copying data into Events and Incidents, the data would remain in the IML and simply be referenced from Events and Incidents.
 
+\subsubsection{Discussion of AML}
 I believe the AML is critical and I'm not sure that I would make any changes to it directly. It alone is responsible for providing the triggering architecture required for detecting Events. However, I would consider adding a new level between the AML and the DL called the Data Fusion Level (DFL).
 
+\subsubsection{Discussion of New Level DFL}
 The DFL would be responsible for collecting AML data from heterogeneous sources. For instance, I found myself wishing that I had a way to feed ground truth data into OPQ alongside the OPQ Box data in an attempt to perform real time validation of our data. It would also be interesting to fuse other data sources such as temperature data, weather data, or power usage data in an attempt to find correlations between other data streams and what was observed by the OPQ Boxes. I would place the DFL between the AML and DL because I would like the DL an IL to be abstracted over AML values.
 
+\subsubsection{Discussion of DL and IL}
 In certain instances, I believe the DL and IL could be combined into a single level. The main difference between Events and Incidents is that Incidents provide a known classification and only reference a subset of the Event data. It would be easy to combine these levels into a single Detection Level that has parameters listing known classifications within the Event along with timestamps. This would require less housekeeping and potential data savings by not copying the Incident waveform from the Event waveform.
 
+\subsubsection{Discussion of PL}
 I would not make many changes to the PL. I believe the PL is fundamentally important for providing context for large amounts of Events and Incidents.
 
+\subsubsection{Discussion of Sub-Levels}
 I think there is room to create sub-levels within the main levels. For example, sub-levels could be added to perform compression, encryption, metric collection, quality assurance, or logging. These are currently handled by individual Actors within the levels, but in certain instances, I think it could be helpful to promote these ideas to sub-levels as useful parts of the Laha hierarchy.
+
+\subsubsection{Summary of Discussion on Laha Levels}
+Table~\ref{table:summary_of_levels} summarizes the discussion of Laha Levels.
+
+\begin{table}[H]
+    \centering
+    \caption{Summary of Laha Levels Discussion}
+    \begin{tabularx}{\textwidth}{lX}
+        \toprule
+        \textbf{Laha Level} & \textbf{Summary} \\
+        \midrule
+        SML & Create a new level ``SML" used for describing sensor data stored on sensors. \\
+        IML & Redefine IML for data that has been received from sensors. Store IML data in the IML instead of copying to other levels. \\
+        AML & No changes. \\
+        DFL & Create a new level ``DFL" that performs data fusion with other data sources. \\
+        DL & Possibly combine with IL \\
+        IL & Possibly combine with DL \\
+        PL & No changes. \\
+        Sub-Levels & Introduce new sub-levels into existing levels to perform compression, encryption, metric collection, quality insurance, etc. \\
+        \bottomrule
+    \end{tabularx}
+    \label{table:summary_of_levels}
+\end{table}
 
 \section{Results of Converting Primitive Data into Actionable Insights}\label{sec:results-of-converting-primitie-data-into-actional-insights}
 
