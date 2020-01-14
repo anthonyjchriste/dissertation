@@ -40,7 +40,7 @@ The placement strategy I utilized aimed to maximize collecting distributed PQ ev
 
 Determination of electrical lines was aided by the UH Manoa electrical blueprint as displayed in Figure~\ref{fig:UhGridTopo}.
 
-\begin{figure}
+\begin{figure}[H]
 	\centering
 	\includegraphics[height=\textheight]{figures/uh_power_grid.pdf}
 	\caption{UH Deployment Grid Topology}
@@ -49,7 +49,7 @@ Determination of electrical lines was aided by the UH Manoa electrical blueprint
 
 A graphical representation showing the complete coverage of Boxes on the UH Manoa microgrid is displayed in Figure~\ref{fig:UhDeploy}.
 
-\begin{figure}
+\begin{figure}[H]
 	\centering
 	\includegraphics[width=\linewidth]{figures/deploy.jpg}
 	\caption{UH Deployment}
@@ -58,11 +58,97 @@ A graphical representation showing the complete coverage of Boxes on the UH Mano
 
 All devices were placed in a location that had access to UH Manoa's wireless network. As soon as they were installed, they started transmitting PQ data for that location.
 
-\subsection{Lokahi Deployment}
+\subsection{Lokahi Deployment}\label{subsec:lokahi-deployment}
 
 Over a period of three months, data was collected from over 100 Lokahi sensors at large distributed globally.
 
-% TODO Update me
+Figure~\ref{fig:active_lokahi_sensors_i} shows the number of active Lokahi sensors sampling at different sampling rates over this period.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{figures/lokahi_num_sensors.png}
+	\caption{Active Lokahi Sensors}
+	\label{fig:active_lokahi_sensors_i}
+\end{figure}
+
+Data was collected globally. The next series of Figures will show where data was collected from using the Lokahi network over the deployment window. It should be noted that this map only displays data from sensors that recorded public data. This was done to protect the privacy of users that have marked their data as private. Other results for the Lokahi network utilize the full data set of public and private data. I took care to not expose any private details and only provide results as statistical summaries.
+
+Figure~\ref{fig:lokahi_deploy_1} shows Lokahi sensors deployed in the state of Hawaii.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{figures/lokahi_deploy_1.jpg}
+	\caption{Lokahi Sensors: Hawaii}
+	\label{fig:lokahi_deploy_1}
+\end{figure}
+
+Here, we can observe sensor coverage on the islands of Oahu, Maui, and the Big Island of Hawaii.
+
+Figure~\ref{fig:lokahi_deploy_2} shows Lokahi sensors deployed across North America.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{figures/lokahi_deploy_2.jpg}
+	\caption{Lokahi Sensors: North America}
+	\label{fig:lokahi_deploy_2}
+\end{figure}
+
+Lokahi has provided significant sensor coverage over the North American continent with most sensors located in the United States and others located in Mexico and Canada.
+
+Figure~\ref{fig:lokahi_deploy_3} shows Lokahi sensors deployed through Central and South America.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{figures/lokahi_deploy_3.jpg}
+	\caption{Lokahi Sensors: Central and South America}
+	\label{fig:lokahi_deploy_3}
+\end{figure}
+
+Here we can see sensors that were deployed in Columbia, Costa Rica, and Brazil.
+
+Figure~\ref{fig:lokahi_deploy_4} shows Lokahi sensors deployed through Europe and Western Asia.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{figures/lokahi_deploy_4.jpg}
+	\caption{Lokahi Sensors: Europe and Western Asia}
+	\label{fig:lokahi_deploy_4}
+\end{figure}
+
+Europe also provides excellent coverage for the Lokahi network. You will also note that Lokahi sensors have been deployed to several countries outside of Europe including Turkey, Israel, Ukraine, and Russia.
+
+Figure~\ref{fig:lokahi_deploy_5} shows Lokahi sensors deployed through South-East Asia.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{figures/lokahi_deploy_5.jpg}
+	\caption{Lokahi Sensors: India and South-East Asia}
+	\label{fig:lokahi_deploy_5}
+\end{figure}
+
+Here, we can see Lokahi sensors that have been deployed in India, Bangladesh, Sri Lanka, Pakistan, and Malaysia.
+
+Figure~\ref{fig:lokahi_deploy_6} shows Lokahi sensors deployed through Oceania.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{figures/lokahi_deploy_6.jpg}
+	\caption{Lokahi Sensors: Oceania}
+	\label{fig:lokahi_deploy_6}
+\end{figure}
+
+Lokahi sensors have been deployed to the Western, Southern, and Eastern coasts of Australia as well as New Zealand.
+
+Figure~\ref{fig:lokahi_deploy_7} shows Lokahi sensors deployed through East Asia.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{figures/lokahi_deploy_7.jpg}
+	\caption{Lokahi Sensors: East Asia}
+	\label{fig:lokahi_deploy_7}
+\end{figure}
+
+Here we can observe Lokahi sensors that have been deployed to China, Taiwan, Russia, South Korea, and Japan.
 
 \section{Validate data collected by Laha deployment}\label{sec:validate-data-collected-by-laha-deployment}
 Data from both experimental deployments were validated against ground truth data as described in the Introduction~\ref{subsec:anticipated-contributions}. In the OPQ deployment, ground truth is provided by UH meters installed at the main of each building. In the Lokahi deployment, ground truth was provided by high-end calibrated microphones.
