@@ -1154,8 +1154,15 @@ I have provided evidence that shows that the Future Phenomena are able to predic
 
 \subsubsection{Results of Similarity Phenomena}
 
-% TODO
-TODO
+Similarity Phenomena attempt to add context to Incidents by grouping sets of related Incidents together. These groupings allow us to discuss Incidents as Incidents that belong to a particular group rather than individual Incidents. For example, in the OPQ network, Frequency Incidents dominate in count compared to all other Incidents types. This makes it difficult to discuss Frequency Incidents and to separate the proverbial wheat from the chaff. Similarity Phenomena were designed to provide a way of providing additional context on top of large numbers of Incidents.
+
+Similarity Phenomena provide multiple optimizations to the underlying DSN in terms of data storage requirements. Unlike other Incidents which have their data saved when a new Phenomena is created, Similarity Phenomena provide the ability to discard data once it has been classified into a particular cluster. Now, instead of saving all Frequency swells that have a mean duration of 100 ms and a mean deviation of -.1 Hz, Laha can discard the original data and only update the counts within the Similarity Phenomena.
+
+Two approaches were taken to find similar groups of Frequency incidents with varying success. K-means clustering was used to find groups of related clusters with an empirically found $k$ value. I also attempted to utilize hierarchical clustering, but had issues due to the high memory requirements required for agglomerative clustering. In agglomerative clustering, point-wise distances are found which ends up providing a memory overhead of $O(N^2)$. This memory overhead is too large to be useful on our cloud based OPQ server. I tried to perform agglomerative clustering on a development machine with 32 GB of memory, but still ran into memory issues. Because of these memory issues, I attempted to focus my efforts on k-means which provides memory overhead of $O(N + k * d)$.
+
+I focused my Similarity Phenomena on Frequency Incidents due to the large amount of Frequency Incidents present in the OPQ system. Frequency Incidents were compared using a distance metric comprised of the duration of the Incident and the maximum deviation from nominal of the Incident. I then examined the groupings provided for individual OPQ Boxes and also the groupings provided for the set of all OPQ Boxes.
+
+Future work will examine extending this concept to other features collected by OPQ and examine including higher dimensional features sets to compare between.
 
 \subsubsection{Summary of Results for Converting Raw Data into Actionable Insights}
 
