@@ -152,7 +152,7 @@ def get_reports(mongo_client: pymongo.MongoClient,
                   "receivers": True,
                   "devices": True}
 
-    return list(map(lambda doc: RedvoxReport.from_doc(doc, mongo_client, s3_client), list(reports_coll.find(query, projection=projection))))
+    return list(map(lambda doc: RedvoxReport.from_doc(doc, mongo_client, s3_client), list(reports_coll.find(query))))
 
 
 def get_stats(reports: List[RedvoxReport]) -> None:

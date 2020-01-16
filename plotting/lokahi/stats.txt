@@ -49,3 +49,5 @@ total_trends=2827637 6987.09MB orphaned_trends=2484447 87.86% 6139.07MB event_tr
 total_events=2801 180160.32MB orphaned_events=2801 100.00% 180160.32MB incident_events=0 0.00% 0.00MB
 total_incidents=86 9326.53MB
 total_storage_items=5658161
+
+phenomena dr: 0.0056203203849740264
