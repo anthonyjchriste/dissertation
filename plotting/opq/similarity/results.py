@@ -6,8 +6,8 @@ def res(incident_type: str,
         sample_size_bytes: int,
         mean_incident_size_bytes: int) -> None:
     size_bytes: float = num_incidents * ((mean_duration_ms / 1_000.0) * sr_hz * sample_size_bytes + mean_incident_size_bytes)
-    size_gb: float = size_bytes / 1_000_000.0
-    print(f"{incident_type} {cluster_id} & {num_incidents} & {size_gb:.2f} \\\\")
+    size_gb: float = size_bytes / 1_000_000_000.0
+    print(f"{incident_type} {cluster_id} & {size_gb:.2f}")
 
 def main():
     res("FSag", 1, 116769, 98.91, 12000, 2, 365)
