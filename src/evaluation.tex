@@ -495,8 +495,8 @@ Next, I will compare the estimated sizes of the PL for the OPQ and Lokahi networ
 		\toprule
 		\textbf{Network} & $\bm{\mu DR}$ & \textbf{Data/Day} & \textbf{Data/Week} & \textbf{Data/Year} \\
 		\midrule
-		OPQ & .02 & 1.73 kb & 12.10 kb & 628.99 kb \\
-		Lokahi & 37.12 & 3.21 MB & 22.45 MB & 1.17 GB \\
+		OPQ & 0.22 & 0.02 MB & 0.13 MB & 6.92 MB \\
+		Lokahi & 0.01 & 0.86 kB & 6.05 kB & 314.50 kB \\
 		\bottomrule
 	\end{tabularx}
 	\label{table:estimated_mu_pl}
@@ -539,12 +539,13 @@ First, let's look at the size of Laha with parameters estimated from OPQ. The es
 		$\mu N_{SEN}$ & 1  \\
 		$\mu DR$ & 40.69  \\
 		$\mu IR$ & 184.41 \\
+		$\mu PR$ & 0.22 \\
 		\bottomrule
 	\end{tabularx}
 	\label{table:estimated_laha_opq}
 \end{table}
 
-Figure~\ref{fig:plot_lala_opq} shows the bounds of the entire network over the course of three years (note the x-axis values are multiplied by 1E8).
+Figure~\ref{fig:plot_lala_opq} shows the estimated bounds of the entire network over the course of three years.
 
 \begin{figure}[H]
 	\centering
@@ -553,7 +554,7 @@ Figure~\ref{fig:plot_lala_opq} shows the bounds of the entire network over the c
 	\label{fig:plot_lala_opq}
 \end{figure}
 
-We can gather that the bounds on the entire OPQ network given estimated parameters from the network are 7953 gigabytes $\pm$ 1.1 gigabytes per year. It's clear that the IML provides most of this data. We can also see that over time, the DL dominates all other levels except the IML\@.
+We can gather that the bounds on the entire OPQ network given estimated parameters from the network are 2310 gigabytes over a period of 3 years. It's clear that the IML provides most of this data. We can also see that over time, the DL dominates all other levels except the IML\@.
 
 By representing the data as a pie chart (Figure~\ref{fig:plot_lala_opq_pie}), we can gain a better understanding of how these levels compare at the end of a year. The first (left most) pie chart shows that the IML dominates the overall data size. This makes sense because this level represents raw samples which is always going to be the largest set of data.
 
@@ -577,14 +578,14 @@ Finally, we summarize the results in Table~\ref{table:summarized_laha_results_op
 		\toprule
 		\textbf{Laha Level} & \bm{$\mu Size$} \textbf{GB} \\
 		\midrule
-		IML & 2114.65 \\
-		AML (Measurements) & 12.78 \\
-		AML (Trends) & 0.54  \\
-		AML (Total) & 13.31  \\
-		DL & 3.58  \\
-		IL & 16.25  \\
-		PL & NA  \\
-		Laha (Total) & 2147.8  \\
+		IML & 2270.59 \\
+		AML (Measurements) & 13.71 \\
+		AML (Trends) & 0.57  \\
+		AML (Total) & 14.29  \\
+		DL & 3.84  \\
+		IL & 22.21 \\
+		PL & 0.02  \\
+		Laha (Total) & 2310.97  \\
 		\bottomrule
 	\end{tabularx}
 	\label{table:summarized_laha_results_opq}
@@ -606,6 +607,7 @@ Let's next perform the same evaluation, but for the Lokahi network. Table~\ref{t
 		$\mu N_{SEN}$ & 1  \\
 		$\mu DR$ & 402.82  \\
 		$\mu IR$ & 37.11 \\
+		$\mu PR$ & 0.01 \\
 		\bottomrule
 	\end{tabularx}
 	\label{table:estimated_laha_lokahi}
@@ -638,16 +640,18 @@ Finally, we summarize the results in Table~\ref{table:summarized_laha_results_lo
 		\toprule
 		\textbf{Laha Level} & \bm{$\mu Size$} \textbf{GB} \\
 		\midrule
-		IML & 2819.54 \\
+		IML & 2819.53 \\
 		AML (Total) & 6.64  \\
 		DL & 35.49  \\
 		IL & 3.27  \\
-		PL & NA  \\
+		PL & 0.001  \\
 		Laha (Total) & 2864.95  \\
 		\bottomrule
 	\end{tabularx}
 	\label{table:summarized_laha_results_lokahi}
 \end{table}
+
+Over the course of 3 years using estimated parameters supplied by the Lokahi network, the network is expected to grow close to 2.8 TB.
 
 \subsubsection{Evaluation of TTL}\label{sssec:evaluation_of_ttl}
 In the previous section, I examined the data requirements for Laha with the assumption that data is never discarded. In practice, this approach is unsustainable and will quickly lead to network degradation in terms of storage, memory, and processing requirements. To address this issue, Laha provides the concept of TTL (Time-to-Live) which is the amount of time that data is stored before it is garbage collected.
@@ -719,6 +723,7 @@ Table~\ref{table:sim_params} provides the estimated parameters used to run the O
 		Mean Incident Size Bytes & 12647 & 46169741 \\
 		Event DR/second & 40.66 &  0.000031 \\
 		Incident DR/second & 184.41 &  0.0000008 \\
+		Phenomena DR/second & 0.22 & 0.01 \\
 		Simulation Tick Granularity & 1 second & 1 second \\
 		Simulation Ticks & seconds/3 years, seconds/3 years, \\
 		Simulation GC Interval & seconds/10 minutes, seconds/10 minutes \\

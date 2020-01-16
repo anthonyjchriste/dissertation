@@ -31,6 +31,6 @@ total_events=897589 301589.90MB orphaned_events=610907 68.06% 205264.75MB incide
 total_incidents=1741491 22376.42MB
 total_storage_items=190818280
 
-Total Phenomena: 2939
-Total bytes: 132255
-DR/s: 0.015624939959598386
+Total Phenomena: 2946
+Total bytes: 1853989
+DR/s: 0.21875293620997627

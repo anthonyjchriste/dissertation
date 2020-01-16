@@ -424,7 +424,7 @@ def plot_laha_opq():
     x_values = np.arange(1, S_IN_YEAR * 3, step=S_IN_DAY)
 
     # IML
-    mu_n_sens = 15.0
+    mu_n_sens = 1.0
     sigma_n_sens = 0.7
     s_samp = 2
     sr = 12000
@@ -466,21 +466,28 @@ def plot_laha_opq():
     il_size_e = (sigma_il / np.sqrt(x_values)) * np.abs(x_values)
     plt.plot(x_values, il_size, label="IL")
 
+    # PL
+    mu_pl = 0.22
+    pl_size = mu_pl * x_values / 1_000_000_000.0
+    plt.plot(x_values, pl_size, label="PL")
+
     # Total
-    laha_size = iml_size + aml_size_total + dl_size + il_size
+    laha_size = iml_size + aml_size_total + dl_size + il_size + pl_size
     laha_size_e = np.sqrt(iml_error ** 2 + aml_size_e ** 2 + dl_size_e ** 2 + il_size_e ** 2)
     plt.plot(x_values, laha_size, label="Laha")
 
-    print("iml", gb(iml_size[-1]), gb(iml_error[-1]))
-    print("aml meas", gb(aml_size_meas[-1]), gb(aml_size_meas_e[-1]))
-    print("aml trend", gb(aml_size_trend[-1]), "%f" % gb(aml_size_trends_e[-1]))
-    print("aml total", gb(aml_size_total[-1]), gb(aml_size_e[-1]))
-    print("dl", gb(dl_size[-1]), gb(dl_size_e[-1]))
-    print("il", gb(il_size[-1]), gb(il_size_e[-1]))
-    print("total", gb(laha_size[-1]), gb(laha_size_e[-1]))
+    print("iml", iml_size[-1], iml_error[-1])
+    print("aml meas", aml_size_meas[-1], aml_size_meas_e[-1])
+    print("aml trend", aml_size_trend[-1], "%f" % aml_size_trends_e[-1])
+    print("aml total", aml_size_total[-1], aml_size_e[-1])
+    print("dl", dl_size[-1], dl_size_e[-1])
+    print("il", il_size[-1], il_size_e[-1])
+    print("pl", pl_size[-1])
+    print("total", laha_size[-1], laha_size_e[-1])
 
+    plt.yscale("log")
     plt.title("Laha (OPQ)")
-    plt.xlabel("Time (S)")
+    plt.xlabel("Time (s)")
     plt.ylabel("GB")
 
     plt.legend()
@@ -529,8 +536,12 @@ def plot_laha_opq_no_iml():
     il_size_e = (sigma_il / np.sqrt(x_values)) * np.abs(x_values)
     plt.plot(x_values, il_size, label="IL")
 
+    # PL
+    mu_pl = 0.22
+    pl_size = mu_pl * x_values / 1_000_000_000.0
+
     # Total
-    laha_size = aml_size_total + dl_size + il_size
+    laha_size = aml_size_total + dl_size + il_size + pl_size
     laha_size_e = np.sqrt(aml_size_e ** 2 + dl_size_e ** 2 + il_size_e ** 2)
     plt.plot(x_values, laha_size, label="Laha")
 
@@ -570,16 +581,20 @@ def plot_laha_opq_pie():
     mu_il = 234.83720746762222
     il_size = mu_il * x_values
 
+    # PL
+    mu_pl = 0.22
+    pl_size = mu_pl * x_values
+
     plt.subplot(1, 2, 1)
-    labels = ["IML", "AML", "DL", "IL"]
-    values = [gb(iml_size[-1]), gb(aml_size_meas[-1] + aml_size_trend[-1]), gb(dl_size[-1]), gb(il_size[-1])]
+    labels = ["IML", "AML", "DL", "IL", "PL"]
+    values = [gb(iml_size[-1]), gb(aml_size_meas[-1] + aml_size_trend[-1]), gb(dl_size[-1]), gb(il_size[-1]), gb(pl_size[-1])]
     total = sum(values)
     plt.pie(values, labels=labels, autopct=lambda p: "%.2f gb" % (p * total / 100.0))
     plt.title("Laha (OPQ) w/ IML")
 
     plt.subplot(1, 2, 2)
-    labels = ["AML (M)", "AML (T)", "DL", "IL"]
-    values = [gb(aml_size_meas[-1]), gb(aml_size_trend[-1]), gb(dl_size[-1]), gb(il_size[-1])]
+    labels = ["AML (M)", "AML (T)", "DL", "IL", "PL"]
+    values = [gb(aml_size_meas[-1]), gb(aml_size_trend[-1]), gb(dl_size[-1]), gb(il_size[-1]), gb(pl_size[-1])]
     total = sum(values)
     plt.pie(values, labels=labels, autopct=lambda p: "%.2f gb" % (p * total / 100.0))
 
@@ -616,16 +631,19 @@ def plot_laha_lokahi_pie():
     mu_il = 37.11652361890925
     il_size = mu_il * x_values
 
+    # PL
+    pl_size = 0.01 * x_values
+
     plt.subplot(1, 2, 1)
-    labels = ["IML", "AML", "DL", "IL"]
-    values = [gb(iml_size[-1]), gb(aml_size_trend[-1]), gb(dl_size[-1]), gb(il_size[-1])]
+    labels = ["IML", "AML", "DL", "IL", "PL"]
+    values = [gb(iml_size[-1]), gb(aml_size_trend[-1]), gb(dl_size[-1]), gb(il_size[-1]), gb(pl_size[-1])]
     total = sum(values)
     plt.pie(values, labels=labels, autopct=lambda p: "%.2f gb" % (p * total / 100.0))
     plt.title("Laha (Lokahi) w/ IML")
 
     plt.subplot(1, 2, 2)
-    labels = ["AML (T)", "DL", "IL"]
-    values = [gb(aml_size_trend[-1]), gb(dl_size[-1]), gb(il_size[-1])]
+    labels = ["AML (T)", "DL", "IL", "PL"]
+    values = [gb(aml_size_trend[-1]), gb(dl_size[-1]), gb(il_size[-1]), gb(pl_size[-1])]
     total = sum(values)
     plt.pie(values, labels=labels, autopct=lambda p: "%.2f gb" % (p * total / 100.0))
 
@@ -647,7 +665,7 @@ def plot_laha_lokahi():
 
     iml_size = s_samp * sr * mu_n_sens * x_values
     iml_error = (sigma_n_sens / np.sqrt(x_values)) * np.abs(s_samp * sr * x_values)
-    plt.errorbar(x_values, iml_size, yerr=iml_error, label="IML")
+    plt.errorbar(x_values, iml_size / 1_000_000_000.0, yerr=iml_error / 1_000_000_000.0, label="IML")
 
     # AML
     # s_meas = 145.0
@@ -663,8 +681,8 @@ def plot_laha_lokahi():
     aml_size_e = aml_size_trends_e
 
     # plt.errorbar(x_values, aml_size_meas, yerr=aml_size_meas_e, label="AML (Measurements)")
-    plt.errorbar(x_values, aml_size_trend, yerr=aml_size_trends_e, label="AML (Trends)")
-    plt.errorbar(x_values, aml_size_total, yerr=aml_size_e, label="AML")
+    plt.errorbar(x_values, aml_size_trend  / 1_000_000_000.0, yerr=aml_size_trends_e / 1_000_000_000.0, label="AML (Trends)")
+    plt.errorbar(x_values, aml_size_total  / 1_000_000_000.0, yerr=aml_size_e / 1_000_000_000.0, label="AML")
 
     # DL
     mu_dr = 402.81624834955454
@@ -672,7 +690,7 @@ def plot_laha_lokahi():
 
     dl_size = mu_dr * x_values
     dl_size_e = (sigma_dr / np.sqrt(x_values)) * np.abs(x_values)
-    plt.errorbar(x_values, dl_size, yerr=dl_size_e, label="DL")
+    plt.errorbar(x_values, dl_size  / 1_000_000_000.0, yerr=dl_size_e  / 1_000_000_000.0, label="DL")
 
     # IL
     mu_il = 37.11652361890925
@@ -680,12 +698,17 @@ def plot_laha_lokahi():
 
     il_size = mu_il * x_values
     il_size_e = (sigma_il / np.sqrt(x_values)) * np.abs(x_values)
-    plt.errorbar(x_values, il_size, yerr=il_size_e, label="IL")
+    plt.errorbar(x_values, il_size  / 1_000_000_000.0, yerr=il_size_e  / 1_000_000_000.0, label="IL")
+
+    # PL
+    mu_pl = 0.01
+    pl_size = mu_pl * x_values
+    plt.plot(x_values, pl_size / 1_000_000_000.0, label="PL")
 
     # Total
-    laha_size = iml_size + aml_size_total + dl_size + il_size
+    laha_size = iml_size + aml_size_total + dl_size + il_size + pl_size
     laha_size_e = np.sqrt(iml_error ** 2 + aml_size_e ** 2 + dl_size_e ** 2 + il_size_e ** 2)
-    plt.errorbar(x_values, laha_size, yerr=laha_size_e, label="Laha")
+    plt.errorbar(x_values, laha_size / 1_000_000_000.0, yerr=laha_size_e / 1_000_000_000.0, label="Laha")
 
     print("iml", gb(iml_size[-1]), gb(iml_error[-1]))
     # print("aml meas", gb(aml_size_meas[-1]), gb(aml_size_meas_e[-1]))
@@ -693,12 +716,13 @@ def plot_laha_lokahi():
     print("aml total", gb(aml_size_total[-1]), gb(aml_size_e[-1]))
     print("dl", gb(dl_size[-1]), gb(dl_size_e[-1]))
     print("il", gb(il_size[-1]), gb(il_size_e[-1]))
+    print("pl", gb(pl_size[-1]))
     print("total", gb(laha_size[-1]), gb(laha_size_e[-1]))
 
     plt.title("Laha (Lokahi)")
     plt.xlabel("Time (S)")
     plt.ylabel("GB")
-
+    plt.yscale("log")
     plt.legend()
     plt.savefig("../src/figures/plot_laha_lokahi.png")
     plt.show()
@@ -718,11 +742,11 @@ if __name__ == "__main__":
     # plot_iml_level_lokahi()
     # plot_dl_opq_no_err()
     # plot_dl_opq_err()
-    plot_iml_average()
-    plot_dl_opq_avg()
-    plot_il_opq_avg()
-    plot_laha_opq()
-    plot_laha_opq_no_iml()
-    plot_laha_opq_pie()
-    # plot_laha_lokahi_pie()
+    # plot_iml_average()
+    # plot_dl_opq_avg()
+    # plot_il_opq_avg()
+    # plot_laha_opq()
+    # plot_laha_opq_no_iml()
+    # plot_laha_opq_pie()
+    plot_laha_lokahi_pie()
     # plot_laha_lokahi()

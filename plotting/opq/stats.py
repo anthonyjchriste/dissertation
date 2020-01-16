@@ -127,11 +127,9 @@ def phenomena_stats(mongo_client: pymongo.MongoClient):
     coll: pymongo.collection.Collection = db["phenomena"]
 
     query: Dict = {}
-    projection: Dict[str, bool] = {"_id": False,
-                                   "start_ts_ms": True,
-                                   "end_ts_ms": True}
+    projection: Dict[str, bool] = {}
 
-    phenomena_docs: List[Dict] = list(coll.find(query, projection=projection))
+    phenomena_docs: List[Dict] = list(coll.find(query))
     durations_ms: np.ndarray = np.array(list(map(lambda doc: doc["end_ts_ms"] - doc["start_ts_ms"], phenomena_docs)))
     durations_s: np.ndarray = durations_ms / 1_000.0
     min_ts_ms: float = min(list(map(lambda doc: doc["start_ts_ms"], phenomena_docs)))
