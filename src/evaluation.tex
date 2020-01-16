@@ -479,6 +479,31 @@ Equation~\ref{eq:pl} calculates the size of the PL $S_{PL}$ by summing the size 
 	S_{PL} = \sum_{i=0}^{S_{P_{n}}} S_{P_{i}}
 \end{equation}
 
+The size of the PL can be estimated by Equation~\ref{eq:est_pl} where $\mu PR$ is the mean Phenomena data rate per second and $T$ is the number of seconds that the network is up.
+
+\begin{equation}
+	\mu S_{PL} = \mu PR * T
+	\label{eq:est_pl}
+\end{equation}
+
+Next, I will compare the estimated sizes of the PL for the OPQ and Lokahi networks using statistics gathered for these networks. These values were obtained directly from data collected during OPQ and Lokahi deployments. Table~\ref{table:estimated_mu_pl} provides the parameters used for these comparisons.
+
+\begin{table}[H]
+	\centering
+	\caption{Estimated $PL$}
+	\begin{tabularx}{\textwidth}{llllll}
+		\toprule
+		\textbf{Network} & $\bm{\mu DR}$ & \textbf{Data/Day} & \textbf{Data/Week} & \textbf{Data/Year} \\
+		\midrule
+		OPQ & .02 & 1.73 kb & 12.10 kb & 628.99 kb \\
+		Lokahi & 37.12 & 3.21 MB & 22.45 MB & 1.17 GB \\
+		\bottomrule
+	\end{tabularx}
+	\label{table:estimated_mu_pl}
+\end{table}
+
+Why are the Phenomena data amounts so low compared to the other levels? The main reason is that Phenomena are few and far between. Another reason is that Phenomena consist mainly of metadata and do not copy data from lower levels into it. Instead, Phenomena points to data in lower levels and adjusts the TTL values of lower levels to match that of the Phenomena.
+
 \paragraph{Comparing Laha Requirements}
 
 Now that we can compute the bounds for different levels within the Laha hierarchy, let's examine how the requirements compare between each level given data that resembles the OPQ and Lokahi DSNs. This data was generated using parameters gathered from OPQ and Lokahi deployments.

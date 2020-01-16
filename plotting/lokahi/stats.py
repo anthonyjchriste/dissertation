@@ -7,6 +7,7 @@ import botocore
 import numpy as np
 import pymongo
 import pymongo.database
+import bson
 
 T = TypeVar("T")
 
@@ -48,6 +49,7 @@ class RedvoxReport:
                  receivers: int,
                  devices: List[str],
                  mongo_client: pymongo.MongoClient,
+                 meta_size_bytes: int,
                  s3_client):
         self.start_timestamp_s = start_timestamp_s
         self.end_timestamp_s = end_timestamp_s
@@ -61,6 +63,7 @@ class RedvoxReport:
         self.product_bytes = self.__product_bytes(s3_client)
         self.total_bytes = self.estimated_data_bytes + self.product_bytes
         self.is_estimated = False
+        self.meta_size_bytes = meta_size_bytes
 
     def duration(self) -> int:
         return self.end_timestamp_s - self.start_timestamp_s
@@ -111,6 +114,7 @@ class RedvoxReport:
                             doc_get(doc, "receivers"),
                             list(map(lambda device: f"{device['redvoxId']}:{device['redvoxUuid']}", doc["devices"])),
                             mongo_client,
+                            len(bson.BSON.encode(doc)),
                             s3_client)
 
     def __str__(self):
@@ -200,7 +204,18 @@ def get_stats(reports: List[RedvoxReport]) -> None:
     print(f"Incident DR/s: {i_dr}")
     print(f"Incident DR/s sem: {i_dr_sem}")
 
+def phenomena_stats(reports: List[RedvoxReport]):
+    reports = list(filter(lambda report: report.devices is not None and len(report.devices) > 0, reports))
+    incidents = list(filter(lambda report: report.is_public or (report.receivers is not None and len(report.receivers) > 0), reports))
+    incident_durations = np.array(list(map(lambda report: report.end_timestamp_s - report.start_timestamp_s, incidents)))
+    incident_sizes = np.array(list(map(lambda report: report.meta_size_bytes, incidents)))
 
+    min_ts = min(list(map(lambda report: report.start_timestamp_s, incidents)))
+    max_ts = max(list(map(lambda report: report.end_timestamp_s, incidents)))
+    total_duration = max_ts - min_ts
+    total_size = incident_sizes.sum()
+
+    print(f"phenomena dr: {float(total_size) / total_duration}")
 
 if __name__ == "__main__":
     host = os.getenv("REDVOX_MONGO_HOST")
@@ -212,7 +227,7 @@ if __name__ == "__main__":
     reports = get_reports(mongo_client, s3_client)
     # for report in reports:
     #     print(report.estimated_data_bytes, report.product_bytes)
-    get_stats(reports)
-
+    # get_stats(reports)
+    phenomena_stats(reports)
 
 

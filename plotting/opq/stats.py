@@ -19,7 +19,7 @@ def event_stats(mongo_client: pymongo.MongoClient) -> List[Dict]:
 
     events: List[Dict] = events_coll.find(events_query, projection=events_projection)
     durations_events_ms: np.ndarray = np.array(
-            list(map(lambda doc: doc["target_event_end_timestamp_ms"] - doc["target_event_start_timestamp_ms"], events)))
+        list(map(lambda doc: doc["target_event_end_timestamp_ms"] - doc["target_event_start_timestamp_ms"], events)))
     durations_events_s: np.ndarray = durations_events_ms / 1_000.0
 
     data_duration_events_s = durations_events_s.sum()
@@ -38,7 +38,7 @@ def event_stats(mongo_client: pymongo.MongoClient) -> List[Dict]:
     max_ts_ms: int = max(list(map(lambda doc: doc["event_end_timestamp_ms"], box_events)))
 
     durations_box_events_ms: np.ndarray = np.array(
-            list(map(lambda doc: doc["event_end_timestamp_ms"] - doc["event_start_timestamp_ms"], box_events)))
+        list(map(lambda doc: doc["event_end_timestamp_ms"] - doc["event_start_timestamp_ms"], box_events)))
     durations_box_events_s: np.ndarray = durations_box_events_ms / 1000.0
     data_stored: np.ndarray = 12_000.0 * 2 * durations_box_events_s
 
@@ -90,7 +90,7 @@ def incident_stats(mongo_client: pymongo.MongoClient) -> List[Dict]:
     max_ts_ms: int = max(list(map(lambda doc: doc["end_timestamp_ms"], incidents)))
 
     durations_ms: np.ndarray = np.array(
-            list(map(lambda doc: doc["end_timestamp_ms"] - doc["start_timestamp_ms"], incidents)))
+        list(map(lambda doc: doc["end_timestamp_ms"] - doc["start_timestamp_ms"], incidents)))
     durations_s: np.ndarray = durations_ms / 1000.0
     data_stored: np.ndarray = 12_000.0 * 2 * durations_s
 
@@ -121,6 +121,32 @@ def incident_stats(mongo_client: pymongo.MongoClient) -> List[Dict]:
     return incidents
 
 
+def phenomena_stats(mongo_client: pymongo.MongoClient):
+    import bson
+    db: pymongo.database.Database = mongo_client["opq"]
+    coll: pymongo.collection.Collection = db["phenomena"]
+
+    query: Dict = {}
+    projection: Dict[str, bool] = {"_id": False,
+                                   "start_ts_ms": True,
+                                   "end_ts_ms": True}
+
+    phenomena_docs: List[Dict] = list(coll.find(query, projection=projection))
+    durations_ms: np.ndarray = np.array(list(map(lambda doc: doc["end_ts_ms"] - doc["start_ts_ms"], phenomena_docs)))
+    durations_s: np.ndarray = durations_ms / 1_000.0
+    min_ts_ms: float = min(list(map(lambda doc: doc["start_ts_ms"], phenomena_docs)))
+    max_ts_ms: float = max(list(map(lambda doc: doc["end_ts_ms"], phenomena_docs)))
+    total_duration_ms: float = max_ts_ms - min_ts_ms
+    total_duration_s: float = total_duration_ms / 1_000.0
+    size_bytes: np.ndarray = np.array(list(map(lambda doc: len(bson.BSON.encode(doc)), phenomena_docs)))
+    total_bytes = size_bytes.sum()
+    dr_s: float = total_bytes / total_duration_s
+
+    print(f"Total Phenomena: {len(phenomena_docs)}")
+    print(f"Total bytes: {total_bytes}")
+    print(f"DR/s: {dr_s}")
+
+
 def ttl_aml_stats(events: List[Dict], incidents: List[Dict]) -> List[Dict]:
     incident_event_ids: Set[str] = set(map(lambda doc: doc["event_id"], incidents))
     events_without_an_incident: List[Dict] = list(filter(lambda doc: doc["event_id"] in incident_event_ids, events))
@@ -129,8 +155,8 @@ def ttl_aml_stats(events: List[Dict], incidents: List[Dict]) -> List[Dict]:
     max_ts_ms: int = max(list(map(lambda doc: doc["event_end_timestamp_ms"], events)))
 
     durations_ms: np.ndarray = np.array(
-            list(map(lambda doc: doc["event_end_timestamp_ms"] - doc["event_start_timestamp_ms"],
-                     events_without_an_incident)))
+        list(map(lambda doc: doc["event_end_timestamp_ms"] - doc["event_start_timestamp_ms"],
+                 events_without_an_incident)))
     durations_s: np.ndarray = durations_ms / 1000.0
 
     total_duration_ms: int = max_ts_ms - min_ts_ms
@@ -148,8 +174,9 @@ def ttl_aml_stats(events: List[Dict], incidents: List[Dict]) -> List[Dict]:
 
 if __name__ == "__main__":
     mongo_client = pymongo.MongoClient()
-    events = event_stats(mongo_client)
-    print()
-    incidents = incident_stats(mongo_client)
-    print()
-    ttl_aml_stats(events, incidents)
+    # events = event_stats(mongo_client)
+    # print()
+    # incidents = incident_stats(mongo_client)
+    # print()
+    # ttl_aml_stats(events, incidents)
+    phenomena_stats(mongo_client)
