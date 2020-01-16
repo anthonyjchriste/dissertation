@@ -21,6 +21,7 @@ fn main() {
         bytes_per_trend: constants::ESTIMATED_BYTES_PER_TREND,
         bytes_per_event: constants::ESTIMATED_BYTES_PER_EVENT,
         bytes_per_incident: constants::ESTIMATED_BYTES_PER_INCIDENT,
+        bytes_per_phenomena: constants::ESTIMATED_BYTES_PER_PHENOMENA,
         print_info_every_n_ticks: 500_000,
         write_info_every_n_ticks: 3600,
         out_file: "/home/opq/Documents/anthony/dissertation/plotting/opq/sim_data.txt".to_string(),

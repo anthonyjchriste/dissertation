@@ -140,8 +140,12 @@ def phenomena_stats(mongo_client: pymongo.MongoClient):
     total_bytes = size_bytes.sum()
     dr_s: float = total_bytes / total_duration_s
 
+
+
     print(f"Total Phenomena: {len(phenomena_docs)}")
     print(f"Total bytes: {total_bytes}")
+    print(f"Phenomena/s: {len(phenomena_docs) / float(total_duration_s)}")
+    print(f"mean size per phenomena: {float(total_bytes) / len(phenomena_docs)}")
     print(f"DR/s: {dr_s}")
 
 

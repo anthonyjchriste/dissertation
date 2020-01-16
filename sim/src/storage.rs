@@ -41,6 +41,7 @@ pub struct StorageItem {
     pub ttl: usize,
     pub is_event: bool,
     pub is_incident: bool,
+    pub is_phenomena: bool,
 }
 
 impl StorageItem {
@@ -50,6 +51,7 @@ impl StorageItem {
         ttl: usize,
         is_event: Option<bool>,
         is_incident: Option<bool>,
+        is_phenomena: Option<bool>,
     ) -> StorageItem {
         StorageItem {
             storage_type,
@@ -57,11 +59,12 @@ impl StorageItem {
             ttl,
             is_event: is_event.unwrap_or(false),
             is_incident: is_incident.unwrap_or(false),
+            is_phenomena: is_phenomena.unwrap_or(false),
         }
     }
 
     pub fn from_ttl(ttl: usize) -> StorageItem {
-        StorageItem::new_measurement(0, ttl, None, None)
+        StorageItem::new_measurement(0, ttl, None, None, None)
     }
 
     pub fn new_sample(
@@ -69,6 +72,7 @@ impl StorageItem {
         ttl: usize,
         is_event: Option<bool>,
         is_incident: Option<bool>,
+        is_phenomena: Option<bool>,
     ) -> StorageItem {
         StorageItem::new(
             StorageType::Sample(constants::ESTIMATED_BYTES_PER_META_SAMPLE),
@@ -76,6 +80,7 @@ impl StorageItem {
             ttl,
             is_event,
             is_incident,
+            is_phenomena,
         )
     }
 
@@ -84,6 +89,7 @@ impl StorageItem {
         ttl: usize,
         is_event: Option<bool>,
         is_incident: Option<bool>,
+        is_phenomena: Option<bool>,
     ) -> StorageItem {
         StorageItem::new(
             StorageType::Measurement(constants::ESTIMATED_BYTES_PER_MEASUREMENT),
@@ -91,6 +97,7 @@ impl StorageItem {
             ttl,
             is_event,
             is_incident,
+            is_phenomena,
         )
     }
 
@@ -99,6 +106,7 @@ impl StorageItem {
         ttl: usize,
         is_event: Option<bool>,
         is_incident: Option<bool>,
+        is_phenomena: Option<bool>,
     ) -> StorageItem {
         StorageItem::new(
             StorageType::Trend(constants::ESTIMATED_BYTES_PER_TREND),
@@ -106,6 +114,7 @@ impl StorageItem {
             ttl,
             is_event,
             is_incident,
+            is_phenomena,
         )
     }
 
@@ -114,6 +123,7 @@ impl StorageItem {
         ttl: usize,
         is_event: Option<bool>,
         is_incident: Option<bool>,
+        is_phenomena: Option<bool>,
     ) -> StorageItem {
         StorageItem::new(
             StorageType::Event(constants::ESTIMATED_BYTES_PER_EVENT),
@@ -121,6 +131,7 @@ impl StorageItem {
             ttl,
             is_event,
             is_incident,
+            is_phenomena,
         )
     }
 
@@ -129,6 +140,7 @@ impl StorageItem {
         ttl: usize,
         is_event: Option<bool>,
         is_incident: Option<bool>,
+        is_phenomena: Option<bool>,
     ) -> StorageItem {
         StorageItem::new(
             StorageType::Incident(constants::ESTIMATED_BYTES_PER_INCIDENT),
@@ -136,6 +148,24 @@ impl StorageItem {
             ttl,
             is_event,
             is_incident,
+            is_phenomena,
+        )
+    }
+
+    pub fn new_phenomena(
+        ts: usize,
+        ttl: usize,
+        is_event: Option<bool>,
+        is_incident: Option<bool>,
+        is_phenomena: Option<bool>,
+    ) -> StorageItem {
+        StorageItem::new(
+            StorageType::Phenomena(constants::ESTIMATED_BYTES_PER_PHENOMENA),
+            ts,
+            ttl,
+            is_event,
+            is_incident,
+            is_phenomena,
         )
     }
 }
@@ -203,6 +233,7 @@ impl Storage {
         storage_type: Option<StorageType>,
         is_event: Option<bool>,
         is_incident: Option<bool>,
+        is_phenomena: Option<bool>,
     ) -> StorageItemStatistic {
         let filtered_storage_items: Vec<&StorageItem> = self
             .storage_items
@@ -222,6 +253,12 @@ impl Storage {
 
                 if let Some(is_incident) = is_incident {
                     if storage_item.is_incident != is_incident {
+                        return false;
+                    }
+                }
+
+                if let Some(is_phenomena) = is_phenomena {
+                    if storage_item.is_phenomena != is_phenomena {
                         return false;
                     }
                 }

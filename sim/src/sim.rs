@@ -51,6 +51,7 @@ pub struct Simulation {
     total_incidents: usize,
     total_orphaned_incidents: usize,
     total_phenomena_incidents: usize,
+    total_phenomena: usize,
 }
 
 impl Simulation {
@@ -85,10 +86,17 @@ impl Simulation {
             total_incidents: 0,
             total_orphaned_incidents: 0,
             total_phenomena_incidents: 0,
+            total_phenomena: 0,
         }
     }
 
-    fn make_sample(&mut self, time: usize, is_event: bool, is_incident: bool) -> StorageItem {
+    fn make_sample(
+        &mut self,
+        time: usize,
+        is_event: bool,
+        is_incident: bool,
+        is_phenomena: bool,
+    ) -> StorageItem {
         self.total_storage_items += 1;
         self.total_samples += 1;
         let ttl = if !is_event && !is_incident {
@@ -106,31 +114,58 @@ impl Simulation {
 
         let is_incident = if is_incident { Some(is_incident) } else { None };
 
-        storage::StorageItem::new_sample(time, ttl, is_event, is_incident)
+        let is_phenomena = if is_phenomena {
+            Some(is_phenomena)
+        } else {
+            None
+        };
+
+        storage::StorageItem::new_sample(time, ttl, is_event, is_incident, is_phenomena)
     }
 
-    fn make_measurement(&mut self, time: usize, is_event: bool, is_incident: bool) -> StorageItem {
+    fn make_measurement(
+        &mut self,
+        time: usize,
+        is_event: bool,
+        is_incident: bool,
+        is_phenomena: bool,
+    ) -> StorageItem {
         self.total_storage_items += 1;
         self.total_measurements += 1;
-        let ttl = if !is_event && !is_incident {
+        let ttl = if !is_event && !is_incident && !is_phenomena {
             self.total_orphaned_measurements += 1;
             time + self.conf.measurements_ttl
         } else if is_event {
             self.total_event_measurements += 1;
             time + self.conf.events_ttl
-        } else {
+        } else if is_incident {
             self.total_incident_measurements += 1;
             time + self.conf.incidents_ttl
+        } else {
+            self.total_phenomena_measurements += 1;
+            time + self.conf.phenomena_ttl
         };
 
         let is_event = if is_event { Some(is_event) } else { None };
 
         let is_incident = if is_incident { Some(is_incident) } else { None };
 
-        storage::StorageItem::new_measurement(time, ttl, is_event, is_incident)
+        let is_phenomena = if is_phenomena {
+            Some(is_phenomena)
+        } else {
+            None
+        };
+
+        storage::StorageItem::new_measurement(time, ttl, is_event, is_incident, is_phenomena)
     }
 
-    fn make_trend(&mut self, time: usize, is_event: bool, is_incident: bool) -> StorageItem {
+    fn make_trend(
+        &mut self,
+        time: usize,
+        is_event: bool,
+        is_incident: bool,
+        is_phenomena: bool,
+    ) -> StorageItem {
         self.total_storage_items += 1;
         self.total_trends += 1;
         let ttl = if !is_event && !is_incident {
@@ -148,10 +183,16 @@ impl Simulation {
 
         let is_incident = if is_incident { Some(is_incident) } else { None };
 
-        storage::StorageItem::new_trend(time, ttl, is_event, is_incident)
+        let is_phenomena = if is_phenomena {
+            Some(is_phenomena)
+        } else {
+            None
+        };
+
+        storage::StorageItem::new_trend(time, ttl, is_event, is_incident, is_phenomena)
     }
 
-    fn make_event(&mut self, time: usize, is_incident: bool) -> StorageItem {
+    fn make_event(&mut self, time: usize, is_incident: bool, is_phenomena: bool) -> StorageItem {
         self.total_storage_items += 1;
         self.total_events += 1;
         let ttl = if !is_incident {
@@ -164,17 +205,43 @@ impl Simulation {
 
         let is_incident = if is_incident { Some(is_incident) } else { None };
 
-        storage::StorageItem::new_event(time, ttl, Some(false), is_incident)
+        let is_phenomena = if is_phenomena {
+            Some(is_phenomena)
+        } else {
+            None
+        };
+
+        storage::StorageItem::new_event(time, ttl, Some(false), is_incident, is_phenomena)
     }
 
-    fn make_incident(&mut self, time: usize) -> StorageItem {
+    fn make_incident(&mut self, time: usize, is_phenomena: bool) -> StorageItem {
         self.total_storage_items += 1;
         self.total_incidents += 1;
         self.total_orphaned_incidents += 1;
 
+        let is_phenomena = if is_phenomena {
+            Some(is_phenomena)
+        } else {
+            None
+        };
+
         storage::StorageItem::new_incident(
             time,
             time + self.conf.incidents_ttl,
+            Some(false),
+            Some(false),
+            is_phenomena,
+        )
+    }
+
+    fn make_phenomena(&mut self, time: usize) -> StorageItem {
+        self.total_storage_items += 1;
+        self.total_phenomena += 1;
+
+        storage::StorageItem::new_incident(
+            time,
+            time + self.conf.incidents_ttl,
+            Some(false),
             Some(false),
             Some(false),
         )
@@ -561,6 +628,13 @@ impl Simulation {
             for _ in 0..self.conf.num_sensors {
                 if percent_chance(constants::ESTIMATED_INCIDENTS_PER_SECOND, &mut self.rng) {
                     storage_items_per_tick.push(self.make_incident(i));
+                }
+            }
+
+            // Phenomena
+            for _ in 0..self.conf.num_sensors {
+                if percent_chance(constants::ESTIMATED_PHENOMENA_PER_SECOND, &mut self.rng) {
+                    storage_items_per_tick.push();
                 }
             }
 
