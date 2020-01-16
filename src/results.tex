@@ -1186,7 +1186,7 @@ K-means clustering was applied to both the Frequency swell and Frequency sag dat
 
 The distance metrics provided were normalized in both the x and y directions to perform k-means, and then denormalized for display of the results. I empirically found that $k=8$ provides a nice set of clusters that characterize both the durations and the deviations from nominal. Smaller values of $k$ do not provide enough resolution in the y-direction while larger values of $k$ provide too many clusters in the x-direction. The only negative aspect of selecting $k=8$, is that long duration Incidents are generally classified together. This is acceptable because long duration Incidents are much more rare than short duration Incidents. The above Figure shows clusters for short duration Incidents that are close to nominal, clusters for short duration Incidents that are further from nominal, and clusters for Incidents that are close to nominal, but have longer durations.
 
-Table summarizes the results of the clusters found using k-means.
+Table~\ref{table:f_kmeans_sags} summarizes the results of the Frequency sag Incidents found using k-means sorted by mean duration.
 
 \begin{table}[H]
     \centering
@@ -1195,17 +1195,41 @@ Table summarizes the results of the clusters found using k-means.
         \toprule
         \textbf{Cluster} & \textbf{Incidents} &\textbf{Mean Duration} & \textbf{Std Duration} & \textbf{Mean Value} & \textbf{Std Value} \\
         \midrule
-        0 & 8931 & 3447.78 & 575.45 & 59.75 & 0.12 \\
-        1 & 116769 & 98.91 & 93.97 & 59.84 & 0.08 \\
-        2 & 242 & 19729.35 & 4278.64 & 59.72 & 0.13 \\
-        3 & 20059 & 1908.64 & 354.46 & 59.77 & 0.13 \\
-        4 & 1079 & 10780.30 & 1829.83 & 59.75 & 0.13 \\
         5 & 79 & 56.19 & 17.33 & 47.70 & 5.21 \\
+        1 & 116769 & 98.91 & 93.97 & 59.84 & 0.08 \\
         6 & 35957 & 809.18 & 261.35 & 59.73 & 0.21 \\
+        3 & 20059 & 1908.64 & 354.46 & 59.77 & 0.13 \\
+        0 & 8931 & 3447.78 & 575.45 & 59.75 & 0.12 \\
         7 & 3121 & 6132.47 & 1016.73 & 59.74 & 0.13 \\
+        4 & 1079 & 10780.30 & 1829.83 & 59.75 & 0.13 \\
+        2 & 242 & 19729.35 & 4278.64 & 59.72 & 0.13 \\
         \bottomrule
     \end{tabularx}
     \label{table:f_kmeans_sags}
+\end{table}
+
+The above Table displays some interesting features. First, we can gather that 172,864 Frequency sag Incidents all have mean durations less than half a second. Next, we can observe that cluster 5 captures the outlying short duration Voltage sags that have larger deviations from nominal. The rest of the clusters show mean Frequency sag values near 59.75 Hz.
+
+Table~\ref{table:f_kmeans_swells} summarizes the results of the Frequency swell Incidents found using k-means sorted by mean duration.
+
+\begin{table}[H]
+    \centering
+    \caption{Results of Similarity Phenomena for Frequency Swell Incidents}
+    \begin{tabularx}{\textwidth}{llllll}
+        \toprule
+        \textbf{Cluster} & \textbf{Incidents} &\textbf{Mean Duration} & \textbf{Std Duration} & \textbf{Mean Value} & \textbf{Std Value} \\
+        \midrule
+        7 & 78577 & 138.63 & 176.19 & 60.10 & 0.06 \\
+        0 & 95488 & 158.29 & 175.95 & 60.27 & 0.08 \\
+        3 & 136 & 245.82 & 398.53 & 65.14 & 1.89 \\
+        5 & 21972 & 1469.80 & 433.48 & 60.21 & 0.12 \\
+        2 & 8954 & 3298.74 & 633.05 & 60.29 & 0.12 \\
+        1 & 3422 & 6046.04 & 1072.05 & 60.31 & 0.11 \\
+        6 & 1027 & 11297.67 & 2003.82 & 60.32 & 0.13 \\
+        4 & 252 & 21019.67 & 4684.53 & 60.39 & 0.32 \\
+        \bottomrule
+    \end{tabularx}
+    \label{table:f_kmeans_swells}
 \end{table}
 
 Future work will examine extending this concept to other features collected by OPQ and examine including higher dimensional features sets to compare between. Future work will also examine how the categories defined above might be refined to provide more valuable context.
