@@ -910,6 +910,17 @@ Figure~\ref{fig:sim_pl_opq} shows the simulated growth of the PL for the OPQ net
 	\label{fig:sim_pl_opq}
 \end{figure}
 
+Figure~\ref{fig:sim_pl_lokahi} shows the simulated growth of the PL for the Lokahi network over the course of 3 years for a single sensor.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{figures/sim_pl_lokahi.png}
+	\caption{Simulated PL for Lokahi}
+	\label{fig:sim_pl_lokahi}
+\end{figure}
+
+We can observe that the size of the PL within Lokahi is similar between sampling rates. This is due to the fact that Phenomena within Lokahi are not affected by sampling rate.
+
 \paragraph{Evaluation of Laha with TTL}
 
 The Laha hierarchy contains the levels IML, AML, DL, IL, and PL as discussed in the previous sections. This section evaluates the bounds on the entirety of Laha by looking at all the levels in summation.
@@ -933,7 +944,6 @@ Figure~\ref{fig:sim_laha_lokahi} shows the simulated Laha bounds for OPQ over th
 	\caption{Simulated Laha for Lokahi}
 	\label{fig:sim_laha_lokahi}
 \end{figure}
-
 
 \paragraph{Comparing Laha with and without TTL}
 
@@ -974,7 +984,7 @@ Let's next examine Lokahi with and without TTL. Table~\ref{table:lokahi_laha_com
 		AML & 6987 & 220 & 6767/-96.85 \\
 		DL & 180160 & 5000 & 175160/-97.22 \\
 		IL & 9326 & 3000 & 6362/-67.95 \\
-		PL & NA & NA & NA  \\
+		PL & 0.94 & 0.20 & 0.74/-78.72  \\
 		Total & 286957 & 8255 & 278702/-97.12 \\
 		\bottomrule
 	\end{tabularx}
