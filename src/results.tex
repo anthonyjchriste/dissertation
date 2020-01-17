@@ -1540,10 +1540,16 @@ Figure~\ref{fig:actual_il_vs_unbounded_opq} shows the actual IL vs unbounded IL.
 This data was affected by the implicit TTL parameter and does not portray accurate unbounded versus bounded growth. Instead, we can see that the actual size of the IL tracks pretty closely to the estimated maximum bounds. At the end of the data collection period, OPQ collected about 4GB less worth of data than what was estimated.
 
 \paragraph{PL Versus Estimated Growth}
-Figure shows the actual PL vs unbounded PL.
+Figure~\ref{fig:actual_pl_vs_unbounded_opq} shows the actual PL vs unbounded PL.
 
-% TODO
-TODO
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/actual_phenomena_opq_vs_est.png}
+    \caption{Actual PL vs Estimated IL for OPQ}
+    \label{fig:actual_pl_vs_unbounded_opq}
+\end{figure}
+
+We can observe that early on, the actual and estimated values do not match well. This was caused by the fact the Future Phenomena were fully implemented until early January. The estimated data trends very closely to the actual PL data size by the end of the deployment with a difference near 0 MB.
 
 \paragraph{Laha Versus Estimated Growth}
 Finally, I examine the total size of Laha and compare it to the estimated bounds of Laha without TTL. This takes into account all levels within the Laha hierarchy.

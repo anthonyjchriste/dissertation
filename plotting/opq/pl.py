@@ -25,8 +25,54 @@ def pl_vs_sim():
     pass
 
 
-def pl_vs_est():
-    pass
+def pl_vs_est(mongo_client: pymongo.MongoClient):
+    # Query
+    db: pymongo.database.Database = mongo_client["opq"]
+    coll: pymongo.collection.Collection = db["phenomena"]
+
+    # Data
+    phenomena_docs: List[Dict] = sorted(list(coll.find()), key=lambda doc: doc["start_ts_ms"])
+    start_timestamps_ms: List[float] = list(map(lambda doc: doc["start_ts_ms"], phenomena_docs))
+    ts_s: np.ndarray = np.array(start_timestamps_ms) / 1_000.0
+    sizes_bytes: List[int] = list(map(lambda doc: len(bson.BSON.encode(doc)), phenomena_docs))
+    dts: List[datetime.datetime] = list(
+        map(lambda ts: datetime.datetime.utcfromtimestamp(ts / 1000.0), start_timestamps_ms))
+
+    summed_sizes: np.ndarray = sum_series(np.array(sizes_bytes))
+    summed_sizes_mb: np.ndarray = summed_sizes / 1_000_000.0
+
+    # Est data
+    dr_s = 0.22
+    ts = ts_s - ts_s[0]
+    vs = ts * dr_s
+    vs = vs / 1_000_000.0
+
+    # Plots
+    fig, ax = plt.subplots(3, 1, figsize=(16, 9), sharex="all", sharey="all")
+    fig: plt.Figure = fig
+    ax: List[plt.Axes] = ax
+
+    fig.suptitle("OPQ: Estimated PL vs Actual PL")
+
+    est_ax = ax[0]
+    est_ax.plot(dts, vs)
+    est_ax.set_title("Estimated PL")
+    est_ax.set_ylabel("Size (MB)")
+
+    actual_ax = ax[1]
+    actual_ax.plot(dts, summed_sizes_mb)
+    actual_ax.set_title("Actual PL")
+    actual_ax.set_ylabel("Size (MB)")
+
+    diff_ax = ax[2]
+    diff_ax.plot(dts, vs - summed_sizes_mb)
+    diff_ax.set_title("Difference (Estimated - Actual)")
+
+    diff_ax.set_xlabel("Time (UTC)")
+    diff_ax.set_ylabel("Size (MB)")
+
+    # fig.show()
+    fig.savefig("/home/opq/Documents/anthony/dissertation/src/figures/actual_phenomena_opq_vs_est.png")
 
 
 def actual_pl(mongo_client: pymongo.MongoClient):
@@ -72,8 +118,8 @@ def actual_pl(mongo_client: pymongo.MongoClient):
 
 def main():
     mongo_client: pymongo.MongoClient = pymongo.MongoClient()
-    actual_pl(mongo_client)
-
+    # actual_pl(mongo_client)
+    pl_vs_est(mongo_client)
 
 if __name__ == "__main__":
     main()
