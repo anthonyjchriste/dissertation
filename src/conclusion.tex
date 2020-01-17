@@ -1,0 +1,38 @@
+\chapter{Conclusion}\label{ch:conclusion}
+
+This dissertation presented the Laha abstract distributed sensor network framework.
+
+Chapter~\ref{ch:introduction} introduced the Laha framework (Section~\ref{sec:laha:-an-abstract-framework-for-adaptively-optimizing-dsns}) and the main problems that the Laha Framework aims to solve, namely the conversion of primitive sensor data into actionable insights (Section~\ref{sec:converting-sensor-data-into-actionable-insights}) and the management of Big Data in relation to DSNs (Section~\ref{sec:big-data-management-in-dsns}). Traditional approaches to DSN optimization were briefly examined (Section~\ref{sec:traditional-approaches-to-dsn-optimization}). This chapter also provided the major claims of the Laha framework (Section~\ref{sec:anticipated-contributions-of-laha}) as well as the major contributions to the field of DSNs (Section~\ref{subsec:anticipated-contributions}).
+
+Chapter~\ref{ch:related-work} examined related work with an emphasis on Big Data and distributed sensor networks (Section~\ref{sec:big-data-and-distributed-sensor-networks}), DSN Big Data management (Section~\ref{sec:distributed-sensor-networks-and-big-data-management}), predictive analytics and forecasting for DSNs (Section~\ref{sec:distributed-sensor-networks-and-predictive-analytics-and-forecasting}), topology and localization (Section~\ref{sec:determining-topology-and-localization}), and triggering optimizations (Section~\ref{sec:optimizations-for-triggering}).
+
+Chapter~\ref{ch:system-design} provided the design details of the Laha framework as well as the design details for the Lokahi and OPQ Laha-compatible reference networks. This chapter included the design of the Laha hierarchy for DSN Big Data Management (Section~\ref{sec:big-data-management}), the design of Phenomena (Section~\ref{sec:phenomena}), design of Laha Actors (Section~\ref{sec:laha-actors:-acting-on-the-laha-data-model}), design of the OPQ reference network (Section~\ref{sec:opq:-a-laha-compliant-power-quality-dsn}), and the design of the Lokahi reference network (Section~\ref{sec:lokahi:-a-laha-compliant-infrasound-dsn}).
+
+Chapter~\ref{ch:evaluation} provided evaluation techniques for determining if the Laha framework is able to meet the goals set in the Introduction chapter. In particular, this chapter examined deployment plans for the OPQ and Lokahi networks (Section~\ref{sec:deploy-laha-reference-implementations-on-test-sites}), data validation strategies (Section~\ref{sec:validate-data-collected-by-laha-deployment}), the evaluation of determining if Laha meets the goals stated in the Introduction chapter (Section~\ref{sec:use-laha-deployments-to-evaluate-the-main-goals-of-the-framework}), and a set of tertiary goals for evaluation (Section~\ref{sec:evaluation-of-tertiary-goals}).
+
+Chapter~\ref{ch:results} provided evidence and results from the Lokahi and OPQ networks that were used to give credence to the goals and contributions outlined in the Introduction chapter. Results were provided for data validation (Section~\ref{sec:ground-truth-analysis}), the generality of the Laha framework (Section~\ref{sec:results-of-generality-of-this-framework}), the ability to convert primitive sensor data into actionable insights (through the Laha level hierarchy and Phenomena (Section~\ref{sec:results-of-converting-primitie-data-into-actional-insights})), tiered Big Data management (Section~\ref{sec:dsn-system-requirements}), and results for the provided tertiary goals (Section~\ref{sec:results-of-tertiary-goals}).
+
+\section{Future Directions}\label{sec:future-directions}
+
+The longer I've had to work with these networks, the more I realized that they could be expanded in a multitude of ways.
+
+I think the lowest hanging fruit for Laha is to implement a machine learning layer. I believe machine learning could be used for triggering, detection, and classification of signals of interest. This is an active area of research within the Lokahi network as we are currently planning to augment our architecture with machine learning over the year of 2020. The goals for machine learning within Lokahi are to implement robust detection algorithms using a training set of labeled data collected at our lab and at various national laboratories.
+
+I also believe machine learning could be useful at the Phenomena level, providing models for predicting Events and Incidents and identifying groupings of data. It would be great to augment Annotation Phenomena with the ability to automatically create new Annotations from past data.
+
+In terms of creating Events and Incidents, I believe it would be useful to experiment with changing window sizes used to compute low level metrics such as Frequency, THD, and Voltage. As shown in the ground truth analysis, the current implementation uses cycle sized windows for computing THD and Frequency with the cost of added noise. These window sizes should me modified to find an optimum length that minimizes noise but still accurately reflects the data.
+
+Although I created a simulation to simulate Laha itself, I believe it would be useful to simulate the power grid as well. Multiple commercial options exist that provide grid simulations. It would be useful to create a copy of the UHM micro-grid in simulation to help fill in some of the missing puzzle pieces about sensor topology and how signals travel through the UHM micro-grid. This would also afford us the opportunity to simulate PQ signals at will instead of waiting for them to arrive.
+
+I would like to experiment with adding and/or combining levels within the Laha hierarchy as described in the ``Discussion of Laha Levels" section.
+
+I believe that Laha is a perfect test bed for data fusion. I would like to integrate multiple data streams into the DSNs to find correlations in the data providing more context for the signals that we observe. For instance, solar production and other environmental would provide useful data streams for the OPQ network to compare signals against.
+
+I believe Laha could do a better job at collecting metrics about system performance. It would be good to know exactly when data is garbage collected. It would also be useful to collect more memory and system utilization metrics per plugin to determine the performance overhead of individual pieces of analysis.
+
+Future deployments should investigate utilizing more detailed ground truth metrics. The ground truth metrics utilized by OPQ only provided high level trends for Voltage, Frequency, and THD. It would be useful to have ground truth metrics that include some sort of indication of anomalous PQ events.
+
+I would like to do a direct study on how intermittent renewable energy sources affect PQ on the grid. The Hawaiian islands are a perfect test bed for this and the Laha framework is capable of providing insights into this issue.
+
+Finally, I would like to develop and deploy more sensors for OPQ outside of the UHM micro-grid. It would be useful to discover the interactions in PQ between multiple grids, island wide, and between islands.
+
