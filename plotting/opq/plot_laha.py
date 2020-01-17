@@ -184,6 +184,7 @@ def plot_aml(data: List[Data], out_dir: str) -> None:
                            label="Events TTL (1 Month)")
     measurement_ax.axvline(seconds_in_year, 0, total_measurements.max(), color="blue", linestyle="--",
                            label="Incidents TTL (1 Year)")
+    measurement_ax.axvline(seconds_in_year * 2, 0, total_measurements.max(), color="orange", linestyle="--", label="Phenomena TTL (2 Years)")
 
     measurement_ax.set_title("Measurements")
     measurement_ax.set_ylabel("# Measurements")
@@ -205,8 +206,7 @@ def plot_aml(data: List[Data], out_dir: str) -> None:
                      label="Events TTL (1 Month)")
     trend_ax.axvline(seconds_in_year, 0, total_trends.max(), color="blue", linestyle="--",
                      label="Incidents TTL (1 Year)")
-
-    trend_ax.axvline(seconds_in_year * 2, 0, total_trends.max(), color="blue", linestyle="--",
+    trend_ax.axvline(seconds_in_year * 2, 0, total_trends.max(), color="orange", linestyle="--",
                      label="Phenomena TTL (2 Years)")
 
     trend_ax.set_title("Trends")
@@ -230,6 +230,8 @@ def plot_aml(data: List[Data], out_dir: str) -> None:
                    label="Events TTL (1 Month)")
     aml_ax.axvline(seconds_in_year, 0, total_measurements.max() + total_trends.max(), color="blue", linestyle="--",
                    label="Incidents TTL (1 Year)")
+    aml_ax.axvline(seconds_in_year * 2, 0, total_measurements.max(), color="orange", linestyle="--",
+                     label="Phenomena TTL (2 Years)")
 
     aml_ax.set_title("AML")
     aml_ax.set_ylabel("# AML Items")
@@ -262,7 +264,7 @@ def plot_dl(data: List[Data], out_dir: str) -> None:
     ax.plot(x, total_incident_events, label="Incident Events")
     ax.axvline(seconds_in_month, 0, total_events.max(), color="green", linestyle="--", label="Events TTL (1 Month)")
     ax.axvline(seconds_in_year, 0, total_events.max(), color="blue", linestyle="--", label="Incidents TTL (1 Year)")
-    ax.axvline(seconds_in_year * 2, 0, total_events.max(), color="blue", linestyle="--", label="Phenomena TTL (2 Years)")
+    ax.axvline(seconds_in_year * 2, 0, total_events.max(), color="red", linestyle="--", label="Phenomena TTL (2 Years)")
 
     ax_mb: plt.Axes = ax.twinx()
     ax_mb.plot(x, total_events_mb, visible=False)
@@ -288,7 +290,7 @@ def plot_il(data: List[Data], out_dir: str) -> None:
 
     ax.plot(x, total_incidents, label="Total Incidents")
     ax.axvline(seconds_in_year, 0, total_incidents.max(), color="blue", linestyle="--", label="Incidents TTL (1 Year)")
-    ax.axvline(seconds_in_year * 2, 0, total_incidents.max(), color="blue", linestyle="--", label="Phenomena TTL (2 Years)")
+    ax.axvline(seconds_in_year * 2, 0, total_incidents.max(), color="orange", linestyle="--", label="Phenomena TTL (2 Years)")
 
     ax.set_title("OPQ IL Single Device Data Growth 3 Years")
     ax.set_ylabel("# Incidents")
