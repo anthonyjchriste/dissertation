@@ -24,7 +24,8 @@ fn main() {
         bytes_per_phenomena: constants::ESTIMATED_BYTES_PER_PHENOMENA,
         print_info_every_n_ticks: 500_000,
         write_info_every_n_ticks: 3600,
-        out_file: "/home/opq/Documents/anthony/dissertation/plotting/opq/sim_data.txt".to_string(),
+        out_file: "/home/opq/scrap/sim_data_opq.txt".to_string(),
+        //        out_file: "/home/opq/Documents/anthony/dissertation/plotting/opq/sim_data.txt".to_string(),
     };
     let mut simulation = sim::Simulation::new(conf);
     simulation.run_simulation();

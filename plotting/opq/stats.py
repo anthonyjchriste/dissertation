@@ -140,6 +140,11 @@ def phenomena_stats(mongo_client: pymongo.MongoClient):
     total_bytes = size_bytes.sum()
     dr_s: float = total_bytes / total_duration_s
 
+    all_incident_ids: Set[int] = set()
+    for phenomena_doc in phenomena_docs:
+        all_incident_ids.update(phenomena_doc["related_incident_ids"])
+
+    total_incidents = db["incidents"].count()
 
 
     print(f"Total Phenomena: {len(phenomena_docs)}")
@@ -147,6 +152,8 @@ def phenomena_stats(mongo_client: pymongo.MongoClient):
     print(f"Phenomena/s: {len(phenomena_docs) / float(total_duration_s)}")
     print(f"mean size per phenomena: {float(total_bytes) / len(phenomena_docs)}")
     print(f"DR/s: {dr_s}")
+    print(f"total_incidents from phenomena: {len(all_incident_ids)}")
+    print(f"percent_incident_to_phenomena: {len(all_incident_ids) / float(total_incidents)}")
 
 
 def ttl_aml_stats(events: List[Dict], incidents: List[Dict]) -> List[Dict]:

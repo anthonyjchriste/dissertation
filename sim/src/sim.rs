@@ -132,18 +132,19 @@ impl Simulation {
     ) -> StorageItem {
         self.total_storage_items += 1;
         self.total_measurements += 1;
-        let ttl = if !is_event && !is_incident && !is_phenomena {
-            self.total_orphaned_measurements += 1;
-            time + self.conf.measurements_ttl
-        } else if is_event {
-            self.total_event_measurements += 1;
-            time + self.conf.events_ttl
+
+        let ttl = if is_phenomena {
+            self.total_phenomena_measurements += 1;
+            time + self.conf.phenomena_ttl
         } else if is_incident {
             self.total_incident_measurements += 1;
             time + self.conf.incidents_ttl
+        } else if is_event {
+            self.total_event_measurements += 1;
+            time + self.conf.events_ttl
         } else {
-            self.total_phenomena_measurements += 1;
-            time + self.conf.phenomena_ttl
+            self.total_orphaned_measurements += 1;
+            time + self.conf.measurements_ttl
         };
 
         let is_event = if is_event { Some(is_event) } else { None };
@@ -168,15 +169,19 @@ impl Simulation {
     ) -> StorageItem {
         self.total_storage_items += 1;
         self.total_trends += 1;
-        let ttl = if !is_event && !is_incident {
-            self.total_orphaned_trends += 1;
-            time + self.conf.trends_ttl
+
+        let ttl = if is_phenomena {
+            self.total_phenomena_trends += 1;
+            time + self.conf.phenomena_ttl
+        } else if is_incident {
+            self.total_incident_trends += 1;
+            time + self.conf.incidents_ttl
         } else if is_event {
             self.total_event_trends += 1;
             time + self.conf.events_ttl
         } else {
-            self.total_incident_trends += 1;
-            time + self.conf.incidents_ttl
+            self.total_orphaned_trends += 1;
+            time + self.conf.trends_ttl
         };
 
         let is_event = if is_event { Some(is_event) } else { None };
@@ -195,12 +200,16 @@ impl Simulation {
     fn make_event(&mut self, time: usize, is_incident: bool, is_phenomena: bool) -> StorageItem {
         self.total_storage_items += 1;
         self.total_events += 1;
-        let ttl = if !is_incident {
-            self.total_orphaned_events += 1;
-            time + self.conf.events_ttl
-        } else {
+
+        let ttl = if is_phenomena {
+            self.total_phenomena_events += 1;
+            time + self.conf.phenomena_ttl
+        } else if is_incident {
             self.total_incident_events += 1;
             time + self.conf.incidents_ttl
+        } else {
+            self.total_orphaned_events += 1;
+            time + self.conf.events_ttl
         };
 
         let is_incident = if is_incident { Some(is_incident) } else { None };
@@ -217,7 +226,14 @@ impl Simulation {
     fn make_incident(&mut self, time: usize, is_phenomena: bool) -> StorageItem {
         self.total_storage_items += 1;
         self.total_incidents += 1;
-        self.total_orphaned_incidents += 1;
+
+        let ttl = if is_phenomena {
+            self.total_phenomena_incidents += 1;
+            time + self.conf.phenomena_ttl
+        } else {
+            self.total_orphaned_incidents += 1;
+            time + self.conf.incidents_ttl
+        };
 
         let is_phenomena = if is_phenomena {
             Some(is_phenomena)
@@ -225,22 +241,16 @@ impl Simulation {
             None
         };
 
-        storage::StorageItem::new_incident(
-            time,
-            time + self.conf.incidents_ttl,
-            Some(false),
-            Some(false),
-            is_phenomena,
-        )
+        storage::StorageItem::new_incident(time, ttl, Some(false), Some(false), is_phenomena)
     }
 
     fn make_phenomena(&mut self, time: usize) -> StorageItem {
         self.total_storage_items += 1;
         self.total_phenomena += 1;
 
-        storage::StorageItem::new_incident(
+        storage::StorageItem::new_phenomena(
             time,
-            time + self.conf.incidents_ttl,
+            time + self.conf.phenomena_ttl,
             Some(false),
             Some(false),
             Some(false),
@@ -248,11 +258,12 @@ impl Simulation {
     }
 
     fn write_to_file(&mut self, time: usize) {
-        let storage_stats = self.storage.stat_storage_items(None, None, None);
+        let storage_stats = self.storage.stat_storage_items(None, None, None, None);
         let sample_stats = self.storage.stat_storage_items(
             Some(storage::StorageType::Sample(
                 constants::ESTIMATED_BYTES_PER_META_SAMPLE,
             )),
+            None,
             None,
             None,
         );
@@ -262,11 +273,13 @@ impl Simulation {
             )),
             None,
             None,
+            None,
         );
         let measurement_orphaned_stats = self.storage.stat_storage_items(
             Some(storage::StorageType::Measurement(
                 constants::ESTIMATED_BYTES_PER_MEASUREMENT,
             )),
+            Some(false),
             Some(false),
             Some(false),
         );
@@ -276,11 +289,21 @@ impl Simulation {
             )),
             Some(true),
             Some(false),
+            Some(false),
         );
         let measurement_incident_stats = self.storage.stat_storage_items(
             Some(storage::StorageType::Measurement(
                 constants::ESTIMATED_BYTES_PER_MEASUREMENT,
             )),
+            Some(false),
+            Some(true),
+            Some(false),
+        );
+        let measurement_phenomena_stats = self.storage.stat_storage_items(
+            Some(storage::StorageType::Measurement(
+                constants::ESTIMATED_BYTES_PER_MEASUREMENT,
+            )),
+            Some(false),
             Some(false),
             Some(true),
         );
@@ -290,11 +313,13 @@ impl Simulation {
             )),
             None,
             None,
+            None,
         );
         let trends_orphaned_stats = self.storage.stat_storage_items(
             Some(storage::StorageType::Trend(
                 constants::ESTIMATED_BYTES_PER_TREND,
             )),
+            Some(false),
             Some(false),
             Some(false),
         );
@@ -304,11 +329,21 @@ impl Simulation {
             )),
             Some(true),
             Some(false),
+            Some(false),
         );
         let trends_incident_stats = self.storage.stat_storage_items(
             Some(storage::StorageType::Trend(
                 constants::ESTIMATED_BYTES_PER_TREND,
             )),
+            Some(false),
+            Some(true),
+            Some(false),
+        );
+        let trends_phenomena_stats = self.storage.stat_storage_items(
+            Some(storage::StorageType::Trend(
+                constants::ESTIMATED_BYTES_PER_TREND,
+            )),
+            Some(false),
             Some(false),
             Some(true),
         );
@@ -318,11 +353,13 @@ impl Simulation {
             )),
             None,
             None,
+            None,
         );
         let event_orphaned_stats = self.storage.stat_storage_items(
             Some(storage::StorageType::Event(
                 constants::ESTIMATED_BYTES_PER_EVENT,
             )),
+            Some(false),
             Some(false),
             Some(false),
         );
@@ -332,6 +369,15 @@ impl Simulation {
             )),
             Some(false),
             Some(true),
+            Some(false),
+        );
+        let event_phenomena_stats = self.storage.stat_storage_items(
+            Some(storage::StorageType::Event(
+                constants::ESTIMATED_BYTES_PER_EVENT,
+            )),
+            Some(false),
+            Some(false),
+            Some(true),
         );
         let incident_stats = self.storage.stat_storage_items(
             Some(storage::StorageType::Incident(
@@ -339,6 +385,23 @@ impl Simulation {
             )),
             Some(false),
             Some(false),
+            Some(false),
+        );
+        let incident_phenomena_stats = self.storage.stat_storage_items(
+            Some(storage::StorageType::Incident(
+                constants::ESTIMATED_BYTES_PER_INCIDENT,
+            )),
+            Some(false),
+            Some(false),
+            Some(true),
+        );
+        let phenomena_stats = self.storage.stat_storage_items(
+            Some(storage::StorageType::Phenomena(
+                constants::ESTIMATED_BYTES_PER_PHENOMENA,
+            )),
+            None,
+            None,
+            None,
         );
 
         let items: Vec<usize> = vec![
@@ -353,6 +416,8 @@ impl Simulation {
             measurement_event_stats.total_bytes,
             measurement_incident_stats.items,
             measurement_incident_stats.total_bytes,
+            measurement_phenomena_stats.items,
+            measurement_phenomena_stats.total_bytes,
             trends_stats.items,
             trends_stats.total_bytes,
             trends_orphaned_stats.items,
@@ -361,19 +426,28 @@ impl Simulation {
             trends_event_stats.total_bytes,
             trends_incident_stats.items,
             trends_incident_stats.total_bytes,
+            trends_phenomena_stats.items,
+            trends_phenomena_stats.total_bytes,
             event_stats.items,
             event_stats.total_bytes,
             event_orphaned_stats.items,
             event_orphaned_stats.total_bytes,
             event_incident_stats.items,
             event_incident_stats.total_bytes,
+            event_phenomena_stats.items,
+            event_phenomena_stats.total_bytes,
             incident_stats.items,
             incident_stats.total_bytes,
+            incident_phenomena_stats.items,
+            incident_phenomena_stats.total_bytes,
+            phenomena_stats.items,
+            phenomena_stats.total_bytes,
             storage_stats.total_bytes,
             sample_stats.total_bytes,
             measurement_stats.total_bytes + trends_stats.total_bytes,
             event_stats.total_bytes,
             incident_stats.total_bytes,
+            phenomena_stats.total_bytes,
         ];
         let items: Vec<String> = items.iter().map(|i| i.to_string()).collect();
         let line: String = format!("{}\n", items.join(","));
@@ -381,11 +455,12 @@ impl Simulation {
     }
 
     fn display_info(&mut self, time: usize) {
-        let storage_stats = self.storage.stat_storage_items(None, None, None);
+        let storage_stats = self.storage.stat_storage_items(None, None, None, None);
         let sample_stats = self.storage.stat_storage_items(
             Some(storage::StorageType::Sample(
                 constants::ESTIMATED_BYTES_PER_META_SAMPLE,
             )),
+            None,
             None,
             None,
         );
@@ -395,11 +470,13 @@ impl Simulation {
             )),
             None,
             None,
+            None,
         );
         let measurement_orphaned_stats = self.storage.stat_storage_items(
             Some(storage::StorageType::Measurement(
                 constants::ESTIMATED_BYTES_PER_MEASUREMENT,
             )),
+            Some(false),
             Some(false),
             Some(false),
         );
@@ -409,11 +486,21 @@ impl Simulation {
             )),
             Some(true),
             Some(false),
+            Some(false),
         );
         let measurement_incident_stats = self.storage.stat_storage_items(
             Some(storage::StorageType::Measurement(
                 constants::ESTIMATED_BYTES_PER_MEASUREMENT,
             )),
+            Some(false),
+            Some(true),
+            Some(false),
+        );
+        let measurement_phenomena_stats = self.storage.stat_storage_items(
+            Some(storage::StorageType::Measurement(
+                constants::ESTIMATED_BYTES_PER_MEASUREMENT,
+            )),
+            Some(false),
             Some(false),
             Some(true),
         );
@@ -423,11 +510,13 @@ impl Simulation {
             )),
             None,
             None,
+            None,
         );
         let trends_orphaned_stats = self.storage.stat_storage_items(
             Some(storage::StorageType::Trend(
                 constants::ESTIMATED_BYTES_PER_TREND,
             )),
+            Some(false),
             Some(false),
             Some(false),
         );
@@ -437,11 +526,21 @@ impl Simulation {
             )),
             Some(true),
             Some(false),
+            Some(false),
         );
         let trends_incident_stats = self.storage.stat_storage_items(
             Some(storage::StorageType::Trend(
                 constants::ESTIMATED_BYTES_PER_TREND,
             )),
+            Some(false),
+            Some(true),
+            Some(false),
+        );
+        let trends_phenomena_stats = self.storage.stat_storage_items(
+            Some(storage::StorageType::Trend(
+                constants::ESTIMATED_BYTES_PER_TREND,
+            )),
+            Some(false),
             Some(false),
             Some(true),
         );
@@ -451,11 +550,13 @@ impl Simulation {
             )),
             None,
             None,
+            None,
         );
         let event_orphaned_stats = self.storage.stat_storage_items(
             Some(storage::StorageType::Event(
                 constants::ESTIMATED_BYTES_PER_EVENT,
             )),
+            Some(false),
             Some(false),
             Some(false),
         );
@@ -465,6 +566,15 @@ impl Simulation {
             )),
             Some(false),
             Some(true),
+            Some(false),
+        );
+        let event_phenomena_stats = self.storage.stat_storage_items(
+            Some(storage::StorageType::Event(
+                constants::ESTIMATED_BYTES_PER_EVENT,
+            )),
+            Some(false),
+            Some(false),
+            Some(true),
         );
         let incident_stats = self.storage.stat_storage_items(
             Some(storage::StorageType::Incident(
@@ -472,6 +582,23 @@ impl Simulation {
             )),
             Some(false),
             Some(false),
+            Some(false),
+        );
+        let incident_phenomena_stats = self.storage.stat_storage_items(
+            Some(storage::StorageType::Incident(
+                constants::ESTIMATED_BYTES_PER_INCIDENT,
+            )),
+            Some(false),
+            Some(false),
+            Some(true),
+        );
+        let phenomena_stats = self.storage.stat_storage_items(
+            Some(storage::StorageType::Phenomena(
+                constants::ESTIMATED_BYTES_PER_PHENOMENA,
+            )),
+            None,
+            None,
+            None,
         );
 
         println!(
@@ -489,7 +616,7 @@ impl Simulation {
         );
 
         println!(
-            "\ttotal_measurements={} {} orphaned_measurements={} {} {} event_measurements={} {} {} incident_measurements={} {} {}",
+            "\ttotal_measurements={} {} orphaned_measurements={} {} {} event_measurements={} {} {} incident_measurements={} {} {} phenomena_measurements={} {} {}",
             measurement_stats.items,
             measurement_stats.fmt_size_mb(),
             measurement_orphaned_stats.items,
@@ -501,10 +628,13 @@ impl Simulation {
             measurement_incident_stats.items,
             measurement_incident_stats.fmt_percent(),
             measurement_incident_stats.fmt_size_mb(),
+            measurement_phenomena_stats.items,
+            measurement_phenomena_stats.fmt_percent(),
+            measurement_phenomena_stats.fmt_size_mb()
         );
 
         println!(
-            "\ttotal_trends={} {} orphaned_trends={} {} {} event_trends={} {} {} incident_trends={} {} {}",
+            "\ttotal_trends={} {} orphaned_trends={} {} {} event_trends={} {} {} incident_trends={} {} {} phenomena_trends={} {} {}",
             trends_stats.items,
             trends_stats.fmt_size_mb(),
             trends_orphaned_stats.items,
@@ -516,10 +646,13 @@ impl Simulation {
             trends_incident_stats.items,
             trends_incident_stats.fmt_percent(),
             trends_incident_stats.fmt_size_mb(),
+            trends_phenomena_stats.items,
+            trends_phenomena_stats.fmt_percent(),
+            trends_phenomena_stats.fmt_size_mb()
         );
 
         println!(
-            "\ttotal_events={} {} orphaned_events={} {} {} incident_events={} {} {}",
+            "\ttotal_events={} {} orphaned_events={} {} {} incident_events={} {} {} phenomena_events={} {} {}",
             event_stats.items,
             event_stats.fmt_size_mb(),
             event_orphaned_stats.items,
@@ -527,22 +660,35 @@ impl Simulation {
             event_orphaned_stats.fmt_size_mb(),
             event_incident_stats.items,
             event_incident_stats.fmt_percent(),
-            event_incident_stats.fmt_size_mb()
+            event_incident_stats.fmt_size_mb(),
+            event_phenomena_stats.items,
+            event_phenomena_stats.fmt_percent(),
+            event_phenomena_stats.fmt_size_mb()
         );
 
         println!(
-            "\ttotal_incidents={} {}",
+            "\ttotal_incidents={} {} phenomena_incidents={} {} {}",
             incident_stats.items,
-            incident_stats.fmt_size_mb()
+            incident_stats.fmt_size_mb(),
+            incident_phenomena_stats.items,
+            incident_phenomena_stats.fmt_percent(),
+            incident_phenomena_stats.fmt_size_mb()
         );
 
         println!(
-            "\ttotal_laha={} total_iml={} total_aml={} total_dl={} total_il={}",
+            "\ttotal_phenomena={} {}",
+            phenomena_stats.items,
+            phenomena_stats.fmt_size_mb(),
+        );
+
+        println!(
+            "\ttotal_laha={} total_iml={} total_aml={} total_dl={} total_il={} total_pl={}",
             storage_stats.fmt_size_mb(),
             sample_stats.fmt_size_mb(),
             fmt_size_mb(measurement_stats.total_bytes + trends_stats.total_bytes),
             event_stats.fmt_size_mb(),
-            incident_stats.fmt_size_mb()
+            incident_stats.fmt_size_mb(),
+            phenomena_stats.fmt_size_mb()
         );
     }
 
@@ -555,7 +701,7 @@ impl Simulation {
         );
 
         println!(
-            "total_measurements={} {} orphaned_measurements={} {} {} event_measurements={} {} {} incident_measurements={} {} {}",
+            "total_measurements={} {} orphaned_measurements={} {} {} event_measurements={} {} {} incident_measurements={} {} {} phenomena_measurements={} {} {}",
             self.total_measurements,
             fmt_size_mb(self.total_measurements * constants::ESTIMATED_BYTES_PER_MEASUREMENT),
             self.total_orphaned_measurements,
@@ -567,10 +713,13 @@ impl Simulation {
             self.total_incident_measurements,
             fmt_percent(self.total_incident_measurements as f64 / self.total_measurements as f64),
             fmt_size_mb(self.total_incident_measurements * constants::ESTIMATED_BYTES_PER_MEASUREMENT),
+            self.total_phenomena_measurements,
+            fmt_percent(self.total_phenomena_measurements as f64 / self.total_measurements as f64),
+            fmt_size_mb(self.total_phenomena_measurements * constants::ESTIMATED_BYTES_PER_MEASUREMENT)
         );
 
         println!(
-            "total_trends={} {} orphaned_trends={} {} {} event_trends={} {} {} incident_trends={} {} {}",
+            "total_trends={} {} orphaned_trends={} {} {} event_trends={} {} {} incident_trends={} {} {} incident_phenomena={} {} {}",
             self.total_trends,
             fmt_size_mb(self.total_trends * constants::ESTIMATED_BYTES_PER_TREND),
             self.total_orphaned_trends,
@@ -582,10 +731,13 @@ impl Simulation {
             self.total_incident_trends,
             fmt_percent(self.total_incident_trends as f64 / self.total_trends as f64),
             fmt_size_mb(self.total_incident_trends * constants::ESTIMATED_BYTES_PER_TREND),
+            self.total_phenomena_trends,
+            fmt_percent(self.total_phenomena_trends as f64 / self.total_trends as f64),
+            fmt_size_mb(self.total_phenomena_trends * constants::ESTIMATED_BYTES_PER_TREND)
         );
 
         println!(
-            "total_events={} {} orphaned_events={} {} {} incident_events={} {} {}",
+            "total_events={} {} orphaned_events={} {} {} incident_events={} {} {} phenomena_events={} {} {}",
             self.total_events,
             fmt_size_mb(self.total_events * constants::ESTIMATED_BYTES_PER_EVENT),
             self.total_orphaned_events,
@@ -593,13 +745,25 @@ impl Simulation {
             fmt_size_mb(self.total_orphaned_events * constants::ESTIMATED_BYTES_PER_EVENT),
             self.total_incident_events,
             fmt_percent(self.total_incident_events as f64 / self.total_events as f64),
-            fmt_size_mb(self.total_incident_events * constants::ESTIMATED_BYTES_PER_EVENT)
+            fmt_size_mb(self.total_incident_events * constants::ESTIMATED_BYTES_PER_EVENT),
+            self.total_phenomena_events,
+            fmt_percent(self.total_phenomena_events as f64 / self.total_events as f64),
+            fmt_size_mb(self.total_phenomena_events * constants::ESTIMATED_BYTES_PER_EVENT)
+        );
+
+        println!(
+            "total_incidents={} {} phenomena_incidents={} {} {}",
+            self.total_incidents,
+            fmt_size_mb(self.total_incidents * constants::ESTIMATED_BYTES_PER_INCIDENT),
+            self.total_phenomena_incidents,
+            fmt_percent(self.total_phenomena_incidents as f64 / self.total_incidents as f64),
+            fmt_size_mb(self.total_phenomena_incidents * constants::ESTIMATED_BYTES_PER_INCIDENT)
         );
 
         println!(
             "total_incidents={} {}",
-            self.total_incidents,
-            fmt_size_mb(self.total_incidents * constants::ESTIMATED_BYTES_PER_INCIDENT)
+            self.total_phenomena,
+            fmt_size_mb(self.total_phenomena * constants::ESTIMATED_BYTES_PER_PHENOMENA),
         );
 
         println!("total_storage_items={}", self.total_storage_items);
@@ -615,11 +779,17 @@ impl Simulation {
             for _ in 0..self.conf.num_sensors {
                 if percent_chance(constants::ESTIMATED_EVENTS_PER_SECOND, &mut self.rng) {
                     if percent_chance(self.conf.percent_event_to_incident, &mut self.rng) {
-                        // Create an event owned by incident
-                        storage_items_per_tick.push(self.make_event(i, true));
+                        if percent_chance(
+                            constants::ESTIMATED_PERCENT_INCIDENT_TO_PHENOMENA,
+                            &mut self.rng,
+                        ) {
+                            storage_items_per_tick.push(self.make_event(i, false, true));
+                        } else {
+                            storage_items_per_tick.push(self.make_event(i, true, false));
+                        }
                     } else {
                         // Create an orphaned event
-                        storage_items_per_tick.push(self.make_event(i, false));
+                        storage_items_per_tick.push(self.make_event(i, false, false));
                     }
                 }
             }
@@ -627,46 +797,70 @@ impl Simulation {
             // Incidents
             for _ in 0..self.conf.num_sensors {
                 if percent_chance(constants::ESTIMATED_INCIDENTS_PER_SECOND, &mut self.rng) {
-                    storage_items_per_tick.push(self.make_incident(i));
+                    if percent_chance(
+                        constants::ESTIMATED_PERCENT_INCIDENT_TO_PHENOMENA,
+                        &mut self.rng,
+                    ) {
+                        //                        storage_items_per_tick.push(self.make_phenomena(i));
+                        storage_items_per_tick.push(self.make_incident(i, true))
+                    } else {
+                        storage_items_per_tick.push(self.make_incident(i, false))
+                    }
                 }
             }
 
             // Phenomena
             for _ in 0..self.conf.num_sensors {
                 if percent_chance(constants::ESTIMATED_PHENOMENA_PER_SECOND, &mut self.rng) {
-                    storage_items_per_tick.push();
+                    println!("boom!");
+                    storage_items_per_tick.push(self.make_phenomena(i));
                 }
             }
 
             // Samples, measurements, trends
             for _ in 0..self.conf.num_sensors {
                 // Store meta-sample
-                storage_items_per_tick.push(self.make_sample(i, false, false));
+                storage_items_per_tick.push(self.make_sample(i, false, false, false));
                 let make_trend = i % 60 == 0;
                 // Probability of belonging to an event
                 if percent_chance(self.conf.percent_event_duration, &mut self.rng) {
                     // Probability of also belonging to an incident
                     if percent_chance(self.conf.percent_event_to_incident, &mut self.rng) {
-                        // Store measurement saved by incident
-                        storage_items_per_tick.push(self.make_measurement(i, false, true));
-                        if make_trend {
-                            // Store trend saved by incident
-                            storage_items_per_tick.push(self.make_trend(i, false, true));
+                        // Probability of also belonging to a phenomena
+                        if percent_chance(
+                            constants::ESTIMATED_PERCENT_INCIDENT_TO_PHENOMENA,
+                            &mut self.rng,
+                        ) {
+                            // Store measurement saved by phenomena
+                            storage_items_per_tick
+                                .push(self.make_measurement(i, false, false, true));
+                            if make_trend {
+                                // Store trend saved by phenomena
+                                storage_items_per_tick.push(self.make_trend(i, false, false, true));
+                            }
+                        } else {
+                            // Store measurement saved by incident
+                            storage_items_per_tick
+                                .push(self.make_measurement(i, false, true, false));
+                            if make_trend {
+                                // Store trend saved by incident
+                                storage_items_per_tick.push(self.make_trend(i, false, true, false));
+                            }
                         }
                     } else {
                         // Store measurement saved by event
-                        storage_items_per_tick.push(self.make_measurement(i, true, false));
+                        storage_items_per_tick.push(self.make_measurement(i, true, false, false));
                         if make_trend {
                             // Store trend saved by event
-                            storage_items_per_tick.push(self.make_trend(i, true, false));
+                            storage_items_per_tick.push(self.make_trend(i, true, false, false));
                         }
                     }
                 } else {
                     // Store orphaned measurement
-                    storage_items_per_tick.push(self.make_measurement(i, false, false));
+                    storage_items_per_tick.push(self.make_measurement(i, false, false, false));
                     if make_trend {
                         // Store orphaned trend
-                        storage_items_per_tick.push(self.make_trend(i, false, false));
+                        storage_items_per_tick.push(self.make_trend(i, false, false, false));
                     }
                 }
             }

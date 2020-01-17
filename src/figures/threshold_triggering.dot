@@ -1,15 +1,41 @@
-digraph threhold_triggering {
-    BoxId
-    Frequency
-    Voltage
-    THD
-    TriggerState [label="Trigger State [NOMINAL | TRIGGER]"]
+//digraph threhold_triggering {
+//    BoxId
+//    Frequency
+//    Voltage
+//    THD
+//    TriggerState [label="Trigger State [NOMINAL | TRIGGER]"]
+//
+//    BoxId -> Frequency
+//    BoxId -> Voltage
+//    BoxId -> THD
+//
+//    Frequency -> TriggerState
+//    Voltage -> TriggerState
+//    THD -> TriggerState
+//}
 
-    BoxId -> Frequency
-    BoxId -> Voltage
-    BoxId -> THD
+digraph threshold_triggering {
+    Nominal
+    Triggering
+    CheckFrequency
+    CheckVoltage
+    CheckTHD
+    Start
 
-    Frequency -> TriggerState
-    Voltage -> TriggerState
-    THD -> TriggerState
+    Start -> Nominal
+
+    Nominal -> CheckFrequency -> Nominal
+    Nominal -> CheckVoltage -> Nominal
+    Nominal -> CheckTHD -> Nominal
+
+//    CheckFrequency -> Nominal -> CheckFrequency
+//    CheckVoltage -> Nominal
+//    CheckTHD -> Nominal
+//
+    CheckFrequency -> Triggering -> CheckFrequency
+    CheckVoltage -> Triggering -> CheckVoltage
+    CheckTHD -> Triggering -> CheckTHD
+    CheckTHD -> Triggering -> CheckTHD
+
+
 }
