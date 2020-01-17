@@ -1424,7 +1424,23 @@ I will compare this result to the theoretical results in following sections.
 
 The Phenomena Level (PL) contains groupings of Incidents with added context and predictive analytic capabilities.
 
-% TODO
+Figure~ref{fig:actual_pl_opq} shows the the PL growth over the period of the OPQ deployment.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/actual_phenomena_opq.png}
+    \caption{Actual PL for OPQ}
+    \label{fig:actual_pl_opq}
+\end{figure}
+
+Of note is the fact that the PL level wasn't fully implemented until the start of December. The large spike in the PL observed at the start of January was the introduction of Future Phenomena. It should also be noted that the Phenomena Level is quite small. This is due to the fact that Phenomena are few and far between and also only consist of metadata.
+
+Equation~\ref{eq:pl_si} provides the linear regression of the PL growth once Future Phenomena were implemented.
+
+\begin{equation}
+    y = 1.6563287380621955e-06 * x + -0.1865557652111356
+    \label{eq:pl_si}
+\end{equation}
 
 \subsubsection{DSN System Requirements OPQ}
 

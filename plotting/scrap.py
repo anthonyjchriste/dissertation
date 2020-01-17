@@ -1,19 +1,18 @@
-def res(incident_type: str,
-        cluster_id: int,
-        num_incidents: int,
-        mean_duration_ms: float,
-        sr_hz: float,
-        sample_size_bytes: int,
-        mean_incident_size_bytes: int) -> None:
-    size_bytes: float = num_incidents * ((mean_duration_ms / 1_000.0) * sr_hz * sample_size_bytes + mean_incident_size_bytes)
-    size_gb: float = size_bytes / 1_000_000.0
-    print(f"{incident_type} {cluster_id} & {num_incidents} & {size_gb:.2f} \\\\")
+from typing import List
+
+import numpy as np
+
+def sum_series(series: np.ndarray) -> np.ndarray:
+    result: List[int] = [series[0]]
+    for i in range(1, len(series)):
+        result.append(result[i - 1] + series[i])
+
+    return np.array(result)
+
 
 def main():
-    res("FSag", 1, 116769, 98.91, 12000, 2, 365)
-    res("FSag", 6, 35957, 809.18, 12000, 2, 365)
-    res("FSwell", 7, 78577, 138.63, 12000, 2, 365)
-    res("FSwell", 0, 95488, 158.29, 12000, 2, 365)
+    a = np.array([1, 2, 3, 4, 5])
+    print(sum_series(a))
 
 
 if __name__ == "__main__":
