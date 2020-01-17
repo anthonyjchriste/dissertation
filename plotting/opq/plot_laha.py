@@ -23,6 +23,8 @@ class Data:
                  total_event_measurements_b: int,
                  total_incident_measurements: int,
                  total_incident_measurements_b: int,
+                 total_phenomena_measurements: int,
+                 total_phenomena_measurements_b: int,
                  total_trends: int,
                  total_trends_b: int,
                  total_orphaned_trends: int,
@@ -31,19 +33,28 @@ class Data:
                  total_event_trends_b: int,
                  total_incident_trends: int,
                  total_incident_trends_b: int,
+                 total_phenomena_trends: int,
+                 total_phenomena_trends_b: int,
                  total_events: int,
                  total_events_b: int,
                  total_orphaned_events: int,
                  total_orphaned_events_b: int,
                  total_incident_events: int,
                  total_incident_events_b: int,
+                 total_phenomena_events: int,
+                 total_phenomena_events_b: int,
                  total_incidents: int,
                  total_incidents_b: int,
+                 total_phenomena_incidents: int,
+                 total_phenomena_incidents_b: int,
+                 total_phenomena: int,
+                 total_phenomena_b: int,
                  total_laha_b: int,
                  total_iml_b: int,
                  total_aml_b: int,
                  total_dl_b: int,
-                 total_il_b: int):
+                 total_il_b: int,
+                 total_pl_b: int):
         self.time: int = time
         self.total_samples: int = total_samples
         self.total_samples_b: int = total_samples_b
@@ -76,6 +87,18 @@ class Data:
         self.total_aml_b: int = total_aml_b
         self.total_dl_b: int = total_dl_b
         self.total_il_b: int = total_il_b
+
+        self.total_phenomena_measurements = total_phenomena_measurements
+        self.total_phenomena_measurements_b = total_phenomena_measurements_b
+        self.total_phenomena_trends = total_phenomena_trends
+        self.total_phenomena_trends_b = total_phenomena_trends_b
+        self.total_phenomena_events = total_phenomena_events
+        self.total_phenomena_events_b = total_phenomena_events_b
+        self.total_phenomena_incidents = total_phenomena_incidents
+        self.total_phenomena_incidents_b = total_phenomena_incidents_b
+        self.total_phenomena = total_phenomena
+        self.total_phenomena_b = total_phenomena_b
+        self.total_pl_b = total_pl_b
 
     @staticmethod
     def from_line(line: str) -> 'Data':
@@ -183,6 +206,9 @@ def plot_aml(data: List[Data], out_dir: str) -> None:
     trend_ax.axvline(seconds_in_year, 0, total_trends.max(), color="blue", linestyle="--",
                      label="Incidents TTL (1 Year)")
 
+    trend_ax.axvline(seconds_in_year * 2, 0, total_trends.max(), color="blue", linestyle="--",
+                     label="Phenomena TTL (2 Years)")
+
     trend_ax.set_title("Trends")
     trend_ax.set_ylabel("# Trends")
     trend_ax.legend()
@@ -236,6 +262,7 @@ def plot_dl(data: List[Data], out_dir: str) -> None:
     ax.plot(x, total_incident_events, label="Incident Events")
     ax.axvline(seconds_in_month, 0, total_events.max(), color="green", linestyle="--", label="Events TTL (1 Month)")
     ax.axvline(seconds_in_year, 0, total_events.max(), color="blue", linestyle="--", label="Incidents TTL (1 Year)")
+    ax.axvline(seconds_in_year * 2, 0, total_events.max(), color="blue", linestyle="--", label="Phenomena TTL (2 Years)")
 
     ax_mb: plt.Axes = ax.twinx()
     ax_mb.plot(x, total_events_mb, visible=False)
@@ -261,6 +288,7 @@ def plot_il(data: List[Data], out_dir: str) -> None:
 
     ax.plot(x, total_incidents, label="Total Incidents")
     ax.axvline(seconds_in_year, 0, total_incidents.max(), color="blue", linestyle="--", label="Incidents TTL (1 Year)")
+    ax.axvline(seconds_in_year * 2, 0, total_incidents.max(), color="blue", linestyle="--", label="Phenomena TTL (2 Years)")
 
     ax.set_title("OPQ IL Single Device Data Growth 3 Years")
     ax.set_ylabel("# Incidents")
@@ -275,6 +303,32 @@ def plot_il(data: List[Data], out_dir: str) -> None:
 
     fig.savefig(f"{out_dir}/sim_il_opq.png")
 
+def plot_pl(data: List[Data], out_dir: str) -> None:
+    fig, ax = plt.subplots(1, 1, figsize=(16, 9), sharex="all")
+    fig: plt.Figure = fig
+    ax: plt.Axes = ax
+
+    x = np.array(list(map(lambda d: d.time, data)))
+    total_phenomena = np.array(list(map(lambda d: d.total_phenomena, data)))
+    total_phenomena_mb = np.array(list(map(lambda d: d.total_phenomena_b, data))) / 1_000_000.0
+
+    ax.plot(x, total_phenomena, label="Total Phenomena")
+    ax.axvline(seconds_in_year * 2, 0, total_phenomena.max(), color="blue", linestyle="--", label="Phenomena TTL (2 Years)")
+
+    ax.set_title("OPQ PL Single Device Data Growth 3 Years")
+    ax.set_ylabel("# Phenomena")
+    ax.set_xlabel("Seconds")
+    ax.set_xscale("log")
+
+    ax_mb: plt.Axes = ax.twinx()
+    ax_mb.plot(x, total_phenomena_mb, visible=False)
+    ax_mb.set_ylabel("Size MB")
+
+    ax.legend()
+
+    fig.show()
+    fig.savefig(f"{out_dir}/sim_pl_opq.png")
+
 
 def plot_laha(data: List[Data], out_dir: str) -> None:
     fig, ax = plt.subplots(1, 1, figsize=(16, 9), sharex="all")
@@ -287,18 +341,21 @@ def plot_laha(data: List[Data], out_dir: str) -> None:
     total_aml_mb = np.array(list(map(lambda d: d.total_aml_b, data))) / 1_000_000.0
     total_dl_mb = np.array(list(map(lambda d: d.total_dl_b, data))) / 1_000_000.0
     total_il_mb = np.array(list(map(lambda d: d.total_il_b, data))) / 1_000_000.0
+    total_pl_mb = np.array(list(map(lambda d: d.total_pl_b, data))) / 1_000_000.0
 
     ax.plot(x, total_laha_mb, label="Total Laha")
     ax.plot(x, total_iml_mb, label="IML")
     ax.plot(x, total_aml_mb, label="AML")
     ax.plot(x, total_dl_mb, label="DL")
     ax.plot(x, total_il_mb, label="IL")
+    ax.plot(x, total_pl_mb, label="PL")
 
     ax.axvline(seconds_in_day, 0, total_laha_mb.max(), color="red", linestyle="--", label="Measurements TTL (1 Day)")
     ax.axvline(seconds_in_two_weeks, 0, total_laha_mb.max(), color="black", linestyle="--",
                label="Trends TTL (2 Weeks)")
     ax.axvline(seconds_in_month, 0, total_laha_mb.max(), color="green", linestyle="--", label="Events TTL (1 Month)")
     ax.axvline(seconds_in_year, 0, total_laha_mb.max(), color="blue", linestyle="--", label="Incidents TTL (1 Year)")
+    ax.axvline(seconds_in_year * 2, 0, total_laha_mb.max(), color="blue", linestyle="--", label="Phenomena TTL (2 Years)")
 
     ax.set_title("OPQ Laha Single Device Data Growth 3 Years")
     ax.set_ylabel("Size MB")
@@ -307,20 +364,23 @@ def plot_laha(data: List[Data], out_dir: str) -> None:
     # ax.set_yscale("log")
     ax.legend()
 
+    fig.show()
     fig.savefig(f"{out_dir}/sim_laha_opq.png")
 
 
 if __name__ == "__main__":
-    iml_data = parse_file("./sim_data_iml.txt")
-    data = parse_file('./sim_data.txt')
+    # iml_data = parse_file("./sim_data_iml.txt")
+    # data = parse_file('./sim_data.txt')
+    data = parse_file("/home/opq/scrap/sim_data_opq.txt")
 
-    print(f"len(iml_data)={len(iml_data)}")
-    print(f"len(data)={len(data)}")
+    # print(f"len(iml_data)={len(iml_data)}")
+    # print(f"len(data)={len(data)}")
 
-    out_dir = "/Users/anthony/Development/dissertation/src/figures"
+    out_dir = "/home/opq/Documents/anthony/dissertation/src/figures"
 
-    plot_iml(iml_data, out_dir)
+    # plot_iml(iml_data, out_dir)
     plot_aml(data, out_dir)
     plot_dl(data, out_dir)
     plot_il(data, out_dir)
     plot_laha(data, out_dir)
+    plot_pl(data, out_dir)
