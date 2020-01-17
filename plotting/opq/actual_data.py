@@ -686,6 +686,7 @@ def plot_laha(laha_stat_dts: np.ndarray,
               aml_gb: np.ndarray,
               dl_gb: np.ndarray,
               il_gb: np.ndarray,
+              pl_gb: np.ndarray,
               total_gb: np.ndarray,
               out_dir: str):
     # Plot
@@ -707,6 +708,7 @@ def plot_laha(laha_stat_dts: np.ndarray,
     size_ax.plot(laha_stat_dts, aml_gb, label="AML Total")
     size_ax.plot(laha_stat_dts, dl_gb, label="DL Total")
     size_ax.plot(laha_stat_dts, il_gb, label="IL Total")
+    size_ax.plot(laha_stat_dts, pl_gb, label="PL Total")
     size_ax.plot(laha_stat_dts, total_gb, label="Total")
     size_ax.errorbar(laha_stat_dts, intercept + slope * xs, yerr=std_err, label="Laha Total GB LR", color="black",
                      linestyle=":")
@@ -1528,7 +1530,7 @@ def main():
     #
     # print("Done.")
 
-    out_dir: str = "/Users/anthony/Development/dissertation/src/figures"
+    out_dir: str = "/home/opq/Documents/anthony/dissertation/src/figures"
 
     print("Making plots...")
 
@@ -1538,38 +1540,39 @@ def main():
     #          laha_iml_total_mb,
     #          out_dir)
 
-    plot_aml(laha_stat_dts,
-             laha_measurements_gb,
-             laha_trends_gb,
-             laha_aml_total_gb,
-             laha_measurements_cnt,
-             laha_trends_cnt,
-             laha_aml_total_cnt,
-             laha_measurements_gc,
-             laha_trends_gc,
-             laha_aml_total_gc,
-             laha_active_devices,
-             out_dir)
-
-    plot_dl(laha_stat_dts,
-            laha_events_gb,
-            laha_events_cnt,
-            laha_events_gc,
-            laha_active_devices,
-            out_dir)
-
-    plot_il(laha_stat_dts,
-            laha_incidents_gb,
-            laha_incidents_cnt,
-            laha_incidents_gc,
-            laha_active_devices,
-            out_dir)
+    # plot_aml(laha_stat_dts,
+    #          laha_measurements_gb,
+    #          laha_trends_gb,
+    #          laha_aml_total_gb,
+    #          laha_measurements_cnt,
+    #          laha_trends_cnt,
+    #          laha_aml_total_cnt,
+    #          laha_measurements_gc,
+    #          laha_trends_gc,
+    #          laha_aml_total_gc,
+    #          laha_active_devices,
+    #          out_dir)
+    #
+    # plot_dl(laha_stat_dts,
+    #         laha_events_gb,
+    #         laha_events_cnt,
+    #         laha_events_gc,
+    #         laha_active_devices,
+    #         out_dir)
+    #
+    # plot_il(laha_stat_dts,
+    #         laha_incidents_gb,
+    #         laha_incidents_cnt,
+    #         laha_incidents_gc,
+    #         laha_active_devices,
+    #         out_dir)
 
     plot_laha(laha_stat_dts,
               laha_iml_total_gb,
               laha_aml_total_gb,
               laha_events_gb,
               laha_incidents_gb,
+              np.array([0.002 for _ in laha_stat_dts]),
               laha_total_gb,
               out_dir)
 
