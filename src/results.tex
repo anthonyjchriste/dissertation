@@ -1633,10 +1633,18 @@ The Incidents Level (IL) contains metadata and a window of data that contains cl
 The simulated IL data is better than the simulated DL data, but still displays an offset, likely for the same reasons as the DL. OPQ saves 20 GB in the IL compared to the simulated IL.
 
 \paragraph{PL Versus Simulated Growth}
-Figure shows the actual PL vs estimated PL.
+The Phenomena Level (PL) provides context on top of Incidents and predictive analytics capabilities.
 
-% TODO
-TODO
+Figure~\ref{fig:actual_phenomena_opq_vs_sim} shows the actual PL vs simulated PL.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{figures/actual_phenomena_opq_vs_sim.png}
+    \caption{Actual PL vs Simulation PL for OPQ}
+    \label{fig:actual_phenomena_opq_vs_sim}
+\end{figure}
+
+Here, we can observe that the actual PL trends pretty closely to the simulated PL. This is to be expectet due to the fact that there are a small number of Phenomena and the OPQ deployment has not been running long enough (2 years) to make full use of the TTL of Phenomena.
 
 \paragraph{Laha Versus Simulated Growth}
 Figure~\ref{fig:actual_laha_vs_sim_opq} shows the actual Laha vs estimated Laha.
