@@ -1397,7 +1397,6 @@ Figure~\ref{fig:actual_il_opq} shows the IL growth for the OPQ network over a pe
 \end{figure}
 
 The top panel shows the growth of the IL with the size in GB on the left Y-axis and the number of Incidents on the right Y-axis. Over a period of two and a half months, the IL of OPQ has grown to near 6GB containing over 400,000 Incidents. The update in Incidents around mid-November is due to the fact that I performed maintenance on many of my Incident classification algorithms and also added a slew of Incident plugins. This also caused our linear regression fit to be the least accurate of any of the Laha levels.
-The top panel shows the growth of the IL with the size in GB on the left Y-axis and the number of Incidents on the right Y-axis. Over a period of two and a half months, the IL of OPQ has grown to near 6GB containing over 400,000 Incidents. The update in Incidents around mid-November is due to the fact that I performed maintenance on many of my Incident classification algorithms and also added a slew of Incident plugins. This also caused our linear regression fit to be the least accurate of any of the Laha levels.
 
 The middle panel shows the garbage collection statistics for the IL. You'll note that the GC statistics are flat lining at 0. This is due to the fact that Incidents are given a default TTL of 1 year and this deployment has only been collecting data for 3 months.
 
@@ -1423,8 +1422,9 @@ I will compare this result to the theoretical results in following sections.
 
 \subsubsection{DSN System Requirements OPQ: PL}
 
+The Phenomena Level (PL) contains groupings of Incidents with added context and predictive analytic capabilities.
+
 % TODO
-TODO
 
 \subsubsection{DSN System Requirements OPQ}
 
