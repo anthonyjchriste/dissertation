@@ -65,11 +65,11 @@ A summary of how data management in Laha is provided in Table~\ref{data-managame
 		\toprule
 		\textbf{Level} & \textbf{Description} & \textbf{Time-to-Live (TTL)} \\
 		\midrule
-		Phenomena Level (PL) & Contextual \& predictive analytics &  \\
-		Incidents Level (IL) & Classified signals &  1 year \\
-		Detections Level (DL) & Triggered windowed raw data & 1 week  \\
-		Aggregate Measurements Level (AML) & Statistical aggregates of raw data  & 1 day  \\
-		Instantaneous Measurements Level (IML) & Raw sensor data  & 1 hour \\
+		Phenomena Level (PL) & Contextual \& predictive analytics & 2 years \\
+		Incidents Level (IL) & Classified signals & 1 year \\
+		Detections Level (DL) & Triggered windowed raw data & 1 month  \\
+		Aggregate Measurements Level (AML) & Statistical aggregates of raw data  & 2 weeks  \\
+		Instantaneous Measurements Level (IML) & Raw sensor data  & 15 minutes \\
 		\bottomrule
 		\label{data-managament-table}
 	\end{tabularx}
@@ -194,8 +194,6 @@ Because of these difficulties, we can't simply correlate two signals for similar
 To compare the similarity between signals, the above mentioned features are used in combination with community detection algorithms to group similar feature sets. These groupings can be further refined by correlating the signals, but due to the fact that the signal shape may change, these features are weighted less than grouping by high-level features.
 
 K-Means clustering is used on the high-level features to create clusters of related features based on the distance from the mean values of those features. These features include a combination of Incident duration, Incident classification, Incident magnitude, and Sensor location.
-
-From these clusters, this Phenomena creates a similarity metric. The metric is defined as $similarity = D*\alpha_1 + C\alpha_2 + M*\alpha_3 + L*\alpha_4 + Z*\alpha_5$ where $D$ is the duration metrics, $C$ is the classification metric, $M$ is the magnitude metric, $L$ is the location metric, and $Z$ is the correlation metric. The $\alpha$ values are a configurable weighting of the importance of each metric in determining similarity.
 
 \subsection{Future Phenomena}\label{subsec:future-phenomena}
 Future Phenomena are a statistical model of the likelihood of seeing an Incident or Incidents at future points in time. Knowing that a signal may occur with some probability allows those affected by those signals time to prepare for the signals.
@@ -1117,10 +1115,10 @@ Table~\ref{table:DefaultTtls} displays the default TTL in seconds for each OPQ c
         \midrule
         box\_samples & 900 \\
         measurements & 86400 \\
-        trends & 604800 \\
-        events & 2592000 \\
-        incidents & 31536000 \\
-        phenomena & Does not expire \\
+        trends & 1209600 \\
+        events & 2620800 \\
+        incidents & 31449600 \\
+        phenomena & 62899200 \\
         \bottomrule
     \end{tabularx}
     \label{table:DefaultTtls}
@@ -1565,8 +1563,8 @@ The ``RedvoxPacketApi900" collection stores metadata for all data packets receiv
 		appFileStartUsUtc & i64 & The timestamp of the start of this packet. \\
 		appFileStartMachine & i64 & The machine timestamp of the start of this packet. \\
 		serverTimestampUsUtc & i64 & The time that this packet was received at the server. \\
-		evenlySampledChannels & [EvenlySampledChannel] & Evenly sampled channels metadata. \\
-		unevenlySampledChannels& [UnevenlySampledChannel] & Unevenly sampled channels metadata. \\
+		evenlySampledChannels & [EvenChannel] & Evenly sampled channels metadata. \\
+		unevenlySampledChannels& [UnevenChannel] & Unevenly sampled channels metadata. \\
 		metadata & [str] & A list of metadata added to this packet. \\
 		dataKey & str & The location of the original data file stored in AWS S3. \\
 		\bottomrule
@@ -1912,7 +1910,7 @@ Once a group is created, you can then view the status of all devices in that gro
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.7\linewidth]{figures/lweb_group.png}
+	\includegraphics[width=0.65\linewidth]{figures/lweb_group.png}
 	\caption{Sensor Group Status}
 	\label{fig:lweb_group}
 \end{figure}
@@ -1955,7 +1953,7 @@ An example of a report with one device is provided in Figure~\ref{fig:lweb_repor
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.7\linewidth]{figures/lweb_report.png}
+	\includegraphics[width=0.6\linewidth]{figures/lweb_report.png}
 	\caption{Lokahi Web Report}
 	\label{fig:lweb_report}
 \end{figure}
