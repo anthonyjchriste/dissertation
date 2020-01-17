@@ -5,7 +5,7 @@
 
 \subsection{Mauka Default Configuration}
 \label{appendix:MaukaConfig}
-\begin{verbatim}
+\begin{lstlisting}
 
 {
 	// Enables debugging for Mauka plugins
@@ -144,11 +144,11 @@
 		}
 	}
 }
-\end{verbatim}
+\end{lstlisting}
 
 \subsection{ITIC Curve Polygon Points}
 \label{appendix:Itic}
-\begin{verbatim}
+\begin{lstlisting}
 HUNDREDTH_OF_A_CYCLE = analysis.c_to_ms(0.01)
 """Hundredth of a power cycle in milliseconds"""
 
@@ -200,11 +200,11 @@ NO_INTERRUPTION_REGION_POLYGON = [
 	[0, 0]
 ]
 """Polygon representing the no interruption region"""
-\end{verbatim}
+\end{lstlisting}
 
 \subsection{Lokahi Data Packet Protocol}
 \label{lokahi-data-packet-protocol}
-\begin{verbatim}
+\begin{lstlisting}
 syntax = "proto3";
 
 option java_package = "io.redvox.apis";
@@ -395,11 +395,11 @@ repeated Error errors = 3;    // List of errors
 repeated string metadata = 4; // Extra metadata to associate with this response
 }
 
-\end{verbatim}
+\end{lstlisting}
 
 \subsection{Lokahi Acquisition Sample Config}
 \label{lokahi_acquisition_config}
-\begin{verbatim}
+\begin{lstlisting}
 # Acquisition WebSocket server configuration
 [server]
 host = "localhost"                  # The host the acquisition server should bind to
@@ -449,8 +449,6 @@ devices_blacklist = []
 owners_whitelist = []
 owners_blacklist = []
 
-
-
 # AWS S3 handlers.
 # When enabled, these will upload redvox packets to AWS S3.
 [[s3_handlers]]
@@ -495,10 +493,10 @@ devices_blacklist = []
 owners_whitelist = []
 owners_blacklist = []
 encrypt_with_key = ""                               # If provided, encrypt using this user's GPG key
-\end{verbatim}
+\end{lstlisting}
 
 \subsection{Simulation Parameters}\label{appendix:simulation_parameters}
-\begin{verbatim}
+\begin{lstlisting}
 	OPQ Params
 	total events 151516
 	total duration s 1575423519.721
@@ -582,4 +580,4 @@ encrypt_with_key = ""                               # If provided, encrypt using
 	total_incidents=86 9326.53MB
 	total_storage_items=5658161
 
-\end{verbatim}
+\end{lstlisting}
