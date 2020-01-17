@@ -27,27 +27,57 @@ Incident DR/s sem: 12004.184732882764
 avg trend size bytes = 2471
 
 80
+93000000/93312000 99.7%
+        total_samples=216000 0.29MB
+        total_measurements=0 0.00MB orphaned_measurements=0 NaN% 0.00MB event_measurements=0 NaN% 0.00MB incident_measurements=0 NaN% 0.00MB phenomena_measurements=0 NaN% 0.00MB
+        total_trends=29827 73.70MB orphaned_trends=22168 74.32% 54.78MB event_trends=3091 10.36% 7.64MB incident_trends=1523 5.11% 3.76MB phenomena_trends=3045 10.21% 7.52MB
+        total_events=74 47.60MB orphaned_events=74 100.00% 47.60MB incident_events=0 0.00% 0.00MB phenomena_events=0 0.00% 0.00MB
+        total_incidents=22 23.86MB phenomena_incidents=0 0.00% 0.00MB
+        total_phenomena=46 0.20MB
+        total_laha=145.65MB total_iml=0.29MB total_aml=73.70MB total_dl=47.60MB total_il=23.86MB total_pl=0.20MB
 total_samples=146371840 585.49MB
-total_measurements=0 0.00MB orphaned_measurements=0 NaN% 0.00MB event_measurements=0 NaN% 0.00MB incident_measurements=0 NaN% 0.00MB
-total_trends=1829648 4521.06MB orphaned_trends=1607403 87.85% 3971.89MB event_trends=114361 6.25% 282.59MB incident_trends=107884 5.90% 266.58MB
-total_events=2945 1894.22MB orphaned_events=2945 100.00% 1894.22MB incident_events=0 0.00% 0.00MB
-total_incidents=78 84.59MB
-total_storage_items=3662319
+total_measurements=0 0.00MB orphaned_measurements=0 NaN% 0.00MB event_measurements=0 NaN% 0.00MB incident_measurements=0 NaN% 0.00MB phenomena_measurements=0 NaN% 0.00MB
+total_trends=1829648 4521.06MB orphaned_trends=1705874 93.24% 4215.21MB event_trends=114483 6.26% 282.89MB incident_trends=4662 0.25% 11.52MB incident_phenomena=4629 0.25% 11.44MB
+total_events=2904 1867.85MB orphaned_events=2904 100.00% 1867.85MB incident_events=0 0.00% 0.00MB phenomena_events=0 0.00% 0.00MB
+total_incidents=81 87.84MB phenomena_incidents=0 0.00% 0.00MB
+total_incidents=64 0.28MB
+total_storage_items=3662345
+
 
 800
+93000000/93312000 99.7%
+        total_samples=264000 2.89MB
+        total_measurements=0 0.00MB orphaned_measurements=0 NaN% 0.00MB event_measurements=0 NaN% 0.00MB incident_measurements=0 NaN% 0.00MB phenomena_measurements=0 NaN% 0.00MB
+        total_trends=37286 92.13MB orphaned_trends=27556 73.90% 68.09MB event_trends=3885 10.42% 9.60MB incident_trends=1901 5.10% 4.70MB phenomena_trends=3944 10.58% 9.75MB
+        total_events=83 533.86MB orphaned_events=83 100.00% 533.86MB incident_events=0 0.00% 0.00MB phenomena_events=0 0.00% 0.00MB
+        total_incidents=31 336.19MB phenomena_incidents=0 0.00% 0.00MB
+        total_phenomena=51 0.22MB
+        total_laha=965.28MB total_iml=2.89MB total_aml=92.13MB total_dl=533.86MB total_il=336.19MB total_pl=0.22MB
 total_samples=1820722400 7282.89MB
-total_measurements=0 0.00MB orphaned_measurements=0 NaN% 0.00MB event_measurements=0 NaN% 0.00MB incident_measurements=0 NaN% 0.00MB
-total_trends=2275903 5623.76MB orphaned_trends=1999646 87.86% 4941.13MB event_trends=142319 6.25% 351.67MB incident_trends=133938 5.89% 330.96MB
-total_events=2835 18234.72MB orphaned_events=2835 100.00% 18234.72MB incident_events=0 0.00% 0.00MB
-total_incidents=69 748.29MB
-total_storage_items=4554710
+total_measurements=0 0.00MB orphaned_measurements=0 NaN% 0.00MB event_measurements=0 NaN% 0.00MB incident_measurements=0 NaN% 0.00MB phenomena_measurements=0 NaN% 0.00MB
+total_trends=2275903 5623.76MB orphaned_trends=2122100 93.24% 5243.71MB event_trends=142057 6.24% 351.02MB incident_trends=5865 0.26% 14.49MB incident_phenomena=5881 0.26% 14.53MB
+total_events=2860 18395.52MB orphaned_events=2860 100.00% 18395.52MB incident_events=0 0.00% 0.00MB phenomena_events=0 0.00% 0.00MB
+total_incidents=81 878.43MB phenomena_incidents=0 0.00% 0.00MB
+total_incidents=82 0.35MB
+total_storage_items=4554829
+
 
 8000
+93000000/93312000 99.7%
+        total_samples=324000 28.51MB
+        total_measurements=0 0.00MB orphaned_measurements=0 NaN% 0.00MB event_measurements=0 NaN% 0.00MB incident_measurements=0 NaN% 0.00MB phenomena_measurements=0 NaN% 0.00MB
+        total_trends=46458 114.80MB orphaned_trends=34070 73.34% 84.19MB event_trends=5073 10.92% 12.54MB incident_trends=2435 5.24% 6.02MB phenomena_trends=4880 10.50% 12.06MB
+        total_events=86 5531.52MB orphaned_events=86 100.00% 5531.52MB incident_events=0 0.00% 0.00MB phenomena_events=0 0.00% 0.00MB
+        total_incidents=30 3253.44MB phenomena_incidents=0 0.00% 0.00MB
+        total_phenomena=34 0.15MB
+        total_laha=8928.42MB total_iml=28.51MB total_aml=114.80MB total_dl=5531.52MB total_il=3253.44MB total_pl=0.15MB
 total_samples=22621096000 90484.38MB
-total_measurements=0 0.00MB orphaned_measurements=0 NaN% 0.00MB event_measurements=0 NaN% 0.00MB incident_measurements=0 NaN% 0.00MB
-total_trends=2827637 6987.09MB orphaned_trends=2484447 87.86% 6139.07MB event_trends=177355 6.27% 438.24MB incident_trends=165835 5.86% 409.78MB
-total_events=2801 180160.32MB orphaned_events=2801 100.00% 180160.32MB incident_events=0 0.00% 0.00MB
-total_incidents=86 9326.53MB
-total_storage_items=5658161
+total_measurements=0 0.00MB orphaned_measurements=0 NaN% 0.00MB event_measurements=0 NaN% 0.00MB incident_measurements=0 NaN% 0.00MB phenomena_measurements=0 NaN% 0.00MB
+total_trends=2827637 6987.09MB orphaned_trends=2635719 93.21% 6512.86MB event_trends=177388 6.27% 438.33MB incident_trends=7284 0.26% 18.00MB incident_phenomena=7246 0.26% 17.90MB
+total_events=2874 184855.68MB orphaned_events=2874 100.00% 184855.68MB incident_events=0 0.00% 0.00MB phenomena_events=0 0.00% 0.00MB
+total_incidents=88 9543.42MB phenomena_incidents=0 0.00% 0.00MB
+total_incidents=52 0.22MB
+total_storage_items=5658288
+
 
 phenomena dr: 0.0056203203849740264

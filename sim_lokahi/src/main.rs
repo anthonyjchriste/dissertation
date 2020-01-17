@@ -17,16 +17,15 @@ fn main() {
         incidents_ttl: constants::DEFAULT_INCIDENTS_TTL,
         phenomena_ttl: constants::DEFAULT_PHENOMENA_TTL,
         num_sensors: 1,
-        bytes_per_sample: constants::ESTIMATED_BYTES_PER_META_SAMPLE_80,
+        bytes_per_sample: constants::ESTIMATED_BYTES_PER_META_SAMPLE_8000,
         bytes_per_measurement: constants::ESTIMATED_BYTES_PER_MEASUREMENT,
         bytes_per_trend: constants::ESTIMATED_BYTES_PER_TREND,
-        bytes_per_event: constants::ESTIMATED_BYTES_PER_EVENT_80,
-        bytes_per_incident: constants::ESTIMATED_BYTES_PER_INCIDENT_80,
+        bytes_per_event: constants::ESTIMATED_BYTES_PER_EVENT_8000,
+        bytes_per_incident: constants::ESTIMATED_BYTES_PER_INCIDENT_8000,
         print_info_every_n_ticks: 500_000,
         write_info_every_n_ticks: 3600,
         //        write_info_every_n_ticks: 300,
-        out_file: "/Users/Anthony/Development/dissertation/plotting/lokahi/sim_data_80.txt"
-            .to_string(),
+        out_file: "/home/opq/scrap/sim_data_8000_lokahi.txt".to_string(),
     };
     let mut simulation = sim::Simulation::new(conf);
     simulation.run_simulation();
