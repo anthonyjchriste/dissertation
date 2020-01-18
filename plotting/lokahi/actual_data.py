@@ -74,6 +74,7 @@ def align_data_multi(series: List[SeriesSpec]) -> List[Tuple[np.ndarray, np.ndar
     return res
 
 
+
 class Data:
     def __init__(self,
                  time: int,
@@ -87,8 +88,6 @@ class Data:
                  total_event_measurements_b: int,
                  total_incident_measurements: int,
                  total_incident_measurements_b: int,
-                 total_phenomena_measurements: int,
-                 total_phenomena_measurements_b: int,
                  total_trends: int,
                  total_trends_b: int,
                  total_orphaned_trends: int,
@@ -97,28 +96,19 @@ class Data:
                  total_event_trends_b: int,
                  total_incident_trends: int,
                  total_incident_trends_b: int,
-                 total_phenomena_trends: int,
-                 total_phenomena_trends_b: int,
                  total_events: int,
                  total_events_b: int,
                  total_orphaned_events: int,
                  total_orphaned_events_b: int,
                  total_incident_events: int,
                  total_incident_events_b: int,
-                 total_phenomena_events: int,
-                 total_phenomena_events_b: int,
                  total_incidents: int,
                  total_incidents_b: int,
-                 total_phenomena_incidents: int,
-                 total_phenomena_incidents_b: int,
-                 total_phenomena: int,
-                 total_phenomena_b: int,
                  total_laha_b: int,
                  total_iml_b: int,
                  total_aml_b: int,
                  total_dl_b: int,
-                 total_il_b: int,
-                 total_pl_b: int):
+                 total_il_b: int):
         self.time: int = time
         self.total_samples: int = total_samples
         self.total_samples_b: int = total_samples_b
@@ -151,18 +141,6 @@ class Data:
         self.total_aml_b: int = total_aml_b
         self.total_dl_b: int = total_dl_b
         self.total_il_b: int = total_il_b
-
-        self.total_phenomena_measurements = total_phenomena_measurements
-        self.total_phenomena_measurements_b = total_phenomena_measurements_b
-        self.total_phenomena_trends = total_phenomena_trends
-        self.total_phenomena_trends_b = total_phenomena_trends_b
-        self.total_phenomena_events = total_phenomena_events
-        self.total_phenomena_events_b = total_phenomena_events_b
-        self.total_phenomena_incidents = total_phenomena_incidents
-        self.total_phenomena_incidents_b = total_phenomena_incidents_b
-        self.total_phenomena = total_phenomena
-        self.total_phenomena_b = total_phenomena_b
-        self.total_pl_b = total_pl_b
 
     @staticmethod
     def from_line(line: str) -> 'Data':
@@ -1099,6 +1077,9 @@ def plot_laha(dts: np.ndarray,
     sum_incident_bytes: np.ndarray = incident_bytes
     sum_incident_gb: np.ndarray = sum_incident_bytes / 1_000_000_000.0
 
+    # PL
+    pl_gb: np.ndarray = np.array([2.3e-5 for _ in sum_incident_gb])
+
     # Total
     total_gb = sum_total_data_gb_iml + sum_total_data_gb_aml + sum_event_gb + sum_incident_gb
 
@@ -1111,6 +1092,7 @@ def plot_laha(dts: np.ndarray,
     ax.plot(dts, sum_total_data_gb_aml, label="AML")
     ax.plot(dts, sum_event_gb, label="DL")
     ax.plot(dts, sum_incident_gb, label="IL")
+    ax.plot(dts, pl_gb, label="PL")
     ax.plot(dts, total_gb, label="Total")
 
     ax.set_yscale("log")
