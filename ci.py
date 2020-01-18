@@ -25,6 +25,7 @@ if __name__ == "__main__":
         stdout = result.stdout
         if len(stdout) > 0:
             errs = list(map(lambda line: line.strip(), stdout.strip().split(b"\n")))
+            errs = list(filter(lambda err: "Ph".encode() not in err, errs))
             errors.extend(errs)
 
         warnings = ["todo", " table ", "(table", " figure ", "(figure", " id ", " ids "]
