@@ -580,3 +580,14 @@ ve
 hasn
 Lanka
 sensors
+SimilarityPlugin
+EvenChannel
+UnevenChannel
+Zealand
+"sensors'"
+sensors'
+wordsmithing
+agglomerative
+FSag
+FSwell
+denormalized

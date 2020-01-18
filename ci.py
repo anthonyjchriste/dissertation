@@ -10,6 +10,9 @@ if __name__ == "__main__":
     errors = []
 
     for tex_file in tex_files:
+        if "appendix" in tex_file:
+            continue
+
         result = subprocess.run(["hunspell",
                                  "-u3",
                                  "-d",
