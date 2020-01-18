@@ -132,7 +132,7 @@ By understanding the general locality of Incidents and building a statistical mo
 Locality Phenomena can also tune the sampling rate or send rate of features from sensors. Certain signals may only be observed at certain sampling rates due to the Nyquist-Shannon sampling theorem\cite{landau1967sampling} which states that signals with a frequency $F$ can only be observed by sampling at at a rate of $2F$. Knowing that signals attenuate as a function of their distance from the source, the sampling rate of sensors can be modified to ensure that signals of interest are captured at difference distances from the signal source.
 
 \subsection{Periodic Phenomena} \label{subsec:periodicity-phenomena}
-Periodic Phenomena consists of data that exhibits repetitive behavior, that is, the same types of Measurements, Trends, Events, or Incidents appearing in cycles from single or multiple devices. Periodicity allows for the easy creation of Future Phenomena.
+Periodic Phenomena consist of data that exhibits repetitive behavior, that is, the same types of Measurements, Trends, Events, or Incidents appearing in cycles from single or multiple devices. Periodicity allows for the easy creation of Future Phenomena.
 
 Periodic Phenomena allow us to either tune our network to find periodic data or tune the network to ignore periodic data depending on if the periodic signals are of interest. Periodic Phenomena are especially useful in conjunction with Annotation Phenomena as Laha can assign causality to the periodic signal.
 
@@ -214,7 +214,7 @@ The constraints for each level of Laha hierarchy is summarized in Table~\ref{act
 \end{table}
 
 \section{OPQ: A Laha-compliant Power Quality DSN}\label{sec:opq:-a-laha-compliant-power-quality-dsn}
-OPQMauka is a middleware component of the Open Power Quality (OPQ) framework. The OPQ project provides a hardware and software solution for monitoring distributed power quality (PQ). The OPQ project was founded with the goal of studying how intermittent distributed renewable energy sources affect PQ not just at a user's home, but also within a user's neighborhood, between neighborhoods, and globally across the grid.
+OPQ Mauka is a middleware component of the Open Power Quality (OPQ) framework. The OPQ project provides a hardware and software solution for monitoring distributed power quality (PQ). The OPQ project was founded with the goal of studying how intermittent distributed renewable energy sources affect PQ not just at a user's home, but also within a user's neighborhood, between neighborhoods, and globally across the grid.
 
 The OPQ ecosystem is made up of networked hardware sensors (OPQBoxes) and various software services (OPQMakai, OPQMauka OPQHealth, OPQView). Each of these software components are made up of individual services and plugins. The entire software system is deployed as Docker containers.
 
@@ -226,9 +226,8 @@ The OPQ system design is laid out in Figure~\ref{fig:opq-system}.
 	\caption{OPQ System Diagram}\label{fig:opq-system}
 \end{figure}
 
-
 \subsection{OPQ: Boxes}\label{subsec:opq:-boxes}
-An OPQ Box is a custom designed PQ sensor. OPQBoxes can be plugged into a wall outlet and communicate with OPQ servers using the user's WiFi connection. OPQBoxes consist of a Raspberry PI single board computer (SBC), a custom board for PQ measurements, custom firmware, and a custom enclosure. The custom board contains an ADC that samples an alternating current (AC) power signal at 12 thousand samples per second. This data is transferred to the Raspberry Pi where feature extraction and data transfer takes place. The hardware design is presented in Figure~\ref{fig:opq-box-design} and the software design is provided in Figure~\ref{fig:opq-box-software}.
+An OPQ Box is a custom designed PQ sensor. OPQ Boxes can be plugged into a wall outlet and communicate with OPQ servers using the user's WiFi connection. OPQBoxes consist of a Raspberry PI single board computer (SBC), a custom board for PQ measurements, custom firmware, and a custom enclosure. The custom board contains an ADC that samples an alternating current (AC) power signal at 12 thousand samples per second. This data is transferred to the Raspberry Pi where feature extraction and data transfer takes place. The hardware design is presented in Figure~\ref{fig:opq-box-design} and the software design is provided in Figure~\ref{fig:opq-box-software}.
 
 \begin{figure}
 	\centering
@@ -265,7 +264,7 @@ Thresholds are dynamic and can be modified by the ``ThresholdOptimizationPlugin"
 
 This plugin utilizes a finite state machine (FSM) which maintains the triggering state for each feature for each Box. There are only two triggering states, ``TRIGGERING" and ``NOMINAL". If a feature for a Box passes a minimum or maximum threshold for a Box feature, then the state for that feature moves into the TRIGGERING state. If and when that feature is no longer passing the threshold, the state for that feature moves into the NOMINAL state and a trigger request is made for that Box which includes the time window of when that Box feature was in the TRIGGERING state.
 
-From here, Makai handles are event storage and notification of the triggered Boxes.
+From here, Makai handles event storage and notification of the triggered Boxes.
 
 Figure~\ref{fig:threshold_triggering} provides an overview of the states that are managed by the FSM\@.
 
@@ -304,9 +303,9 @@ OPQ Mauka (or just Mauka) is a middleware component of the OPQ system that provi
 
 Mauka sits between Makai and OPQ's database. It receives messages from Makai when Makai has triggered OPQBoxes due to something interesting in the low-fidelity data stream. Mauka then retrieves the raw waveforms stored in the database by Makai, performs feature extraction, and then forwards the features and/or raw waveform to various plugins to perform classification and other high level analytics. These results are then stored in our database and presented to users in OPQView.
 
-Mauka is written entirely in Python 3.7\cite{python:2019} and relies on various scientific libraries for analytics. These include SciPy\cite{scipy:2019}, numpy\cite{numpy}, matplotlib\cite{matplotlib}, and scikit-learn\cite{scikitlearn}. Communication between processes are accomplished with the ZeroMQ\cite{zmq} library. Messages are serialized using Protocol Buffers\cite{protobuf}. The Mauka code base consists of over 9,594 lines of Python code split over 45 Python modules. The code base is licensed under the GNU General Public License (GPL) version 3\cite{gplv3}. Mauka is hosted and publicly accessible at OPQ's github repository\cite{opqgithub}.
+Mauka was written entirely in Python 3.7\cite{python:2019} and relies on various scientific libraries for analytics. These include SciPy\cite{scipy:2019}, numpy\cite{numpy}, matplotlib\cite{matplotlib}, and scikit-learn\cite{scikitlearn}. Communication between processes are accomplished with the ZeroMQ\cite{zmq} library. Messages are serialized using Protocol Buffers\cite{protobuf}. The Mauka code base consists of over 9,594 lines of Python code split over 45 Python modules. The code base is licensed under the GNU General Public License (GPL) version 3\cite{gplv3}. Mauka is hosted and publicly accessible at OPQ's github repository\cite{opqgithub}.
 
-Mauka is designed as a distributed set of processes that communicate via type-safe message passing. Most functionality in Mauka is implemented as plugins where each plugin runs in its own process, providing horizontal scalability. The direction of communication between plugins can be modeled by a directed acyclic graph (DAG). The DAG property of Mauka plugins ensures easy horizontal scalability by making it possible to trivially create many distributed instances of plugins to meet the computational load.
+Mauka was designed as a distributed set of processes that communicate via type-safe message passing. Most functionality in Mauka is implemented as plugins where each plugin runs in its own process, providing horizontal scalability. The direction of communication between plugins can be modeled by a directed acyclic graph (DAG). The DAG property of Mauka plugins ensures easy horizontal scalability by making it possible to trivially create many distributed instances of plugins to meet the computational load.
 
 The following sections will detail all components and functionality provided by Mauka.
 
@@ -653,7 +652,7 @@ Figure~\ref{fig:mauka_messages} displays all types used and their variants for t
 
 \subsubsection{Makai Communications Protocol}
 
-Most communications take place inside of Mauka, however there are several communications channels that occur from Mauka to Makai. These include requesting Event Ids, sending triggers, and sending Box data rate commands. The communications protocols for these actions are described in this section.
+Most communication takes place inside of Mauka, however there are several communications channels that occur from Mauka to Makai. These include requesting Event Ids, sending triggers, and sending Box data rate commands. The communications protocols for these actions are described in this section.
 
 Requesting Event Ids from Makai's Event Id Service is performed over a REQ/REP ZMQ socket. Requests from the client should be an empty string. Replies from the host should be a string that only includes the event\_id.
 
@@ -944,9 +943,26 @@ The ``makai\_config" collection contains default and Box override thresholds use
 	\label{table:makai_config_override}
 \end{table}
 
-The ``phenomena" collection contains metadata relating to Phenomena produced by Mauka.
+The ``phenomena" collection contains metadata relating to Phenomena produced by Mauka. The data model for Phenomena is provided in Table~\ref{table:phenomena_data_model}.
 
-TODO
+\begin{table}[H]
+	\centering
+	\caption{Phenomena Data Model}
+	\begin{tabularx}{\textwidth}{XlX}
+		\toprule
+		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
+		\midrule
+		phenomena\_id & int & Id of the Phenomena \\
+		related\_incident\_ids & [int] & List of related Incident Ids. \\
+		related\_event\_ids & [int] & List of related Event Ids. \\
+		affected\_opq\_boxes & [str] & List of OPQ Boxes affected by this Phenomena. \\
+		start\_ts\_ms & int & Start time of the Phenomena. \\
+		end\_ts\_ms & int & End time of the Phenomena. \\
+		phenomena\_type: Object & Metadata and parameters for specific Phenomena types. \\
+		\bottomrule
+	\end{tabularx}
+	\label{table:phenomena_data_model}
+\end{table}
 
 \subsubsection{PQ Plugins}\label{ssec:pq_plugins}
 Mauka's functionality is provided by plugins that perform analysis, data management, health, and system tuning. Communication within Mauka is performed using type safe message passing. This section describes in detail how each plugin functions and also documents each plugins inputs and outputs.
@@ -1429,7 +1445,6 @@ Sensors in Lokahi are any mobile device that can run iOS or Android. We have sen
 Recent development and improvements to the data API have allowed Lokahi to begin accepting data from any of the available onboard sensors on iOS and Android devices. Even though the main focus is still infrasound, having access to all of the available sensors provides the ability to sense other sensor fields and to perform interesting data fusion techniques.
 
 A diagram of the Lokahi framework is provided in Figure~\ref{fig:lokahi}.
-
 
 \begin{figure}
 	\centering
