@@ -1,22 +1,15 @@
 
 \chapter{System Design}\label{ch:system-design}
-Laha, which means, to spread or distribute in Hawaiian, is an abstract framework for distributed sensor networks that provides a means for turning primitive data into actionable insights, tiered management of voluminous amounts of sensor data. Major goals are in part accomplished by augmenting a DSN with the ability to adaptively optimize its bandwidth, detection, and classification.
+Laha is an abstract framework for distributed sensor networks that provides a means for turning primitive data into actionable insights, tiered management of voluminous amounts of sensor data. Major goals are in part accomplished by augmenting a DSN with the ability to adaptively optimize its bandwidth, detection, and classification.
 
-The Laha framework is made up of five levels that can be viewed conceptually as a pyramid (see~\ref{laha-figure}). Primitive data entering the Laha framework is located at the bottom the bottom of the pyramid. As data moves upward through the levels, noise is discarded, less interesting events are discarded or aggregated into upper levels, events are given more meaning and context, and associations and predictions are made.
-
-\begin{figure}
-\caption{Laha Conceptual Model}
-\centering
-\includegraphics{figures/laha.png}
-\label{laha-figure}
-\end{figure}
+The Laha framework is made up of five levels that can be viewed conceptually as a pyramid (see Figure~\ref{laha-abstract-overview}). Primitive data entering the Laha framework is located at the bottom of the pyramid. As data moves upward through the levels, noise is discarded, less interesting events are discarded or aggregated into upper levels, events are given more meaning and context, and associations and predictions are made.
 
 \section{Big Data Management in Laha} \label{sec:big-data-management}
-Big Data management was outlined in the introduction\ref{sec:big-data-management-in-dsns}. The Laha framework acts as an adaptive sieve for filtering noise and uninteresting data collected from a DSN. In this way, each level only passes what it considers interesting to the level above it. In practice, ``higher" levels determine what is interesting and pull data from ``lower" levels. All data at a particular level is garbage collected at specific intervals relating to its important to the DSN\@.
+Big Data management was outlined in Section~\ref{sec:big-data-management-in-dsns}. The Laha framework acts as an adaptive sieve for filtering noise and uninteresting data collected from a DSN. In this way, each level only passes what it considers interesting to the level above it. In practice, ``higher" levels determine what is interesting and pull data from ``lower" levels. All data at a particular level is garbage collected at specific intervals relating to its important to the DSN\@.
 
-Each level only keeps data for a specified amount of time before it is garbage collected. As data moves up the pyramid, it is generally considered more useful and therefore has a longer Time to Live (TTL), the amount of the time the data lives before it is garbage collected.  When a higher level detects ``something interesting", the data contained in the time window of ``something interesting" is copied into the levels above it and will still persist even though the original data is garbage collected. In this way, Laha preserves data from all levels if they are associated with interesting data. This also provides graceful degradation of services. The TTL is managed by the overall memory management of the system. Laha Actors are designed to work within the constraints of the TTL at different levels. If a constraint is broken, the Actor logs this issue. TTL can be optimized by Phenomena at each level to either tune for system performance or tune for decreasing of false positives and false negatives at different levels within the Laha hierarchy.
+Each level only keeps data for a specified amount of time before it is garbage collected. As data moves up the pyramid, it is generally considered more useful and therefore has a longer Time to Live (TTL), the amount of the time the data lives before it is garbage collected.  When a higher level detects ``something interesting", the data contained in the time window of ``something interesting" is copied into the levels above it and will persist even though the original data is garbage collected. In this way, Laha preserves data from all levels if they are associated with interesting data. This also provides graceful degradation of services. The TTL is managed by the overall memory management of the system. Laha Actors are designed to work within the constraints of the TTL at different levels. If a constraint is broken, the Actor logs this issue. TTL can be optimized by Phenomena at each level to either tune for system performance or tune for decreasing of false positives and false negatives at different levels within the Laha hierarchy.
 
-A summary of how data management in Laha is provided in Table~\ref{data-managament-table}.
+A summary of data management in Laha is provided in Table~\ref{data-managament-table}.
 
 \begin{table}[h]
 	\centering
@@ -36,7 +29,7 @@ A summary of how data management in Laha is provided in Table~\ref{data-managame
 \end{table}
 
 \subsection{Instantaneous Measurements Level}\label{subsec:instantaneous-measurements-level}
-The Instantaneous Measurements Level (IML) receives raw, sampled data from the DSN. The amount of data received is determined by the sample rate of each device multiplied by the number of fields per sample. Most of the time, devices in the network are mainly sampling noise. A large percentage of the data in this level is destined for garbage collection and data is assigned a short Time to Live (TTL) of 15 minutes. Often times, IML data is bounded by the available onboard memory of the sensor.
+The Instantaneous Measurements Level (IML) receives raw, sampled data from the DSN. The amount of data received is determined by the sample rate of each device multiplied by the number of fields per sample. Most of the time, devices in the network are mainly sampling noise. A large percentage of the data in this level is destined for garbage collection and data is assigned a short Time to Live (TTL) of 15 minutes by default. Often times, IML data is bounded by the available onboard memory of the sensor.
 
 \subsection{Aggregate Measurements Level}\label{subsec:aggregate-measurements-level}
 The Aggregate Measurements Level (AML) is responsible for rolling up IMs from the IML. In general, this level only works with feature extracted data, rather than working with the raw samples. Each measurement in the AML provides summary statistics over a configurable time window. For example, these can include min, max, mean, median, mode, and variance statistics.
@@ -52,23 +45,27 @@ The Detections Level (DL) is the first level that provides some context to the d
 
 When a data stream looks interesting, the DL marks a timestamp $N$ seconds before the interesting features and $M$ seconds after the interesting features, where both $N$ and $M$ are configurable within the framework. The goal is to use a time window that catches signals of interest within it. Since these data ranges will be further processed and refined higher in the hierarchy, there is no issue with collecting larges amounts of data in this level.
 
-The actual methods of detection is dependent on the characteristics of every individual sensor network. This framework assumes that the detection algorithms are provided by the implementing frameworks.
+The actual methods of detection are dependent on the characteristics of every individual sensor network. This framework assumes that the detection algorithms are provided by the implementing frameworks.
 
-Similar to other levels, the DL level will have its IMs and AMs copied into levels above it when upper levels observe something interesting in the DL. The Detections level is set to have a TTL of a week.
+Similar to other levels, the DL level will have its IMs and AMs copied into levels above it when upper levels observe something interesting in the DL. The Detections level is set to have a TTL of a one month by default.
 
 \subsection{Incidents Level}\label{subsec:incidents-level}
-Incidents represent classified signals. Incidents are individual classifications for signals of interest and are created by analyzing waveforms from Events. Waveforms from Events may contain multiple Incidents. Individual signals may be classified as multiple Incidents (for example a transient being classified as both a transient and frequency Incidents).
+Incidents represent classified signals of interest. Incidents are individual classifications for signals of interest and are created by analyzing data from Events. Data from Events may contain multiple Incidents. Individual signals of interest may be classified as multiple Incidents (for example a transient being classified as both a transient and frequency Incidents).
 
-Incidents are further analyzed to produce Phenomena.
+What separates Incidents from Events are the size of the data windows and the ability to classify signals of interest. Whereas Events contain a window that may or may not contain signals of interest, Incidents always contain classified signals of interest. Further, Incidents are always a subset of Event windows. Event windows are defined by thresholds crossing into non-nominal territory, while Incident windows are defined by classification algorithms for the exact start and end of the Incident within the Event window.
 
-Incidents are expired after one year of storage.
+For example, the OPQ network may detect frequency deviations in the triggering data stream. These deviations cause an Event to be generated. The Event is further analyzed by Incident algorithms and it is found that the Event contains multiple Frequency sag Incidents and an excessive THD Incident. Each Incident is a subset of the original Event. As another example, the Lokahi network detects deviations in the infrasound range. These deviations cause an Event to be generated, which when further analyzed by Incident algorithms, it is found that the Event contains two atmospheric explosions that are classified as Incidents.
+
+Incidents are expired after one year of storage by default.
 
 \subsection{Phenomena Level}\label{subsec:phenomena-level}
-Phenomena are defined as a grouping of Incidents that provide one or more of annotations, locality, periodicity, predictiveness, similarity, and future Phenomena.
+Phenomena are defined as a grouping of Incidents that provide based on annotations, locality, periodicity, predictiveness, or similarity.
 
 Not only do Phenomena provide interesting insight and analytics into the underlying data, but they also provide a means for adaptively tuning the underlying collection, triggering, detection, and analysis of a distributed sensor network.
 
-Phenomena are summarized in Table~\ref{phenomena-summary-table} and discussed in great detail in section~\ref{sec:phenomena}.
+Phenomena utilize a TTL of 2 years by default.
+
+Phenomena are summarized in Table~\ref{phenomena-summary-table} and discussed in detail in Section~\ref{sec:phenomena}.
 
 Evaluation of utilizing these levels is provided in the Evaluation in Section~\ref{subsec:eval-big-data}. Results are provided in Section~\ref{sec:dsn-system-requirements}.
 

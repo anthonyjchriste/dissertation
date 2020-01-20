@@ -733,7 +733,7 @@ Table~\ref{table:sim_params} provides the estimated parameters used to run the O
 	\label{table:sim_params}
 \end{table}
 
-The full statistics can be found in the appendix in section~\ref{appendix:simulation_parameters}.
+The full statistics can be found in the appendix in Section~\ref{appendix:simulation_parameters}.
 
 \paragraph{Evaluation of IML with TTL}
 The IML (Instantaneous Measurements Level) stores raw samples from the DSN. Traditionally, this is the largest and most noisy data set produced by the DSN and thus has a very short TTL (which is often limited by the amount of on-board sensor memory). I showed in the previous section that without TTL, this level grows very rapidly. The IML is unique in that it is the only level that does not grow beyond its TTL. Instead, when Detections, Incidents, or Phenomena are identified, data is coped from the IML into either the DL, IL, or PL. This simplifies calculating the bounds of this level.
