@@ -151,7 +151,7 @@ Figure~\ref{fig:lokahi_deploy_7} shows Lokahi sensors deployed through East Asia
 Here we can observe Lokahi sensors that have been deployed to China, Taiwan, Russia, South Korea, and Japan.
 
 \section{Validate data collected by Laha deployment}\label{sec:validate-data-collected-by-laha-deployment}
-Data from both experimental deployments were validated against ground truth data as described in the Introduction~\ref{subsec:anticipated-contributions}. In the OPQ deployment, ground truth is provided by UH meters installed at the main of each building. In the Lokahi deployment, ground truth was provided by high-end calibrated microphones.
+Data from both experimental deployments were validated against ground truth data as described in Section~\ref{subsec:anticipated-contributions}. In the OPQ deployment, ground truth is provided by UH meters installed at the main of each building. In the Lokahi deployment, ground truth was provided by high-end calibrated microphones.
 
 Results of data validation are provided in Section~\ref{sec:ground-truth-analysis}.
 
@@ -186,7 +186,7 @@ In the OPQ deployment, OPQ Boxes are deployed and co-located with industry stand
 
 In the Lokahi deployment, I had the opportunity to generate infrasound signals using a calibrated infrasound source~\cite{park2009rotary}. The source can be tuned to produce infrasound at configurable Frequencies and amplitudes. The source works by attaching a variable pitch propeller to an electric motor that can be driven by a waveform generator. The source can generate signals that can be observed at large stand off distances, over tens of kilometers. Similar to the OPQ deployment, sensors within the Lokahi deployment were co-located with industry standard, calibrated, infrasound sensors. These sensors can provide a metric of signals that were correctly observed, incorrectly observed, or not observed at all by the Lokahi deployment. Further, infrasound itself is characterized quite well by various geophysical equations.
 
-Evaluation of the main goals of this network are provided in the following sections. Results of these evaluations can be found in Sections~\ref{sec:ground-truth-analysis}, \ref{sec:results-of-generality-of-this-framework}, \ref{sec:results-of-converting-primitie-data-into-actional-insights}, \ref{sec:dsn-system-requirements}, and \ref{sec:results-of-tertiary-goals}.
+Evaluation of the main goals of this network are provided in the following sections. Results of these evaluations can be found in Section~\ref{sec:ground-truth-analysis}, Section~\ref{sec:results-of-generality-of-this-framework}, Section~\ref{sec:results-of-converting-primitie-data-into-actional-insights}, Section~\ref{sec:dsn-system-requirements}, and Section~\ref{sec:results-of-tertiary-goals}.
 
 \subsection{Evaluation of the Generality of this Framework}\label{subsec:evaluation-of-the-generality-of-this-framework}
 I claim that the Laha framework is useful and general enough to be applied to DSNs in different domains. To test this, I designed, developed, and deployed two DSNs. The first OPQ, measures distributed PQ signals on the electrical grid. The second, Lokahi, observes infrasound signals traveling through the atmosphere.
@@ -264,7 +264,7 @@ Results for DSN system requirements are provided in Section~\ref{sec:dsn-system-
 \paragraph{IML Requirements}
 The IML level contains instantaneous samples from a sensor. These values are generally stored in memory on the sensors. We can calculate several useful metrics for this layer.
 
-First, we can calculate the IML size for an individual sensor $S_{SEN}$, with a sample size in bytes $S_{SAMP}$, a sample rate in Hz $SR$, and a time window in seconds $T$. This is shown in equation~\ref{iml:SSEN}.
+First, we can calculate the IML size for an individual sensor $S_{SEN}$, with a sample size in bytes $S_{SAMP}$, a sample rate in Hz $SR$, and a time window in seconds $T$. This is shown in Equation~\ref{iml:SSEN}.
 
 \begin{equation}\label{iml:SSEN}
 	S_{SEN} = S_{SAMP} * SR * T
@@ -284,7 +284,7 @@ Equation~\ref{eq:iml:mu_size_iml} provides the calculations for finding the mean
 \mu S_{IML} = S_{SAMP} * SR * \mu N_{SEN} * T \pm \delta S_{IML}
 \end{equation}
 
-Equations~\ref{eq:iml:e1} and~\ref{eq:iml:e2} provide the error bounds for calculating the mean IML size.
+Equation~\ref{eq:iml:e1} and Equation~\ref{eq:iml:e2} provide the error bounds for calculating the mean IML size.
 
 \begin{align}
 	\delta N_{SEN} &= \frac{\sigma N_{SEN}}{\sqrt{T}} \label{eq:iml:e1} \\
@@ -332,14 +332,14 @@ Equation~\ref{eq:aml} shows the size of the AML $S_{AML}$ including all sub-leve
 	S_{AML} = \sum_{i=1}^{S_{SL_{n}}} S_{SL_{i}}
 \end{equation}
 
-Similar to what was done for the IML, we can estimate bounds assuming the number of sensors sending data is not constant. Equations~\ref{eq:aml:mu_s_sl} and~\ref{eq:aml:mu_s_aml} provide the calculations for mean sub-AML level size and the mean size of the AML respectively.
+Similar to what was done for the IML, we can estimate bounds assuming the number of sensors sending data is not constant. Equation~\ref{eq:aml:mu_s_sl} and Equation~\ref{eq:aml:mu_s_aml} provide the calculations for mean sub-AML level size and the mean size of the AML respectively.
 
 \begin{align}
 	\mu S_{SL} &= S_{V} * SR * T * \mu B \pm \delta S_{SL} \label{eq:aml:mu_s_sl} \\
 	\mu S_{AML} &= \sum_{i=1}^{S_{\mu SL_{n}}} \mu S_{SL_{i}} \pm \delta S_{AML} \label{eq:aml:mu_s_aml}
 \end{align}
 
-Equations~\ref{eq:aml:e0},~\ref{eq:aml:e1}, and~\ref{eq:aml:e2} provide the error on mean calculations for the AML\@.
+Equation~\ref{eq:aml:e0}, Equation~\ref{eq:aml:e1}, and Equation~\ref{eq:aml:e2} provide the error on mean calculations for the AML\@.
 
 \begin{align}
 	\delta B &= \frac{\sigma B}{\sqrt{T}} \label{eq:aml:e0} \\
@@ -399,7 +399,7 @@ We can provide estimated bounds on the DL with an estimated data rate $\mu DR$ w
 	\mu S_{DL} = \mu DR * T \pm \delta S_{DL}
 \end{equation}
 
-The errors for the mean size of the DL are given in Equations~\ref{eq:dl:e0} and~\ref{eq:dl:e1}.
+The errors for the mean size of the DL are given in Equation~\ref{eq:dl:e0} and Equation~\ref{eq:dl:e1}.
 
 \begin{align}
 	\delta DR = \frac{\sigma DR}{\sqrt{T}} \label{eq:dl:e0} \\
@@ -447,7 +447,7 @@ We can provide estimated bounds on the IL assuming a mean Incident rate in bytes
  \mu S_{IL} = \mu IR * T \pm \delta S_{IL}
 \end{equation}
 
-Equations~\ref{eq:il:e0} and~\ref{eq:il:e1} provide error bounds on the estimated size of the IL\@.
+Equation~\ref{eq:il:e0} and Equation~\ref{eq:il:e1} provide error bounds on the estimated size of the IL\@.
 
 \begin{align}
 	\delta IR &= \frac{\sigma IR}{\sqrt{T}} \label{eq:il:e0} \\
@@ -514,7 +514,7 @@ Analytically, when all parameters are known, the size of the entire DSN $S_{DSN}
 	S_{DSN} = S_{IML} + S_{AML} + S_{DL} + S_{IL} + S_{P}
 \end{equation}
 
-Statistically speaking, the mean size and error of the entire DSN are provided by Equations~\ref{eq:dsn:mu_s_dsn} and~\ref{eq:dsn:e} respectively.
+Statistically speaking, the mean size and error of the entire DSN are provided by Equations~\ref{eq:dsn:mu_s_dsn} and Equation~\ref{eq:dsn:e} respectively.
 
 \begin{align}
 	\delta S_{DSN} &= \sqrt{(\delta S_{IML})^2 + (\delta S_{AML})^2 + (\delta S_{DL})^2 + (\delta S_{IL})^2 + (\delta S_{P})^2} \label{eq:dsn:e} \\
@@ -738,7 +738,7 @@ The full statistics can be found in the appendix in Section~\ref{appendix:simula
 \paragraph{Evaluation of IML with TTL}
 The IML (Instantaneous Measurements Level) stores raw samples from the DSN. Traditionally, this is the largest and most noisy data set produced by the DSN and thus has a very short TTL (which is often limited by the amount of on-board sensor memory). I showed in the previous section that without TTL, this level grows very rapidly. The IML is unique in that it is the only level that does not grow beyond its TTL. Instead, when Detections, Incidents, or Phenomena are identified, data is coped from the IML into either the DL, IL, or PL. This simplifies calculating the bounds of this level.
 
-Calculating lower bounds of the IML for a network can be accomplished by simply bounding its growth by its TTL\@. By substituting $T$ in Equations~\ref{iml:SSEN} and~\ref{eq:iml:mu_size_iml} with the the number of seconds in the IML TTL (15 minutes).
+Calculating lower bounds of the IML for a network can be accomplished by simply bounding its growth by its TTL\@. By substituting $T$ in Equation~\ref{iml:SSEN} and Equation~\ref{eq:iml:mu_size_iml} with the the number of seconds in the IML TTL (15 minutes).
 
 Figure~\ref{fig:sim_iml_opq} shows the simulated IML data growth for a single sensor from the OPQ network over the period of one day. We can observe that the IML converges to 25 MB after 15 minutes. The spikes once the data converges is the delta added by a garbage collector that only runs once every 10 minutes.
 
@@ -778,7 +778,7 @@ Table~\ref{table:ttls_aml} displays default AML TTL values for the OPQ and Lokah
 	\label{table:ttls_aml}
 \end{table}
 
-The minimum bounds of the AML with TTL can be found by using Equations~\ref{eq:aml:mu_s_sl} and~\ref{eq:aml:mu_s_aml} and substituting $T$ for the AML TTL\@.
+The minimum bounds of the AML with TTL can be found by using Equation~\ref{eq:aml:mu_s_sl} and Equation~\ref{eq:aml:mu_s_aml} and substituting $T$ for the AML TTL\@.
 
 Next, I examine the estimated bounds of the AML by looking at the estimated amount of AML data that is saved by higher levels in the hierarchy.
 
@@ -996,7 +996,7 @@ The Lokahi simulation showed that of all the Trends, about 93.21\% of them were 
 In this section, we evaluated the data storage requirements with and without TTL. We showed significant data savings when using TTL as compared to when TTL was not used. Parameters for these evaluations were found both by the physical properties of the sensors as well as the rate at which data is moved between Laha levels.
 
 \section{Evaluation of Tertiary Goals}\label{sec:evaluation-of-tertiary-goals}
-In order to achieve the main goals of this framework, I claim that either all or a subset of the following tertiary goals must be fulfilled as discussion in the introduction~\ref{subsec:tertiary-goals-and-claims}: optimization of triggering, detection, classification, sensor energy usage, bandwidth, predictive analytics, and the ability to derive models of the underlying sensing field topology.
+In order to achieve the main goals of this framework, I claim that either all or a subset of the following tertiary goals must be fulfilled as discussed in Section~\ref{subsec:tertiary-goals-and-claims}: optimization of triggering, detection, classification, sensor energy usage, bandwidth, predictive analytics, and the ability to derive models of the underlying sensing field topology.
 
 To evaluate these tertiary goals, I selected and implemented DSN optimization techniques from current literature. I then compared and contrasted the usefulness of different techniques and discuss how each of these techniques perform in the different sensor domains.
 

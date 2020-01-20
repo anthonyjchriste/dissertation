@@ -247,7 +247,7 @@ OPQ Makai is the central sink and triggering daemon for the OPQ framework. It is
 
 \subsubsection{Dynamic Triggering}\label{subsubsec:dynamic-triggering}
 
-While Makai is mostly the brain child of my colleague Sergey Negrashov, I implemented my own triggering logic into Makai to trigger for PQ Events. This threshold based triggering is written as a Rust plugin for Makai's TriggeringService. The plugin receives a stream of Measurements of OPQ Boxes. Each Measurement contains min, max, and average values for Frequency, Voltage, and THD over the Measurement's time window.
+While Makai is mostly implemented my colleague Sergey Negrashov, I implemented my own triggering logic into Makai to trigger PQ Events. This threshold based triggering is written as a Rust plugin for Makai's TriggeringService. The plugin receives a stream of Measurements of OPQ Boxes. Each Measurement contains min, max, and average values for Frequency, Voltage, and THD over the Measurement's time window.
 
 This plugin checks if a Measurement stream from a Box passes minimum or maximum thresholds for the Measurement's features. Thresholds are provided in the Mongo database in the collection ``makai\_config". The thresholds are provided as minimum and maximum percentages from nominal. For example, the database provides values for nominal Voltage and Frequency (120$V$ and 60$Hz$ respectively) and thresholds for minimum and maximum percentage from nominal for Voltage and Frequency. It also checks the maximum percent of THD from 0.
 
@@ -255,7 +255,7 @@ Not only does the database provide default dynamic thresholds for all devices, b
 
 All thresholds are cached for performance reasons. Values from Measurements are compared to these cached thresholds. This is needed so that this plugin does not have to request the thresholds from the database on every Measurement from every Box. Instead, cached values are used. The cache is updated at a configurable interval but defaults to once a minute.
 
-Thresholds are dynamic and can be modified by the ``ThresholdOptimizationPlugin"\ref{subsubsec:threshold-optimization-pugin} in Mauka.
+Thresholds are dynamic and can be modified by the ``ThresholdOptimizationPlugin" (described in Section~\ref{subsubsec:threshold-optimization-pugin}) in Mauka.
 
 This plugin utilizes a finite state machine (FSM) which maintains the triggering state for each feature for each Box. There are only two triggering states, ``TRIGGERING" and ``NOMINAL". If a feature for a Box passes a minimum or maximum threshold for a Box feature, then the state for that feature moves into the TRIGGERING state. If and when that feature is no longer passing the threshold, the state for that feature moves into the NOMINAL state and a trigger request is made for that Box which includes the time window of when that Box feature was in the TRIGGERING state.
 
@@ -271,18 +271,19 @@ Figure~\ref{fig:threshold_triggering} provides an overview of the states that ar
 \end{figure}
 
 \subsubsection{TTL Provider Service}
-Time-to-Live (or TTL) is a metric for defining when documents in the Mongo database should be garbage collected. The TTL metric is stored dynamically in the MongoDB collection ``laha\_config". A TTL metric is provided for each collection and the value represents the number of seconds after document creation that that document should be garbage collected. TTLs are dynamically managed by Mauka's ``TtlOptimizationPlugin"~\ref{subsubsec:ttl-optimization-pugin}. The actual garbage collection itself is provided by Mauka's ``LahaGcPlugin"\ref{sec:gc_plugin}.
+Time-to-Live (or TTL) is a metric for defining when documents in the Mongo database should be garbage collected. The TTL metric is stored dynamically in the MongoDB collection ``laha\_config". A TTL metric is provided for each collection and the value represents the number of seconds after document creation that that document should be garbage collected. TTLs are dynamically managed by Mauka's ``TtlOptimizationPlugin" (described in Section~\ref{subsubsec:ttl-optimization-pugin}). The actual garbage collection itself is provided by Mauka's ``LahaGcPlugin" (Section~\ref{sec:gc_plugin}).
 
 TTLs are assigned in Makai to Measurements, Trends, and Events since Makai handles storage for these collections. Because TTLs are dynamic and can be updated by Mauka at any time, a cached TTL provider service was created to provide performant access to TTLs in the database. This service loads the TTLs from the database and caches those values for a configurable amount of time (which defaults to one minute). The cache enables Makai to assign TTLs without hitting the database for every Measurement, Trend, and Event that it creates. If a TTL is updated by Mauka, then the cached value will expire after a configurable amount of time and the new TTL will be cached and used until the next cache invalidation.
 
 This service lives within Makai and was written in Rust.
 
 \subsubsection{Event Id Service}
-Event Ids are used to uniquely identify Events produced by either Makai or Mauka. We need to ensure that Event Ids are unique between services and monotonically increasing. This restraint requires that a single source of truth provide the Event Ids to avoid race conditions between Makai and Mauka. The EventId Service is a service written in Rust that resides in Makai's Event Broker.
+Event Ids are used to uniquely identify Events produced by either Makai or Mauka. We need to ensure that Event Ids are unique between services and monotonically increasing. This constraint requires that a single source of truth provide the Event Ids to avoid race conditions between Makai and Mauka. The EventId Service is a service written in Rust that resides in Makai's Event Broker.
 
-The service wraps an atomic integer and provides thread-safe access to this integer. The service allows anyone to peak at the current highest Event Id and to also increment and get the next highest available Event Id. When this service is initialized, it queries the MongoDB for the highest Event Id in the database. All other requests to this service will increment the atomic integer and use that value for the next Event Id. In this way, the database only needs to be queried once on initialization and all other operations are on the atomic integer.
+The service wraps an atomic integer and provides thread-safe access to this integer. The service allows any other service within Laha to peak at the current highest Event Id and to also increment and get the next highest available Event Id. When this service is initialized, it queries the MongoDB for the highest Event Id in the database. All other requests to this service will increment the atomic integer and use that value for the next Event Id. In this way, the database only needs to be queried once on initialization and all other operations are on the atomic integer.
 
-This service can be passed directly into Makai's Event Broker using automatic reference counting (ARC). To enable Mauka to access this service, the same service is passed into a ZMQ thread using ARC. The ZMQ thread provides a ZMQ REP endpoint for requesting atomic Event Ids from this service. An example of Mauka requesting the Event Id from Makai is described in section~\ref{sec:trigger_plugin}.
+
+This service can be passed directly into Makai's Event Broker using automatic reference counting (ARC). To enable Mauka to access this service, the same service is passed into a ZMQ thread using ARC. The ZMQ thread provides a ZMQ REP endpoint for requesting atomic Event Ids from this service. An example of Mauka requesting the Event Id from Makai is described in Section~\ref{sec:trigger_plugin}.
 
 A high level overview of the Event Id Service is provided in Figure~\ref{fig:eid_service}.
 
@@ -329,7 +330,7 @@ Figure~\ref{fig:mauka_brokers} provides a high level view of how the brokers fac
 One down side to this approach is that the brokers become single points of failure. I believe that this issue is minimized by using the production proven ZMQ backend for communications. I have also never experienced failures in the broker during data collection or normal system usage.
 
 \subsubsection{Mauka Communication Protocol}
-The messages that are passed over ZeroMQ are serialized using the type safe protocol buffers (v3) format. Protocol buffers provide efficient binary serialization/deserialization routines for structured data and can be used from a multitude of programming languages.
+The messages that are passed using ZeroMQ are serialized using the type safe protocol buffers (v3) format. Protocol buffers provide efficient binary serialization/deserialization routines for structured data and can be used from a multitude of programming languages.
 
 Mauka provides a single message type, ``MaukaMessage", that includes many subtypes. All messages passed within Mauka are of the instance MaukaMessage and may include different subtypes. The MaukaMessage protocol is described in detail in the following tables.
 
@@ -739,7 +740,7 @@ It's important to note some distinctions between the commands. Loading a plugin 
 \end{table}
 
 \subsubsection{Mauka Configuration}
-Mauka is highly configurable and it loads various static and dynamic configurations. Static configurations, or configurations that are loaded when Mauka starts are provided by a JSON file (appendix~\ref{appendix:MaukaConfig}). Dynamic configurations related to TTL and garbage collection are stored in the MongoDB and are discussed in detail in section~\ref{sec:gc_plugin}.
+Mauka is highly configurable and it loads various static and dynamic configurations. Static configurations, or configurations that are loaded when Mauka starts are provided by a JSON file (appendix~\ref{appendix:MaukaConfig}). Dynamic configurations related to TTL and garbage collection are stored in the MongoDB and are discussed in detail in Section~\ref{sec:gc_plugin}.
 
 \subsubsection{Mauka Data Models}
 Mauka works directly with the following data models: Measurements, Trends, Events, BoxEvents, Incidents, and Phenomena. The data models for these collections are described in this sections.
@@ -894,7 +895,7 @@ The ``laha\_config" collection contains dynamic configuration options that Pheno
 	\label{table:laha_config}
 \end{table}
 
-The ``laha\_stats" collection contains system statistics that measure various performance metrics in relation to Laha's optimizations. The full details of the ``laha\_stats" collection is provided in the section describing the ``SystemStatsPlugin"~\ref{lbl:SystemStatsPlugin}.
+The ``laha\_stats" collection contains system statistics that measure various performance metrics in relation to Laha's optimizations. The full details of the ``laha\_stats" collection are provided in the section describing the ``SystemStatsPlugin"~\ref{lbl:SystemStatsPlugin}.
 
 The ``makai\_config" collection contains default and Box override thresholds used by Makai's threshold triggering plugin. These items can be dynamically modified by the ``ThresholdOptimizationPlugin"\ref{subsubsec:threshold-optimization-pugin}.
 
@@ -962,7 +963,7 @@ The ``phenomena" collection contains metadata relating to Phenomena produced by 
 \subsubsection{PQ Plugins}\label{ssec:pq_plugins}
 Mauka's functionality is provided by plugins that perform analysis, data management, health, and system tuning. Communication within Mauka is performed using type safe message passing. This section describes in detail how each plugin functions and also documents each plugins inputs and outputs.
 
-\paragraph{BasePlugin}
+\paragraph{BasePlugin.}
 All plugins derive from a single ``BasePlugin". The BasePlugin provides primitives for running plugins as separate processes, serialization and deserialization of type safe messages, communication over ZeroMQ, metrics collection, MongoDB communication, debugging, and plugin health.
 
 To support running plugins as separate processes, the BasePlugin provides a ``run\_plugin" method that instantiates the new plugin inside of a new process. The BasePlugin provides signal handlers to catch SIGKILL and SIGINT signals from the system and cleanly exit the plugin process. The BasePlugin also contains an ``exit\_event" which can be set from other processes to inform the plugin to exit cleanly. This is used when Mauka is cleanly shutdown or when a plugin is stopped from the PluginManager.
@@ -981,15 +982,15 @@ The BasePlugin uses the configurable debugging interface to selective display de
 
 The BasePlugin provides a MongoDB client for each plugin for reading and writing to the database.
 
-\paragraph{MakaiEventPlugin} The ``MakaiEventPlugin" is responsible for reading Events newly created by Makai into Mauka. It performs feature extraction on the raw Event data streams and forwards those features (or the raw data) to subscribing plugins. This allows Mauka to perform the important feature extraction once, and reuse those features in multiple plugins.
+\paragraph{MakaiEventPlugin.} The ``MakaiEventPlugin" is responsible for reading Events newly created by Makai into Mauka. It performs feature extraction on the raw Event data streams and forwards those features (or the raw data) to subscribing plugins. This allows Mauka to perform the important feature extraction once, and reuse those features in multiple plugins.
 
-The MakaiEventPlugin subscribes to messages from the topic ``MakaiEventMessage". These messages are described in Table~\ref{table:MakaiEvent}. When a message is received, the plugin waits a configurable amount of time to ensure that Makai has finished writing data to the database. Once the data is in the database, the plugin loads the raw data and performs feature extraction.
+The MakaiEventPlugin subscribes to messages from with the subject ``MakaiEventMessage". These messages are described in Table~\ref{table:MakaiEvent}. When a message is received, the plugin waits a configurable amount of time to ensure that Makai has finished writing data to the database. Once the data is in the database, the plugin loads the raw data and performs feature extraction.
 
 The raw waveform from the OPQ Box is serialized into a Payload (Table~\ref{table:Payload}) with PayloadType (Table~\ref{table:PayloadType}) ``ADC\_SAMPLES" and produced to the topic ``AdcSamples".
 
 The raw Voltage is calculated by dividing each sample of the raw waveform by the calibration constant loaded from the database that is set for each device. The raw Voltage  is serialized into a Payload (Table~\ref{table:Payload}) with PayloadType (Table~\ref{table:PayloadType}) ``VOLTAGE\_RAW" and produced to the topic ``RawVoltage".
 
-$V_{rms}$ is the peak-to-peak Voltage over a configurable time window. By default, Mauka uses a time window of one electrical cycle at 60$Hz$ which works out to be $1/60$ seconds. $V_{rms}$ is calculated by moving a running window over the raw Voltage waveform. The computation of $V_{rms}$ for each window with $n$ samples is given by equation~\ref{equation:Vrms}. The RMS Voltage  is serialized into a Payload (Table~\ref{table:Payload}) with PayloadType (Table~\ref{table:PayloadType}) ``VOLTAGE\_RMS\_WINDOWED" and produced to the topic ``RmsWindowedVoltage".
+$V_{rms}$ is the peak-to-peak Voltage over a configurable time window. By default, Mauka uses a time window of one electrical cycle at 60$Hz$ which works out to be $1/60$ seconds. $V_{rms}$ is calculated by moving a running window over the raw Voltage waveform. The computation of $V_{rms}$ for each window with $n$ samples is given by Wquation~\ref{equation:Vrms}. The RMS Voltage  is serialized into a Payload (Table~\ref{table:Payload}) with PayloadType (Table~\ref{table:PayloadType}) ``VOLTAGE\_RMS\_WINDOWED" and produced to the topic ``RmsWindowedVoltage".
 
 \begin{equation}
 \label{equation:Vrms}
@@ -1000,17 +1001,17 @@ Windowed Frequency is the Frequency calculated for a configurable time window. B
 
 When new Events are received by the MakaiEventPlugin, a GcUpdate (Table~\ref{table:GcUpdate}) message is produced informing the LahaGcPlugin that all ``measurements" and ``trends" stored by Makai should receive a TTL of the newly created Event.
 
-\paragraph{FrequencyVariationPlugin}
+\paragraph{FrequencyVariationPlugin.}
 The ``FrequencyVariationPlugin" is used to classify generic Frequency sags, swells, and interruptions as defined by the IEEE1159 standard\cite{IEEE:2018:1159D3}. The plugin subscribes to messages from the ``WindowedFrequency" topic which includes a payload of Frequency features over one electrical cycle.
 
 When a message is received, the plugin uses configurable thresholds to find Frequency fluctuations within the windowed Frequency streams. The plugin is able to classify Frequency swells, Frequency interruptions, and Frequency sags. When a new Frequency variation is detected, a Frequency Incident is created and a GC\_UPDATE message is sent to the LahaGcPlugin to update the TTL of all Measurements, Trends, and Events that belong to this new Incident.
 
-\paragraph{IEEE1159VoltagePlugin}
+\paragraph{IEEE1159VoltagePlugin.}
 The ``IEEE1159VoltagePlugin" is a plugin that is able to classify Voltage Incidents in accordance to the IEEE1159 standard\cite{IEEE:2018:1159D3}. The plugin subscribes to messages from the ``RmsWindowedVoltage" topic which includes payloads of $V_{RMS}$ features over a window of one electrical cycle.
 
 This plugin is capable of classifying Voltage sags, swells, and interruptions as defined by the standard. The plugin works by identifying sags, swells, and interruptions and determining the duration of those Events. If the duration or delta is large enough, a Voltage Incident is created and a GC\_UPDATE message is sent to the LahaGcPlugin asking it to update the TTL for all Measurements, Trends, and Events that belong to this new Incident.
 
-\paragraph{AnnotationPlugin}
+\paragraph{AnnotationPlugin.}
 
 The ``AnnotationPlugin" is responsible for creating and storing Annotation Phenomena within Mauka. The Annotation Plugin subscribes to ``AnnotationRequest" messages which include a start and end timestamp, a list of affected OPQ Boxes, a list of related Event Ids, and a list of related Incident Ids.
 
@@ -1018,7 +1019,7 @@ When an AnnotationRequest is received, the request is parsed and the data is sto
 
 At the time of writing, AnnotationRequests are generated manually and inserted into the system using the MockPlugin which allows any type of message to be constructed and produced to any other plugins. Annotations are created when users of the OPQ network can correctly identify the source of a PQ signal.
 
-\paragraph{BoxOptimizationPlugin}
+\paragraph{BoxOptimizationPlugin.}
 
 The ``BoxOptimizationPlugin" is responsible for sending and receiving typed messages to and from OPQ Boxes from OPQ Mauka. This plugin is capable of requesting the state of each OPQ Box (e.g. uptime, Measurement rate, security keys, etc). This plugin is also capable of adjusting the state of individual OPQ Boxes by changing things such as the Measurement and Trend rate or the sampling rate that the Box is sampling at.
 
@@ -1026,7 +1027,7 @@ This plugin subscribes to two topics, ``BoxOptimizationRequest" and "BoxMeasurem
 
 When a BoxMeasurementRateRequest is received, the plugin sends a message to all Boxes marked in the request along with new Measurement and Trends rates (in cycles) that the Box should adjust to use. It's important to note that Makai caches these values for a maximum of one minute. Therefore, to adjust the Measurement or Trend rate at time $T$, the adjustment should really take place at $T - 60$ so that the new value is utilized by the Box and not the cached value over the duration of change. Once the rates have been changed, the Box sends an asynchronous response back to Mauka which is received in a separately spawned thread, a MeasurementRateResponse is created and forwarded to interested plugins.
 
-\paragraph{FuturePhenomenaPlugin}
+\paragraph{FuturePhenomenaPlugin.}
 
 The ``FuturePhenomenaPlugin" is responsible for creating Future or Predictive Phenomena. These Phenomena are used to predict Events and Incidents that may occur in the future. This plugin does not subscribe to any messages, but instead utilizes timers to perform its work. By default, this plugin runs every 10 minutes.
 
@@ -1036,7 +1037,7 @@ When a Future Phenomena is created, a timers are started in a separate thread si
 
 This plugin also tracks the number of Events and Incidents that were identified utilizing Future Phenomena. If a Future Phenomena does not detect any Events or Incidents, I say that the Phenomena is not realized. If it does detect Events or Incidents, I say that the plugin is realized.
 
-\paragraph{ITICPlugin}
+\paragraph{ITICPlugin.}
 The ``ITICPlugin" analyzes $V_{rms}$ to determine where it falls within the ITIC curve\cite{thallam2000power}. The ITIC curve is a power acceptability curve that plots time on the x-axis and $V_{rms}$ on the y-axis. The ITIC curve is displayed in Figure~\ref{fig:IticCurve}.
 
 \begin{figure}
@@ -1058,11 +1059,11 @@ Given an array of values $A$, the length of the array $len(A)$, and a segmentati
 
 Once the segments are defined, we calculate the duration of each segment. We know that each sample in the $V_{rms}$ features represents one electrical cycle at 60$Hz$. Thus, to find the duration of a segment in milliseconds we can simply divide the number of cycles by the number of cycles in milliseconds. Thus, $duration\_ms = \frac{cycles}{0.06}$. The plugin also calculates the mean $V_{rms}$ for each segment. Once we have a duration and mean $V_{rms}$ for each segment, we can plot it on the ITIC curve and get a region classification.
 
-In order to plot the value on the curve, the curve is first constructed as a set of polygons representing each ITIC region. Each polygon is represented by an array of points (see appendix~\ref{appendix:Itic}). Once the polygons are constructed, matplotlib's point-in-polygon algorithm is used to determine which ITIC region a point of $(duration\_ms, V_{rms})$ falls within. If a region of ``No Interruption" or "Prohibited" is returned, then a new ITIC Incident is created and stored to the database.
+In order to plot the value on the curve, the curve is first constructed as a set of polygons representing each ITIC region. Each polygon is represented by an array of points (see Appendix~\ref{appendix:Itic}). Once the polygons are constructed, matplotlib's point-in-polygon algorithm is used to determine which ITIC region a point of $(duration\_ms, V_{rms})$ falls within. If a region of ``No Interruption" or ``Prohibited" is returned, then a new ITIC Incident is created and stored to the database.
 
 If a new Incident is created, a message is sent to the LahaGcPlugin informing the plugin to update the TTL of all Measurements, Trends, and Events that belong to the Incident.
 
-\paragraph{LahaGcPlugin}\label{sec:gc_plugin}
+\paragraph{LahaGcPlugin.}\label{sec:gc_plugin}
 Mauka provides custom garbage collection (GC) for identifying and removing ``uninteresting" data. This fulfills one of Laha's claims that it is able to manage data storage pressure while increasing the signal-to-noise ratio within the data set.
 
 In order for Mauka to know when items should be GCed, all elements stored in the database are assigned a TTL. A default TTL is assigned when the element is first created, but can be updated later by Mauka plugins depending on if that data is deemed ``interesting".
@@ -1119,15 +1120,15 @@ Dynamically updating TTLs is also performed by the LahaGcPlugin. The LahaGcPlugi
 
 When new Events are created, the TTL of Measurements and Trends that coincide with that Event receive the TTL of the Event. When Incidents are created, the Events, Trends, and Measurements associated with that Incident receive the TTL of the Incident. When Phenomena are created, the TTLs of Incidents, Events, Trends, and Measurements are assigned the TTL of the Phenomena (which is infinite).
 
-\paragraph{MockPlugin}
+\paragraph{MockPlugin.}
 The ``MockPlugin" is a special plugin that can be instantiated at run time and sends and receives messages to configurable topics. This plugin is useful for debugging and rerunning (or running new) analysis over old data. As an example, let's say a new plugin Foo is designed. We want to run historical data through Foo. To do that, the MockPlugin can be configured to read the database for all old Events, and then construct a message to Foo so that Foo runs its analysis over those Events.
 
-\paragraph{OutagePlugin}
+\paragraph{OutagePlugin.}
 The ``OutagePlugin" classifies power outages. Since no real power data is produced during an outage, this plugin only subscribes to its own heartbeats. When a heartbeat is received, the outage plugin looks up in the database all OPQ Boxes that are marked ``down" by OPQ Health and not marked as ``unplugged" in the database. This plugin keeps track of current outages so that if an OPQ Box is already in an outage state a new outage Incident is not created on each subsequent heartbeat.
 
 When outage Incidents are created, TTL update messages are not sent because there is no data during the time period of an outage to adjust the TTL for.
 
-\paragraph{PeriodicityPlugin}
+\paragraph{PeriodicityPlugin.}
 
 The ``Periodicity Plugin" is responsible for detecting periodic signals in power data. This plugin does not subscribe to any messages, but instead runs off of a configurable timer. The plugin is set to run by default once an hour and every hour it scrapes the last 24 hours worth of data and attempts to find periods in the Measurements over that duration.
 
@@ -1150,7 +1151,7 @@ The top panel shows the original signal. The middle panel shows the filtered sig
 
 The Periodicity Plugin also performs several pieces of housekeeping. It's possible that a Periodic Phenomena already exists in the database for the same sensor and feature set. If that is the case, the original Periodic Phenomena is updated if the newly identified period contains more autocorrelation peaks and a smaller standard deviation than the one that is already stored. In the Event that the plugin stops seeing periodic data for Phenomena that already exists, the plugin sets the Phenomena as ``no longer active" signaling that the Periodic Phenomena is no longer observing the periodic signal of interest. The plugin also identifies Events and Incidents that have taken place during the reported periodic signals.
 
-\paragraph{SimilarityPlugin}
+\paragraph{SimilarityPlugin.}
 The ``SimilarityPlugin" attempts to find groupings of Incidents that are similar. This plugin uses a similarity distance metric computed from the normalized duration of the Incident and the normalized deviation from nominal of the Incident.
 
 This plugin runs on a configurable timer (default of 24 hours). It loads all Incidents and groups them by Incident type. K-means clustering is utilized to find groupings of related Incidents, with empirically found $k$ values for each Incident type. For example, $k=8$ for Frequency Incidents provides decent characterization of Incidents by both duration and deviation from nominal.
@@ -1159,10 +1160,10 @@ When clusters are found, they are saved to the database as Similarity Phenomena.
 
 Optionally, this plugin can be configured to act on Incidents as they arrive. Using an initial set of clusters found, the newly arrived Incident can be inserted into the correct cluster. Parameters describing ``non-interesting" cluster (e.g. less than 1 second and closer to nominal for Frequency Incident) can be provided to this plugin. If a new Incident is classified into a non-interesting cluster, the Phenomena is updated to include this Incident, but the Incident is not saved to disk, providing data savings and reducing the total number of Incidents so that only more interesting Incidents remain.
 
-\paragraph{PrintPlugin}
+\paragraph{PrintPlugin.}
 The ``PrintPlugin" is a special plugin that is mainly used for debugging. It subscribes to all topics and simply prints the contents of the message to STDOUT. This is useful in development or when bringing up a new Mauka system to ensure that the communications infrastructure is in place. It can also be enabled at runtime from the Mauka CLI to debug all communication channels for all plugins.
 
-\paragraph{SemiF47Plugin}
+\paragraph{SemiF47Plugin.}
 The ``SemiF47" plugin is another plugin like the IticPlugin that plots Voltage and duration against a power acceptability curve. In this case, the standard used is the SemiF47 standard\cite{semif47}. Rather than using a point-in-polygon approach, this plugin reads the $V_{RMS}$ features sequentially and uses a state machine to keep track of the current classification. This plugin only classifies values as a ``violation" or as ``nominal".
 
 The SemiF47 curve is displayed in Figure~\ref{fig:SemiF47Curve}.
@@ -1184,7 +1185,7 @@ SemiF47 is described in Table~\ref{fig:SemiF47Table}.
 \end{figure}
 
 
-\paragraph{StatusPlugin}
+\paragraph{StatusPlugin.}
 Mauka provides a health endpoint that can be queried by OPQ Health to determine the health status of Mauka. The health status is saved to a database by Health and shown in OPQ View.
 
 The Mauka plugin ``StatusPlugin" is responsible for obtaining and providing the status of the OPQ Mauka service. The plugin subscribes to heartbeats sent at configurable intervals from all other plugins including itself. When the plugin receives a heartbeat, it updates its internal state which includes a mapping of all plugins, their state, and the last time that plugin sent a heartbeat.
@@ -1207,10 +1208,10 @@ The plugin provides a configurable HTTP endpoint which is queried by OPQ Health.
 	\label{table:HealthProtocol}
 \end{table}
 
-\paragraph{SystemStatsPlugin}\label{lbl:SystemStatsPlugin}
+\paragraph{SystemStatsPlugin.}\label{lbl:SystemStatsPlugin}
 Mauka collects and stores many different types of performance metrics in order to demonstrate the efficacy of Laha as implemented in Mauka. The metrics are collected by the ``SystemStatsPlugin" Mauka plugin and are stored in the MongoDB collection `laha\_metrics`.
 
-The metrics are conditioned and displayed in OPQ View for easy analysis. It's possible to select a start and end date/time to configure the time window of metrics displayed in view. Examples of Mauka's metrics displayed in OPQ View are shown in figures~\ref{fig:Metrics1},~\ref{fig:Metrics2}, and~\ref{fig:Metrics3}.
+The metrics are conditioned and displayed in OPQ View for easy analysis. It's possible to select a start and end date/time to configure the time window of metrics displayed in view. Examples of Mauka's metrics displayed in OPQ View are shown in Figures~\ref{fig:Metrics1},~\ref{fig:Metrics2}, and~\ref{fig:Metrics3}.
 
 \begin{figure}
 	\centering
@@ -1235,9 +1236,9 @@ The metrics are conditioned and displayed in OPQ View for easy analysis. It's po
 
 The types of metrics collected include plugin statistics, system statistics, and Laha statistics which provide metrics on data usage and TTL for data stored within each Laha level as well as garbage collection statistics for each level of the hierarchy.
 
-Metrics are collected at a configurable interval. System statistics such as CPU usage, memory usage, and disk usage are sampled once every 10 seconds. Once every 5 minutes, all metrics are saved to disk. The system statistic metrics which are sampled more Frequency are rolled into a 5 minute metric only storing min, max, mean, variance, count, and start and end timestamp.
+Metrics are collected at a configurable interval. System statistics such as CPU usage, memory usage, and disk usage are sampled once every 10 seconds. Once every 5 minutes, all metrics are saved to disk. The system statistic metrics which are sampled more frequently are rolled into a 5 minute metric only storing min, max, mean, variance, count, and start and end timestamp.
 
-Mauka metrics consist of nested documents. The following Table swill describe each of the documents stored in the metrics collection.
+Mauka metrics consist of nested documents. The following Table describes each of the documents stored in the metrics collection.
 
 The base document shown in Table~\ref{table:Metrics} contains links to all of the high level metrics that Mauka collects. This includes metrics for plugins, system statistics, Laha metrics, and ground truth.
 
@@ -1258,7 +1259,7 @@ The base document shown in Table~\ref{table:Metrics} contains links to all of th
 	\label{table:Metrics}
 \end{table}
 
-Plugin metrics are described in Table~\ref{table:MetricsPluginStat} and mainly record the plugin name and the number and size of messages received and produced for each plugin.
+Plugin metrics are described in Table~\ref{table:MetricsPluginStat} and mainly records the plugin name and the number and size of messages received and produced for each plugin.
 
 \begin{table}[H]
 	\centering
@@ -1315,8 +1316,8 @@ The Laha metrics described in Table~\ref{table:MetricsLaha} store metrics relati
 	\label{table:MetricsLaha}
 \end{table}
 
-\paragraph{ThdPlugin}
-The ``ThdPlugin" classifies abnormal amounts of total harmonic distortion (THD) in a power waveform. THD is a measure of amount of noise in the Frequency at multiples of 60Hz. The ThdPlugin subscribes to messages from the ``AdcSamples" topic which include payloads consisting of raw samples from the OPQ Boxes. THD is calculated using a rolling window of one electrical cycle over the waveform. For each window, THD is calculated by equation~\ref{equation:Thd}.
+\paragraph{ThdPlugin.}
+The ``ThdPlugin" classifies abnormal amounts of total harmonic distortion (THD) in a power waveform. THD is a measure of amount of noise in the Frequency at multiples of 60Hz. The ThdPlugin subscribes to messages from the ``AdcSamples" topic which include payloads consisting of raw samples from the OPQ Boxes. THD is calculated using a rolling window of one electrical cycle over the waveform. For each window, THD is calculated by Equation~\ref{equation:Thd}.
 
 \begin{equation}
 \label{equation:Thd}
@@ -1326,14 +1327,14 @@ The ``ThdPlugin" classifies abnormal amounts of total harmonic distortion (THD) 
 For each continuous set of windows that has THD higher than the configured threshold, a THD Incident is created. If an Incident is created, this plugin sends a GC\_UPDATE message to the LahaGcPlugin informing it that it should update all Measurements, Trends, and Events that belong to the new Incident to match the Incident's TTL\@.
 
 
-\paragraph{TransientPlugin}
+\paragraph{TransientPlugin.}
 The ``TransientPlugin" is responsible for classifying Frequency transients in power waveforms. The plugin subscribes to messages from the ``RawVoltage" topic which contains a calibrated power waveform payload. The TransientPlugin is capable of classifying impulsive, arcing, oscillatory, and periodic notching transients. A decision tree is utilized to select the most likely transient type and then further analysis is used to perform the actual classification of transients.
 
-The full details of our transient classification system are published in the Proceedings of the Ninth International Conference on Smart Grids, Green Communications and IT Energy-aware Technologies\cite{csdl2-19-02}.
+Dickens et al\cite{csdl2-19-02} provides more details on the transient classification system.
 
 When a transient is classified a new transient Incident is created. If an Incident is created, this plugin sends a GC\_UPDATE message to the LahaGcPlugin informing it to update the TTLs for all Measurements, Trends, and Events that belong to this new Incident.
 
-\paragraph{TriggerPlugin}\label{sec:trigger_plugin}
+\paragraph{TriggerPlugin.}\label{sec:trigger_plugin}
 The ``TriggerPlugin" provides Mauka with the functionality to trigger OPQ Boxes itself instead of relying on Makai for triggering. Generally, Mauka is only provided with event\_ids when Makai triggers Boxes based off of their low-fidelity data streams. Mauka then loads the associated Event data from the database, performs cycle level feature extraction, and then forwards those features to analysis plugins for PQ analysis.
 
 This plugin takes advantage of Phenomena in order to find Incidents that may not have passed Makai's triggering thresholds.
@@ -1342,11 +1343,11 @@ This plugin consists of two threads running in a single process. The main thread
 
 The only stateful component between a data request and a data response is an identity string which is a specially crafted string that allows Makai to route requests through its services. The format of an identity string is ``[topic]\_[event\_token]\_[uuid]". In Mauka's case, the ``[topic]" is always set to ``mauka", the ``[event\_token]" is a randomly generated v4 UUID (which provides $2^{122}$ bits of collision space), and the ``[uuid]" is the box\_id of the Box being triggered. The issue however is that both threads need to know more than just the identity. For instance, they need to know things like which ``event\_id" and ``incident\_id" a data response belongs to to or which Boxes we are still waiting for a response from.
 
-To accomplish data sharing between the two threads, a thread safe ``TriggerRecords" class was created. This class uses a reentrant lock to lock mappings from ``event\_token" to all of ``event\_id", ``incident\_id", ``timestamp\_ms" (of record insert), and ``triggered\_boxes".  Details of how these mappings are used will be provided in later paragraphs.
+To accomplish data sharing between the two threads, a thread safe ``TriggerRecords" class was created. This class uses a reentrant lock to lock mappings from ``event\_token" to all of ``event\_id", ``incident\_id", ``timestamp\_ms" (of record insert), and ``triggered\_boxes".  Details of how these mappings are used are provided below.
 
 This plugin listens for ``TriggerRequest" messages from other plugins. When it receives a ``TriggerRequest", it constructs protobuf data commands that Makai can consume. Each data command is for a single Box and includes start and end timestamps as milliseconds since the epoch. Each data command also contains an identity string which determines how the message is routed through Makai's services.
 
-The data commands\ref{table:Command} are serialized and sent over a ZMQ PUSH/PULL socket to Makai's acquisition broker. Makai's acquisition broker then goes out to the requested Boxes (if they are available) and requests raw data for the requested time window.
+The data commands described in Section~\ref{table:Command} are serialized and sent over a ZMQ PUSH/PULL socket to Makai's acquisition broker. Makai's acquisition broker then goes out to the requested Boxes (if they are available) and requests raw data for the requested time window.
 
 Previously, Makai handled all Event storage. With this plugin, Mauka now has to handle Event storage for Boxes that Mauka has triggered. This includes creating and modifying the Event document metadata, BoxEvent document metadata, and gridfs waveform storage.
 
@@ -1366,26 +1367,26 @@ By using the above approach, we ensure that we never request analysis of the dat
 
 Data triggered from Mauka is fundamentally different than data triggered from Makai. That's because Boxes triggered from Mauka are always triggered from an associated Incident or Phenomena. If new Incidents are found from this data and they are similar to the original Incident that caused Mauka to trigger, then we have found a global event and possible Phenomena that would not have been observed using Makai's triggering alone. This requires extra semantic information to be passed to the ``MakaiEventPlugin" and other analysis plugins. Data received from Mauka triggers are always forwarded with the associated Incident or Phenomena Id so that the relationships can be tracked and maintained.
 
-\paragraph{ThresholdOptimizationPlugin}\label{subsubsec:threshold-optimization-pugin}
-The ThresholdOptimizationPlugin is responsible for modifying dynamic triggering thresholds within Makai. Makai utilizes two methods for triggering Boxes. One method called ``Napali" was produced by Sergey Negrashov as part of his dissertation research. The Napali trigger uses a windowed statistical model for triggering devices based off of metric distance from standard deviations and means. The second approach to triggering is a threshold trigger which watches Frequency, Voltage, and THD levels to determine if they have passed certain thresholds. This plugin works with the second type of triggering, the threshold trigger. Threshold based triggering is described in section~\ref{subsubsec:dynamic-triggering}.
+\paragraph{ThresholdOptimizationPlugin.}\label{subsubsec:threshold-optimization-pugin}
+The ThresholdOptimizationPlugin is responsible for modifying dynamic triggering thresholds within Makai. Makai utilizes two methods for triggering Boxes. One method called ``Napali" was produced by Sergey Negrashov as part of his dissertation research. The Napali trigger uses a windowed statistical model for triggering devices based off of metric distance from standard deviations and means. The second approach to triggering is a threshold trigger which watches Frequency, Voltage, and THD levels to determine if they have passed certain thresholds. This plugin works with the second type of triggering, the threshold trigger. Threshold based triggering is described in Section~\ref{subsubsec:dynamic-triggering}.
 
 Thresholds are stored in MongoDB and consist of default thresholds and override thresholds which are thresholds set specifically for individual devices. This plugin can dynamically modify both types of thresholds. The data model for thresholds are presented in Table~\ref{table:makai_config}.
 
-This plugin receives the MaukaMessage variant ``ThresholdOptimizationRequest"\ref{table:ThresholdOptimziationRequest}. When a request is received, the default thresholds can be updated, a single override threshold can be updated, or both can be updated at the same time.
+This plugin receives the MaukaMessage variant ``ThresholdOptimizationRequest" (described in Section~\ref{table:ThresholdOptimziationRequest}). When a request is received, the default thresholds can be updated, a single override threshold can be updated, or both can be updated at the same time.
 
 For any default value in the request that is larger than 0, the default threshold value in the database is updated with the new request value. If the request contains an override value larger than 0, this plugin first checks to see an override for that Box already exists in the database. If an override already exists, then the override is updated with the new override values from the request. If the override does not exist, then a new override is created with default values and the override values are updated from the request.
 
-\paragraph{RateOptimizationPlugin}
+\paragraph{RateOptimizationPlugin.}
 
-The ``RateOptimizationPlugin" is responsible for modifying the send rate of Measurements for specific Boxes. This plugin subscribes to ``RateOptimizationRequest" messages~\ref{table:RateOptimizationRequest} which include a Box Id and requested sample rate for the Measurements collection.
+The ``RateOptimizationPlugin" is responsible for modifying the send rate of Measurements for specific Boxes. This plugin subscribes to ``RateOptimizationRequest" messages (described in Section~\ref{table:RateOptimizationRequest}) which include a Box Id and requested sample rate for the Measurements collection.
 
 Requests from this plugin are sent from Phenomena when a Phenomena believes that changing the Measurement rate of a Box or Boxes could enhance Mauka's ability to discover signals of interest.
 
-When a request is received, this plugin sends a Makai Command\ref{table:Command} to Makai's acquisition broker over a ZMQ socket. The command message includes the Box Id and Measurement sample rate. Makai then handles forwarding the command to the relevant Box which will then change its Measurement rate to match that of the request.
+When a request is received, this plugin sends a Makai Command (Section~\ref{table:Command}) to Makai's acquisition broker over a ZMQ socket. The command message includes the Box Id and Measurement sample rate. Makai then handles forwarding the command to the relevant Box which will then change its Measurement rate to match that of the request.
 
-\paragraph{TtlOptimizationPlugin}\label{subsubsec:ttl-optimization-pugin}
+\paragraph{TtlOptimizationPlugin.}\label{subsubsec:ttl-optimization-pugin}
 
-The ``TtlOptimizationPlugin" is responsible for dynamically modifying ``laha\_config" collection TTL values. This plugin subscribes to ``TtlOptimizationRequest" messages\ref{table:TtlOptimizationRequest}.
+The ``TtlOptimizationPlugin" is responsible for dynamically modifying ``laha\_config" collection TTL values. This plugin subscribes to ``TtlOptimizationRequest" messages (Section~\ref{table:TtlOptimizationRequest}).
 
 When a request is received, the corresponding TTL value in the database is updated to match the requested value.
 
@@ -1415,10 +1416,10 @@ OPQ View provides the ability to manually define minimum and maximum triggering 
 	\caption{OPQ View Threshold Configuration}\label{fig:view_thresholds}
 \end{figure}
 
-OPQ View also provides a display for Laha metrics that were collected by Mauka. This is described and shown in section~\ref{lbl:SystemStatsPlugin}.
+OPQ View also provides a display for Laha metrics that were collected by Mauka. This is described and shown in Section~\ref{lbl:SystemStatsPlugin}.
 
 \subsection{OPQ: Dockerfication}\label{subsec:opq:-dockerfication}
-The OPQ system is made up of many separate services and technology stacks. Each service has its own build process and set of other services that it communicates with. In order to streamline the building and deployment of OPQ services, we implemented a containerized architecture user Docker and Docker Compose. This architecture allows us to track the version of each service and provide the OPQ Cloud system as a monolithic service managed by Docker. This greatly simplifies deployment of not just individual services, but deployment of the entire system as a whole.
+The OPQ system is made up of many separate services and technology stacks. Each service has its own build process and set of other services that it communicates with. In order to streamline the building and deployment of OPQ services, we implemented a containerized architecture using Docker and Docker Compose. This architecture allows us to track the version of each service and provide the OPQ Cloud system as a monolithic service managed by Docker. This greatly simplifies deployment of not just individual services, but deployment of the entire system as a whole.
 
 Each OPQ service runs in its own Docker container. Each container is configured so that network access is restricted to only the other containers that it is allowed to communicate with. Docker also allows us to manage which ports are open to the outside world for any particular service.
 
@@ -1452,13 +1453,13 @@ Lokahi is made up of several distributed services, each of which will be discuss
 \subsection{Lokahi Data Acquisition Service}\label{subsec:lokahi-data-acquisition-service}
 The data acquisition service is responsible for acquiring, authenticating, storing, and moving real-time sensor data from Lokahi sensors.
 
-The data acquisition service is written in Rust and makes use of Actix Actors for scalability and distributed communication. Originally, the data acquisition server was written in Java using Akka Actors. I recently moved the acquisition server to Rust so that it can be ran on embedded hardware such as Raspberry Pis in resource restricted environments or on the edge of networks. Rust also provides performances improvements in terms of CPU utilization and memory utilization.
+The data acquisition service is written in Rust and makes use of Actix Actors for scalability and distributed communication. Originally, the data acquisition server was written in Java using Akka Actors. I recently moved the acquisition server to Rust so that it can be run on embedded hardware such as Raspberry Pis in resource restricted environments or on the edge of networks. Rust also provides performances improvements in terms of CPU utilization and memory utilization.
 
 Type safe data is passed between actors where each actor fulfills a single purpose. When an actor successfully completes a unit of work, it responds with an empty success message to the calling actor. If an actor fails to complete a unit of work, it responds with a type safe error message to the calling actor. Errors messages are passed up the chain until they get to the original caller.
 
 All actors in this service are optional and configurable. For instance, this service can be brought up with the sole purpose of writing the data to a file system and nothing else, or acting  solely as a data relay, or only storing data to AWS S3, or it can do it all.
 
-Further, multiple Actors can be ran concurrently with different configurations. For instance, its possible to define multiple Kafka actors, each with their own encryption and endpoint configurations, or you could write data to multiple file systems by configuring multiple Fs Actors, etc.
+Further, multiple Actors can be ran concurrently with different configurations. For instance, it's possible to define multiple Kafka actors, each with their own encryption and endpoint configurations, or you could write data to multiple file systems by configuring multiple file system Actors, etc.
 
 It's also possible to configure each actor with whitelists and blacklists where items can be added by sensor Id or sensor owner. In this way, the configuration for each actor can be fine tuned to only allow certain sensors or sets of sensors or disallow sets of sensors. This is utilized when we require that only a subset of data received be forwarded to a particular actor. For instance, when we share real time data with our collaborators, they are only interested in a certain subset of data that we are receiving. Therefore, we create a whilelist with their information so that they only receive the data they are interested in. On the other hand, that data may be sensitive, so we black list it on other actors so that data is not forwarded to those actors.
 
@@ -1477,17 +1478,17 @@ Figure~\ref{fig:LokahiAcquisition} provides an overview of the workflow and comm
 
 Configuration for this service is stored in a .toml file. This file is parsed from the environment on service startup and deserialized into a typesafe Rust struct. The configuration is completely declarative and all actor configurations are optional. Also, it's possible to add new actors to this system by simply declaring a new actor in the configuration and restarting the service. This approach scales much more nicely than our previous approach which required editing the source code directly to modify or add actors.
 
-An example configuration file with one of each actor type is provided in the appendix in section~\ref{lokahi_acquisition_config}.
+An example configuration file with one of each actor type is provided in the appendix in Section~\ref{lokahi_acquisition_config}.
 
 \subsubsection{Acquisition Actor}
-Lokahi sensors establish an encrypted WebSocket connection to the the acquisition server in which they send data over. Encryption is provided over standard HTTPS using Let's Encrypt as a certificate provider. Once the connection is established, the connection remains open for as long as the sensor is continuously sending data. Each connection causes the creation of a new Actix Actor within the acquisition service. Instead of creating a thread for each connection, actors share their resources over a configurable thread pool and lightweight green threads are used to provide concurrency. Since most of the work of the acquisition service is I/O bound, the use of green threads makes the most sense.
+Lokahi sensors establish an encrypted WebSocket connection to the the acquisition server in which they send data over. Encryption is provided over standard HTTPS using Let's Encrypt as a certificate provider. Once the connection is established, the connection remains open for as long as the sensor is continuously sending data. Each connection causes the creation of a new Actix Actor within the acquisition service. Instead of creating a thread for each connection, actors share their resources over a configurable thread pool and lightweight green threads are used to provide concurrency. Since most of the work of the acquisition service is I/O bound, the system employs green threads.
 
 This actor is also responsible for checking the response messages from all actors in the acquisition pipeline. If all responses are ``Ok", then this actor responds to the sensor with a checksum and an ``Ok" response. If any of the actor responses are an error, then this actor responds to the sensor with an error message and the sensor will store the data onboard until it is able to send at a later time.
 
 \subsubsection{Packet Actor}
 The acquisition service ``Packet Actor" handles each packet from a sensor individually. When a packet arrives, the packet is first decompressed using a custom LZ4 compression protocol where the first four bytes of the compressed payload contain the size of the original uncompressed data.
 
-Once the packet is decompressed, it is then deserialized using Protocol Buffers into a struct that Rust is able to work with. The data packet protocol is provided in full in the appendix in section~\ref{lokahi-data-packet-protocol}.
+Once the packet is decompressed, it is then deserialized using Protocol Buffers into a struct that Rust is able to work with. The data packet protocol is provided in full in the appendix in Section~\ref{lokahi-data-packet-protocol}.
 
 Each packet contains a Json Web Token (JWT) which is a cryptographically signed token generated by Lokahi Web. This token provides user authentication and authorization. The acquisition service extracts the token and either accepts or rejects the packet depending on if authentication is successful or not.
 
@@ -1498,7 +1499,7 @@ Once the packet has been updated by the ``Packet Actor", all meta-data is extrac
 
 Multiple collections are updated by the Mongo Actor when a packet is received.
 
-The ``RedvoxPacketApi900" collection stores metadata for all data packets received from sensors. The schema for this collection is described in Table~\ref{table:RedvoxPacketApi900}. This document also includes two embedded documents EvenlySampledChannel\ref{table:EvenlySampledChannel} and UnevenlySampledChannel\ref{table:UnevenlySampledChannel}. The EvenlySampledChannel document contains metadata for evenly sampled channels such as the microphone. The UnevenlySampledChannel document contains metadata for unevenly sampled channels such as barometer, location, gyroscope, accelerometer, etc.
+The ``RedvoxPacketApi900" collection stores metadata for all data packets received from sensors. The schema for this collection is described in Table~\ref{table:RedvoxPacketApi900}. This document also includes two embedded documents EvenlySampledChannel (Section~\ref{table:EvenlySampledChannel}) and UnevenlySampledChannel (Section~\ref{table:UnevenlySampledChannel}). The EvenlySampledChannel document contains metadata for evenly sampled channels such as the microphone. The UnevenlySampledChannel document contains metadata for unevenly sampled channels such as barometer, location, gyroscope, accelerometer, etc.
 
 \begin{table}
 	\centering
@@ -1588,7 +1589,7 @@ The ``RedvoxPacketApi900" collection stores metadata for all data packets receiv
 
 The Mongo Actor also updates other documents which are used by Lokahi View for display, device, and user management. The schemas for these collections are described next.
 
-The ``RedvoxDeviceApi900" collection contains metadata relating to each sensor that Lokahi receives from. This collection is described in Table~\ref{table:RedvoxDeviceApi900}. This collection also contains two embedded documents ``PrivacyPolicy"\ref{table:PrivacyPolicy} and ``AuthenticatedEmailEntry"\ref{table:AuthenticatedEmailEntry}.
+The ``RedvoxDeviceApi900" collection contains metadata relating to each sensor that Lokahi receives from. This collection is described in Table~\ref{table:RedvoxDeviceApi900}. This collection also contains two embedded documents ``PrivacyPolicy" (Section~\ref{table:PrivacyPolicy}) and ``AuthenticatedEmailEntry" (Section~\ref{table:AuthenticatedEmailEntry}).
 
 \begin{table}[H]
 	\centering
