@@ -10,17 +10,17 @@ The UHM Office of Energy Management provided our team with access to data collec
 
 Ground truth data was scraped from an UHM internal server over the duration of the OPQ deployment. I collected ground truth data containing 15 features for each of the ground truth meters that are co-located with an OPQ Box. The ground truth data is mostly complete, however, there are a few missing features for some meters.
 
-The provided ground truth data is similar to OPQ Trends in that it provides rolled up summary statistics for features over a window of 60 seconds. The included statistics include the actual, minimum, maximum, average, and standard deviation of the features measured. Unfortunately, the ground truth data does not provide a count of how many measurements were rolled into their one minute window. Because of this, I do not know the window sized used when computing things such as Frequency or THD.
+The provided ground truth data is similar to OPQ Trends in that it provides rolled up summary statistics for features over a window of 60 seconds. The included statistics include the actual, minimum, maximum, average, and standard deviation of the features measured. Unfortunately, the ground truth data does not provide a count of how many Measurements were rolled into their one minute window. Because of this, I do not know the window sized used when computing things such as Frequency or THD.
 
 I collected the following available features for ground truth data: ``Frequency", ``Average Voltage THD", ``VAB", ``VAN", ``VBC", ``VBN", ``VCA", ``VCN", ``Voltage CN THD", ``Voltage AN THD", ``Voltage BN THD", and ``Voltage CN THD".
 
-The Frequency and THD measurements are in units that are similar to what OPQ collects (Frequency @ 60Hz and \% THD), but the Voltage values are in RMS at 420V and 240V where OPQ collects RMS at 120V. This means that the Voltage values can not be compared directly and that we either need to scale the Voltage values or use straight thresholds for determining Events and Incidents. Further, the ground truth values for Voltage are provided for each of the three Voltage phases whereas OPQ Boxes compute RMS Voltage from a combination of three phases. This needs to be considered before comparing ground truth Voltage to OPQ Voltage measurements.
+The Frequency and THD Measurements are in units that are similar to what OPQ collects (Frequency @ 60Hz and \% THD), but the Voltage values are in RMS at 420V and 240V where OPQ collects RMS at 120V. This means that the Voltage values can not be compared directly and that we either need to scale the Voltage values or use straight thresholds for determining Events and Incidents. Further, the ground truth values for Voltage are provided for each of the three Voltage phases whereas OPQ Boxes compute RMS Voltage from a combination of three phases. This needs to be considered before comparing ground truth Voltage to OPQ Voltage Measurements.
 
-Although the Frequency and THD ground truth measurements are scaled the same as OPQ observations, it's not clear what size of computation window the ground truth sensors utilize to make these calculations. I expect to see slight differences between what Mauka observed and what the UHM meters observed due to these differences.
+Although the Frequency and THD ground truth Measurements are scaled the same as OPQ observations, it's not clear what size of computation window the ground truth sensors utilize to make these calculations. I expect to see slight differences between what Mauka observed and what the UHM meters observed due to these differences.
 
 To complicate things, we do not have a UHM meter co-located with every OPQ Box and several of our Boxes are co-located with multiple UHM meters making the determination of which combination of Box and Meter to compare not straight forward.
 
-Finally, it should be noted that due to OPQ's default TTL values, Measurements are only stored for a day and Trends are only stored for two weeks. This means that we can not compare the ground truth trends directly (unless they were saved by an Event, Incident, or Phenomena) for more than a period of 2 weeks. This only affects comparing ground truth data to OPQ Measurements and Trends and should not affect the comparison of Events and Incidents.
+Finally, it should be noted that due to OPQ's default TTL values, Measurements are only stored for a day and Trends are only stored for two weeks. This means that we can not compare the ground truth Trends directly (unless they were saved by an Event, Incident, or Phenomena) for more than a period of 2 weeks. This only affects comparing ground truth data to OPQ Measurements and Trends and should not affect the comparison of Events and Incidents.
 
 Table~\ref{table:gt} provides a mapping from OPQ Boxes to co-located UHM meters.
 
@@ -393,7 +393,7 @@ The OPQ Box computes THD over a window of six cycles. The window size that the U
 
 This is caused by using a smaller THD computation window which has less of a chance to average out noise. On one hand, this provides THD per cycle which better exemplifies small transients in the data which would otherwise be averaged out using larger window lengths. On the other hand, measured THD will be higher due to added noise in the signal.
 
-I empirically found that THD values calculated by Mauka add .5\% THD to the OPQ Box and UHM ground truth measurements. This added THD is due to added noise in the THD calculation caused by using a smaller window. Ground truth data had this constant added before comparing to THD Incidents produced by Mauka. Table ~\ref{table:gt_thd_incidents} summarizes the results of the THD Incidents comparison.
+I empirically found that THD values calculated by Mauka add .5\% THD to the OPQ Box and UHM ground truth Measurements. This added THD is due to added noise in the THD calculation caused by using a smaller window. Ground truth data had this constant added before comparing to THD Incidents produced by Mauka. Table ~\ref{table:gt_thd_incidents} summarizes the results of the THD Incidents comparison.
 
 \begin{table}[H]
     \centering
@@ -478,7 +478,7 @@ Events were compared to UHM ground truth data by applying thresholding on the da
 
 Incidents were compared to UHM ground truth data by applying thresholding to the data and correcting for differences in noise generation. Voltage and THD Incidents are well characterized, but Frequency Incidents were not as accurate.
 
-Other than Frequency Incidents, these results provide evidence that the OPQ Mauka system provides accurate measurements as compared to the ground truth. By the rule of transitivity, I would like to say that all other Incidents that rely on features not collected by the UHM ground truth sensors are hopefully well characterized by virtue of the fact that all of the data feeding into those Incidents are well characterized.
+Other than Frequency Incidents, these results provide evidence that the OPQ Mauka system provides accurate Measurements as compared to the ground truth. By the rule of transitivity, I would like to say that all other Incidents that rely on features not collected by the UHM ground truth sensors are hopefully well characterized by virtue of the fact that all of the data feeding into those Incidents are well characterized.
 
 Future work should seek to find ground truth options that provide more details such as the duration of anomalies or something similar to Events so that Incidents can be more easily and more directly compared to the ground truth data.
 
@@ -565,7 +565,7 @@ Figure~\ref{fig:vsag_semi_itic} shows a Voltage sag with associated Semi-F47 and
     \label{fig:vsag_semi_itic}
 \end{figure}
 
-Here, the initial voltage waveform and $V_{RMS}$ show a sag on the order of $10^3$ cycles. This is just long enough in duration and low enough in Voltage that is breaches the Semi-F47 threshold and barely surpasses the ITIC threshold.
+Here, the initial Voltage waveform and $V_{RMS}$ show a sag on the order of $10^3$ cycles. This is just long enough in duration and low enough in Voltage that is breaches the Semi-F47 threshold and barely surpasses the ITIC threshold.
 
 Figure~\ref{fig:vsag_semi} provides an example of both a large Voltage sag and a related Semi-47 violation, but no ITIC violation. This is much more common in the data.
 
@@ -764,7 +764,7 @@ Figure~\ref{fig:quake_3} shows the map of the earth quake epicenter (in red) and
 It should be noted that there are two sensors on top of each other in Kailua-Kona that are not visible in the above map.
 
 \subsubsection{Meteor Entry Over Hawaiian Islands}
-On July 25 2019, a meteor entered the atmosphere above the Hawaiian islands as reported by the American Meteor Society\cite{ams}. The Lokahi network observed the event on 19 sensors stationed on the islands of Oahu, Maui, and the Big Island.
+On July 25 2019, a meteor entered the atmosphere above the Hawaiian islands as reported by the American Meteor Society\cite{ams}. The Lokahi network observed the Event on 19 sensors stationed on the islands of Oahu, Maui, and the Big Island.
 
 Figure~\ref{fig:meteor_1} shows the infrasound as recorded by device 1637610019:1472585716. A large spike can be observed in the infrasound range showing the meteor entering Earth's atmosphere.
 
@@ -892,7 +892,7 @@ One of the major differences between OPQ and Lokahi is the number of identified 
 An interesting consequence of the above is that data at different levels in the two networks appear to provide different weights of importance. For example, Events and Incidents are somewhat rare in the Lokahi network due to the high threshold required to become an Event or Incident. These Incidents are generally infrasonic events that are well characterized. Because of the high threshold and rarity of these data types, the Incidents that are classified by Lokahi tend to provide greater context than Events and Incidents in OPQ where there are many more Events and Incidents and I rely on Phenomena to find important signals of interest. This leads me to believe that networks with large amounts of Events and Incidents are better analyzed with Phenomena where networks with low amounts of Events and Incidents may not necessarily need Phenomena to provide use context and actionable insights.
 
 \subsubsection{Multiple Signal Classifications}
-Networks that require only binary classifications or a small number of classifications would not be well suited by Laha. As an example, a network of temperature sensors that only creates Events when a threshold is crossed is likely better served by edge processing or sending all the data and only saving high level metrics and thresholds event indications. Laha really shines when it has the ability to apply multiple classification to multimodal data and to act on those classifications with Phenomena.
+Networks that require only binary classifications or a small number of classifications would not be well suited by Laha. As an example, a network of temperature sensors that only creates Events when a threshold is crossed is likely better served by edge processing or sending all the data and only saving high level metrics and thresholds Event indications. Laha really shines when it has the ability to apply multiple classification to multimodal data and to act on those classifications with Phenomena.
 
 \subsubsection{Data Acquisition}
 Networks that only send high level metrics (e.g. AML values) would be a difficult fit for Laha as Laha relies on the fact that it can access high-fidelity data to perform analysis in the Detection and Incident levels. Laha can still be used (from the AML up), but I suspect the quality of the results to greatly suffer.
@@ -1158,7 +1158,7 @@ Similarity Phenomena attempt to add context to Incidents by grouping sets of rel
 
 Similarity Phenomena provide multiple optimizations to the underlying DSN in terms of data storage requirements. Unlike other Incidents which have their data saved when a new Phenomena is created, Similarity Phenomena provide the ability to discard data once it has been classified into a particular cluster. Now, instead of saving all Frequency swells that have a mean duration of 100 ms and a mean deviation of -.1 Hz, Laha can discard the original data and only update the counts within the Similarity Phenomena.
 
-Two approaches were taken to find similar groups of Frequency incidents with varying success. I initially attempted to utilize hierarchical clustering\cite{johnson1967hierarchical}, but had issues due to the high memory requirements required for performing agglomerative clustering. In agglomerative clustering, point-wise distances are found which ends up providing a memory overhead of $O(N^2)$. This memory overhead is too large to be useful on our cloud based OPQ server with a large number of Incidents. I tried to perform agglomerative clustering on a development machine with 32 GB of memory, but still ran into memory issues. Because of these memory issues, I attempted to focus my efforts on k-means\cite{alsabti1997efficient} clustering which provides memory overhead of closer to $O(N + k * d)$. K-means clustering was used to find groups of related clusters with an empirically found $k$ value.
+Two approaches were taken to find similar groups of Frequency Incidents with varying success. I initially attempted to utilize hierarchical clustering\cite{johnson1967hierarchical}, but had issues due to the high memory requirements required for performing agglomerative clustering. In agglomerative clustering, point-wise distances are found which ends up providing a memory overhead of $O(N^2)$. This memory overhead is too large to be useful on our cloud based OPQ server with a large number of Incidents. I tried to perform agglomerative clustering on a development machine with 32 GB of memory, but still ran into memory issues. Because of these memory issues, I attempted to focus my efforts on k-means\cite{alsabti1997efficient} clustering which provides memory overhead of closer to $O(N + k * d)$. K-means clustering was used to find groups of related clusters with an empirically found $k$ value.
 
 I focused my Similarity Phenomena on Frequency Incidents due to the large amount of Frequency Incidents present in the OPQ system. Frequency Incidents were compared using a distance metric comprised of the duration of the Incident and the maximum deviation from nominal of the Incident.
 
@@ -1234,7 +1234,7 @@ Table~\ref{table:f_kmeans_swells} summarizes the results of the Frequency swell 
     \label{table:f_kmeans_swells}
 \end{table}
 
-Clusters of Frequency swells provide similar results to clusters of Frequency sags. For instance, 174,201 (83\%) Frequency swell incidents are less than 1 second in duration. Cluster 3 contains Frequency swell Incidents that are further from nominal while other clusters vary in duration and remain closer to nominal.
+Clusters of Frequency swells provide similar results to clusters of Frequency sags. For instance, 174,201 (83\%) Frequency swell Incidents are less than 1 second in duration. Cluster 3 contains Frequency swell Incidents that are further from nominal while other clusters vary in duration and remain closer to nominal.
 
 This combination of Similarity Phenomena for Frequency sag and swell Incidents creates a total of 16 Similarity Phenomena within the OPQ network, 8 for each Frequency Incident type.
 
@@ -1290,7 +1290,7 @@ All results in this section were gathered directly from the OPQ and Lokahi netwo
 
 System utilization metrics were collected during the deployment of the OPQ DSN. The metrics that were collected are provided in the description of the SystemStatsPlugin (Section~\ref{lbl:SystemStatsPlugin}). In summary, I collected metrics on plugin utilization, system resource utilization, garbage collection, tunable Laha parameters, and storage requirements for each level within the Laha hierarchy. Evaluations for these results are provided in Sections~\ref{sssec:eval_of_dsn_system_requirements} and~\ref{sssec:evaluation_of_ttl}.
 
-There were several schema changes to the stored metric data, with the most significant change taking place on September 20, 2019. For these results, I only used metrics collected after this date as they contain the most useful data. Because of this, all actual data measurements have an offset that is greater than zero. That is, there was already data stored at each level before I started collecting detailed metrics. This offset is removed from the actual data when comparing to the theoretical data bounds in order to provide a more accurate comparison between the series.
+There were several schema changes to the stored metric data, with the most significant change taking place on September 20, 2019. For these results, I only used metrics collected after this date as they contain the most useful data. Because of this, all actual data Measurements have an offset that is greater than zero. That is, there was already data stored at each level before I started collecting detailed metrics. This offset is removed from the actual data when comparing to the theoretical data bounds in order to provide a more accurate comparison between the series.
 
 Further, the astute reader will notice that there are often times more than 15 Boxes in the metric data when only 15 Boxes were deployed for the UHM deployment. This is attributed to the fact that several Boxes were sent to the Electric Power Research Institute (EPRI) to evaluate if our Boxes could be used as a test bed for their power quality analysis needs. The metrics collected by Laha are collected for the total set of all Boxes sending to OPQ, and thus, also sometimes include metrics from the Boxes that EPRI are evaluating.
 
@@ -1504,7 +1504,7 @@ The Instantaneous Measurements Level (IML) consists of raw samples from sensors.
 This plot is a little uninteresting. The difference is lost by the shear imbalance between magnitudes. With the IML producing the most data consisting of raw samples, without a TTL of 15 minutes the unbounded IML grows very quickly. By having bounds on the data, OPQ saves over 2.5 TB worth of data storage.
 
 \paragraph{AML Versus Estimated Growth}
-Figure~\ref{fig:actual_aml_vs_unbounded_opq} shows the actual AML vs unbounded AML. The AML level contains aggregate measurements which are rolled up summary statistics extracted from the IML\@.
+Figure~\ref{fig:actual_aml_vs_unbounded_opq} shows the actual AML vs unbounded AML. The AML level contains aggregate Measurements which are rolled up summary statistics extracted from the IML\@.
 
 \begin{figure}[H]
     \centering
@@ -1995,7 +1995,7 @@ In the introduction Section~\ref{subsec:tertiary-goals-and-claims}, I provided t
 
 \subsection{Results of Adaptive Optimizations for Triggering}\label{subsec:results-of-adaptive-optimizations-for-triggering}
 
-In the previous discussion on Future Phenomena, I showed how Future Phenomena have the ability to modify the Measurement and Trend rates for OPQ Boxes. These rates are increased over the duration that a Future Phenomena signal is predicted. The measurement rate is increased from one Measurement per 60 cycles to one Measurement per 10 cycles. Once the Future Phenomena duration ends, the rates are adjusted back to default values.
+In the previous discussion on Future Phenomena, I showed how Future Phenomena have the ability to modify the Measurement and Trend rates for OPQ Boxes. These rates are increased over the duration that a Future Phenomena signal is predicted. The Measurement rate is increased from one Measurement per 60 cycles to one Measurement per 10 cycles. Once the Future Phenomena duration ends, the rates are adjusted back to default values.
 
 This increase in fidelity provides triggering algorithms with more data to work with and provides a smaller window ($\frac{1}{6}$ of a second compared to 1 second) in which deviations can be identified. This increases the network's chance of observing Events and Incidents that may have originally been missed.
 
