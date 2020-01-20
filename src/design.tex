@@ -740,7 +740,7 @@ It's important to note some distinctions between the commands. Loading a plugin 
 \end{table}
 
 \subsubsection{Mauka Configuration}
-Mauka is highly configurable and it loads various static and dynamic configurations. Static configurations, or configurations that are loaded when Mauka starts are provided by a JSON file (appendix~\ref{appendix:MaukaConfig}). Dynamic configurations related to TTL and garbage collection are stored in the MongoDB and are discussed in detail in Section~\ref{sec:gc_plugin}.
+Mauka is highly configurable and it loads various static and dynamic configurations. Static configurations, or configurations that are loaded when Mauka starts are provided by a JSON file. Dynamic configurations related to TTL and garbage collection are stored in the MongoDB and are discussed in detail in Section~\ref{sec:gc_plugin}.
 
 \subsubsection{Mauka Data Models}
 Mauka works directly with the following data models: Measurements, Trends, Events, BoxEvents, Incidents, and Phenomena. The data models for these collections are described in this sections.
@@ -895,9 +895,9 @@ The ``laha\_config" collection contains dynamic configuration options that Pheno
 	\label{table:laha_config}
 \end{table}
 
-The ``laha\_stats" collection contains system statistics that measure various performance metrics in relation to Laha's optimizations. The full details of the ``laha\_stats" collection are provided in the section describing the ``SystemStatsPlugin"~\ref{lbl:SystemStatsPlugin}.
+The ``laha\_stats" collection contains system statistics that measure various performance metrics in relation to Laha's optimizations. The full details of the ``laha\_stats" collection are provided in Section~\ref{lbl:SystemStatsPlugin}.
 
-The ``makai\_config" collection contains default and Box override thresholds used by Makai's threshold triggering plugin. These items can be dynamically modified by the ``ThresholdOptimizationPlugin"\ref{subsubsec:threshold-optimization-pugin}.
+The ``makai\_config" collection contains default and Box override thresholds used by Makai's threshold triggering plugin. These items can be dynamically modified by the ``ThresholdOptimizationPlugin" (Section~\ref{subsubsec:threshold-optimization-pugin}).
 
 \begin{table}[H]
 	\centering
@@ -990,7 +990,7 @@ The raw waveform from the OPQ Box is serialized into a Payload (Table~\ref{table
 
 The raw Voltage is calculated by dividing each sample of the raw waveform by the calibration constant loaded from the database that is set for each device. The raw Voltage  is serialized into a Payload (Table~\ref{table:Payload}) with PayloadType (Table~\ref{table:PayloadType}) ``VOLTAGE\_RAW" and produced to the topic ``RawVoltage".
 
-$V_{rms}$ is the peak-to-peak Voltage over a configurable time window. By default, Mauka uses a time window of one electrical cycle at 60$Hz$ which works out to be $1/60$ seconds. $V_{rms}$ is calculated by moving a running window over the raw Voltage waveform. The computation of $V_{rms}$ for each window with $n$ samples is given by Wquation~\ref{equation:Vrms}. The RMS Voltage  is serialized into a Payload (Table~\ref{table:Payload}) with PayloadType (Table~\ref{table:PayloadType}) ``VOLTAGE\_RMS\_WINDOWED" and produced to the topic ``RmsWindowedVoltage".
+$V_{rms}$ is the peak-to-peak Voltage over a configurable time window. By default, Mauka uses a time window of one electrical cycle at 60$Hz$ which works out to be $1/60$ seconds. $V_{rms}$ is calculated by moving a running window over the raw Voltage waveform. The computation of $V_{rms}$ for each window with $n$ samples is given by Equation~\ref{equation:Vrms}. The RMS Voltage  is serialized into a Payload (Table~\ref{table:Payload}) with PayloadType (Table~\ref{table:PayloadType}) ``VOLTAGE\_RMS\_WINDOWED" and produced to the topic ``RmsWindowedVoltage".
 
 \begin{equation}
 \label{equation:Vrms}
@@ -1211,7 +1211,7 @@ The plugin provides a configurable HTTP endpoint which is queried by OPQ Health.
 \paragraph{SystemStatsPlugin.}\label{lbl:SystemStatsPlugin}
 Mauka collects and stores many different types of performance metrics in order to demonstrate the efficacy of Laha as implemented in Mauka. The metrics are collected by the ``SystemStatsPlugin" Mauka plugin and are stored in the MongoDB collection `laha\_metrics`.
 
-The metrics are conditioned and displayed in OPQ View for easy analysis. It's possible to select a start and end date/time to configure the time window of metrics displayed in view. Examples of Mauka's metrics displayed in OPQ View are shown in Figures~\ref{fig:Metrics1},~\ref{fig:Metrics2}, and~\ref{fig:Metrics3}.
+The metrics are conditioned and displayed in OPQ View for easy analysis. It's possible to select a start and end date/time to configure the time window of metrics displayed in view. Examples of Mauka's metrics displayed in OPQ View are shown in Figure~\ref{fig:Metrics1}, Figure~\ref{fig:Metrics2}, and Figure~\ref{fig:Metrics3}.
 
 \begin{figure}
 	\centering
