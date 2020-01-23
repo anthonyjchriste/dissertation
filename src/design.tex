@@ -50,11 +50,11 @@ The actual methods of detection are dependent on the characteristics of every in
 Similar to other levels, the DL level will have its IMs and AMs copied into levels above it when upper levels observe something interesting in the DL. The Detections level is set to have a TTL of a one month by default.
 
 \subsection{Incidents Level}\label{subsec:incidents-level}
-Incidents represent classified signals of interest. Incidents are individual classifications for signals of interest and are created by analyzing data from Events. Data from Events may contain multiple Incidents. Individual signals of interest may be classified as multiple Incidents (for example a transient being classified as both a transient and Frequency Incidents).
+Incidents represent classified signals of interest. Incidents are individual classifications for signals of interest and are created by analyzing data from Events. Data from Events may contain multiple Incidents. Individual signals of interest may be classified as multiple Incidents (for example a transient being classified as both a transient and frequency Incidents).
 
 What separates Incidents from Events are the size of the data windows and the ability to classify signals of interest. Whereas Events contain a window that may or may not contain signals of interest, Incidents always contain classified signals of interest. Further, Incidents are always a subset of Event windows. Event windows are defined by thresholds crossing into non-nominal territory, while Incident windows are defined by classification algorithms for the exact start and end of the Incident within the Event window.
 
-For example, the OPQ network may detect Frequency deviations in the triggering data stream. These deviations cause an Event to be generated. The Event is further analyzed by Incident algorithms and it is found that the Event contains multiple Frequency sag Incidents and an excessive THD Incident. Each Incident is a subset of the original Event. As another example, the Lokahi network detects deviations in the infrasound range. These deviations cause an Event to be generated, which when further analyzed by Incident algorithms, it is found that the Event contains two atmospheric explosions that are classified as Incidents.
+For example, the OPQ network may detect frequency deviations in the triggering data stream. These deviations cause an Event to be generated. The Event is further analyzed by Incident algorithms and it is found that the Event contains multiple frequency sag Incidents and an excessive THD Incident. Each Incident is a subset of the original Event. As another example, the Lokahi network detects deviations in the infrasound range. These deviations cause an Event to be generated, which when further analyzed by Incident algorithms, it is found that the Event contains two atmospheric explosions that are classified as Incidents.
 
 Incidents are expired after one year of storage by default.
 
@@ -124,7 +124,7 @@ It is possible to determine the locality of signals on networks with constrained
 
 By understanding the general locality of Incidents and building a statistical model of sensors that often display co-located Incidents, the Locality Phenomena is able to tune both the sensors themselves and triggering thresholds for the network. As an example, let's say two sensors, A and B, often observe the same signals of interest, but sensor B does not pass any of the triggering thresholds for the DSN. Locality Phenomena can dynamically tune the triggering thresholds for sensor B so that it does trigger on the signals of interest that would normally go unnoticed.
 
-Locality Phenomena can also tune the sampling rate or send rate of features from sensors. Certain signals may only be observed at certain sampling rates due to the Nyquist-Shannon sampling theorem\cite{landau1967sampling} which states that signals with a Frequency $F$ can only be observed by sampling at at a rate of $2F$. Knowing that signals attenuate as a function of their distance from the source, the sampling rate of sensors can be modified to ensure that signals of interest are captured at a variety of distances from the signal source.
+Locality Phenomena can also tune the sampling rate or send rate of features from sensors. Certain signals may only be observed at certain sampling rates due to the Nyquist-Shannon sampling theorem\cite{landau1967sampling} which states that signals with a frequency $F$ can only be observed by sampling at at a rate of $2F$. Knowing that signals attenuate as a function of their distance from the source, the sampling rate of sensors can be modified to ensure that signals of interest are captured at a variety of distances from the signal source.
 
 \subsection{Periodic Phenomena} \label{subsec:periodicity-phenomena}
 Periodic Phenomena consist of data that exhibits repetitive behavior, that is, the same types of Measurements, Trends, Events, or Incidents appearing in cycles from single or multiple devices. Periodicity allows for the easy creation of Future Phenomena.
@@ -133,7 +133,7 @@ Periodic Phenomena allow us to either tune our network to find periodic data or 
 
 Periodic Phenomena are identified using the following approach. Using a configurable interval, the Periodicity Plugin loads Measurements and Trends for all active sensors over a configurable time window. A time window of 24 hours (the default TTL of Measurements) is used to find periodic signals in Measurements. A time window of two weeks (the default TTL of Trends) is used to find periodic signals in Trends. Larger time windows can be used for Events, Incidents, and Phenomena.
 
-For each feature in the Measurement and Trend data (e.g. Frequency, Voltage, and THD), the Periodicity plugin first removes the DC offset from the data by subtracting the mean. Next, the plugin filters the signal using a 4th order high-pass filter to filter out noise. The plugin then performs autocorrelation on the signal followed by finding the peaks of the autocorrelation. The mean distance between the peaks of the autocorrelation ($\mu$) provides the period of the signal.
+For each feature in the Measurement and Trend data (e.g. frequency, voltage, and THD), the Periodicity plugin first removes the DC offset from the data by subtracting the mean. Next, the plugin filters the signal using a 4th order high-pass filter to filter out noise. The plugin then performs autocorrelation on the signal followed by finding the peaks of the autocorrelation. The mean distance between the peaks of the autocorrelation ($\mu$) provides the period of the signal.
 
 Periodic Phenomena are instrumental in creating Future Phenomena. Periodic Phenomena are used to create Future Phenomena which attempt to predict Incident arrivals at future dates. Periodic Phenomena produce Future Phenomena for all devices that are shown to be periodic. Periodic Phenomena will continue to produce Future Phenomena until consecutive Future Phenomena no longer observe the predicted signals of interest.
 
@@ -153,7 +153,7 @@ Future Phenomena are a statistical model of the likelihood of seeing an Incident
 
 Future Phenomena are created by a combination of other Phenomena types. The most useful Phenomena for creating Future Phenomena are Periodic Phenomena which forecasts future Incidents based off of periodicity. However, Future Phenomena also take into account other Phenomena. For instance, Future Phenomena uses Locality Phenomena to automatically trigger predicted sensors that often observe the same signals. In this way, Future Phenomena can identify signals of interest that may have not passed various triggering thresholds.
 
-Future Phenomena also make use of Annotation Phenomena to predict signals of interest that have been Annotated. This provides actionable insights into the DSN to predict future causes of signals of interest. As an example, instead of saying that the DSN predicts a Voltage sag in a power quality network, the DSN can predict a Voltage sag due to a washer machine turning on in the future, providing more context to the DSN\@.
+Future Phenomena also make use of Annotation Phenomena to predict signals of interest that have been Annotated. This provides actionable insights into the DSN to predict future causes of signals of interest. As an example, instead of saying that the DSN predicts a voltage sag in a power quality network, the DSN can predict a voltage sag due to a washer machine turning on in the future, providing more context to the DSN\@.
 
 Future Phenomena track three items. The first is a list of sensors that should observe a signal in the future. The second is a list of future times at which a signal of interest should be observed. The final item is a statistical weight that provides the likelihood of observing a future signal of interest. The statistical weight $I$ is given as floating point value between 0 and 1 with 1 being the highest probability and 0 being the lowest probability.
 
@@ -163,7 +163,7 @@ Future Phenomena can work the other way as well by increasing triggering thresho
 
 
 \section{Laha Actors: Acting on the Laha Data Model}\label{sec:laha-actors:-acting-on-the-laha-data-model}
-Laha Actors act on the Laha hierarchy and provide one of two functions. Actors can move data from one level of the hierarchy upwards through the hierarchy when interesting data is requested by an upper level. Actors can also apply adaptive optimizations downwards through the hierarchy. The Laha framework can support multiple actors at each level. For example, the Incidents Level in our reference power quality network contains actors for each of the following functions: IEEE classified Voltage events, Frequency variations, power outages, excessive THD, and many others. The Incident Level Actors move data from these Incidents upwards to the Phenomena Level.
+Laha Actors act on the Laha hierarchy and provide one of two functions. Actors can move data from one level of the hierarchy upwards through the hierarchy when interesting data is requested by an upper level. Actors can also apply adaptive optimizations downwards through the hierarchy. The Laha framework can support multiple actors at each level. For example, the Incidents Level in our reference power quality network contains actors for each of the following functions: IEEE classified voltage events, frequency variations, power outages, excessive THD, and many others. The Incident Level Actors move data from these Incidents upwards to the Phenomena Level.
 
 Table~\ref{laha-actors-tables} summarizes the actors that exist within the Laha framework and their purposes.
 
@@ -236,20 +236,20 @@ An OPQ Box is a custom designed PQ sensor. OPQ Boxes can be plugged into a wall 
 	\caption{OPQ Box Software}\label{fig:opq-box-software}
 \end{figure}
 
-The feature extraction algorithms extract from the sampled waveform the following features: windowed $V_{RMS}$, Frequency, and total harmonic distortion (THD) features. The feature extracted data is then sent to a central sink where further analysis is used to determine if the sensor or a subset of sensors should be triggered for raw data.
+The feature extraction algorithms extract from the sampled waveform the following features: windowed $V_{RMS}$, frequency, and total harmonic distortion (THD) features. The feature extracted data is then sent to a central sink where further analysis is used to determine if the sensor or a subset of sensors should be triggered for raw data.
 
 The OPQ network is a hybrid network that uses edge computing for calculating features at the edge of the network. This is opposed to networks that utilize a ``send everything" approach. In this way, Laha is able to minimize bandwidth.
 
 OPQ Boxes are synchronized to each other and the OPQ back end using the network time protocol (NTP). This provides synchronization to the millisecond level, which although is great for longer Incidents, does not provide accurate timing for transients that may be shorter than tens of milliseconds.
 
 \subsection{OPQ: Makai}\label{subsec:opq:-makai}
-OPQ Makai is the central sink and triggering daemon for the OPQ framework. It is made up of several services which are responsible for aggregating and processing the Measurements generated by OPQ Boxes. Low fidelity feature extracted data consisting of $V_{RMS}$, Frequency, and THD are streamed from OPQ Boxes at a configurable message rate. These data streams are observed by OPQ Makai and the daemon uses statistical methods and configurable thresholds to determine if the sensor or a subset of sensors should be triggered for a window of raw sampled waveforms.
+OPQ Makai is the central sink and triggering daemon for the OPQ framework. It is made up of several services which are responsible for aggregating and processing the Measurements generated by OPQ Boxes. Low fidelity feature extracted data consisting of $V_{RMS}$, frequency, and THD are streamed from OPQ Boxes at a configurable message rate. These data streams are observed by OPQ Makai and the daemon uses statistical methods and configurable thresholds to determine if the sensor or a subset of sensors should be triggered for a window of raw sampled waveforms.
 
 \subsubsection{Dynamic Triggering}\label{subsubsec:dynamic-triggering}
 
-While Makai is mostly implemented my colleague Sergey Negrashov, I implemented my own triggering logic into Makai to trigger PQ Events. This threshold based triggering is written as a Rust plugin for Makai's TriggeringService. The plugin receives a stream of Measurements of OPQ Boxes. Each Measurement contains min, max, and average values for Frequency, Voltage, and THD over the Measurement's time window.
+While Makai is mostly implemented my colleague Sergey Negrashov, I implemented my own triggering logic into Makai to trigger PQ Events. This threshold based triggering is written as a Rust plugin for Makai's TriggeringService. The plugin receives a stream of Measurements of OPQ Boxes. Each Measurement contains min, max, and average values for frequency, voltage, and THD over the Measurement's time window.
 
-This plugin checks if a Measurement stream from a Box passes minimum or maximum thresholds for the Measurement's features. Thresholds are provided in the Mongo database in the collection ``makai\_config". The thresholds are provided as minimum and maximum percentages from nominal. For example, the database provides values for nominal Voltage and Frequency (120$V$ and 60$Hz$ respectively) and thresholds for minimum and maximum percentage from nominal for Voltage and Frequency. It also checks the maximum percent of THD from 0.
+This plugin checks if a Measurement stream from a Box passes minimum or maximum thresholds for the Measurement's features. Thresholds are provided in the Mongo database in the collection ``makai\_config". The thresholds are provided as minimum and maximum percentages from nominal. For example, the database provides values for nominal voltage and frequency (120$V$ and 60$Hz$ respectively) and thresholds for minimum and maximum percentage from nominal for voltage and frequency. It also checks the maximum percent of THD from 0.
 
 Not only does the database provide default dynamic thresholds for all devices, but it also includes threshold overrides for individual devices. Override thresholds contain the same information as default thresholds, but also include a box\_id. When loading thresholds for a device, if an override does not exist, then default thresholds are used. If an override does exist, then the thresholds from the override are used.
 
@@ -381,8 +381,8 @@ The ``PayloadType" (Table~\ref{table:PayloadType}) variant is an enumeration tha
 		\textbf{Field} & \textbf{Value} & \textbf{Description} \\
 		\midrule
 		ADC\_SAMPLES & 0 & ADC waveform samples from the Box.  \\
-		VOLTAGE\_RAW & 1 & Raw waveform Voltage obtained by dividing ADC values by a calibration constant. \\
-		VOLTAGE\_RMS & 2 & RMS waveform obtained by dividing raw Voltage by sqrt(2). \\
+		VOLTAGE\_RAW & 1 & Raw waveform voltage obtained by dividing ADC values by a calibration constant. \\
+		VOLTAGE\_RMS & 2 & RMS waveform obtained by dividing raw voltage by sqrt(2). \\
 		VOLTAGE\_RMS\_WINDOWED & 3 & RMS extracted feature array. \\
 		FREQUENCY\_WINDOWED & 4 & Frequency extracted feature array. \\
 		\bottomrule
@@ -422,7 +422,7 @@ The ``MakaiEvent" (Table~\ref{table:MakaiEvent}) variant is a message which incl
 	\label{table:MakaiEvent}
 \end{table}
 
-The ``Measurement" (Table~\ref{table:Measurement}) variant is a message that contains an Instantaneous Measurement which includes a timestamp, Voltage, Frequency, and THD metrics.
+The ``Measurement" (Table~\ref{table:Measurement}) variant is a message that contains an Instantaneous Measurement which includes a timestamp, voltage, frequency, and THD metrics.
 
 \begin{table}[H]
 	\centering
@@ -433,8 +433,8 @@ The ``Measurement" (Table~\ref{table:Measurement}) variant is a message that con
 		\midrule
 		box\_id & string  & Box that this Measurement came from. \\
 		timestamp\_ms & uint64 & Timestamp that this Measurement was recorded. \\
-		frequency & double & The instantaneous Frequency of this Measurement. \\
-		voltage\_rms & double & The instantaneous RMS Voltage of this Measurement. \\
+		frequency & double & The instantaneous frequency of this Measurement. \\
+		voltage\_rms & double & The instantaneous RMS voltage of this Measurement. \\
 		thd & double & The instantaneous THD of this Measurement. \\
 		\bottomrule
 	\end{tabularx}
@@ -585,20 +585,20 @@ A ``ThresholdOptimizationRequest" (Table~\ref{table:ThresholdOptimziationRequest
 		\toprule
 		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
 		\midrule
-		default\_ref\_f & f64 & Default reference Frequency \\
-		default\_ref\_v & f64 & Default reference Voltage \\
-		default\_threshold\_percent\_f\_low & f64 & Default Frequency percent low threshold \\
-		default\_threshold\_percent\_f\_high & f64 & Default Frequency percent high threshold \\
-		default\_threshold\_percent\_v\_low & f64 & Default Voltage percent low threshold \\
-		default\_threshold\_percent\_v\_high & f64 & Default Voltage percent high threshold \\
+		default\_ref\_f & f64 & Default reference frequency \\
+		default\_ref\_v & f64 & Default reference voltage \\
+		default\_threshold\_percent\_f\_low & f64 & Default frequency percent low threshold \\
+		default\_threshold\_percent\_f\_high & f64 & Default frequency percent high threshold \\
+		default\_threshold\_percent\_v\_low & f64 & Default voltage percent low threshold \\
+		default\_threshold\_percent\_v\_high & f64 & Default voltage percent high threshold \\
 		default\_threshold\_percent\_thd\_high & f64 & Default THD percent high threshold \\
 		box\_id & str & Override Box Id \\
-		ref\_f & f64 & Override reference Frequency \\
-		ref\_v & f64 & Override reference Voltage \\
-		threshold\_percent\_f\_low & f64 & Override Frequency percent low threshold \\
-		threshold\_percent\_f\_high & f64 & Override Frequency percent high threshold \\
-		threshold\_percent\_v\_low & f64 & Override Voltage percent low threshold \\
-		threshold\_percent\_v\_high & f64 & Override Voltage percent high threshold \\
+		ref\_f & f64 & Override reference frequency \\
+		ref\_v & f64 & Override reference voltage \\
+		threshold\_percent\_f\_low & f64 & Override frequency percent low threshold \\
+		threshold\_percent\_f\_high & f64 & Override frequency percent high threshold \\
+		threshold\_percent\_v\_low & f64 & Override voltage percent low threshold \\
+		threshold\_percent\_v\_high & f64 & Override voltage percent high threshold \\
 		threshold\_percent\_thd\_high & f64 & Override THD percent high threshold \\
 		\bottomrule
 	\end{tabularx}
@@ -757,15 +757,15 @@ The Measurements collection contains Instantaneous Measurements produced by Maka
 		box\_id & str & OPQ Box Id \\
 		timestamp\_ms & int & Timestamp of the Measurement in milliseconds \\
 		expire\_at & int & The timestamp in seconds that this document should be garbage collected \\
-		frequency & float & The instantaneous Frequency Measurement in Hz \\
-		voltage & float & The instantaneous Voltage Measurement \\
+		frequency & float & The instantaneous frequency Measurement in Hz \\
+		voltage & float & The instantaneous voltage Measurement \\
 		thd & float & The instantaneous THD Measurement as a percentage \\
 		\bottomrule
 	\end{tabularx}
 	\label{table:Measurements}
 \end{table}
 
-The Trends collection provides summary statistics of Frequency, Voltage, and THD over a configurable time window. The data model for the Trends collection is given in Table~\ref{table:Trends}.
+The Trends collection provides summary statistics of frequency, voltage, and THD over a configurable time window. The data model for the Trends collection is given in Table~\ref{table:Trends}.
 
 \begin{table}[H]
 	\centering
@@ -774,9 +774,9 @@ The Trends collection provides summary statistics of Frequency, Voltage, and THD
 		\toprule
 		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
 		\midrule
-		min\_(thd, frequency, voltage) & float & Minimum values for THD, Frequency, and Voltage \\
-		max\_(thd, frequency, voltage) & float & Maximum values for THD, Frequency, and Voltage \\
-		average\_(thd, frequency, voltage) & float & Mean values for THD, Frequency, and Voltage \\
+		min\_(thd, frequency, voltage) & float & Minimum values for THD, frequency, and voltage \\
+		max\_(thd, frequency, voltage) & float & Maximum values for THD, frequency, and voltage \\
+		average\_(thd, frequency, voltage) & float & Mean values for THD, frequency, and voltage \\
 		box\_id & str & OPQ Box Id \\
 		timestamp\_ms & int & Timestamp of end of Trend in milliseconds \\
 		location & str & Location slug from the location that this Trend originated from \\
@@ -906,12 +906,12 @@ The ``makai\_config" collection contains default and Box override thresholds use
 		\toprule
 		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
 		\midrule
-		default\_ref\_f & f64 & Default reference Frequency \\
-		default\_ref\_v & f64 & Default reference Voltage \\
-		default\_threshold\_percent\_f\_low & f64 & Default Frequency percent low threshold \\
-		default\_threshold\_percent\_f\_high & f64 & Default Frequency percent high threshold \\
-		default\_threshold\_percent\_v\_low & f64 & Default Voltage percent low threshold \\
-		default\_threshold\_percent\_v\_high & f64 & Default Voltage percent high threshold \\
+		default\_ref\_f & f64 & Default reference frequency \\
+		default\_ref\_v & f64 & Default reference voltage \\
+		default\_threshold\_percent\_f\_low & f64 & Default frequency percent low threshold \\
+		default\_threshold\_percent\_f\_high & f64 & Default frequency percent high threshold \\
+		default\_threshold\_percent\_v\_low & f64 & Default voltage percent low threshold \\
+		default\_threshold\_percent\_v\_high & f64 & Default voltage percent high threshold \\
 		default\_threshold\_percent\_thd\_high & f64 & Default THD percent high threshold \\
 		triggering\_overrides & [MakaiConfigOverride] & List of Box specific overrides \\
 		\bottomrule
@@ -927,12 +927,12 @@ The ``makai\_config" collection contains default and Box override thresholds use
 		\textbf{Field} & \textbf{Type} & \textbf{Description} \\
 		\midrule
 		box\_id & str & Override Box Id \\
-		ref\_f & f64 & Override reference Frequency \\
-		ref\_v & f64 & Override reference Voltage \\
-		threshold\_percent\_f\_low & f64 & Override Frequency percent low threshold \\
-		threshold\_percent\_f\_high & f64 & Override Frequency percent high threshold \\
-		threshold\_percent\_v\_low & f64 & Override Voltage percent low threshold \\
-		threshold\_percent\_v\_high & f64 & Override Voltage percent high threshold \\
+		ref\_f & f64 & Override reference frequency \\
+		ref\_v & f64 & Override reference voltage \\
+		threshold\_percent\_f\_low & f64 & Override frequency percent low threshold \\
+		threshold\_percent\_f\_high & f64 & Override frequency percent high threshold \\
+		threshold\_percent\_v\_low & f64 & Override voltage percent low threshold \\
+		threshold\_percent\_v\_high & f64 & Override voltage percent high threshold \\
 		threshold\_percent\_thd\_high & f64 & Override THD percent high threshold \\
 		\bottomrule
 	\end{tabularx}
@@ -988,28 +988,28 @@ The MakaiEventPlugin subscribes to messages from with the subject ``MakaiEventMe
 
 The raw waveform from the OPQ Box is serialized into a Payload (Table~\ref{table:Payload}) with PayloadType (Table~\ref{table:PayloadType}) ``ADC\_SAMPLES" and produced to the topic ``AdcSamples".
 
-The raw Voltage is calculated by dividing each sample of the raw waveform by the calibration constant loaded from the database that is set for each device. The raw Voltage  is serialized into a Payload (Table~\ref{table:Payload}) with PayloadType (Table~\ref{table:PayloadType}) ``VOLTAGE\_RAW" and produced to the topic ``RawVoltage".
+The raw voltage is calculated by dividing each sample of the raw waveform by the calibration constant loaded from the database that is set for each device. The raw voltage  is serialized into a Payload (Table~\ref{table:Payload}) with PayloadType (Table~\ref{table:PayloadType}) ``VOLTAGE\_RAW" and produced to the topic ``RawVoltage".
 
-$V_{rms}$ is the peak-to-peak Voltage over a configurable time window. By default, Mauka uses a time window of one electrical cycle at 60$Hz$ which works out to be $1/60$ seconds. $V_{rms}$ is calculated by moving a running window over the raw Voltage waveform. The computation of $V_{rms}$ for each window with $n$ samples is given by Equation~\ref{equation:Vrms}. The RMS Voltage  is serialized into a Payload (Table~\ref{table:Payload}) with PayloadType (Table~\ref{table:PayloadType}) ``VOLTAGE\_RMS\_WINDOWED" and produced to the topic ``RmsWindowedVoltage".
+$V_{rms}$ is the peak-to-peak voltage over a configurable time window. By default, Mauka uses a time window of one electrical cycle at 60$Hz$ which works out to be $1/60$ seconds. $V_{rms}$ is calculated by moving a running window over the raw voltage waveform. The computation of $V_{rms}$ for each window with $n$ samples is given by Equation~\ref{equation:Vrms}. The RMS voltage is serialized into a Payload (Table~\ref{table:Payload}) with PayloadType (Table~\ref{table:PayloadType}) ``VOLTAGE\_RMS\_WINDOWED" and produced to the topic ``RmsWindowedVoltage".
 
 \begin{equation}
 \label{equation:Vrms}
 	V_{RMS} = \sqrt{\frac{\sum_{i=0}^{n} n_{i}^2}{n}}
 \end{equation}
 
-Windowed Frequency is the Frequency calculated for a configurable time window. By default, Mauka uses a time window of one electrical cycle at 60$Hz$ which works out to be $1/60$ seconds. The Frequency is calculated by first smoothing the raw Voltage waveform by applying a $4^{th}$ order Butterworth filter to the waveform with a cutoff Frequency of 500$Hz$ and a down sampling rate of 2. Then, a window is moved across the smoothed signal and the Frequency is calculated for each window by performing a least squares regression and fitting a sinusoide. The windowed Frequency is serialized into a Payload (Table~\ref{table:Payload}) with PayloadType (Table~\ref{table:PayloadType}) ``FREQUENCY\_WINDOWED" and produced to the topic ``WindowedFrequency".
+Windowed frequency is the frequency calculated for a configurable time window. By default, Mauka uses a time window of one electrical cycle at 60$Hz$ which works out to be $1/60$ seconds. The frequency is calculated by first smoothing the raw voltage waveform by applying a $4^{th}$ order Butterworth filter to the waveform with a cutoff frequency of 500$Hz$ and a down sampling rate of 2. Then, a window is moved across the smoothed signal and the frequency is calculated for each window by performing a least squares regression and fitting a sinusoide. The windowed frequency is serialized into a Payload (Table~\ref{table:Payload}) with PayloadType (Table~\ref{table:PayloadType}) ``FREQUENCY\_WINDOWED" and produced to the topic ``WindowedFrequency".
 
 When new Events are received by the MakaiEventPlugin, a GcUpdate (Table~\ref{table:GcUpdate}) message is produced informing the LahaGcPlugin that all ``measurements" and ``trends" stored by Makai should receive a TTL of the newly created Event.
 
 \paragraph{FrequencyVariationPlugin.}
-The ``FrequencyVariationPlugin" is used to classify generic Frequency sags, swells, and interruptions as defined by the IEEE1159 standard\cite{IEEE:2018:1159D3}. Both duration and deviation from nominal are used to perform these classifications. Duration classifications include Frequency deviations that last for less than 50 ns, between 50 ns to 1 ms, and 1 ms to 50 ms. Classifications for deviations from nominal are performed for values that are up to 40\% deviation nominal. The plugin subscribes to messages from the ``WindowedFrequency" topic which includes a payload of Frequency features over one electrical cycle.
+The ``FrequencyVariationPlugin" is used to classify generic frequency sags, swells, and interruptions as defined by the IEEE1159 standard\cite{IEEE:2018:1159D3}. Both duration and deviation from nominal are used to perform these classifications. Duration classifications include frequency deviations that last for less than 50 ns, between 50 ns to 1 ms, and 1 ms to 50 ms. Classifications for deviations from nominal are performed for values that are up to 40\% deviation nominal. The plugin subscribes to messages from the ``WindowedFrequency" topic which includes a payload of frequency features over one electrical cycle.
 
-When a message is received, the plugin uses configurable thresholds to find Frequency fluctuations within the windowed Frequency streams. The plugin is able to classify Frequency swells, Frequency interruptions, and Frequency sags. When a new Frequency variation is detected, a Frequency Incident is created and a GC\_UPDATE message is sent to the LahaGcPlugin to update the TTL of all Measurements, Trends, and Events that belong to this new Incident.
+When a message is received, the plugin uses configurable thresholds to find frequency fluctuations within the windowed frequency streams. The plugin is able to classify frequency swells, frequency interruptions, and frequency sags. When a new frequency variation is detected, a frequency Incident is created and a GC\_UPDATE message is sent to the LahaGcPlugin to update the TTL of all Measurements, Trends, and Events that belong to this new Incident.
 
 \paragraph{IEEE1159VoltagePlugin.}
-The ``IEEE1159VoltagePlugin" is a plugin that is able to classify Voltage Incidents in accordance to the IEEE1159 standard\cite{IEEE:2018:1159D3}. In general, this standard classifies Voltage disturbances by duration and by magnitude. Voltage durations are classified from 0.5 to 30 cycles, 30 cycles to 3 seconds, 3 seconds to a minute, and greater than 1 minute. Voltage deviations are classified in both the sag and swell directions as a percentage from nominal. Sags are generally classified between 10\% and 90\% of nominal while swells are generally classified from 110\% to 180\% of nominal.  The plugin subscribes to messages from the ``RmsWindowedVoltage" topic which includes payloads of $V_{RMS}$ features over a window of one electrical cycle.
+The ``IEEE1159VoltagePlugin" is a plugin that is able to classify voltage Incidents in accordance to the IEEE1159 standard\cite{IEEE:2018:1159D3}. In general, this standard classifies voltage disturbances by duration and by magnitude. voltage durations are classified from 0.5 to 30 cycles, 30 cycles to 3 seconds, 3 seconds to a minute, and greater than 1 minute. voltage deviations are classified in both the sag and swell directions as a percentage from nominal. Sags are generally classified between 10\% and 90\% of nominal while swells are generally classified from 110\% to 180\% of nominal.  The plugin subscribes to messages from the ``RmsWindowedVoltage" topic which includes payloads of $V_{RMS}$ features over a window of one electrical cycle.
 
-This plugin is capable of classifying Voltage sags, swells, and interruptions as defined by the standard. The plugin works by identifying sags, swells, and interruptions and determining the duration of those Events. If the duration or delta is large enough, a Voltage Incident is created and a GC\_UPDATE message is sent to the LahaGcPlugin asking it to update the TTL for all Measurements, Trends, and Events that belong to this new Incident.
+This plugin is capable of classifying voltage sags, swells, and interruptions as defined by the standard. The plugin works by identifying sags, swells, and interruptions and determining the duration of those Events. If the duration or delta is large enough, a voltage Incident is created and a GC\_UPDATE message is sent to the LahaGcPlugin asking it to update the TTL for all Measurements, Trends, and Events that belong to this new Incident.
 
 \paragraph{AnnotationPlugin.}
 
@@ -1047,9 +1047,9 @@ The ``ITICPlugin" analyzes $V_{rms}$ to determine where it falls within the ITIC
 	\label{fig:IticCurve}
 \end{figure}
 
-The purpose of the curve is to provide a tolerance envelope for single-phase 120V equipment. Meaning it defines the sustained Voltage tolerance at different time durations. The curve defines three regions. The first region is ``No Interruption" and generally includes all Voltages with very short sustained durations. All power Events within this region have no noticeable effect on power equipment. The second region, the ``No Damage Region", occurs during Voltage sags for extended periods of time. Power Events in this region may cause equipment interruptions, but it won't damage the equipment. The final region, the``Prohibited Region", is caused by sustained Voltage swells and may cause damage to power equipment.
+The purpose of the curve is to provide a tolerance envelope for single-phase 120V equipment. Meaning it defines the sustained voltage tolerance at different time durations. The curve defines three regions. The first region is ``No Interruption" and generally includes all voltages with very short sustained durations. All power Events within this region have no noticeable effect on power equipment. The second region, the ``No Damage Region", occurs during voltage sags for extended periods of time. Power Events in this region may cause equipment interruptions, but it won't damage the equipment. The final region, the``Prohibited Region", is caused by sustained voltage swells and may cause damage to power equipment.
 
-The ITICPlugin subscribes to the ``RmsWindowedVoltage" topic. When it receives a message, it extracts the windowed Voltage features and uses a segmentation algorithm to split the features into segments of sustained Voltage. The segmentation algorithm is rather naive and described below.
+The ITICPlugin subscribes to the ``RmsWindowedVoltage" topic. When it receives a message, it extracts the windowed voltage features and uses a segmentation algorithm to split the features into segments of sustained voltage. The segmentation algorithm is rather naive and described below.
 
 Given an array of values $A$, the length of the array $len(A)$, and a segmentation threshold $t$:
 \begin{enumerate}
@@ -1132,13 +1132,13 @@ When outage Incidents are created, TTL update messages are not sent because ther
 
 The ``Periodicity Plugin" is responsible for detecting periodic signals in power data. This plugin does not subscribe to any messages, but instead runs off of a configurable timer. The plugin is set to run by default once an hour and every hour it scrapes the last 24 hours worth of data and attempts to find periods in the Measurements over that duration.
 
-For each feature in the Measurement and Trend data (e.g. Frequency, Voltage, and THD), the Periodicity plugin first removes the DC offset from the data by subtracting the mean. Next, the plugin filters the signal using a 4th order high-pass filter to filter out noise. The plugin then performs autocorrelation on the signal followed by finding the peaks of the autocorrelation. The mean distance between the peaks of the autocorrelation ($\mu$) provides the period of the signal.
+For each feature in the Measurement and Trend data (e.g. frequency, voltage, and THD), the Periodicity plugin first removes the DC offset from the data by subtracting the mean. Next, the plugin filters the signal using a 4th order high-pass filter to filter out noise. The plugin then performs autocorrelation on the signal followed by finding the peaks of the autocorrelation. The mean distance between the peaks of the autocorrelation ($\mu$) provides the period of the signal.
 
 The plugin only classifies data as periodic if at least 3 peaks were found and the standard deviation of the period ($\sigma$) is less than 600 seconds (10 minutes). Once a positive identification has been made, peak detection is performed on the original signal using the $\mu$ and $\sigma$ parameters found from autocorrelation to parameterize the peak detection algorithm. The peaks of the original signal represent the times and deviations from nominal for that feature.
 
 Once the plugin has the timestamps and deviations from nominal of the periodic signal of interest, the plugin can group Measurements, Trends, Events, and Incidents that were created during the periodic signals together as part of the Periodic Phenomena.
 
-As an example, Figure~\ref{fig:periodic_example} shows Periodic Voltage sags observed at Box 1021.
+As an example, Figure~\ref{fig:periodic_example} shows periodic voltage sags observed at Box 1021.
 
 \begin{figure}[h]
 	\centering
@@ -1154,17 +1154,17 @@ The Periodicity Plugin also performs several pieces of housekeeping. It's possib
 \paragraph{SimilarityPlugin.}
 The ``SimilarityPlugin" attempts to find groupings of Incidents that are similar. This plugin uses a similarity distance metric computed from the normalized duration of the Incident and the normalized deviation from nominal of the Incident.
 
-This plugin runs on a configurable timer (default of 24 hours). It loads all Incidents and groups them by Incident type. K-means clustering is utilized to find groupings of related Incidents, with empirically found $k$ values for each Incident type. For example, $k=8$ for Frequency Incidents provides decent characterization of Incidents by both duration and deviation from nominal.
+This plugin runs on a configurable timer (default of 24 hours). It loads all Incidents and groups them by Incident type. K-means clustering is utilized to find groupings of related Incidents, with empirically found $k$ values for each Incident type. For example, $k=8$ for frequency Incidents provides decent characterization of Incidents by both duration and deviation from nominal.
 
 When clusters are found, they are saved to the database as Similarity Phenomena. Each similarity Phenomena maintains metadata about the Incidents contained within the Phenomena as well as metadata describing the mean deviation from nominal and mean duration.
 
-Optionally, this plugin can be configured to act on Incidents as they arrive. Using an initial set of clusters found, the newly arrived Incident can be inserted into the correct cluster. Parameters describing ``non-interesting" cluster (e.g. less than 1 second and closer to nominal for Frequency Incident) can be provided to this plugin. If a new Incident is classified into a non-interesting cluster, the Phenomena is updated to include this Incident, but the Incident is not saved to disk, providing data savings and reducing the total number of Incidents so that only more interesting Incidents remain.
+Optionally, this plugin can be configured to act on Incidents as they arrive. Using an initial set of clusters found, the newly arrived Incident can be inserted into the correct cluster. Parameters describing ``non-interesting" cluster (e.g. less than 1 second and closer to nominal for frequency Incident) can be provided to this plugin. If a new Incident is classified into a non-interesting cluster, the Phenomena is updated to include this Incident, but the Incident is not saved to disk, providing data savings and reducing the total number of Incidents so that only more interesting Incidents remain.
 
 \paragraph{PrintPlugin.}
 The ``PrintPlugin" is a special plugin that is mainly used for debugging. It subscribes to all topics and simply prints the contents of the message to STDOUT. This is useful in development or when bringing up a new Mauka system to ensure that the communications infrastructure is in place. It can also be enabled at runtime from the Mauka CLI to debug all communication channels for all plugins.
 
 \paragraph{SemiF47Plugin.}
-The ``SemiF47" plugin is another plugin like the IticPlugin that plots Voltage and duration against a power acceptability curve. In this case, the standard used is the SemiF47 standard\cite{semif47}. Rather than using a point-in-polygon approach, this plugin reads the $V_{RMS}$ features sequentially and uses a state machine to keep track of the current classification. This plugin only classifies values as a ``violation" or as ``nominal".
+The ``SemiF47" plugin is another plugin like the IticPlugin that plots voltage and duration against a power acceptability curve. In this case, the standard used is the SemiF47 standard\cite{semif47}. Rather than using a point-in-polygon approach, this plugin reads the $V_{RMS}$ features sequentially and uses a state machine to keep track of the current classification. This plugin only classifies values as a ``violation" or as ``nominal".
 
 The SemiF47 curve is displayed in Figure~\ref{fig:SemiF47Curve}.
 
@@ -1317,7 +1317,7 @@ The Laha metrics described in Table~\ref{table:MetricsLaha} store metrics relati
 \end{table}
 
 \paragraph{ThdPlugin.}
-The ``ThdPlugin" classifies abnormal amounts of total harmonic distortion (THD) in a power waveform. THD is a measure of amount of noise in the Frequency at multiples of 60Hz. The ThdPlugin subscribes to messages from the ``AdcSamples" topic which include payloads consisting of raw samples from the OPQ Boxes. THD is calculated using a rolling window of one electrical cycle over the waveform. For each window, THD is calculated by Equation~\ref{equation:Thd}.
+The ``ThdPlugin" classifies abnormal amounts of total harmonic distortion (THD) in a power waveform. THD is a measure of amount of noise in the frequency at multiples of 60Hz. The ThdPlugin subscribes to messages from the ``AdcSamples" topic which include payloads consisting of raw samples from the OPQ Boxes. THD is calculated using a rolling window of one electrical cycle over the waveform. For each window, THD is calculated by Equation~\ref{equation:Thd}.
 
 \begin{equation}
 \label{equation:Thd}
@@ -1328,7 +1328,7 @@ For each continuous set of windows that has THD higher than the configured thres
 
 
 \paragraph{TransientPlugin.}
-The ``TransientPlugin" is responsible for classifying Frequency transients in power waveforms. The plugin subscribes to messages from the ``RawVoltage" topic which contains a calibrated power waveform payload. The TransientPlugin is capable of classifying impulsive, arcing, oscillatory, and periodic notching transients. A decision tree is utilized to select the most likely transient type and then further analysis is used to perform the actual classification of transients.
+The ``TransientPlugin" is responsible for classifying frequency transients in power waveforms. The plugin subscribes to messages from the ``RawVoltage" topic which contains a calibrated power waveform payload. The TransientPlugin is capable of classifying impulsive, arcing, oscillatory, and periodic notching transients. A decision tree is utilized to select the most likely transient type and then further analysis is used to perform the actual classification of transients.
 
 Dickens et al\cite{csdl2-19-02} provides more details on the transient classification system.
 
@@ -1368,7 +1368,7 @@ By using the above approach, we ensure that we never request analysis of the dat
 Data triggered from Mauka is fundamentally different than data triggered from Makai. That's because Boxes triggered from Mauka are always triggered from an associated Incident or Phenomena. If new Incidents are found from this data and they are similar to the original Incident that caused Mauka to trigger, then we have found a global event and possible Phenomena that would not have been observed using Makai's triggering alone. This requires extra semantic information to be passed to the ``MakaiEventPlugin" and other analysis plugins. Data received from Mauka triggers are always forwarded with the associated Incident or Phenomena Id so that the relationships can be tracked and maintained.
 
 \paragraph{ThresholdOptimizationPlugin.}\label{subsubsec:threshold-optimization-pugin}
-The ThresholdOptimizationPlugin is responsible for modifying dynamic triggering thresholds within Makai. Makai utilizes two methods for triggering Boxes. One method called ``Napali" was produced by Sergey Negrashov as part of his dissertation research. The Napali trigger uses a windowed statistical model for triggering devices based off of metric distance from standard deviations and means. The second approach to triggering is a threshold trigger which watches Frequency, Voltage, and THD levels to determine if they have passed certain thresholds. This plugin works with the second type of triggering, the threshold trigger. Threshold based triggering is described in Section~\ref{subsubsec:dynamic-triggering}.
+The ThresholdOptimizationPlugin is responsible for modifying dynamic triggering thresholds within Makai. Makai utilizes two methods for triggering Boxes. One method called ``Napali" was produced by Sergey Negrashov as part of his dissertation research. The Napali trigger uses a windowed statistical model for triggering devices based off of metric distance from standard deviations and means. The second approach to triggering is a threshold trigger which watches frequency, voltage, and THD levels to determine if they have passed certain thresholds. This plugin works with the second type of triggering, the threshold trigger. Threshold based triggering is described in Section~\ref{subsubsec:dynamic-triggering}.
 
 Thresholds are stored in MongoDB and consist of default thresholds and override thresholds which are thresholds set specifically for individual devices. This plugin can dynamically modify both types of thresholds. The data model for thresholds are presented in Table~\ref{table:makai_config}.
 
@@ -1408,7 +1408,7 @@ A screenshot of OPQ View in action is provided in Figure~\ref{fig:opq-view}.
 
 For the most part, OPQ View serves as a client for displaying PQ information collected and analyzed by the rest of the framework. However, OPQ View provides two components that are directly related to this dissertation.
 
-OPQ View provides the ability to manually define minimum and maximum triggering thresholds for Voltage, Frequency, and THD used by Makai. Figure~\ref{fig:view_thresholds} shows what this functionality looks like as implemented in View.
+OPQ View provides the ability to manually define minimum and maximum triggering thresholds for voltage, frequency, and THD used by Makai. Figure~\ref{fig:view_thresholds} shows what this functionality looks like as implemented in View.
 
 \begin{figure}
 	\centering

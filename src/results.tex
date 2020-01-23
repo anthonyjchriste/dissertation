@@ -10,13 +10,13 @@ The UHM Office of Energy Management provided our team with access to data collec
 
 Ground truth data was scraped from an UHM internal server over the duration of the OPQ deployment. I collected ground truth data containing 15 features for each of the ground truth meters that are co-located with an OPQ Box. The ground truth data is mostly complete, however, there are a few missing features for some meters.
 
-The provided ground truth data is similar to OPQ Trends in that it provides rolled up summary statistics for features over a window of 60 seconds. The included statistics include the actual, minimum, maximum, average, and standard deviation of the features measured. Unfortunately, the ground truth data does not provide a count of how many Measurements were rolled into their one minute window. Because of this, I do not know the window sized used when computing things such as Frequency or THD.
+The provided ground truth data is similar to OPQ Trends in that it provides rolled up summary statistics for features over a window of 60 seconds. The included statistics include the actual, minimum, maximum, average, and standard deviation of the features measured. Unfortunately, the ground truth data does not provide a count of how many Measurements were rolled into their one minute window. Because of this, I do not know the window sized used when computing things such as frequency or THD.
 
 I collected the following available features for ground truth data: ``Frequency", ``Average Voltage THD", ``VAB", ``VAN", ``VBC", ``VBN", ``VCA", ``VCN", ``Voltage CN THD", ``Voltage AN THD", ``Voltage BN THD", and ``Voltage CN THD".
 
-The Frequency and THD Measurements are in units that are similar to what OPQ collects (Frequency @ 60Hz and \% THD), but the Voltage values are in RMS at 420V and 240V where OPQ collects RMS at 120V. This means that the Voltage values can not be compared directly and that we either need to scale the Voltage values or use straight thresholds for determining Events and Incidents. Further, the ground truth values for Voltage are provided for each of the three Voltage phases whereas OPQ Boxes compute RMS Voltage from a combination of three phases. This needs to be considered before comparing ground truth Voltage to OPQ Voltage Measurements.
+The frequency and THD Measurements are in units that are similar to what OPQ collects (frequency @ 60Hz and \% THD), but the voltage values are in RMS at 420V and 240V where OPQ collects RMS at 120V. This means that the voltage values can not be compared directly and that we either need to scale the voltage values or use straight thresholds for determining Events and Incidents. Further, the ground truth values for voltage are provided for each of the three voltage phases whereas OPQ Boxes compute RMS voltage from a combination of three phases. This needs to be considered before comparing ground truth voltage to OPQ voltage Measurements.
 
-Although the Frequency and THD ground truth Measurements are scaled the same as OPQ observations, it's not clear what size of computation window the ground truth sensors utilize to make these calculations. I expect to see slight differences between what Mauka observed and what the UHM meters observed due to these differences.
+Although the frequency and THD ground truth Measurements are scaled the same as OPQ observations, it's not clear what size of computation window the ground truth sensors utilize to make these calculations. I expect to see slight differences between what Mauka observed and what the UHM meters observed due to these differences.
 
 To complicate things, we do not have a UHM meter co-located with every OPQ Box and several of our Boxes are co-located with multiple UHM meters making the determination of which combination of Box and Meter to compare not straight forward.
 
@@ -54,13 +54,13 @@ As can be observed, several OPQ Boxes do not have a co-located UHM sensor and se
 
 \subsubsection{Frequency Measurement and Trend Ground Truth Analysis}
 
-Measurements and Trends are both computed on-board OPQ Boxes using the same algorithms. Since Trends live longer than Measurements, we will perform these comparisons using Trends only for Frequency, THD, and Voltage. A comparison directly to Measurements would yield similar results since Trends are computed directly from the Measurements.
+Measurements and Trends are both computed on-board OPQ Boxes using the same algorithms. Since Trends live longer than Measurements, we will perform these comparisons using Trends only for frequency, THD, and voltage. A comparison directly to Measurements would yield similar results since Trends are computed directly from the Measurements.
 
-Frequency Trends can be compared one-to-one with the UH ground truth meters using the ``Frequency" feature provided by ground truth sensors. In the following Figures, I compare the observed OPQ Frequencies to the observed co-located UHM meter Frequencies.
+Frequency Trends can be compared one-to-one with the UH ground truth meters using the ``Frequency" feature provided by ground truth sensors. In the following Figures, I compare the observed OPQ frequencies to the observed co-located UHM meter frequencies.
 
-For each Frequency comparison, I aligned the two series by minute and then subtracted two weeks of OPQ observed Frequencies from the UHM observed Frequencies. I then plotted the differences as a histogram and finally model a best fit of a Normal Distribution on top of the histogram. This approach is also used when comparing against Voltages and THD Trends.
+For each frequency comparison, I aligned the two series by minute and then subtracted two weeks of OPQ observed frequencies from the UHM observed frequencies. I then plotted the differences as a histogram and finally model a best fit of a Normal Distribution on top of the histogram. This approach is also used when comparing against voltage and THD Trends.
 
-As an example, Figure~\ref{fig:f_hist} shows the Frequency observed by OPQ Box 1000 in POST compared to the UHM POST\_MAIN\_1 meter.
+As an example, Figure~\ref{fig:f_hist} shows the frequency observed by OPQ Box 1000 in POST compared to the UHM POST\_MAIN\_1 meter.
 
 \begin{figure}[H]
     \centering
@@ -69,7 +69,7 @@ As an example, Figure~\ref{fig:f_hist} shows the Frequency observed by OPQ Box 1
     \label{fig:f_hist}
 \end{figure}
 
-The rest of the Frequency comparisons look very similar and the results are summarized in Table~\ref{table:gt_f}.
+The rest of the frequency comparisons look very similar and the results are summarized in Table~\ref{table:gt_f}.
 
 \begin{table}[H]
     \centering
@@ -101,13 +101,13 @@ The rest of the Frequency comparisons look very similar and the results are summ
     \label{table:gt_f}
 \end{table}
 
-As can be observed, the OPQ Boxes that we have co-located with UHM ground sensors track the Frequency quite accurately. In general we rarely see differences outside of 0.02 Hz and most sensors show a mean difference on the order of a mHz. These results are expected as grid stability relies heavily on the Frequency. Further, Frequency is generally affected at global scales rather than local scales, so we expect all UHM meters and OPQ Boxes to observe similar Frequency trends across the UHM micro-grid.
+As can be observed, the OPQ Boxes that we have co-located with UHM ground sensors track the frequency quite accurately. In general we rarely see differences outside of 0.02 Hz and most sensors show a mean difference on the order of a mHz. These results are expected as grid stability relies heavily on the frequency. Further, frequency is generally affected at global scales rather than local scales, so we expect all UHM meters and OPQ Boxes to observe similar frequency trends across the UHM micro-grid.
 
 \subsubsection{Voltage Ground Truth Analysis}
 
-OPQ Boxes measure RMS Voltage as a combination of three Voltage phases at 120 Volts. UHM ground truth meters measure RMS Voltage for each individual phase at different Voltages (480, 240, and 270). Because of these differences, the Voltages can not be compared directly and can only be performed for a small subset of our Boxes due to available ground truth data (those that contain Voltage channels for ``AB", ``BC", and ``CA").
+OPQ Boxes measure RMS voltage as a combination of three voltage phases at 120 Volts. UHM ground truth meters measure RMS voltage for each individual phase at different voltages (480, 240, and 270). Because of these differences, the voltages can not be compared directly and can only be performed for a small subset of our Boxes due to available ground truth data (those that contain voltage channels for ``AB", ``BC", and ``CA").
 
-In order to compare OPQ Box Voltages against UHM Voltages, a combination of Voltage values must exist within the ground truth data for each sensor with the following configurations: Voltage from phase A to phase B, Voltage from phase B to phase C, and Voltage from phase C to phase A. If these metrics exist, then the RMS value for the ground truth can be found by Equation~\ref{eq:gt_vrms} as described by Horowitz\cite{Horowitz:2015:AE:2960712} where $V_{AB}$, $V_{BC}$, and $V_{CA}$ provide the inter-phase Voltages reported by the UHM meters and $C$ is a constant dependent on the transformer configuration and the final step down Voltage. $C$ was empirically found to be 3.9985 for our data sets.
+In order to compare OPQ Box voltages against UHM voltages, a combination of voltage values must exist within the ground truth data for each sensor with the following configurations: voltage from phase A to phase B, voltage from phase B to phase C, and voltage from phase C to phase A. If these metrics exist, then the RMS value for the ground truth can be found by Equation~\ref{eq:gt_vrms} as described by Horowitz\cite{Horowitz:2015:AE:2960712} where $V_{AB}$, $V_{BC}$, and $V_{CA}$ provide the inter-phase voltages reported by the UHM meters and $C$ is a constant dependent on the transformer configuration and the final step down voltage. $C$ was empirically found to be 3.9985 for our data sets.
 
 \begin{equation}
     V_{RMS} = \frac{1}{\sqrt{3}C} \sqrt{V_{AB}^2 + V_{BC}^2 + V_{CA}^2}
@@ -125,7 +125,7 @@ As an example, Figure~\ref{fig:v_hist} provides the difference in $V_{RMS}$ betw
 
 Box 1000 averages about .9V higher than what is observed at the ground truth meter.
 
-Some of the difference comparisons display multiple distributions which might be explained by the cycling of Voltage conditioning equipment and by larger loads on the grid during day time hours. However, I do not have enough information about the UH micro-grid detailed operations to be completely certain about these claims.
+Some of the difference comparisons display multiple distributions which might be explained by the cycling of voltage conditioning equipment and by larger loads on the grid during day time hours. However, I do not have enough information about the UH micro-grid detailed operations to be completely certain about these claims.
 
 For example, Figure~\ref{fig:v_hist_ii} compares Box 1001 in POST to the POST\_MAIN\_1 meter.
 
@@ -136,9 +136,9 @@ For example, Figure~\ref{fig:v_hist_ii} compares Box 1001 in POST to the POST\_M
     \label{fig:v_hist_ii}
 \end{figure}
 
-The green Gaussian fit shows Voltages collected during night time hours where the orange Gaussian fit shows values collected during the day time hours. It's interesting that Box 1000 and Box 1002 show such different results even though the Boxes are located on the same floor within the same building. The Boxes are however opposite each other within the building. I suspect that these Boxes are serviced by different electrical mains within the building. These claims are further supported by THD ground truth analysis in the following section which contains THD data for each electrical main.
+The green Gaussian fit shows voltages collected during night time hours where the orange Gaussian fit shows values collected during the day time hours. It's interesting that Box 1000 and Box 1002 show such different results even though the Boxes are located on the same floor within the same building. The Boxes are however opposite each other within the building. I suspect that these Boxes are serviced by different electrical mains within the building. These claims are further supported by THD ground truth analysis in the following section which contains THD data for each electrical main.
 
-Even more interesting is that several of our Voltage comparisons show three separate Gaussian distributions. As example, Figure~\ref{fig:v_hist_iii} compares Voltage values between Box 1021 and the MARINE\_SCIENCE\_MAIN\_A\_MTR.
+Even more interesting is that several of our voltage comparisons show three separate Gaussian distributions. As example, Figure~\ref{fig:v_hist_iii} compares voltage values between Box 1021 and the MARINE\_SCIENCE\_MAIN\_A\_MTR.
 
 \begin{figure}[H]
     \centering
@@ -149,7 +149,7 @@ Even more interesting is that several of our Voltage comparisons show three sepa
 
 Here we can see that most of our values average about 1V higher than that of the ground truth with other peaks at 0.3V and 1.4V above the ground truth data.
 
-Table~\ref{table:gt_v} summarizes the Voltage comparisons.
+Table~\ref{table:gt_v} summarizes the voltage comparisons.
 
 \begin{table}[H]
     \centering
@@ -184,7 +184,7 @@ Hamilton Library is a major outlier in that the ground truth comparisons are gen
 
 \subsubsection{THD Ground Truth Analysis}
 
-Total Harmonic Distortion (THD) is collected by both OPQ Boxes and UHM ground truth sensors. The feature that was used to make THD comparisons is the AVERAGE\_VOLTAGE\_THD from the ground truth data. Similar to the Frequency comparison, I subtracted the OPQ THD observations from the UHM THD observations and created histograms of the differences. I also attempted to fit the data with a Normal Distribution, but had less success than with the Frequency. This is due to the fact that several of the distribution do not follow a Gaussian, but instead present two separate Gaussian distributions.
+Total Harmonic Distortion (THD) is collected by both OPQ Boxes and UHM ground truth sensors. The feature that was used to make THD comparisons is the AVERAGE\_VOLTAGE\_THD from the ground truth data. Similar to the frequency comparison, I subtracted the OPQ THD observations from the UHM THD observations and created histograms of the differences. I also attempted to fit the data with a Normal Distribution, but had less success than with the frequency. This is due to the fact that several of the distribution do not follow a Gaussian, but instead present two separate Gaussian distributions.
 
 The multiple distributions appear to be related to time of day and point towards either power conditioning equipment cycling on and off or an increased electrical load causing higher amounts of THD during the day (or perhaps both). When there are multiple THD distributions, the distribution throughout the night time hours is more accurate than the distribution created during day time hours.
 
@@ -205,7 +205,7 @@ The THD comparisons within the POST building provides several interesting featur
 
 First, POST has two ground truth meters (POST\_MAIN\_1 and POST\_MAIN\_2) and two OPQ Boxes (1000 in the Collaborative Software Development Lab (CSDL) and 1002 in ICSpace). Both OPQ Boxes are on the third floor, roughly opposite each other in the building. As mentioned previously, I do not know exactly which electrical subsystem each OPQ Box is on when there are multiple electrical mains servicing a single building. In the case of POST, there are two electrical mains. I believe it's possible to guess which OPQ Box corresponds with which main by looking at the ground truth comparisons.
 
-For instance, OPQ Box 1000 vs. POST\_MAIN\_2 provides a much smaller spread in THD difference (about .25\% THD) than OPQ Box 1000 vs. POST\_MAIN\_2 which has a spread of close to 1\% THD. I speculate that OPQ Box 1000 is on the same main as the POST\_MAIN\_2 meter. The opposite holds true for OPQ Box 1002. The spread for Box 1002 is smaller for POST\_MAIN\_1 (about 0.3\% THD) than it is for POST\_MAIN\_2 (about 0.6\% THD) which leads me to speculate that Box 1002 may be serviced by the same electrical main as the POST\_MAIN\_1 meter. These assumptions fit with assumptions made about the Voltage comparisons in the previous sections providing credence to the idea that 1000 and 1002 are serviced by separate mains with POST.
+For instance, OPQ Box 1000 vs. POST\_MAIN\_2 provides a much smaller spread in THD difference (about .25\% THD) than OPQ Box 1000 vs. POST\_MAIN\_2 which has a spread of close to 1\% THD. I speculate that OPQ Box 1000 is on the same main as the POST\_MAIN\_2 meter. The opposite holds true for OPQ Box 1002. The spread for Box 1002 is smaller for POST\_MAIN\_1 (about 0.3\% THD) than it is for POST\_MAIN\_2 (about 0.6\% THD) which leads me to speculate that Box 1002 may be serviced by the same electrical main as the POST\_MAIN\_1 meter. These assumptions fit with assumptions made about the voltage comparisons in the previous sections providing credence to the idea that 1000 and 1002 are serviced by separate mains with POST.
 
 Table~\ref{table:gt_thd} summarizes the best Gaussian fit for THD comparisons between OPQ Boxes and available ground truth data.
 
@@ -237,19 +237,19 @@ Table~\ref{table:gt_thd} summarizes the best Gaussian fit for THD comparisons be
     \label{table:gt_thd}
 \end{table}
 
-All comparisons (except for those at Hamilton Library) show average differences of around .5\% THD. Similar to what was discussed in the previous section comparing Voltage values, Hamilton remains the single outlier in our data set. Here, I observed upwards of 1.5\% THD difference across Hamilton based meters. This continues to lead me to believe that the OPQ Box in Hamilton is serviced by a different main that that of the HAMILTON\_PH\_III ground truth meters.
+All comparisons (except for those at Hamilton Library) show average differences of around .5\% THD. Similar to what was discussed in the previous section comparing voltage values, Hamilton remains the single outlier in our data set. Here, I observed upwards of 1.5\% THD difference across Hamilton based meters. This continues to lead me to believe that the OPQ Box in Hamilton is serviced by a different main that that of the HAMILTON\_PH\_III ground truth meters.
 
-To summarize the comparison of OPQ Measurements and Trends to ground truth data, I showed that co-located OPQ Boxes and UHM ground truth meters trend quite closely together (except for at Hamilton Library) for low level metrics. Frequency is the most accurate metric, followed by THD and Voltage. I would have liked to have seen smaller differences and tighter bounds on the Voltage and THD comparisons, but differences of .5\% THD and .5V are still acceptable. I also wish I had a more concrete explanation for the multiple Gaussian distributions present in the THD and Voltage comparisons.
+To summarize the comparison of OPQ Measurements and Trends to ground truth data, I showed that co-located OPQ Boxes and UHM ground truth meters trend quite closely together (except for at Hamilton Library) for low level metrics. Frequency is the most accurate metric, followed by THD and voltage. I would have liked to have seen smaller differences and tighter bounds on the voltage and THD comparisons, but differences of .5\% THD and .5V are still acceptable. I also wish I had a more concrete explanation for the multiple Gaussian distributions present in the THD and voltage comparisons.
 
 \subsubsection{Mauka Event Ground Truth Analysis}
 
 Events contain metadata and a window of raw data that may or may not contain signals of interest. Events are produced in OPQ by two components. Mauka's threshold based Event detector and Napali's statistical based Event detector. This section focuses on Mauka's threshold based Event detection methods as the Napali Event Trigger is the focus of another Ph.D. dissertation in our research group.
 
-Events generated by Mauka do not store information about which metric was used to generate that Event (Frequency, Voltage, or THD). When Mauka's Event detector was implemented, this seemed reasonable as Events are not supposed to make any type of assumption about what is non-nominal about the data, only that something non-nominal was observed.
+Events generated by Mauka do not store information about which metric was used to generate that Event (frequency, voltage, or THD). When Mauka's Event detector was implemented, this seemed reasonable as Events are not supposed to make any type of assumption about what is non-nominal about the data, only that something non-nominal was observed.
 
 Future implementations of the Mauka Event detector should store extra metadata about which metric was used to create an Event. This metric would be useful when comparing Events generated by Mauka to ground truth data using thresholding analysis.
 
-In order to compare Mauka Events to ground truth data, I applied similar thresholds to those used by Mauka's Event detector to the ground truth data. The thresholds that were applied are $\pm$.16\% nominal Frequency, $\pm$2.5\% nominal Voltage, and +3\% THD. I then normalized the ground truth data by centering each feature's thresholds at zero and then counted the number of zero crossings for each feature and threshold for that feature.
+In order to compare Mauka Events to ground truth data, I applied similar thresholds to those used by Mauka's Event detector to the ground truth data. The thresholds that were applied are $\pm$.16\% nominal frequency, $\pm$2.5\% nominal voltage, and +3\% THD. I then normalized the ground truth data by centering each feature's thresholds at zero and then counted the number of zero crossings for each feature and threshold for that feature.
 
 Because the ground truth data is averaged over a minute window, I bin all Events by minute windows as well and only count windows that contain Events. I then compared the number of Events found by thresholding the ground truth data to the binned Events observed by Mauka. The results are shown in Table~\ref{table:gt_events}.
 
@@ -278,13 +278,13 @@ Because the ground truth data is averaged over a minute window, I bin all Events
     \label{table:gt_events}
 \end{table}
 
-To perform this comparison, I required all three major features used by Mauka's Event generator, Frequency (``Frequency"), Voltage (``VAB", ``VBC", and ``VCA"), and THD (AVERAGE\_VOLTAGE\_THD). Ground truth data with all required features only provides co-located UHM sensors for OPQ Boxes 1000, 1001, 1002, 1021, and 1022.
+To perform this comparison, I required all three major features used by Mauka's Event generator, frequency (``Frequency"), voltage (``VAB", ``VBC", and ``VCA"), and THD (AVERAGE\_VOLTAGE\_THD). Ground truth data with all required features only provides co-located UHM sensors for OPQ Boxes 1000, 1001, 1002, 1021, and 1022.
 
 Boxes 1000, 1001, and 1022 provide the best comparisons to ground truth. Mauka observes about 63\% of the ground truth Events for Box 1000 and 78\% for Box 1001. Mauka observed about 30\% more Events for Box 1022 as compared to ground truth data.
 
 Boxes 1002 and 1021 show fairly anomalous results compared to the ground truth.
 
-One interesting thing that I gathered during this comparison is that the main force driving Event generation within Mauka is THD Events. THD thresholds were set at 3\% for Event generation. Most ground truth data shows that ~80\% of all Events generated are likely caused by crossing the THD thresholds with close to 18\% being caused by Voltage threshold crossings. Only a very small percentage of Events generated were generated by Frequency threshold crossings. This means that observed differences in THD and Voltage readings between OPQ Boxes and ground truth sensors explain the differences that can be observed between ground truth data and OPQ Boxes.
+One interesting thing that I gathered during this comparison is that the main force driving Event generation within Mauka is THD Events. THD thresholds were set at 3\% for Event generation. Most ground truth data shows that ~80\% of all Events generated are likely caused by crossing the THD thresholds with close to 18\% being caused by voltage threshold crossings. Only a very small percentage of Events generated were generated by frequency threshold crossings. This means that observed differences in THD and voltage readings between OPQ Boxes and ground truth sensors explain the differences that can be observed between ground truth data and OPQ Boxes.
 
 For example, let's examine Box 1021 as a case study which observed 3,613 Events while ground truth only observed 391 Events. Figure~\ref{fig:gt_all_msb} shows the ground truth data for the MARINE\_SCIENCE\_MCC\_MTR sensor.
 
@@ -317,7 +317,7 @@ The results for Box 1002 can also be explained using similar methodology. Figure
     \label{fig:gt_all_post_1}
 \end{figure}
 
-This time, THD is not the cause of the large difference in the comparison. Instead, it's the Voltage readings. Box 1002 reads on average 1.7 Volts higher than what is reported by ground truth. Figure~\ref{fig:gt_adj_post_1} shows the ground truth data adjusted to be 1.7 Volts higher.
+This time, THD is not the cause of the large difference in the comparison. Instead, it's the voltage readings. Box 1002 reads on average 1.7 Volts higher than what is reported by ground truth. Figure~\ref{fig:gt_adj_post_1} shows the ground truth data adjusted to be 1.7 Volts higher.
 
 \begin{figure}[H]
     \centering
@@ -326,9 +326,9 @@ This time, THD is not the cause of the large difference in the comparison. Inste
     \label{fig:gt_adj_post_1}
 \end{figure}
 
-Here, we can observe that the Voltage values are often passing the high Voltage threshold. This increases the number of Voltage Events from 34 to 1141 bringing the total observed ground truth Events to 2035 or 643 Events less than what OPQ Box 1002 observed.
+Here, we can observe that the voltage values are often passing the high voltage threshold. This increases the number of voltage Events from 34 to 1141 bringing the total observed ground truth Events to 2035 or 643 Events less than what OPQ Box 1002 observed.
 
-What these results show is that the ground truth comparisons are largely affected by observed readings of THD and Voltage values by OPQ Boxes. These results also show that OPQ Boxes that produce large numbers of Events are caused by readings that hover near the feature thresholds that are utilized for Event creation.
+What these results show is that the ground truth comparisons are largely affected by observed readings of THD and voltage values by OPQ Boxes. These results also show that OPQ Boxes that produce large numbers of Events are caused by readings that hover near the feature thresholds that are utilized for Event creation.
 
 The results from Event ground truth comparison are encouraging. The results show that although we may not be reading exactly what the ground truth sensors are reading, when adjusted for differences in low level metrics, expected Mauka Events match that of the ground truth data.
 
@@ -346,9 +346,9 @@ Incidents were compared using one month of data from December 1 to December 30.
 
 \paragraph{Voltage Incidents Comparison}
 
-Voltage Incidents include Voltage sags, swells and interruptions as well as Semi-F47 and ITIC classifications. All Voltage Incidents rely on the duration of the Incident in order to provide an accurate classification. Duration information is not provided by ground truth data. Instead, I use thresholding to determine where OPQ Incidents might have been observed. It's important to note here that Incidents observed by the ground truth data may not meet the duration thresholds to be classified by OPQ. I attempt to motivate this point using data from Events.
+Voltage Incidents include voltage sags, swells and interruptions as well as Semi-F47 and ITIC classifications. All voltage Incidents rely on the duration of the Incident in order to provide an accurate classification. Duration information is not provided by ground truth data. Instead, I use thresholding to determine where OPQ Incidents might have been observed. It's important to note here that Incidents observed by the ground truth data may not meet the duration thresholds to be classified by OPQ. I attempt to motivate this point using data from Events.
 
-Table~\ref{table:gt_v_incidents} summarizes the results for the Voltage Incidents comparisons. Please note the abbreviations in the table where ``O." stands for an OPQ Box and ``U." stands for a UHM sensor.
+Table~\ref{table:gt_v_incidents} summarizes the results for the voltage Incidents comparisons. Please note the abbreviations in the table where ``O." stands for an OPQ Box and ``U." stands for a UHM sensor.
 
 \begin{table}[H]
     \centering
@@ -379,11 +379,11 @@ Table~\ref{table:gt_v_incidents} summarizes the results for the Voltage Incident
     \label{table:gt_v_incidents}
 \end{table}
 
-There are a couple of things to note here. Mauka did observe 8 Voltage swells over this time period all for Box 1008. However, we do not have ground truth data for this location and Mauka did not observe any other Voltage swells with co-located ground truth sensors.
+There are a couple of things to note here. Mauka did observe 8 voltage swells over this time period all for Box 1008. However, we do not have ground truth data for this location and Mauka did not observe any other voltage swells with co-located ground truth sensors.
 
 All counts for OPQ are less than the counts shown by the OPQ ground truth data. This is important because the ground truth data does not provide any metric for swell or sag duration. This means that some percentage of the ground truth sags and swells durations are less than what is required to classify the data as an Incident by OPQ Mauka.
 
-One of the reasons Mauka likely did not classify many Voltage swells is because they are much less common in general. Further, according to Power Standards Lab\cite{power_standards_lab_2017}, Voltage swells tend to be much smaller in duration compared to Voltage sags. This is due to the fact that Voltage swells are almost always caused by an abrupt decrease in load on the grid followed by rapid stabilization. Voltage sags on the other hand are caused by an increased load on the grid and last for as long as that load continues to persist. It's likely the Voltage spikes observed by the UHM sensors did not last long enough in duration to be classified as Mauka Incidents, however without more detailed ground truth data, this is only a hypothesis.
+One of the reasons Mauka likely did not classify many voltage swells is because they are much less common in general. Further, according to Power Standards Lab\cite{power_standards_lab_2017}, voltage swells tend to be much smaller in duration compared to voltage sags. This is due to the fact that voltage swells are almost always caused by an abrupt decrease in load on the grid followed by rapid stabilization. Voltage sags on the other hand are caused by an increased load on the grid and last for as long as that load continues to persist. It's likely the voltage spikes observed by the UHM sensors did not last long enough in duration to be classified as Mauka Incidents, however without more detailed ground truth data, this is only a hypothesis.
 
 \paragraph{THD Incidents Comparison}
 
@@ -423,17 +423,17 @@ I empirically found that THD values calculated by Mauka add .5\% THD to the OPQ 
     \label{table:gt_thd_incidents}
 \end{table}
 
-These results are not surprising. Similar to the Voltage Incidents, we observe that OPQ Boxes track less THD Incidents than the UHM ground truth meters. This is to be expected due to the fact that the Incidents are only classified when signals are non-nominal for specified durations. It's likely (yet unknown due to lack of detailed ground truth data) that the extraneous THD Incidents that were observed by the ground truth sensors did not meet the duration requirements for classification.
+These results are not surprising. Similar to the voltage Incidents, we observe that OPQ Boxes track less THD Incidents than the UHM ground truth meters. This is to be expected due to the fact that the Incidents are only classified when signals are non-nominal for specified durations. It's likely (yet unknown due to lack of detailed ground truth data) that the extraneous THD Incidents that were observed by the ground truth sensors did not meet the duration requirements for classification.
 
 Boxes 1000 and 1002 provide the only surprising results in that the THD Incidents observed by Mauka were not observed by the UHM ground truth sensors. The Incidents correspond to high peaks in THD at those locations, but the peaks do not cross the THD threshold of 5\%. Since these Incidents correspond with peaks in the ground truth data, it is possible that the smaller THD computation window and added noise created these false positives.
 
 \paragraph{Frequency Incidents Comparison}
 
-Frequency Incidents are classified as either Frequency sags, swells, or interruptions.
+Frequency Incidents are classified as either frequency sags, swells, or interruptions.
 
-Frequency is calculated by filtering a power signal and then fitting a sinusoid per cycle of that power signal. Because Frequency is calculated per cycle, I expect to see higher Frequency values than those compared to the OPQ Box. This is due to the fact that a smaller Frequency estimation window contains more noise. It is unknown what window the UHM sensors use for Frequency calculation, but since it trends so nicely with OPQ Box data, I suspect it is on the order of six cycles.
+Frequency is calculated by filtering a power signal and then fitting a sinusoid per cycle of that power signal. Because frequency is calculated per cycle, I expect to see higher frequency values than those compared to the OPQ Box. This is due to the fact that a smaller frequency estimation window contains more noise. It is unknown what window the UHM sensors use for frequency calculation, but since it trends so nicely with OPQ Box data, I suspect it is on the order of six cycles.
 
-In order to compare Frequency Incidents with UHM ground truth data, the ground truth data must be scaled to account for the added noise provided by the smaller Frequency estimation windows. I empirically found the amount of added noise in the Frequency domain to be .21 Hz. This value was added to the maximum UHM values and subtracted from the minimum UHM values in order to provide an accurate comparison. The results are summarized in Table~\ref{table:gt_f_incidents}.
+In order to compare frequency Incidents with UHM ground truth data, the ground truth data must be scaled to account for the added noise provided by the smaller frequency estimation windows. I empirically found the amount of added noise in the frequency domain to be .21 Hz. This value was added to the maximum UHM values and subtracted from the minimum UHM values in order to provide an accurate comparison. The results are summarized in Table~\ref{table:gt_f_incidents}.
 
 \begin{table}[H]
     \centering
@@ -466,19 +466,19 @@ In order to compare Frequency Incidents with UHM ground truth data, the ground t
     \label{table:gt_f_incidents}
 \end{table}
 
-Of all of the ground truth results, the Frequency comparison in the weakest. I suspect this is caused by the amount of noise inside the short Frequency estimation windows. For the most part, OPQ observed Frequency Incidents are less than possible UHM observed Incidents. This is expected since not all Frequency swells and sags will results in the creation of an Incident within Mauka. However, we see that Boxes 1003, 1021, and 1022 overestimate the amount of verified Frequency swells.
+Of all of the ground truth results, the frequency comparison in the weakest. I suspect this is caused by the amount of noise inside the short frequency estimation windows. For the most part, OPQ observed frequency Incidents are less than possible UHM observed Incidents. This is expected since not all frequency swells and sags will results in the creation of an Incident within Mauka. However, we see that Boxes 1003, 1021, and 1022 overestimate the amount of verified frequency swells.
 
-Future work on Frequency estimation should include experimenting with different sized windows in an attempt to remove some of the noise from the estimations.
+Future work on frequency estimation should include experimenting with different sized windows in an attempt to remove some of the noise from the estimations.
 
 \paragraph{Summarizing Ground Truth Comparisons}
 
-Low level metrics for Frequency, Voltage, and THD were compared against metrics collected from OPQ ground truth sensors. The Frequency metrics provided the best fits, followed by Voltage and THD. Comparisons were made by subtracting the differences and finding the best Gaussian fits. Voltage and THD metrics sometimes exhibited multiple Gaussians.
+Low level metrics for frequency, voltage, and THD were compared against metrics collected from OPQ ground truth sensors. The frequency metrics provided the best fits, followed by voltage and THD. Comparisons were made by subtracting the differences and finding the best Gaussian fits. Voltage and THD metrics sometimes exhibited multiple Gaussians.
 
 Events were compared to UHM ground truth data by applying thresholding on the data and correcting for differences in low level metrics. Events were binned by minute to match ground truth bins. Mauka Events are accounted for and are slightly underrepresented if the ground truth data is to be believed.
 
-Incidents were compared to UHM ground truth data by applying thresholding to the data and correcting for differences in noise generation. Voltage and THD Incidents are well characterized, but Frequency Incidents were not as accurate.
+Incidents were compared to UHM ground truth data by applying thresholding to the data and correcting for differences in noise generation. Voltage and THD Incidents are well characterized, but frequency Incidents were not as accurate.
 
-Other than Frequency Incidents, these results provide evidence that the OPQ Mauka system provides accurate Measurements as compared to the ground truth. By the rule of transitivity, I would like to say that all other Incidents that rely on features not collected by the UHM ground truth sensors are hopefully well characterized by virtue of the fact that all of the data feeding into those Incidents are well characterized.
+Other than frequency Incidents, these results provide evidence that the OPQ Mauka system provides accurate Measurements as compared to the ground truth. By the rule of transitivity, I would like to say that all other Incidents that rely on features not collected by the UHM ground truth sensors are hopefully well characterized by virtue of the fact that all of the data feeding into those Incidents are well characterized.
 
 Future work should seek to find ground truth options that provide more details such as the duration of anomalies or something similar to Events so that Incidents can be more easily and more directly compared to the ground truth data.
 
@@ -527,7 +527,7 @@ I have claimed Section~\ref{subsec:generality-of-the-laha-framework} that the La
 
 \subsection{Results of Laha Generality for OPQ}\label{subsec:results-of-laha-generality-for-opq}
 
-I claimed in the Evaluation Chapter~\ref{subsec:evaluation-of-the-generality-of-this-framework} that the OPQ network must be able to observe common power quality issues including Voltages sags and swells, Frequency sags and swells, excessive THD, and transients. These features were described and shown to exist within OPQ in the previous section on validating collected data by deployments. I will summarize these results here.
+I claimed in the Evaluation Chapter~\ref{subsec:evaluation-of-the-generality-of-this-framework} that the OPQ network must be able to observe common power quality issues including voltage sags and swells, frequency sags and swells, excessive THD, and transients. These features were described and shown to exist within OPQ in the previous section on validating collected data by deployments. I will summarize these results here.
 
 Table~\ref{table:incidents_summary} summarizes the relevant Incidents over the three month deployment.
 
@@ -556,7 +556,7 @@ As can be observed, Laha was able to detect the types of Incidents as defined by
 
 \subsubsection{Example OPQ Incidents}
 
-Figure~\ref{fig:vsag_semi_itic} shows a Voltage sag with associated Semi-F47 and ITIC violations. Note, this is the only such Incident where the Voltage sag created both a Semi-F47 violation and an ITIC violation. This occurred during a power outage on the UHM campus on November 9, 2019.
+Figure~\ref{fig:vsag_semi_itic} shows a voltage sag with associated Semi-F47 and ITIC violations. Note, this is the only such Incident where the voltage sag created both a Semi-F47 violation and an ITIC violation. This occurred during a power outage on the UHM campus on November 9, 2019.
 
 \begin{figure}[H]
     \centering
@@ -565,9 +565,9 @@ Figure~\ref{fig:vsag_semi_itic} shows a Voltage sag with associated Semi-F47 and
     \label{fig:vsag_semi_itic}
 \end{figure}
 
-Here, the initial Voltage waveform and $V_{RMS}$ show a sag on the order of $10^3$ cycles. This is just long enough in duration and low enough in Voltage that is breaches the Semi-F47 threshold and barely surpasses the ITIC threshold.
+Here, the initial voltage waveform and $V_{RMS}$ show a sag on the order of $10^3$ cycles. This is just long enough in duration and low enough in voltage that is breaches the Semi-F47 threshold and barely surpasses the ITIC threshold.
 
-Figure~\ref{fig:vsag_semi} provides an example of both a large Voltage sag and a related Semi-47 violation, but no ITIC violation. This is much more common in the data.
+Figure~\ref{fig:vsag_semi} provides an example of both a large voltage sag and a related Semi-47 violation, but no ITIC violation. This is much more common in the data.
 
 \begin{figure}[H]
     \centering
@@ -576,7 +576,7 @@ Figure~\ref{fig:vsag_semi} provides an example of both a large Voltage sag and a
     \label{fig:vsag_semi}
 \end{figure}
 
-Figure~\ref{fig:vsag_1} and Figure~\ref{fig:vsag_2} show a Voltage sag that was observed by multiple OPQ Boxes.
+Figure~\ref{fig:vsag_1} and Figure~\ref{fig:vsag_2} show a voltage sag that was observed by multiple OPQ Boxes.
 
 \begin{figure}[H]
     \centering
@@ -592,9 +592,9 @@ Figure~\ref{fig:vsag_1} and Figure~\ref{fig:vsag_2} show a Voltage sag that was 
     \label{fig:vsag_2}
 \end{figure}
 
-These two figures show a semi-global Incident that was detected by two OPQ Boxes. The first Box was located Keller while the other was located in Kennedy Theater. There are both Voltage and Frequency deviations that were tracked by both Boxes.
+These two figures show a semi-global Incident that was detected by two OPQ Boxes. The first Box was located Keller while the other was located in Kennedy Theater. There are both voltage and frequency deviations that were tracked by both Boxes.
 
-Figure~\ref{fig:vswell} shows an example of a Voltage swell. You will note that the Semi-F47 does not classify Voltage swells which is why there is a value absent for the bottom panel.
+Figure~\ref{fig:vswell} shows an example of a voltage swell. You will note that the Semi-F47 does not classify voltage swells which is why there is a value absent for the bottom panel.
 
 \begin{figure}[H]
     \centering
@@ -623,7 +623,7 @@ Figure~\ref{fig:transients} shows an example of a transient that was recorded on
     \label{fig:transients}
 \end{figure}
 
-Figure~\ref{fig:fsag} shows an example of a Frequency sag.
+Figure~\ref{fig:fsag} shows an example of a frequency sag.
 
 \begin{figure}[H]
     \centering
@@ -632,7 +632,7 @@ Figure~\ref{fig:fsag} shows an example of a Frequency sag.
     \label{fig:fsag}
 \end{figure}
 
-Figure~\ref{fig:fswell} shows an example of a Frequency swell.
+Figure~\ref{fig:fswell} shows an example of a frequency swell.
 
 \begin{figure}[H]
     \centering
@@ -697,9 +697,9 @@ First, let's look at an example of a semi-global Event as shown in Figure~\ref{f
     \label{fig:sg_events_1}
 \end{figure}
 
-This collection of Events was recorded on November 9, 2019 and observed by 15 OPQ Boxes over a duration of 5 seconds. There are two Voltages sags that drop to about 80 Volts.  These sags were observed by 15 OPQ Boxes. I only show two devices above for brevity. The rest look similar.
+This collection of Events was recorded on November 9, 2019 and observed by 15 OPQ Boxes over a duration of 5 seconds. There are two voltage sags that drop to about 80 Volts.  These sags were observed by 15 OPQ Boxes. I only show two devices above for brevity. The rest look similar.
 
-Next, let's examine an example of a semi-global Incident. Figure~\ref{fig:i_1} and Figure~\ref{fig:i_2} show examples of a Voltage sag Incident observed across 7 OPQ Boxes on November 23, 2019.
+Next, let's examine an example of a semi-global Incident. Figure~\ref{fig:i_1} and Figure~\ref{fig:i_2} show examples of a voltage sag Incident observed across 7 OPQ Boxes on November 23, 2019.
 
 \begin{figure}[H]
     \centering
@@ -715,7 +715,7 @@ Next, let's examine an example of a semi-global Incident. Figure~\ref{fig:i_1} a
     \label{fig:i_2}
 \end{figure}
 
-Here, each Box observes a sag of down to near 100 Volts. You'll note other Voltage sags in the Event waveform. These were also classified as semi-global Incidents. Only two Boxes are shown for brevity.
+Here, each Box observes a sag of down to near 100 Volts. You'll note other voltage sags in the Event waveform. These were also classified as semi-global Incidents. Only two Boxes are shown for brevity.
 
 In summary, I've shown examples of several interesting semi-global Events and Incidents.
 
@@ -729,7 +729,7 @@ I claimed in the Evaluation Chapter~\ref{subsec:evaluation-of-the-generality-of-
 
 Locations of Lokahi sensors during the period of the Lokahi deployment were provided in Section~\ref{subsec:lokahi-deployment}.
 
-I will now summarize and showcase some of the most interesting data that was collected from Lokahi that meets the requirements set forth in the Evaluation chapter. In particular, I hope to show that Lokahi is able to detect infrasonic signals generated from a diverse set of sources.
+I will now summarize and showcase some of the most interesting data that was collected from Lokahi that meets the requirements set forth in the Evaluation chapter. In particular, I will show that Lokahi is able to detect infrasonic signals generated from a diverse set of sources.
 
 \subsubsection{Big Island Earth Quake}
 Figure~\ref{fig:quake_1} and Figure~\ref{fig:quake_2} show a magnitude 4.5 earth quake (USGS\cite{usgs_quake}) that was detected in the infrasound range and by accelerometers on the Big Island of Hawaii on August 12 2019. The earth quake was observed by four sensors. I show only one sensor here (and the rest of this section) for brevity. The full results for all examples are publicly available online\cite{redvox_reports}.
@@ -977,11 +977,11 @@ Table~\ref{table:summary_of_levels} summarizes the discussion of Laha Levels.
 
 Converting primitive data into actionable insights in one of the main tenants of this framework as described in Section~\ref{subsec:ability-to-convert-primitive-data-into-actional-insights}. This is accomplished within Laha by moving data upwards through Laha's hierarchy. Results for converting primitive data into actionable insights were found using the guidelines provided in the Evaluation Section~\ref{subsec:evaluation-of-converting-primitive-data-into-actionable-insights}.
 
-Within Laha, raw sampled signals (IML) are first converted into low fidelity feature streams (AML). This provides context by extracting known features from the signal and providing a summary statistics view of those features. Within OPQ, raw ADC samples are converted to feature streams that contain minimum, maximum, and average values for Voltage, Frequency and THD. Within Lokahi, raw ADC samples are converted to feature streams that include summary statistics about the sampled data as well as a summary statistics for other fields (such as location and timing accuracy). In, both networks, raw samples are converted to feature streams which add context to the original data. These feature streams provide actionable insights in the form of informing higher levels in the hierarchy if a nominal signal is likely within that stream. This brings us to the Detections Level (DL).
+Within Laha, raw sampled signals (IML) are first converted into low fidelity feature streams (AML). This provides context by extracting known features from the signal and providing a summary statistics view of those features. Within OPQ, raw ADC samples are converted to feature streams that contain minimum, maximum, and average values for voltage, frequency and THD. Within Lokahi, raw ADC samples are converted to feature streams that include summary statistics about the sampled data as well as a summary statistics for other fields (such as location and timing accuracy). In, both networks, raw samples are converted to feature streams which add context to the original data. These feature streams provide actionable insights in the form of informing higher levels in the hierarchy if a nominal signal is likely within that stream. This brings us to the Detections Level (DL).
 
 The DL is responsible for identifying Detections which provide a window that includes metadata, IML, and AML data which may or may not include signals of interest. Detections add context to the AML in the form of metadata (such as window length and sensors affected). Detections are found either manually (in the case of Lokahi) or using a triggering algorithms (OPQ). Detections provide actionable insights by providing the Incidents Level (IL) with the chance to classify known signals of interest from the Detection window. Without Detections, Incidents could not be found as easily. Once a Detection has been observed, the data is forwarded to the IL where signal classification occurs.
 
-The IL is responsible for classifying signals of interest against known signals. Multiple Incidents can be found within a single detection. The IL provides added context in the form of these classifications. These classifications are actionable because they inform us about anomalous conditions on the network. These conditions are useful for others who might want to further investigate why anomalous signals were observed. For example, if many Voltage sags are observed by OPQ for a single device, it alerts others that there may be a power issue somewhere in the building that the sensor is located. This issue may or may not need to be addressed, but it is actionable.
+The IL is responsible for classifying signals of interest against known signals. Multiple Incidents can be found within a single detection. The IL provides added context in the form of these classifications. These classifications are actionable because they inform us about anomalous conditions on the network. These conditions are useful for others who might want to further investigate why anomalous signals were observed. For example, if many voltage sags are observed by OPQ for a single device, it alerts others that there may be a power issue somewhere in the building that the sensor is located. This issue may or may not need to be addressed, but it is actionable.
 
 Perhaps the most interesting actionable insights Laha gathered are from Phenomena.
 
@@ -1020,7 +1020,7 @@ Annotations not only provide extra context on top of groupings of data, but they
 
 At this stage, Annotation Phenomena provide a way to discuss related Events, Incidents, and sensors. In networks that have large amounts of Events and Incidents, this can be a valuable tool to assign context to related data and help filter the signal from the noise. Annotations are essentially fancy labels with some metadata to describe the data. This would be useful for any future work that intends to add machine learning to the Laha framework.
 
-I admit that Annotation Phenomena is representationally simple, however, I believe it adds great value in terms of contextualizing a large amount of Events and Incidents and for providing actionable insights that are useful to the consumers or this data. As an example, it's much more informative to say ``Lokahi observed a rocket launch" than it is to say ``Lokahi observed a non-nominal spike in the infrasound range". In a similar vain, it's much more informative to say ``OPQ observed Voltage sags relating to a power outage in Manoa" than it is to say ``OPQ observed Voltage sags across multiple sensors".
+I admit that Annotation Phenomena is representationally simple, however, I believe it adds great value in terms of contextualizing a large amount of Events and Incidents and for providing actionable insights that are useful to the consumers or this data. As an example, it's much more informative to say ``Lokahi observed a rocket launch" than it is to say ``Lokahi observed a non-nominal spike in the infrasound range". In a similar vain, it's much more informative to say ``OPQ observed voltage sags relating to a power outage in Manoa" than it is to say ``OPQ observed voltage sags across multiple sensors".
 
 I would like to integrate Annotation Phenomena with other Phenomena such as Periodic or Similarity Phenomena. However, a lack of known signal sources for OPQ and a lack of Incidents for Lokahi make this difficult. Annotation Phenomena are most useful when an observed signal has a known source or when there are a large amount of Annotations in conjunction with a large amount of Events and Incidents. Future work should examine how to better integrate Annotation Phenomena with other Phenomena in an attempt to provide automatic Annotation classifications.
 
@@ -1052,7 +1052,7 @@ It should be noted that Box 2001 is not part of the OPQ UH micro-grid deployment
 
 Because Box 1021 provides the best metrics in terms of both peaks and standard deviation, I will focus my results to that sensor.
 
-Box 1021 in MSB experiences periodic Voltages sags as shown in the second panel of the Trend data presented in Figure~\ref{fig:v_perio}.
+Box 1021 in MSB experiences periodic voltage sags as shown in the second panel of the Trend data presented in Figure~\ref{fig:v_perio}.
 
 \begin{figure}[H]
     \centering
@@ -1061,9 +1061,9 @@ Box 1021 in MSB experiences periodic Voltages sags as shown in the second panel 
     \label{fig:v_perio}
 \end{figure}
 
-The above figure shows many periodic Voltage sags over the course of one week. These Voltages sags have been present over the entire deployment of the OPQ network and were not observed by Boxes outside of MSB.
+The above figure shows many periodic voltage sags over the course of one week. These voltage sags have been present over the entire deployment of the OPQ network and were not observed by Boxes outside of MSB.
 
-These Voltage sags were identified as periodic within Mauka's Periodicity Plugin. The original signal had its DC offset removed by subtracting the mean of the signal from the signal. Then the signal was filtered using a 4th order Butterworth high-pass filter. The filtered signal was then autocorrelated with itself. The distance between the peaks of the autocorrelation provide the period between peaks in the original signal. The mean of the peaks is the mean period of the Periodic signal. The Periodicity Plugin also finds the standard deviation of of the peaks found during autocorrelation. The combination of the mean period and the standard deviation of the period are then used to find the original times of the peaks and to produce Future Phenomena.
+These voltage sags were identified as periodic within Mauka's Periodicity Plugin. The original signal had its DC offset removed by subtracting the mean of the signal from the signal. Then the signal was filtered using a 4th order Butterworth high-pass filter. The filtered signal was then autocorrelated with itself. The distance between the peaks of the autocorrelation provide the period between peaks in the original signal. The mean of the peaks is the mean period of the Periodic signal. The Periodicity Plugin also finds the standard deviation of of the peaks found during autocorrelation. The combination of the mean period and the standard deviation of the period are then used to find the original times of the peaks and to produce Future Phenomena.
 
 Once the plugin has a measure of mean period and standard deviation of the period, peak finding is employed to find the peaks of the original signal (as opposed to the autocorrelated signal). The peak finding algorithm is parameterized to not find peaks with a width less than that of the mean period minus the standard deviation of the period. These newly identified peaks provide timestamps and deviations from nominal for original periodic signal.
 
@@ -1076,7 +1076,7 @@ Figure~\ref{fig:periodic_example_2} shows an example of the Periodic Phenomena o
     \label{fig:periodic_example_2}
 \end{figure}
 
-The above figure shows the original signal in the top panel, the filtered signal in the middle panel, and the autocorrelated signal in the bottom panel. The mean and standard deviation of the autocorrelation peaks were used to identify the Voltage sag peaks in the original signal on the first panel. The timestamps and deviations from nominal are then extracted from the peaks in the first panel and stored in the database to be utilized by Future Phenomena.
+The above figure shows the original signal in the top panel, the filtered signal in the middle panel, and the autocorrelated signal in the bottom panel. The mean and standard deviation of the autocorrelation peaks were used to identify the voltage sag peaks in the original signal on the first panel. The timestamps and deviations from nominal are then extracted from the peaks in the first panel and stored in the database to be utilized by Future Phenomena.
 
 Phenomena are designed to provide adaptive optimizations to the DSN. Periodic Phenomena provide optimizations in several ways. First, Periodic Phenomena get better over time. Because of the stability of the signal, consecutive runs of the Periodicity Plugin provide more accurate results during times when there is less noise in the periodic signal. Over time, the plugin is able to identify periodic signals with smaller standard deviations than previous runs. As the standard deviation becomes smaller, the accuracy of detecting periodic signals becomes higher.
 
@@ -1084,9 +1084,9 @@ As an example, when the periodic signal at Box 1021 was originally identified, t
 
 Periodic Phenomena self-optimizes by utilizing data gathered from Future Phenomena. Future Phenomena adjust the underlying Event thresholds and the Measurement and Trend rates of OPQ Boxes. During the time window of a future Phenomena, Measurement and Trend rates are increased while Event thresholds are decreased. The net result of this is the ability to detect Events that would not have otherwise been detected. More importantly, by increasing the Measurement rate, the periodicity plugin gains higher fidelity data from the increased data rate which in turn provides Periodic Phenomena the ability to better classify periodic signals of interest, thus decreasing the standard deviation and increasing the accuracy of the plugin. The Periodicity Plugin and Future Plugins work in conjunction to optimize each other. The more accurate the Periodic Phenomena become, the more accurate the Future Phenomena become and vice versa.
 
-One of the tenants of Periodic Phenomena (or one of the tenants of Phenomena in general) is to identify groupings of Events and Incidents that occurred during the period identified by the Phenomena. The summary Table presented in the beginning of this section provides counts for the number of Events and the number of Incidents that correspond with periodic signals of interest. For example, OPQ Box 1021 identified a total of 463 periods that should have observed a Voltage drops. Of those 463 periods, 332 (or about 72\%) of the periods contained Events that were identified by Mauka. Four Voltage sag Incidents were also observed during these periods. This is to be expected as most of the Voltage sags observed by 1021 do cross the Event thresholds, but the deviation from nominal is not large enough to pass the Voltage Incident thresholds. This Phenomena provides groupings of Events and Incidents that are related to the periodic signal of the sensor. This is important because previously these were just Voltage sags Events and Voltage sag Incidents. This Phenomena adds context to these Events and Incidents by providing a grouping that shows that they were part of a periodic signal rather than individual PQ issues. The next section will show how Future Phenomena modifies Event thresholds in order to capture Events that might otherwise be missed due to not passing the Event thresholds.
+One of the tenants of Periodic Phenomena (or one of the tenants of Phenomena in general) is to identify groupings of Events and Incidents that occurred during the period identified by the Phenomena. The summary Table presented in the beginning of this section provides counts for the number of Events and the number of Incidents that correspond with periodic signals of interest. For example, OPQ Box 1021 identified a total of 463 periods that should have observed a voltage drops. Of those 463 periods, 332 (or about 72\%) of the periods contained Events that were identified by Mauka. Four voltage sag Incidents were also observed during these periods. This is to be expected as most of the voltage sags observed by 1021 do cross the Event thresholds, but the deviation from nominal is not large enough to pass the voltage Incident thresholds. This Phenomena provides groupings of Events and Incidents that are related to the periodic signal of the sensor. This is important because previously these were just voltage sags Events and voltage sag Incidents. This Phenomena adds context to these Events and Incidents by providing a grouping that shows that they were part of a periodic signal rather than individual PQ issues. The next section will show how Future Phenomena modifies Event thresholds in order to capture Events that might otherwise be missed due to not passing the Event thresholds.
 
-I have attempted unsuccessfully to determine the cause of the periodic Voltage sags at this location. My original hypothesis was that the cycling of the building's HVAC units caused the Voltage sags. If that was the case, then it should be possible to see pressure changes in the infrasound range as the HVAC system cycled on and off. Going off of this assumption, I co-located a Lokahi sensor with the OPQ Box in MSB in an attempt to measure the HVAC cycles using the onboard barometer of the Lokahi sensor. After collecting data for one week, I was not able to observe any signals in the barometer data that correlated with the Voltages sags.
+I have attempted unsuccessfully to determine the cause of the periodic voltage sags at this location. My original hypothesis was that the cycling of the building's HVAC units caused the voltage sags. If that was the case, then it should be possible to see pressure changes in the infrasound range as the HVAC system cycled on and off. Going off of this assumption, I co-located a Lokahi sensor with the OPQ Box in MSB in an attempt to measure the HVAC cycles using the onboard barometer of the Lokahi sensor. After collecting data for one week, I was not able to observe any signals in the barometer data that correlated with the voltage sags.
 
 It is possible that the HVAC system is constantly pushing air through the building, but the coolant machinery kicks in once every 34 minutes. If this is the case, then the Lokahi sensor would not be able to identify changes in air pressure. One way to test this would be to install a temperature sensor on the OPQ Box to track changes in temperature. This would make for an interesting future direction allowing OPQ to track if changes in the environment are related to changes in PQ readings.
 
@@ -1096,7 +1096,7 @@ I've provided evidence in this section that show OPQ Mauka was able to identify 
 
 \subsubsection{Results of Future/Predictive Phenomena}
 
-Future Phenomena are generated from Periodic Phenomena as described in Section~\ref{subsec:future-phenomena}. Future Phenomena predict when signals of interest should be observed by a particular sensor. Future Phenomena store information about its time window, the OPQ Boxes affected, and the expected feature that is predicted to be non-nominal. Future Phenomena also directly perform optimizations on the OPQ network. They are capable of modifying Event thresholds for the Frequency, Voltage, and THD features as well as modifying the data rate of OPQ Boxes. Because the Future Phenomena is capable of modifying the system, I expected to detect Events that would have otherwise been missed due to the threshold being too high.
+Future Phenomena are generated from Periodic Phenomena as described in Section~\ref{subsec:future-phenomena}. Future Phenomena predict when signals of interest should be observed by a particular sensor. Future Phenomena store information about its time window, the OPQ Boxes affected, and the expected feature that is predicted to be non-nominal. Future Phenomena also directly perform optimizations on the OPQ network. They are capable of modifying Event thresholds for the frequency, voltage, and THD features as well as modifying the data rate of OPQ Boxes. Because the Future Phenomena is capable of modifying the system, I expected to detect Events that would have otherwise been missed due to the threshold being too high.
 
 The Periodic Phenomena that were discussed in the previous section play an important role in creating Future Phenomena. Future Phenomena are created based off of the mean period and standard deviation of the period from the Periodic Phenomena. Future Phenomena attempt to predict four hours of Events and Incidents from the last known timestamp of a Periodic Phenomena.
 
@@ -1137,7 +1137,7 @@ The Figure above shows that initially, the percentage of realized Events is fair
 
 Future Phenomena provide multiple optimizations to the underlying DSN. Future Phenomena can modify Event thresholds and data rates. These modifications increase data fidelity (which in turn helps to produce more accurate Periodic Phenomena), and also decrease Event thresholds. Because of the decreased Event thresholds, I expect Mauka to detect Events that would otherwise not have been detected.
 
-Of the 210 realized Future Phenomena for Box 1021, exactly 37 of them contained sub-threshold Events, that is Voltage sag Events that are smaller than the default sag threshold of 2.5\% or 117.0 Volts. These 37 Events would not have been captured by the default Event trigger without modifications applied by Future Phenomena. Not only were these Events found using Future Phenomena, but they are also part of the Periodic Phenomena data set that created the Future Phenomena in the first place.
+Of the 210 realized Future Phenomena for Box 1021, exactly 37 of them contained sub-threshold Events, that is voltage sag Events that are smaller than the default sag threshold of 2.5\% or 117.0 Volts. These 37 Events would not have been captured by the default Event trigger without modifications applied by Future Phenomena. Not only were these Events found using Future Phenomena, but they are also part of the Periodic Phenomena data set that created the Future Phenomena in the first place.
 
 Figure~\ref{fig:sub_thresh_event} shows an example of a sub-threshold Event found utilizing Future Phenomena.
 
@@ -1148,21 +1148,21 @@ Figure~\ref{fig:sub_thresh_event} shows an example of a sub-threshold Event foun
     \label{fig:sub_thresh_event}
 \end{figure}
 
-Here we can observe a Voltage sag of of just over 1\% deviation from nominal. This Voltage sag would not have been observed without modifying the Event thresholds using this Future Phenomena.
+Here we can observe a voltage sag of of just over 1\% deviation from nominal. This voltage sag would not have been observed without modifying the Event thresholds using this Future Phenomena.
 
 I have provided evidence that shows that the Future Phenomena are able to predict Future Events better than half of the time. I have shown that the Future Phenomena are capable of improving over time based off of optimizations applied by the Periodic Phenomena and Future Phenomena. I have shown that Future Phenomena are capable of detecting sub-threshold Events that would have otherwise been missed by normal triggering algorithms.
 
 \subsubsection{Results of Similarity Phenomena}
 
-Similarity Phenomena attempt to add context to Incidents by grouping sets of related Incidents together. These groupings allow us to discuss Incidents as Incidents that belong to a particular group rather than individual Incidents. For example, in the OPQ network, Frequency Incidents dominate in count compared to all other Incidents types. This makes it difficult to discuss Frequency Incidents and to separate the proverbial wheat from the chaff. Similarity Phenomena were designed to provide a way of providing additional context on top of large numbers of Incidents.
+Similarity Phenomena attempt to add context to Incidents by grouping sets of related Incidents together. These groupings allow us to discuss Incidents as Incidents that belong to a particular group rather than individual Incidents. For example, in the OPQ network, frequency Incidents dominate in count compared to all other Incidents types. This makes it difficult to discuss frequency Incidents and to separate the proverbial wheat from the chaff. Similarity Phenomena were designed to provide a way of providing additional context on top of large numbers of Incidents.
 
-Similarity Phenomena provide multiple optimizations to the underlying DSN in terms of data storage requirements. Unlike other Incidents which have their data saved when a new Phenomena is created, Similarity Phenomena provide the ability to discard data once it has been classified into a particular cluster. Now, instead of saving all Frequency swells that have a mean duration of 100 ms and a mean deviation of -.1 Hz, Laha can discard the original data and only update the counts within the Similarity Phenomena.
+Similarity Phenomena provide multiple optimizations to the underlying DSN in terms of data storage requirements. Unlike other Incidents which have their data saved when a new Phenomena is created, Similarity Phenomena provide the ability to discard data once it has been classified into a particular cluster. Now, instead of saving all frequency swells that have a mean duration of 100 ms and a mean deviation of -.1 Hz, Laha can discard the original data and only update the counts within the Similarity Phenomena.
 
-Two approaches were taken to find similar groups of Frequency Incidents with varying success. I initially attempted to utilize hierarchical clustering\cite{johnson1967hierarchical}, but had issues due to the high memory requirements required for performing agglomerative clustering. In agglomerative clustering, point-wise distances are found which ends up providing a memory overhead of $O(N^2)$. This memory overhead is too large to be useful on our cloud based OPQ server with a large number of Incidents. I tried to perform agglomerative clustering on a development machine with 32 GB of memory, but still ran into memory issues. Because of these memory issues, I attempted to focus my efforts on k-means\cite{alsabti1997efficient} clustering which provides memory overhead of closer to $O(N + k * d)$. K-means clustering was used to find groups of related clusters with an empirically found $k$ value.
+Two approaches were taken to find similar groups of frequency Incidents with varying success. I initially attempted to utilize hierarchical clustering\cite{johnson1967hierarchical}, but had issues due to the high memory requirements required for performing agglomerative clustering. In agglomerative clustering, point-wise distances are found which ends up providing a memory overhead of $O(N^2)$. This memory overhead is too large to be useful on our cloud based OPQ server with a large number of Incidents. I tried to perform agglomerative clustering on a development machine with 32 GB of memory, but still ran into memory issues. Because of these memory issues, I attempted to focus my efforts on k-means\cite{alsabti1997efficient} clustering which provides memory overhead of closer to $O(N + k * d)$. K-means clustering was used to find groups of related clusters with an empirically found $k$ value.
 
-I focused my Similarity Phenomena on Frequency Incidents due to the large amount of Frequency Incidents present in the OPQ system. Frequency Incidents were compared using a distance metric comprised of the duration of the Incident and the maximum deviation from nominal of the Incident.
+I focused my Similarity Phenomena on frequency Incidents due to the large amount of frequency Incidents present in the OPQ system. frequency Incidents were compared using a distance metric comprised of the duration of the Incident and the maximum deviation from nominal of the Incident.
 
-Let's first examine the distribution of Frequency Incidents collected from all OPQ Boxes over the period of the OPQ deployment as shown in Figure~\ref{fig:f_incident_dist}.
+Let's first examine the distribution of frequency Incidents collected from all OPQ Boxes over the period of the OPQ deployment as shown in Figure~\ref{fig:f_incident_dist}.
 
 \begin{figure}[H]
     \centering
@@ -1171,13 +1171,13 @@ Let's first examine the distribution of Frequency Incidents collected from all O
     \label{fig:f_incident_dist}
 \end{figure}
 
-From this distribution, we can gain a pretty good idea of the makeup of OPQ's Frequency Incidents. Most Frequency Incidents are relatively short in duration (less than 1 second). Large deviations from nominal tend to only occur over short durations. This is expected since Frequency tends to self-correct rather quickly on power grids. There is a long tail of sags and swells that don't deviate too far from nominal with durations over 40 seconds.
+From this distribution, we can gain a pretty good idea of the makeup of OPQ's frequency Incidents. Most frequency Incidents are relatively short in duration (less than 1 second). Large deviations from nominal tend to only occur over short durations. This is expected since frequency tends to self-correct rather quickly on power grids. There is a long tail of sags and swells that don't deviate too far from nominal with durations over 40 seconds.
 
 In terms of clustering, I expected to see clusters for the initial set of Incidents that are close to nominal and short in duration. I expected to see clusters for the data that are far from nominal and short in duration and I expected to see clusters that are longer in duration but closer to nominal.
 
-I had hoped to have seen more well defined clusters in this Incident data set, but instead the combination of Voltage sags and swells almost takes on a Gaussian distribution turned on its side. Regardless, I believe that clustering of these values provides context and interesting insights on top of the individual Incidents themselves.
+I had hoped to have seen more well defined clusters in this Incident data set, but instead the combination of voltage sags and swells almost takes on a Gaussian distribution turned on its side. Regardless, I believe that clustering of these values provides context and interesting insights on top of the individual Incidents themselves.
 
-K-means clustering was applied to both the Frequency swell and Frequency sag data sets. Figure~\ref{fig:f_kmeans} shows Frequency Incidents clustered using k-means with $k=8$.
+K-means clustering was applied to both the frequency swell and frequency sag data sets. Figure~\ref{fig:f_kmeans} shows frequency Incidents clustered using k-means with $k=8$.
 
 \begin{figure}[H]
     \centering
@@ -1188,7 +1188,7 @@ K-means clustering was applied to both the Frequency swell and Frequency sag dat
 
 The distance metrics provided were normalized in both the x and y directions to perform k-means, and then denormalized for display of the results. I empirically found that $k=8$ provides a nice set of clusters that characterize both the durations and the deviations from nominal. Smaller values of $k$ do not provide enough resolution in the y-direction while larger values of $k$ provide too many clusters in the x-direction. The only negative aspect of selecting $k=8$, is that long duration Incidents are generally classified together. This is acceptable because long duration Incidents are much more rare than short duration Incidents. The above Figure shows clusters for short duration Incidents that are close to nominal, clusters for short duration Incidents that are further from nominal, and clusters for Incidents that are close to nominal, but have longer durations.
 
-Table~\ref{table:f_kmeans_sags} summarizes the results of the Frequency sag Incidents found using k-means sorted by mean duration.
+Table~\ref{table:f_kmeans_sags} summarizes the results of the frequency sag Incidents found using k-means sorted by mean duration.
 
 \begin{table}[H]
     \centering
@@ -1210,13 +1210,13 @@ Table~\ref{table:f_kmeans_sags} summarizes the results of the Frequency sag Inci
     \label{table:f_kmeans_sags}
 \end{table}
 
-The above Table displays some interesting features. First, we can gather that 152,805 (82\%) Frequency sag Incidents all have mean durations less than 1 second. Next, we can observe that cluster 5 captures the outlying short duration Voltage sags that have larger deviations from nominal (47 Hz). The rest of the clusters show mean Frequency sag values near 59.75 Hz, but vary in duration. You will also note that the standard deviation on the duration increases as the duration increases. This is caused by the smaller number of Incidents that are created at longer durations.
+The above Table displays some interesting features. First, we can gather that 152,805 (82\%) frequency sag Incidents all have mean durations less than 1 second. Next, we can observe that cluster 5 captures the outlying short duration voltage sags that have larger deviations from nominal (47 Hz). The rest of the clusters show mean frequency sag values near 59.75 Hz, but vary in duration. You will also note that the standard deviation on the duration increases as the duration increases. This is caused by the smaller number of Incidents that are created at longer durations.
 
-Table~\ref{table:f_kmeans_swells} summarizes the results of the Frequency swell Incidents found using k-means sorted by mean duration.
+Table~\ref{table:f_kmeans_swells} summarizes the results of the frequency swell Incidents found using k-means sorted by mean duration.
 
 \begin{table}[H]
     \centering
-    \caption{Results of Similarity Phenomena for Frequency Swell Incidents}
+    \caption{Results of Similarity Phenomena for frequency Swell Incidents}
     \begin{tabularx}{\textwidth}{llllll}
         \toprule
         \textbf{Cluster} & \textbf{Incidents} &\textbf{Mean Duration} & \textbf{Std Duration} & \textbf{Mean Value} & \textbf{Std Value} \\
@@ -1234,20 +1234,20 @@ Table~\ref{table:f_kmeans_swells} summarizes the results of the Frequency swell 
     \label{table:f_kmeans_swells}
 \end{table}
 
-Clusters of Frequency swells provide similar results to clusters of Frequency sags. For instance, 174,201 (83\%) Frequency swell Incidents are less than 1 second in duration. Cluster 3 contains Frequency swell Incidents that are further from nominal while other clusters vary in duration and remain closer to nominal.
+Clusters of frequency swells provide similar results to clusters of frequency sags. For instance, 174,201 (83\%) frequency swell Incidents are less than 1 second in duration. Cluster 3 contains frequency swell Incidents that are further from nominal while other clusters vary in duration and remain closer to nominal.
 
-This combination of Similarity Phenomena for Frequency sag and swell Incidents creates a total of 16 Similarity Phenomena within the OPQ network, 8 for each Frequency Incident type.
+This combination of Similarity Phenomena for frequency sag and swell Incidents creates a total of 16 Similarity Phenomena within the OPQ network, 8 for each frequency Incident type.
 
 So how can these results be used to optimize the underlying DSN? In the simplest case, the DSN can be tuned to throw away data from Incidents that belong to ``non-interesting" clusters. One way to define non-interesting clusters is to define clusters that are both shorter in duration and closer to nominal.
 
-For example, it's possible to estimate the amount of data that would be saved if all Frequency Incidents less than one second and close to nominal are only counted and not saved to the network's data storage. Equation~\ref{eq:cluster_est} provides estimated data savings for a given non-interesting cluster, where $I_N$ is the number of Incidents in the cluster, $\mu D$ is the mean duration of the cluster in ms, $SR$ is the sampling rate in Hz, $S_S$ is the size of a sample in bytes, and $\mu S_{IM}$ is the mean size of Incident metadata.
+For example, it's possible to estimate the amount of data that would be saved if all frequency Incidents less than one second and close to nominal are only counted and not saved to the network's data storage. Equation~\ref{eq:cluster_est} provides estimated data savings for a given non-interesting cluster, where $I_N$ is the number of Incidents in the cluster, $\mu D$ is the mean duration of the cluster in ms, $SR$ is the sampling rate in Hz, $S_S$ is the size of a sample in bytes, and $\mu S_{IM}$ is the mean size of Incident metadata.
 
 \begin{equation}
     est\_data\_savings\_bytes = I_N * ((\frac{\mu D}{1000}) * SR * S_S + S_{IM})
     \label{eq:cluster_est}
 \end{equation}
 
-Table~\ref{table:f_saved} shows the estimated data savings for Frequency sags and swell Incidents for clusters that are less than one second in duration and closer to nominal.
+Table~\ref{table:f_saved} shows the estimated data savings for frequency sags and swell Incidents for clusters that are less than one second in duration and closer to nominal.
 
 \begin{table}[H]
     \centering
@@ -1266,7 +1266,7 @@ Table~\ref{table:f_saved} shows the estimated data savings for Frequency sags an
     \label{table:f_saved}
 \end{table}
 
-Here we can observe that the underlying storage would conserve about 1.7 GB worth of data if non-interesting Frequency Incidents were only counted and not stored. Further, this removes a large amount of Incidents (326,791) from the set of all Incidents, helping to further separate out interesting Incidents.
+Here we can observe that the underlying storage would conserve about 1.7 GB worth of data if non-interesting frequency Incidents were only counted and not stored. Further, this removes a large amount of Incidents (326,791) from the set of all Incidents, helping to further separate out interesting Incidents.
 
 I have provided evidence that Similarity Phenomena can be found using traditional k-means clustering. The clusters that are produced provide added context to both the duration and severity of the Incidents. The clusters can be utilized to optimize the DSN to ignore non-interesting Incidents.
 
@@ -2024,15 +2024,15 @@ Future directions should look at providing a signal-to-noise parameter that is u
 
 \subsection{Results of Model of Underlying Sensor Field Topology}\label{subsec:results-of-model-of-underlying-sensor-field-topology}
 
-I had difficulties finding a model that accurately predicts the underlying sensor field topology and as such do not have any results for this tertiary goal. I attempted to use Voltage sags and swells because they tend to show the largest differences in readings between Boxes at any one time. This is compared to THD and Frequency which tend to track more similarly between Boxes. I expected the signal caused by Voltage fluctuations to attenuate as a function of the distance from the source signal. This in conjunction with a map of the UH micro-grid provided the basis for me to explore this hypothesis.
+I had difficulties finding a model that accurately predicts the underlying sensor field topology and as such do not have any results for this tertiary goal. I attempted to use voltage sags and swells because they tend to show the largest differences in readings between Boxes at any one time. This is compared to THD and frequency which tend to track more similarly between Boxes. I expected the signal caused by voltage fluctuations to attenuate as a function of the distance from the source signal. This in conjunction with a map of the UH micro-grid provided the basis for me to explore this hypothesis.
 
 I attempted to find the amount of ``hops" from each OPQ Box to every other OPQ Box on the UHM micro-grid. I did this by counting the number of buildings each main electrical line went through in order to go from an OPQ Box to every other OPQ Box. The UHM micro-grid is serviced by two sub-stations, one on upper campus and one on lower campus. This complicated counting the hops because different electrical routes are taken dependent on the substation that was servicing the micro-grid at any one time. I do not have any information on when each substation was active.
 
-I compared the number of hops to the amount of attenuation observed in Voltage signals and was not able to identify any clear correlation. For certain pairs of sensors, the data made sense, but the correlation broke down for the vast majority of Voltage signals analyzed using this method leading me to believe that the small set of data points that did make sense are likely just coincidence.
+I compared the number of hops to the amount of attenuation observed in voltage signals and was not able to identify any clear correlation. For certain pairs of sensors, the data made sense, but the correlation broke down for the vast majority of voltage signals analyzed using this method leading me to believe that the small set of data points that did make sense are likely just coincidence.
 
-There are also a lot of electrical switches, filters, and transformers that exist between each building and sometimes within buildings that further complicate counting hops. Also, just because a sensor observes a large Voltage signal that attenuates as it reaches other sensors does not mean that the source signal originated at the sensor with the largest signal. It could have originated in a near by building that does not have a OPQ Box inside of it.
+There are also a lot of electrical switches, filters, and transformers that exist between each building and sometimes within buildings that further complicate counting hops. Also, just because a sensor observes a large voltage signal that attenuates as it reaches other sensors does not mean that the source signal originated at the sensor with the largest signal. It could have originated in a near by building that does not have a OPQ Box inside of it.
 
-I think one of the largest issues with this tertiary goal is my lack of knowledge relating to electrical engineering. I simply don't understand the movement of electricity within a grid well enough to be able to model the topology of the grid correctly only based off of Voltage signals and a map of the grid.
+I think one of the largest issues with this tertiary goal is my lack of knowledge relating to electrical engineering. I simply don't understand the movement of electricity within a grid well enough to be able to model the topology of the grid correctly only based off of voltage signals and a map of the grid.
 
 Although the OPQ Box deployment attempts to cover large parts of the campus, a larger deployment would make it much easier to follow signals as they propagate through the micro-grid. I suspect that a Box per building would almost make this a trivial problem, even with my lack of knowledge in the electrical engineering domain.
 
@@ -2044,11 +2044,11 @@ I detailed 3 tertiary goals in the Evaluation chapter including adaptive optimiz
 
 \section{Summary of Results}\label{sec:summary-of-results}
 
-I designed, built, and deployed two Laha compatible DSNs. The Lokahi network collects signals in the infrasound range and is able to identify a large variety of source modalities such as rocket launches, earthquakes, atmospheric entries, storms, and explosions. The OPQ network was designed to detect anomalous signals in PQ data such as Frequency sags and swells, Voltage sags and swells, transients, and excessive THD.
+I designed, built, and deployed two Laha compatible DSNs. The Lokahi network collects signals in the infrasound range and is able to identify a large variety of source modalities such as rocket launches, earthquakes, atmospheric entries, storms, and explosions. The OPQ network was designed to detect anomalous signals in PQ data such as frequency sags and swells, voltage sags and swells, transients, and excessive THD.
 
 I evaluated these DSNs as described in the Evaluation chapter.
 
-First, I showed results comparing ground truth data to the OPQ network. I showed comparisons for collected metrics such a Frequency, Voltage, and THD, and I also provided results that compare how well Events and Incidents match what was observed by ground truth sensors. I found that most of the OPQ network accurately track the ground truth data with the largest deviations taking place within Frequency Incidents.
+First, I showed results comparing ground truth data to the OPQ network. I showed comparisons for collected metrics such a frequency, voltage, and THD, and I also provided results that compare how well Events and Incidents match what was observed by ground truth sensors. I found that most of the OPQ network accurately track the ground truth data with the largest deviations taking place within frequency Incidents.
 
 Next, I provided evidence to show how well Lokahi tracks ground truth data. I used results from Asmar's dissertation to show that infrasound signals are able to be detected with mobile sensors within accordance of the International Monitoring System.
 
