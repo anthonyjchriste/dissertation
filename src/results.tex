@@ -2,11 +2,11 @@
 
 \section{Results of Validating Data Collected by Deployments}\label{sec:ground-truth-analysis}
 
-Ground truth analysis compares data collected by the OPQ and Lokahi networks to data that is assumed to be correct. The collected data is compared to the ground truth data in order to determine how similar it is to the ``correct" data. The requirement to perform ground truth analysis was provided in Section~\ref{subsec:anticipated-contributions}. The analysis performed in the next sections utilized the evaluation from Section~\ref{sec:validate-data-collected-by-laha-deployment} in an attempt to provide evidence that the Lokahi and OPQ networks collect data that is as close to correct as possible and provides discussions on when and why this data doesn't always exactly match the ground truth data.
+Ground truth analysis compares data collected by the OPQ and Lokahi networks to data that is assumed to be correct. The collected data is compared to the ground truth data in order to determine how similar it is to the ``correct" data. The requirement to perform ground truth analysis was provided in Section~\ref{subsec:anticipated-contributions}. The analysis performed in the next sections utilized the evaluation method from Section~\ref{sec:validate-data-collected-by-laha-deployment} in an attempt to provide evidence that the Lokahi and OPQ networks collect data that is as close to correct as possible and provides discussions on when and why this data doesn't always exactly match the ground truth data.
 
 \subsection{Ground Truth Analysis: OPQ}\label{subsec:ground-truth-analysis:-opq}
 
-The UHM Office of Energy Management provided our team with access to data collected by high quality power meters installed at the mains of selected campus buildings. This data set provides the basis of the ground truth data that I compare against using the evaluation outlined in Section~\ref{subsec:validate-data-collected-by-opq-deployment}.
+The UHM Office of Energy Management provided our team with access to data collected by high quality power meters installed at the mains of selected campus buildings. This data set provides the basis of the ground truth data that I compare to OPQ using the evaluation outlined in Section~\ref{subsec:validate-data-collected-by-opq-deployment}.
 
 Ground truth data was scraped from an UHM internal server over the duration of the OPQ deployment. I collected ground truth data containing 15 features for each of the ground truth meters that are co-located with an OPQ Box. The ground truth data is mostly complete, however, there are a few missing features for some meters.
 
@@ -31,8 +31,15 @@ Table~\ref{table:gt} provides a mapping from OPQ Boxes to co-located UHM meters.
         \toprule
         \textbf{OPQ Boxes} & \textbf{UHM Ground Truth Sensors} \\
         \midrule
-        1000, 1002 (POST) & POST\_MAIN\_1, POST\_MAIN\_2 \\
-        1001 (Hamilton) & HAMILTON\_LIB\_PH\_III\_CH\_1\_MTR, HAMILTON\_LIB\_PH\_III\_CH\_2\_MTR, HAMILTON\_LIB\_PH\_III\_CH\_3\_MTR, HAMILTON\_LIB\_PH\_III\_MAIN\_1\_MTR, HAMILTON\_LIB\_PH\_III\_MAIN\_2\_MTR, HAMILTON\_LIB\_PH\_III\_MCC\_AC1\_MTR, HAMILTON\_LIB\_PH\_III\_MCC\_AC2\_MTR \\
+        1000, 1002 (POST) & POST\_MAIN\_1 \\
+         & POST\_MAIN\_2 \\
+        1001 (Hamilton) & HAMILTON\_LIB\_PH\_III\_CH\_1\_MTR \\
+         & HAMILTON\_LIB\_PH\_III\_CH\_2\_MTR \\
+         & HAMILTON\_LIB\_PH\_III\_CH\_3\_MTR \\
+         & HAMILTON\_LIB\_PH\_III\_MAIN\_1\_MTR \\
+         & HAMILTON\_LIB\_PH\_III\_MAIN\_2\_MTR \\
+         & HAMILTON\_LIB\_PH\_III\_MCC\_AC1\_MTR \\
+         & HAMILTON\_LIB\_PH\_III\_MCC\_AC2\_MTR \\
         1003 (Keller) & KELLER\_HALL\_MAIN\_MTR \\
         1005 (Parking Structure Ph. II) & N/A \\
         1006 (Frog I) & N/A \\
@@ -40,8 +47,11 @@ Table~\ref{table:gt} provides a mapping from OPQ Boxes to co-located UHM meters.
         1008 (Mile's Office) & N/A \\
         1009 (Watanabe) & N/A \\
         1010 (Holmes) & N/A \\
-        1021 (MSB) & MARINE\_SCIENCE\_MAIN\_A\_MTR, MARINE\_SCIENCE\_MAIN\_B\_MTR, MARINE\_SCIENCE\_MCC\_MTR \\
-        1022 (Ag. Engineering) & AG\_ENGINEERING\_MAIN\_MTR, AG\_ENGINEERING\_MCC\_MTR \\
+        1021 (MSB) & MARINE\_SCIENCE\_MAIN\_A\_MTR \\
+         & MARINE\_SCIENCE\_MAIN\_B\_MTR \\
+         & MARINE\_SCIENCE\_MCC\_MTR \\
+        1022 (Ag. Engineering) & AG\_ENGINEERING\_MAIN\_MTR \\
+         & AG\_ENGINEERING\_MCC\_MTR \\
         1023 (Law Library) & LAW\_LIB\_MAIN\_MTR \\
         1024 (IT Building) & N/A \\
         1025 (Kennedy Theater) & KENNEDY\_THEATRE\_MAIN\_MTR \\
@@ -284,7 +294,7 @@ Boxes 1000, 1001, and 1022 provide the best comparisons to ground truth. Mauka o
 
 Boxes 1002 and 1021 show fairly anomalous results compared to the ground truth.
 
-One interesting thing that I gathered during this comparison is that the main force driving Event generation within Mauka is THD Events. THD thresholds were set at 3\% for Event generation. Most ground truth data shows that ~80\% of all Events generated are likely caused by crossing the THD thresholds with close to 18\% being caused by voltage threshold crossings. Only a very small percentage of Events generated were generated by frequency threshold crossings. This means that observed differences in THD and voltage readings between OPQ Boxes and ground truth sensors explain the differences that can be observed between ground truth data and OPQ Boxes.
+One useful observation is that the main force driving Event generation within Mauka is THD Events. THD thresholds were set at 3\% for Event generation. Most ground truth data shows that ~80\% of all Events generated are likely caused by crossing the THD thresholds with close to 18\% being caused by voltage threshold crossings. Only a very small percentage of Events generated were generated by frequency threshold crossings. This means that observed differences in THD and voltage readings between OPQ Boxes and ground truth sensors explain the differences that can be observed between ground truth data and OPQ Boxes.
 
 For example, let's examine Box 1021 as a case study which observed 3,613 Events while ground truth only observed 391 Events. Figure~\ref{fig:gt_all_msb} shows the ground truth data for the MARINE\_SCIENCE\_MCC\_MTR sensor.
 
@@ -379,7 +389,7 @@ Table~\ref{table:gt_v_incidents} summarizes the results for the voltage Incident
     \label{table:gt_v_incidents}
 \end{table}
 
-There are a couple of things to note here. Mauka did observe 8 voltage swells over this time period all for Box 1008. However, we do not have ground truth data for this location and Mauka did not observe any other voltage swells with co-located ground truth sensors.
+There are a couple of things to note here. Mauka did observe 8 voltage swells over this time period, all for Box 1008. However, we do not have ground truth data for this location and Mauka did not observe any other voltage swells with co-located ground truth sensors.
 
 All counts for OPQ are less than the counts shown by the OPQ ground truth data. This is important because the ground truth data does not provide any metric for swell or sag duration. This means that some percentage of the ground truth sags and swells durations are less than what is required to classify the data as an Incident by OPQ Mauka.
 
@@ -845,7 +855,7 @@ At least in a controlled environment, Lokahi was able to restore 100\% of its da
 
 \subsection{Discussion on Types of DSNs Laha is Suitable For}\label{subsec:discussion-on-types-of-dsns-laha-is-suitable-for}
 
-In Section~\ref{subsec:anticipated-contributions} and Section~\ref{sec:anticipated-contributions-of-laha}, I stated that I would provide a discussion on the types of DSNs that Laha is suitable for. Working with two different DSNs in two different domains has provided me the opportunity to think about Laha's strengths and weaknesses compared to the domain that it is being utilized in. It's also given me the opportunity to think about other domains that Laha would be useful for. I will first discuss the strengths and weaknesses as compared to OPQ and Lokahi directly.
+In Section~\ref{subsec:anticipated-contributions} and Section~\ref{sec:anticipated-contributions-of-laha}, I stated that I would provide a discussion on the types of DSNs that Laha is suitable for. Working with two different DSNs in two different domains has provided me the opportunity to think about Laha's strengths and weaknesses. It's also given me the opportunity to think about other domains that Laha would be useful for. I will first discuss the strengths and weaknesses as compared to OPQ and Lokahi directly.
 
 First, I provide a summary of Laha's strengths in relation to common DSN properties as shown in Table~\ref{table:summary_of_laha_viability}.
 
@@ -933,13 +943,13 @@ The IML is a bit contrived for some networks. Take OPQ as an example. The IML so
 When Events are found, the IML data is copied into the Event. Similarly, IML data is copied into Incidents. This is in contrast to all other levels which do not perform any copying and merely ``point" to the data. For example, Incidents and Events simply point to a range of Measurements and Trends instead of copying those values into those levels. This is possible because the TTL values of those Measurements and Trends match those of the Events, Incidents, or Phenomena.
 
 \subsubsection{Discussion of New Level SML}
-I think it would be useful to add another level under the IML called the Sensor Measurement Level (SML). This level would signify all of the raw data that is currently living on the sensors themselves and hasn't been sent to a central server for analysis. I would keep the IML, but this level would contain all of the raw samples that were sent from sensors to a central server. Instead of copying data into Events and Incidents, the data would remain in the IML and simply be referenced from Events and Incidents.
+I think it would be useful to add another level under the IML called the Sensor Measurement Level (SML). This level would signify all of the raw data that is currently living on the sensors themselves and hasn't been sent to a central server for analysis. I would keep the IML, but this level would contain all of the raw samples that were sent from sensors to a central server. Instead of copying data into Events and Incidents, the data would remain in the IML and simply be referenced from Events and Incidents. An experiment for testing this new level is provided in Section~\ref{subsec:altering-the-laha-level-hierarchy}.
 
 \subsubsection{Discussion of AML}
 I believe the AML is critical and I'm not sure that I would make any changes to it directly. It alone is responsible for providing the triggering architecture required for detecting Events. However, I would consider adding a new level between the AML and the DL called the Data Fusion Level (DFL).
 
 \subsubsection{Discussion of New Level DFL}
-The DFL would be responsible for collecting AML data from heterogeneous sources. For instance, I found myself wishing that I had a way to feed ground truth data into OPQ alongside the OPQ Box data in an attempt to perform real time validation of our data. It would also be interesting to fuse other data sources such as temperature data, weather data, or power usage data in an attempt to find correlations between other data streams and what was observed by the OPQ Boxes. I would place the DFL between the AML and DL because I would like the DL an IL to be abstracted over AML values.
+The DFL would be responsible for collecting AML data from heterogeneous sources. For instance, this could be a useful way to feed ground truth data into OPQ alongside the OPQ Box data in an attempt to perform real time validation of our data. It would also be interesting to fuse other data sources such as temperature data, weather data, or power usage data in an attempt to find correlations between other data streams and what was observed by the OPQ Boxes. I would place the DFL between the AML and DL because I would like the DL and IL to be abstracted over AML values. An experiment for testing this new level is outline in the future work Section~\ref{subsec:altering-the-laha-level-hierarchy}.
 
 \subsubsection{Discussion of DL and IL}
 In certain instances, I believe the DL and IL could be combined into a single level. The main difference between Events and Incidents is that Incidents provide a known classification and only reference a subset of the Event data. It would be easy to combine these levels into a single Detection Level that has parameters listing known classifications within the Event along with timestamps. This would require less housekeeping and potential data savings by not copying the Incident waveform from the Event waveform.
@@ -977,7 +987,7 @@ Table~\ref{table:summary_of_levels} summarizes the discussion of Laha Levels.
 
 Converting primitive data into actionable insights in one of the main tenants of this framework as described in Section~\ref{subsec:ability-to-convert-primitive-data-into-actional-insights}. This is accomplished within Laha by moving data upwards through Laha's hierarchy. Results for converting primitive data into actionable insights were found using the guidelines provided in the Evaluation Section~\ref{subsec:evaluation-of-converting-primitive-data-into-actionable-insights}.
 
-Within Laha, raw sampled signals (IML) are first converted into low fidelity feature streams (AML). This provides context by extracting known features from the signal and providing a summary statistics view of those features. Within OPQ, raw ADC samples are converted to feature streams that contain minimum, maximum, and average values for voltage, frequency and THD. Within Lokahi, raw ADC samples are converted to feature streams that include summary statistics about the sampled data as well as a summary statistics for other fields (such as location and timing accuracy). In, both networks, raw samples are converted to feature streams which add context to the original data. These feature streams provide actionable insights in the form of informing higher levels in the hierarchy if a nominal signal is likely within that stream. This brings us to the Detections Level (DL).
+Within Laha, raw sampled signals (IML) are first converted into low fidelity feature streams (AML). This provides context by extracting known features from the signal and providing a summary statistics view of those features. Within OPQ, raw ADC samples are converted to feature streams that contain minimum, maximum, and average values for voltage, frequency and THD. Within Lokahi, raw ADC samples are converted to feature streams that include summary statistics about the sampled data as well as a summary statistics for other fields (such as location and timing accuracy). In both networks, raw samples are converted to feature streams which add context to the original data. These feature streams provide actionable insights in the form of informing higher levels in the hierarchy if a nominal signal is likely within that stream. This brings us to the Detections Level (DL).
 
 The DL is responsible for identifying Detections which provide a window that includes metadata, IML, and AML data which may or may not include signals of interest. Detections add context to the AML in the form of metadata (such as window length and sensors affected). Detections are found either manually (in the case of Lokahi) or using a triggering algorithms (OPQ). Detections provide actionable insights by providing the Incidents Level (IL) with the chance to classify known signals of interest from the Detection window. Without Detections, Incidents could not be found as easily. Once a Detection has been observed, the data is forwarded to the IL where signal classification occurs.
 
@@ -987,7 +997,7 @@ Perhaps the most interesting actionable insights Laha gathered are from Phenomen
 
 \subsection{Results of Phenomena}\label{subsec:results-of-phenomena}
 
-When I first conceptualized Phenomena, I expected them to be useful for providing context to data that didn't exist at lower levels. Being able to determine if a signal is periodic or not is interesting. Being able to decide if Incidents are similar is interesting. Being able to create Future/Predictive Phenomena is interesting. All of these Phenomena are interesting in their own right, but I believe the greater discovery is that Phenomena provide a way to filter out the signal from the noise. They provide a way of grouping lots of similar signals together so that they can be discussed as a group. This is something that all Phenomena have in common, they take collections of signals found at lower levels which have been grouped in such a way that they can be discussed as a grouping of data.
+When I first conceptualized Phenomena, I expected them to be useful for providing context to data that didn't exist at lower levels. Being able to determine if a signal is periodic or not is interesting. Being able to decide if Incidents are similar is interesting. Being able to create Future/Predictive Phenomena is interesting. All of these Phenomena are interesting in their own right, but I believe the greater discovery is that Phenomena provide a way to filter out the signal from the noise. They provide a way of grouping lots of similar signals together so that they can be discussed as a group. This is something that all Phenomena have in common: they take collections of signals found at lower levels which have been grouped in such a way that they can be discussed as a grouping of data.
 
 The design of Phenomena can be found in Section~\ref{sec:phenomena} with implementation details outlined in Section~\ref{ssec:pq_plugins}. Evaluation guidelines can be found in Section~\ref{subsec:evaluation-of-converting-primitive-data-into-actionable-insights} and Section~\ref{sec:evaluation-of-tertiary-goals}.
 
@@ -1150,7 +1160,7 @@ Figure~\ref{fig:sub_thresh_event} shows an example of a sub-threshold Event foun
 
 Here we can observe a voltage sag of of just over 1\% deviation from nominal. This voltage sag would not have been observed without modifying the Event thresholds using this Future Phenomena.
 
-I have provided evidence that shows that the Future Phenomena are able to predict Future Events better than half of the time. I have shown that the Future Phenomena are capable of improving over time based off of optimizations applied by the Periodic Phenomena and Future Phenomena. I have shown that Future Phenomena are capable of detecting sub-threshold Events that would have otherwise been missed by normal triggering algorithms.
+These results provide evidence that Future Phenomena are able to predict Future Events better than half of the time. I have shown that the Future Phenomena are capable of improving over time based on optimizations applied by the Periodic Phenomena and Future Phenomena. I have shown that Future Phenomena are capable of detecting sub-threshold Events that would have otherwise been missed by normal triggering algorithms.
 
 \subsubsection{Results of Similarity Phenomena}
 
@@ -1160,7 +1170,7 @@ Similarity Phenomena provide multiple optimizations to the underlying DSN in ter
 
 Two approaches were taken to find similar groups of frequency Incidents with varying success. I initially attempted to utilize hierarchical clustering\cite{johnson1967hierarchical}, but had issues due to the high memory requirements required for performing agglomerative clustering. In agglomerative clustering, point-wise distances are found which ends up providing a memory overhead of $O(N^2)$. This memory overhead is too large to be useful on our cloud based OPQ server with a large number of Incidents. I tried to perform agglomerative clustering on a development machine with 32 GB of memory, but still ran into memory issues. Because of these memory issues, I attempted to focus my efforts on k-means\cite{alsabti1997efficient} clustering which provides memory overhead of closer to $O(N + k * d)$. K-means clustering was used to find groups of related clusters with an empirically found $k$ value.
 
-I focused my Similarity Phenomena on frequency Incidents due to the large amount of frequency Incidents present in the OPQ system. frequency Incidents were compared using a distance metric comprised of the duration of the Incident and the maximum deviation from nominal of the Incident.
+I focused my Similarity Phenomena on frequency Incidents due to the large amount of frequency Incidents present in the OPQ system. Frequency Incidents were compared using a distance metric comprised of the duration of the Incident and the maximum deviation from nominal of the Incident.
 
 Let's first examine the distribution of frequency Incidents collected from all OPQ Boxes over the period of the OPQ deployment as shown in Figure~\ref{fig:f_incident_dist}.
 
@@ -1572,7 +1582,7 @@ This result is a little unsatisfying. The data growth of the IML is pretty much 
     \label{fig:actual_laha_vs_unbounded_no_iml_opq}
 \end{figure}
 
-Over a time period of 2 and a half months, the OPQ network saved about 20GB of data as compared to a store everything approach (not including the IML which saved about 2.5 TB of data). Of course, I would expect this difference to be greater if I had actual metrics for the DL, IL and PL that did not have a built-in implicit TTL parameter. Even with the built-in parameter, the savings gained from the AML alone is significant.
+Over a time period of 2 and a half months, the OPQ network stored close to 15 GB more data as compared to the estimation (not including the IML which saved OPQ about 2.5 TB of data). This difference is mainly caused by the difference between the actual DL and IL levels versus the estimated DL and IL levels. If we include the IML, this provides a total data savings of about 97.6\%. Of course, I would expect the data savings to be greater if I had actual metrics for the DL, IL and PL that did not have a built-in implicit TTL parameter. Even with the built-in parameter, the savings gained from the AML alone is significant.
 
 \subsubsection{DSN System Requirements OPQ: Comparing Results to Simulated Data}
 
@@ -1987,7 +1997,7 @@ Figure~\ref{fig:lokahi_actual_laha_vs_sim} shows actual Laha growth versus simul
 
 The estimated data growth of Laha for Lokahi ends at close to 2 TB smaller that the actual data growth. As discussed for the previous levels, this is due to the fact that Lokahi doesn't implement TTL whereas the simulated does implement TTL. This provides evidence that a TTL approach would be useful in networks similar to Lokahi to achieve substantial data savings.
 
-In this section, I have compared the actual amount of data collected to estimated data and simulated data outlined in the Evaluation chapter. The estimated data tends to be slightly larger than the actual data for all instances. This difference was caused by errors in the estimations due to utilizing the mean number of active sensors rather than the actual number of active sensors. The simulated results showed that a TTL approach would be useful in providing data savings.
+In this section, I have compared the actual amount of data collected to estimated data and simulated data outlined in the Evaluation chapter. The estimated data tends to be slightly larger than the actual data for all instances. This difference was caused by errors in the estimations due to utilizing the mean number of active sensors rather than the actual number of active sensors. The simulated results showed that a TTL approach is useful in providing a total data savings of close to 96\%.
 
 \section{Results of Tertiary Goals}\label{sec:results-of-tertiary-goals}
 
