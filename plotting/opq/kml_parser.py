@@ -40,8 +40,8 @@ def main():
             lat: float = coords[0]
             lng: float = coords[1]
             loc: str = box_to_location[box_id]
-            print(f"{box_id} & {loc} & {lat} & {lng} \\\\")
-
+            # print(f"{box_id} & {loc} & {lat} & {lng} \\\\")
+            print(f"({lat}, {lng}),")
 
 
 
