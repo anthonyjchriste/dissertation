@@ -28,7 +28,7 @@ D = TypeVar("D")
 
 
 def bin_dt_by_min(dt: datetime.datetime) -> datetime.datetime:
-    return datetime.datetime(dt.year, dt.month, dt.day, dt.hour, dt.minute, 0, 0, tzinfo=datetime.timezone.utc)
+    return datetime.datetime(dt.year, dt.month, dt.day, dt.hour, dt.minute, 0, 0)
 
 
 def align_data(series_a: List,
@@ -188,11 +188,11 @@ class PluginStat:
     @staticmethod
     def from_doc(name: str, doc: Dict[str, int]) -> 'PluginStat':
         return PluginStat(
-                name,
-                doc["messages_received"],
-                doc["messages_published"],
-                doc["bytes_received"],
-                doc["bytes_published"]
+            name,
+            doc["messages_received"],
+            doc["messages_published"],
+            doc["bytes_received"],
+            doc["bytes_published"]
         )
 
 
@@ -209,13 +209,13 @@ class SystemStat:
     @staticmethod
     def from_doc(doc: Dict[str, Union[float, int]]) -> 'SystemStat':
         return SystemStat(
-                doc["min"],
-                doc["max"],
-                doc["mean"],
-                doc["var"],
-                doc["cnt"],
-                doc["start_timestamp_s"],
-                doc["end_timestamp_s"]
+            doc["min"],
+            doc["max"],
+            doc["mean"],
+            doc["var"],
+            doc["cnt"],
+            doc["start_timestamp_s"],
+            doc["end_timestamp_s"]
         )
 
 
@@ -228,9 +228,9 @@ class SystemStats:
     @staticmethod
     def from_doc(doc: Dict[str, Dict[str, Union[float, int]]]) -> 'SystemStats':
         return SystemStats(
-                SystemStat.from_doc(doc["cpu_load_percent"]),
-                SystemStat.from_doc(doc["memory_use_bytes"]),
-                SystemStat.from_doc(doc["disk_use_bytes"])
+            SystemStat.from_doc(doc["cpu_load_percent"]),
+            SystemStat.from_doc(doc["memory_use_bytes"]),
+            SystemStat.from_doc(doc["disk_use_bytes"])
         )
 
 
@@ -244,10 +244,10 @@ class LahaMetric:
     @staticmethod
     def from_doc(name: str, doc: Dict[str, int]) -> 'LahaMetric':
         return LahaMetric(
-                name,
-                doc["ttl"] if "ttl" in doc else -1,
-                doc["count"] if "count" in doc else -1,
-                doc["size_bytes"] if "size_bytes" in doc else -1
+            name,
+            doc["ttl"] if "ttl" in doc else -1,
+            doc["count"] if "count" in doc else -1,
+            doc["size_bytes"] if "size_bytes" in doc else -1
         )
 
 
@@ -263,12 +263,12 @@ class GcStats:
     @staticmethod
     def from_doc(doc: Dict[str, int]) -> 'GcStats':
         return GcStats(
-                doc["samples"],
-                doc["measurements"],
-                doc["trends"],
-                doc["events"],
-                doc["incidents"],
-                0
+            doc["samples"],
+            doc["measurements"],
+            doc["trends"],
+            doc["events"],
+            doc["incidents"],
+            0
         )
 
 
@@ -286,14 +286,14 @@ class BoxTriggeringThreshold:
     @staticmethod
     def from_doc(doc: Dict[str, Union[str, int, float]]) -> 'BoxTriggeringThreshold':
         return BoxTriggeringThreshold(
-                doc["box_id"],
-                doc["ref_f"],
-                doc["ref_v"],
-                doc["threshold_percent_f_low"],
-                doc["threshold_percent_f_high"],
-                doc["threshold_percent_v_low"],
-                doc["threshold_percent_v_high"],
-                doc["threshold_percent_thd_high"]
+            doc["box_id"],
+            doc["ref_f"],
+            doc["ref_v"],
+            doc["threshold_percent_f_low"],
+            doc["threshold_percent_f_high"],
+            doc["threshold_percent_v_low"],
+            doc["threshold_percent_v_high"],
+            doc["threshold_percent_thd_high"]
         )
 
 
@@ -305,8 +305,8 @@ class BoxMeasurementRate:
     @staticmethod
     def from_doc(doc: Dict[str, Union[str, int]]) -> 'BoxMeasurementRate':
         return BoxMeasurementRate(
-                doc["box_id"],
-                doc["measurement_rate"]
+            doc["box_id"],
+            doc["measurement_rate"]
         )
 
 
@@ -340,11 +340,11 @@ class LahaStats:
             box_measurement_rates.append(BoxMeasurementRate.from_doc(box_measurement_rate))
 
         return LahaStats(
-                laha_metrics,
-                gc_stats,
-                active_devices,
-                box_triggering_thresholds,
-                box_measurement_rates
+            laha_metrics,
+            gc_stats,
+            active_devices,
+            box_triggering_thresholds,
+            box_measurement_rates
         )
 
 
@@ -738,25 +738,25 @@ def plot_system_resources(laha_stats: List[LahaStat], out_dir: str):
     system_stats: List[SystemStats] = list(map(lambda laha_stat: laha_stat.system_stats, laha_stats))
 
     cpu_load_percent_mins: np.ndarray = np.array(
-            list(map(lambda system_stat: system_stat.cpu_load_percent.min, system_stats)))
+        list(map(lambda system_stat: system_stat.cpu_load_percent.min, system_stats)))
     cpu_load_percent_maxes: np.ndarray = np.array(
-            list(map(lambda system_stat: system_stat.cpu_load_percent.max, system_stats)))
+        list(map(lambda system_stat: system_stat.cpu_load_percent.max, system_stats)))
     cpu_load_percent_means: np.ndarray = np.array(
-            list(map(lambda system_stat: system_stat.cpu_load_percent.mean, system_stats)))
+        list(map(lambda system_stat: system_stat.cpu_load_percent.mean, system_stats)))
 
     memory_use_bytes_mins: np.ndarray = np.array(
-            list(map(lambda system_stat: system_stat.memory_use_bytes.min, system_stats)))
+        list(map(lambda system_stat: system_stat.memory_use_bytes.min, system_stats)))
     memory_use_bytes_maxes: np.ndarray = np.array(
-            list(map(lambda system_stat: system_stat.memory_use_bytes.max, system_stats)))
+        list(map(lambda system_stat: system_stat.memory_use_bytes.max, system_stats)))
     memory_use_bytes_means: np.ndarray = np.array(
-            list(map(lambda system_stat: system_stat.memory_use_bytes.mean, system_stats)))
+        list(map(lambda system_stat: system_stat.memory_use_bytes.mean, system_stats)))
 
     disk_use_bytes_mins: np.ndarray = np.array(
-            list(map(lambda system_stat: system_stat.disk_use_bytes.min, system_stats)))
+        list(map(lambda system_stat: system_stat.disk_use_bytes.min, system_stats)))
     disk_use_bytes_maxes: np.ndarray = np.array(
-            list(map(lambda system_stat: system_stat.disk_use_bytes.max, system_stats)))
+        list(map(lambda system_stat: system_stat.disk_use_bytes.max, system_stats)))
     disk_use_bytes_means: np.ndarray = np.array(
-            list(map(lambda system_stat: system_stat.disk_use_bytes.mean, system_stats)))
+        list(map(lambda system_stat: system_stat.disk_use_bytes.mean, system_stats)))
 
     # Plot
     fig, ax = plt.subplots(4, 1, figsize=(16, 9), sharex="all", constrained_layout=True)
@@ -1273,6 +1273,52 @@ def plot_laha_vs_sim(laha_stat_dts: np.ndarray,
     fig.savefig(f"{out_dir}/actual_laha_vs_sim_opq.png")
 
 
+def plot_laha_vs_no_tll_defense(laha_dts: np.ndarray,
+                                est_dts: np.ndarray,
+                                laha_total_gb: np.ndarray,
+                                est_total_gb: np.ndarray,
+                                out_dir: str) -> None:
+    # Plot
+    fig, ax = plt.subplots(1, 1, figsize=(16, 9), sharex="all", constrained_layout=True)
+    fig: plt.Figure = fig
+    ax: plt.Axes = ax
+
+    fig.suptitle("Actual Laha vs Laha w/o TTL (OPQ)")
+
+    ax.plot(est_dts, est_total_gb, label="Estimated w/o TTL")
+    ax.plot(laha_dts, laha_total_gb, label="Actual w/ TTL")
+    ax.set_ylabel("Size (GB)")
+    ax.set_xlabel("Time (UTC)")
+    ax.legend()
+    # ax.set_yscale("log")
+
+    # # Estimated
+    # ax_estimated = ax[0]
+    # ax_estimated.plot(est_dts, est_total_gb)
+    #
+    # ax_estimated.set_title("Estimated Unbounded Laha with 15 Sensors")
+    # ax_estimated.set_ylabel("Size GB")
+    #
+    # # Actual
+    # ax_actual = ax[1]
+    # ax_actual.plot(laha_dts, laha_total_gb)
+    #
+    # ax_actual.set_title("Actual Laha")
+    # ax_actual.set_ylabel("Size GB")
+
+    # # Estimated - Actual
+    # ax_diff = ax[2]
+    # diff = est_total_gb - laha_total_gb
+    # ax_diff.plot(laha_dts, diff)
+    #
+    # ax_diff.set_title("Difference (Estimated Laha - Actual Laha)")
+    # ax_diff.set_ylabel("Size GB")
+    # ax_diff.set_xlabel("Time (UTC)")
+
+    fig.show()
+    # fig.savefig(f"{out_dir}/actual_laha_vs_unbounded_opq_defense.png")
+
+
 def main():
     # mongo_client: pymongo.MongoClient = pymongo.MongoClient()
     # laha_stats: List[LahaStat] = get_laha_stats(mongo_client)
@@ -1281,75 +1327,73 @@ def main():
     print("Parsing Laha stats...", end=" ")
     laha_stats: List[LahaStat] = load_laha_stats("laha_stats.pickle.db")
     print("Done.")
-    # print("Parsing Sim Data...", end=" ")
-    # sim_data = parse_file("sim_data.txt")
-    # print("Done.")
-    #
-    # print("Aligning Laha stats and Sim Data...", end=" ")
-    # first_laha_stat_timestamp_s: int = laha_stats[0].timestamp_s
-    # last_laha_stat_timestamp_s: int = laha_stats[-1].timestamp_s
-    # time_range: int = last_laha_stat_timestamp_s - first_laha_stat_timestamp_s
-    # aligned: Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] = align_data(
-    #         laha_stats,
-    #         sim_data,
-    #         lambda laha_stat: datetime.datetime.utcfromtimestamp(laha_stat.timestamp_s),
-    #         lambda data: datetime.datetime.utcfromtimestamp(first_laha_stat_timestamp_s + data.time),
-    #         lambda laha_stat: laha_stat,
-    #         lambda sim_data: sim_data
-    # )
-    # print("Done")
-    #
-    # aligned_laha_stats_dts: np.ndarray = aligned[0]
-    # aligned_laha_stats: np.ndarray = aligned[1]
-    # aligned_sim_data_dts: np.ndarray = aligned[2]
-    # aligned_sim_data: np.ndarray = aligned[3]
-    #
-    # print("Extracting features from Laha Stats...", end=" ")
+    print("Parsing Sim Data...", end=" ")
+    sim_data = parse_file("sim_data.txt")
+    print("Done.")
+
+    print("Aligning Laha stats and Sim Data...", end=" ")
+    first_laha_stat_timestamp_s: int = laha_stats[0].timestamp_s
+    last_laha_stat_timestamp_s: int = laha_stats[-1].timestamp_s
+    time_range: int = last_laha_stat_timestamp_s - first_laha_stat_timestamp_s
+    aligned: Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] = align_data(
+            laha_stats,
+            sim_data,
+            lambda laha_stat: datetime.datetime.utcfromtimestamp(laha_stat.timestamp_s),
+            lambda data: datetime.datetime.utcfromtimestamp(first_laha_stat_timestamp_s + data.time),
+            lambda laha_stat: laha_stat,
+            lambda sim_data: sim_data
+    )
+    print("Done")
+
+    aligned_laha_stats_dts: np.ndarray = aligned[0]
+    aligned_laha_stats: np.ndarray = aligned[1]
+    aligned_sim_data_dts: np.ndarray = aligned[2]
+    aligned_sim_data: np.ndarray = aligned[3]
+
+    print("Extracting features from Laha Stats...", end=" ")
     laha_stat_dts: np.ndarray = np.array(
-            list(map(lambda laha_stat: datetime.datetime.utcfromtimestamp(laha_stat.timestamp_s), laha_stats)))
+        list(map(lambda laha_stat: datetime.datetime.utcfromtimestamp(laha_stat.timestamp_s), laha_stats)))
     #
     # # Laha IML
-    # aligned_laha_active_devices: np.ndarray = np.array(
-    #         list(map(lambda laha_stat: laha_stat.laha_stats.active_devices, aligned_laha_stats)))
-    # aligned_laha_iml_total_b: np.ndarray = aligned_laha_active_devices * 12_000 * 2 * 60 * 15
-    # aligned_laha_iml_total_mb: np.ndarray = aligned_laha_iml_total_b / 1_000_000.0
-    # aligned_laha_iml_total_gb: np.ndarray = aligned_laha_iml_total_b / 1_000_000_000.0
+    aligned_laha_active_devices: np.ndarray = np.array(
+            list(map(lambda laha_stat: laha_stat.laha_stats.active_devices, aligned_laha_stats)))
+    aligned_laha_iml_total_b: np.ndarray = aligned_laha_active_devices * 12_000 * 2 * 60 * 15
+    aligned_laha_iml_total_mb: np.ndarray = aligned_laha_iml_total_b / 1_000_000.0
+    aligned_laha_iml_total_gb: np.ndarray = aligned_laha_iml_total_b / 1_000_000_000.0
     #
     laha_active_devices: np.ndarray = np.array(
-            list(map(lambda laha_stat: laha_stat.laha_stats.active_devices, laha_stats)))
+        list(map(lambda laha_stat: laha_stat.laha_stats.active_devices, laha_stats)))
     laha_iml_total_b: np.ndarray = laha_active_devices * 12_000 * 2 * 60 * 15
     laha_iml_total_mb: np.ndarray = laha_iml_total_b / 1_000_000.0
     laha_iml_total_gb: np.ndarray = laha_iml_total_b / 1_000_000_000.0
     #
     # # Laha AML
-    # aligned_laha_measurements: List[LahaMetric] = list(
-    #         map(lambda laha_stat: map_laha_metric(laha_stat, "measurements"), aligned_laha_stats))
-    # aligned_laha_measurements_bytes: np.ndarray = np.array(
-    #         list(map(lambda measurement: measurement.size_bytes, aligned_laha_measurements)))
-    # aligned_laha_measurements_gb: np.ndarray = aligned_laha_measurements_bytes / 1_000_000_000.0
-    # aligned_laha_measurements_gb_zero_offset: np.ndarray = aligned_laha_measurements_gb -
-    # aligned_laha_measurements_gb[
-    #     0]
-    #
-    # aligned_laha_trends: List[LahaMetric] = list(
-    #         map(lambda laha_stat: map_laha_metric(laha_stat, "trends"), aligned_laha_stats))
-    # aligned_laha_trends_bytes: np.ndarray = np.array(list(map(lambda trend: trend.size_bytes, aligned_laha_trends)))
-    # aligned_laha_trends_gb: np.ndarray = aligned_laha_trends_bytes / 1_000_000_000.0
-    # aligned_laha_trends_gb_zero_offset: np.ndarray = aligned_laha_trends_gb - aligned_laha_trends_gb[0]
-    #
-    # aligned_laha_aml_total_gb: np.ndarray = aligned_laha_trends_gb + aligned_laha_measurements_gb
-    # aligned_laha_aml_total_gb_zero_offset: np.ndarray = aligned_laha_trends_gb_zero_offset + \
-    #                                                     aligned_laha_measurements_gb_zero_offset
+    aligned_laha_measurements: List[LahaMetric] = list(
+            map(lambda laha_stat: map_laha_metric(laha_stat, "measurements"), aligned_laha_stats))
+    aligned_laha_measurements_bytes: np.ndarray = np.array(
+            list(map(lambda measurement: measurement.size_bytes, aligned_laha_measurements)))
+    aligned_laha_measurements_gb: np.ndarray = aligned_laha_measurements_bytes / 1_000_000_000.0
+    aligned_laha_measurements_gb_zero_offset: np.ndarray = aligned_laha_measurements_gb - aligned_laha_measurements_gb[0]
+
+    aligned_laha_trends: List[LahaMetric] = list(
+            map(lambda laha_stat: map_laha_metric(laha_stat, "trends"), aligned_laha_stats))
+    aligned_laha_trends_bytes: np.ndarray = np.array(list(map(lambda trend: trend.size_bytes, aligned_laha_trends)))
+    aligned_laha_trends_gb: np.ndarray = aligned_laha_trends_bytes / 1_000_000_000.0
+    aligned_laha_trends_gb_zero_offset: np.ndarray = aligned_laha_trends_gb - aligned_laha_trends_gb[0]
+
+    aligned_laha_aml_total_gb: np.ndarray = aligned_laha_trends_gb + aligned_laha_measurements_gb
+    aligned_laha_aml_total_gb_zero_offset: np.ndarray = aligned_laha_trends_gb_zero_offset + \
+                                                        aligned_laha_measurements_gb_zero_offset
     #
     laha_measurements: List[LahaMetric] = list(
-            map(lambda laha_stat: map_laha_metric(laha_stat, "measurements"), laha_stats))
+        map(lambda laha_stat: map_laha_metric(laha_stat, "measurements"), laha_stats))
     laha_measurements_bytes: np.ndarray = np.array(
-            list(map(lambda measurement: measurement.size_bytes, laha_measurements)))
+        list(map(lambda measurement: measurement.size_bytes, laha_measurements)))
     laha_measurements_gb: np.ndarray = laha_measurements_bytes / 1_000_000_000.0
     laha_measurements_gb_zero_offset: np.ndarray = laha_measurements_gb - laha_measurements_gb[0]
     laha_measurements_cnt: np.ndarray = np.array(list(map(lambda measurement: measurement.count, laha_measurements)))
     laha_measurements_gc: np.ndarray = correct_counts(
-            np.array(list(map(lambda laha_stat: laha_stat.laha_stats.gc_stats.measurements, laha_stats))))
+        np.array(list(map(lambda laha_stat: laha_stat.laha_stats.gc_stats.measurements, laha_stats))))
 
     laha_trends: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "trends"), laha_stats))
     laha_trends_bytes: np.ndarray = np.array(list(map(lambda trend: trend.size_bytes, laha_trends)))
@@ -1357,7 +1401,7 @@ def main():
     laha_trends_gb_zero_offset: np.ndarray = laha_trends_gb - laha_trends_gb[0]
     laha_trends_cnt: np.ndarray = np.array(list(map(lambda trend: trend.count, laha_trends)))
     laha_trends_gc: np.ndarray = correct_counts(
-            np.array(list(map(lambda trend: trend.laha_stats.gc_stats.trends, laha_stats))))
+        np.array(list(map(lambda trend: trend.laha_stats.gc_stats.trends, laha_stats))))
 
     laha_aml_total_cnt: np.ndarray = laha_measurements_cnt + laha_trends_cnt
     laha_aml_total_gc: np.ndarray = laha_measurements_gc + laha_trends_gc
@@ -1365,11 +1409,11 @@ def main():
     laha_aml_total_gb_zero_offset: np.ndarray = laha_trends_gb_zero_offset + laha_measurements_gb_zero_offset
     #
     # # Laha DL
-    # aligned_laha_events: List[LahaMetric] = list(
-    #         map(lambda laha_stat: map_laha_metric(laha_stat, "events"), aligned_laha_stats))
-    # aligned_laha_events_bytes: np.ndarray = np.array(list(map(lambda event: event.size_bytes, aligned_laha_events)))
-    # aligned_laha_events_gb: np.ndarray = aligned_laha_events_bytes / 1_000_000_000.0
-    # aligned_laha_events_gb_offset_zero: np.ndarray = aligned_laha_events_gb - aligned_laha_events_gb[0]
+    aligned_laha_events: List[LahaMetric] = list(
+            map(lambda laha_stat: map_laha_metric(laha_stat, "events"), aligned_laha_stats))
+    aligned_laha_events_bytes: np.ndarray = np.array(list(map(lambda event: event.size_bytes, aligned_laha_events)))
+    aligned_laha_events_gb: np.ndarray = aligned_laha_events_bytes / 1_000_000_000.0
+    aligned_laha_events_gb_offset_zero: np.ndarray = aligned_laha_events_gb - aligned_laha_events_gb[0]
     #
     laha_events: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "events"), laha_stats))
     laha_events_bytes: np.ndarray = np.array(list(map(lambda event: event.size_bytes, laha_events)))
@@ -1377,15 +1421,15 @@ def main():
     laha_events_gb_offset_zero: np.ndarray = laha_events_gb - laha_events_gb[0]
     laha_events_cnt: np.ndarray = np.array(list(map(lambda event: event.count, laha_events)))
     laha_events_gc: np.ndarray = correct_counts(
-            np.array(list(map(lambda laha_stat: laha_stat.laha_stats.gc_stats.events, laha_stats))))
+        np.array(list(map(lambda laha_stat: laha_stat.laha_stats.gc_stats.events, laha_stats))))
     #
     # # Laha IL
-    # aligned_laha_incidents: List[LahaMetric] = list(
-    #         map(lambda laha_stat: map_laha_metric(laha_stat, "incidents"), aligned_laha_stats))
-    # aligned_laha_incidents_bytes: np.ndarray = np.array(
-    #         list(map(lambda incident: incident.size_bytes, aligned_laha_incidents)))
-    # aligned_laha_incidents_gb: np.ndarray = aligned_laha_incidents_bytes / 1_000_000_000.0
-    # aligned_laha_incidents_gb_offset_zero: np.ndarray = aligned_laha_incidents_gb - aligned_laha_incidents_gb[0]
+    aligned_laha_incidents: List[LahaMetric] = list(
+            map(lambda laha_stat: map_laha_metric(laha_stat, "incidents"), aligned_laha_stats))
+    aligned_laha_incidents_bytes: np.ndarray = np.array(
+            list(map(lambda incident: incident.size_bytes, aligned_laha_incidents)))
+    aligned_laha_incidents_gb: np.ndarray = aligned_laha_incidents_bytes / 1_000_000_000.0
+    aligned_laha_incidents_gb_offset_zero: np.ndarray = aligned_laha_incidents_gb - aligned_laha_incidents_gb[0]
     #
     laha_incidents: List[LahaMetric] = list(map(lambda laha_stat: map_laha_metric(laha_stat, "incidents"), laha_stats))
     laha_incidents_bytes: np.ndarray = np.array(list(map(lambda incident: incident.size_bytes, laha_incidents)))
@@ -1393,142 +1437,137 @@ def main():
     laha_incidents_gb_offset_zero: np.ndarray = laha_incidents_gb - laha_incidents_gb[0]
     laha_incidents_cnt: np.ndarray = np.array(list(map(lambda incident: incident.count, laha_incidents)))
     laha_incidents_gc: np.ndarray = correct_counts(
-            np.array(list(map(lambda laha_stat: laha_stat.laha_stats.gc_stats.incidents, laha_stats))))
+        np.array(list(map(lambda laha_stat: laha_stat.laha_stats.gc_stats.incidents, laha_stats))))
     #
     # # Laha
-    # aligned_laha_total_gb: np.ndarray = aligned_laha_iml_total_gb + aligned_laha_aml_total_gb + \
-    #                                     aligned_laha_events_gb + aligned_laha_incidents_gb
-    # aligned_laha_total_gb_offset_zero: np.ndarray = aligned_laha_total_gb - aligned_laha_total_gb[0]
-    #
+    aligned_laha_total_gb: np.ndarray = aligned_laha_iml_total_gb + aligned_laha_aml_total_gb + \
+                                        aligned_laha_events_gb + aligned_laha_incidents_gb
+    aligned_laha_total_gb_offset_zero: np.ndarray = aligned_laha_total_gb - aligned_laha_total_gb[0]
+
     laha_total_gb: np.ndarray = laha_iml_total_gb + laha_aml_total_gb + laha_events_gb + laha_incidents_gb
     laha_total_gb_offset_zero: np.ndarray = laha_total_gb - laha_total_gb[0]
-    # print("Done")
-    #
-    # print("Extracting features from Sim Data...", end=" ")
-    # # Sim IML
-    # aligned_sim_iml_total_b: np.ndarray = np.array(list(map(lambda d: d.total_samples_b, aligned_sim_data)))
-    # aligned_sim_iml_total_mb: np.ndarray = aligned_sim_iml_total_b / 1_000_000.0 * 15
-    # aligned_sim_iml_total_gb: np.ndarray = aligned_sim_iml_total_b / 1_000_000_000.0 * 15
-    #
-    # # Sim AML
-    # aligned_sim_total_measurements_b = np.array(list(map(lambda d: d.total_measurements_b, aligned_sim_data)))
-    # aligned_sim_total_measurements_gb = aligned_sim_total_measurements_b / 1_000_000_000.0 * 15.0
-    # aligned_sim_total_trends_b = np.array(list(map(lambda d: d.total_trends_b, aligned_sim_data)))
-    # aligned_sim_total_trends_gb = aligned_sim_total_trends_b / 1_000_000_000.0 * 15.0
-    # aligned_sim_aml_total_gb = aligned_sim_total_measurements_gb + aligned_sim_total_trends_gb
-    #
-    # # Sim DL
-    # aligned_sim_total_events_b = np.array(list(map(lambda d: d.total_events_b, aligned_sim_data))) * 15.0
-    # aligned_sim_total_events_gb = aligned_sim_total_events_b / 1_000_000_000.0
-    #
-    # # Sim IL
-    # aligned_sim_total_incidents_b = np.array(list(map(lambda d: d.total_incidents_b, aligned_sim_data))) * 15.0
-    # aligned_sim_total_incidents_gb = aligned_sim_total_incidents_b / 1_000_000_000.0
-    #
-    # # Sim total
-    # aligned_sim_total_gb = aligned_sim_iml_total_gb + aligned_sim_aml_total_gb + aligned_sim_total_events_gb + \
-    #                        aligned_sim_total_incidents_gb
-    # print("Done")
-    #
-    # # Estimated data
-    # print("Making estimated data...", end=" ")
-    # estimated_data: List[EstimatedValue] = list(map(EstimatedValue, range(1, time_range + 1)))
-    # print("Done.")
-    # print("Aligning estimated data...", end=" ")
-    # aligned_laha_est_dts, aligned_laha_est_stats, aligned_est_dts, aligned_est_values = align_data(
-    #         laha_stats,
-    #         estimated_data,
-    #         lambda laha_stat: datetime.datetime.utcfromtimestamp(laha_stat.timestamp_s),
-    #         lambda est_val: datetime.datetime.utcfromtimestamp(first_laha_stat_timestamp_s + est_val.x),
-    #         lambda laha_stat: laha_stat,
-    #         lambda est_val: est_val
-    # )
-    # print("Done.")
-    #
-    # print("Extracting estimated parameters...", end=" ")
-    # # Est IML
-    # aligned_laha_est_active_devices: np.ndarray = np.array(
-    #         list(map(lambda laha_stat: laha_stat.laha_stats.active_devices, aligned_laha_est_stats)))
-    # aligned_laha_est_iml_total_b: np.ndarray = aligned_laha_est_active_devices * 12_000 * 2 * 60 * 15
-    # aligned_laha_est_iml_total_mb: np.ndarray = aligned_laha_est_iml_total_b / 1_000_000.0
-    # aligned_laha_est_iml_total_gb: np.ndarray = aligned_laha_est_iml_total_b / 1_000_000_000.0
-    #
-    # aligned_est_iml_total_b: np.ndarray = np.array(list(map(lambda est_val: est_val.iml, aligned_est_values)))
-    # aligned_est_iml_total_mb: np.ndarray = aligned_est_iml_total_b / 1_000_000.0
-    # aligned_est_iml_total_gb: np.ndarray = aligned_est_iml_total_b / 1_000_000_000.0
-    #
-    # # Est AML
-    # aligned_laha_est_measurements: List[LahaMetric] = list(
-    #         map(lambda laha_est_stat: map_laha_metric(laha_est_stat, "measurements"), aligned_laha_est_stats))
-    # aligned_laha_est_measurements_bytes: np.ndarray = np.array(
-    #         list(map(lambda measurement: measurement.size_bytes, aligned_laha_est_measurements)))
-    # aligned_laha_est_measurements_gb: np.ndarray = aligned_laha_est_measurements_bytes / 1_000_000_000.0
-    # aligned_laha_est_measurements_gb_zero_offset: np.ndarray = aligned_laha_est_measurements_gb -
-    # aligned_laha_est_measurements_gb[
-    #     0]
-    #
-    # aligned_laha_est_trends: List[LahaMetric] = list(
-    #         map(lambda laha_est_stat: map_laha_metric(laha_est_stat, "trends"), aligned_laha_est_stats))
-    # aligned_laha_est_trends_bytes: np.ndarray = np.array(list(map(lambda trend: trend.size_bytes,
-    # aligned_laha_est_trends)))
-    # aligned_laha_est_trends_gb: np.ndarray = aligned_laha_est_trends_bytes / 1_000_000_000.0
-    # aligned_laha_est_trends_gb_zero_offset: np.ndarray = aligned_laha_est_trends_gb - aligned_laha_est_trends_gb[0]
-    #
-    # aligned_laha_est_aml_total_gb: np.ndarray = aligned_laha_est_trends_gb + aligned_laha_est_measurements_gb
-    # aligned_laha_est_aml_total_gb_zero_offset: np.ndarray = aligned_laha_est_trends_gb_zero_offset + \
-    #                                                     aligned_laha_est_measurements_gb_zero_offset
-    #
-    # aligned_est_measurements_b: np.ndarray = np.array(list(map(lambda est_val: est_val.aml_measurements,
-    # aligned_est_values)))
-    # aligned_est_measurements_gb: np.ndarray = aligned_est_measurements_b / 1_000_000_000.0
-    #
-    # aligned_est_trends_b: np.ndarray = np.array(list(map(lambda est_val: est_val.aml_trends, aligned_est_values)))
-    # aligned_est_trends_gb: np.ndarray = aligned_est_trends_b / 1_000_000_000.0
-    #
-    # aligned_est_aml_total_b: np.ndarray = np.array(list(map(lambda est_val: est_val.aml_total, aligned_est_values)))
-    # aligned_est_aml_total_gb: np.ndarray = aligned_est_aml_total_b / 1_000_000_000.0
-    #
-    # # Est DL
-    # aligned_laha_est_events: List[LahaMetric] = list(
-    #         map(lambda laha_est_stat: map_laha_metric(laha_est_stat, "events"), aligned_laha_est_stats))
-    # aligned_laha_est_events_bytes: np.ndarray = np.array(list(map(lambda event: event.size_bytes,
-    # aligned_laha_est_events)))
-    # aligned_laha_est_events_gb: np.ndarray = aligned_laha_est_events_bytes / 1_000_000_000.0
-    # aligned_laha_est_events_gb_offset_zero: np.ndarray = aligned_laha_est_events_gb - aligned_laha_est_events_gb[0]
-    #
-    # aligned_est_events_total_b: np.ndarray = np.array(list(map(lambda est_val: est_val.dl, aligned_est_values)))
-    # aligned_est_events_total_gb: np.ndarray = aligned_est_events_total_b / 1_000_000_000.0
-    #
-    # # Est IL
-    # aligned_laha_est_incidents: List[LahaMetric] = list(
-    #         map(lambda laha_est_stat: map_laha_metric(laha_est_stat, "incidents"), aligned_laha_est_stats))
-    # aligned_laha_est_incidents_bytes: np.ndarray = np.array(
-    #         list(map(lambda incident: incident.size_bytes, aligned_laha_est_incidents)))
-    # aligned_laha_est_incidents_gb: np.ndarray = aligned_laha_est_incidents_bytes / 1_000_000_000.0
-    # aligned_laha_est_incidents_gb_offset_zero: np.ndarray = aligned_laha_est_incidents_gb -
-    # aligned_laha_est_incidents_gb[0]
-    #
-    # aligned_est_incidents_total_b: np.ndarray = np.array(list(map(lambda est_val: est_val.il, aligned_est_values)))
-    # aligned_est_incidents_total_gb: np.ndarray = aligned_est_incidents_total_b / 1_000_000_000.0
-    #
-    # # Est Total
-    # aligned_laha_est_total_gb: np.ndarray = aligned_laha_est_iml_total_gb + aligned_laha_est_aml_total_gb + \
-    #                                     aligned_laha_est_events_gb + aligned_laha_est_incidents_gb
-    # aligned_laha_est_total_gb_offset_zero: np.ndarray = aligned_laha_est_total_gb - aligned_laha_est_total_gb[0]
-    #
-    # aligned_est_total_gb: np.ndarray = aligned_est_iml_total_gb + aligned_est_aml_total_gb +
-    # aligned_est_events_total_gb \
-    #                             + aligned_est_incidents_total_gb
-    #
-    # aligned_laha_est_total_gb_sans_iml: np.ndarray = aligned_laha_est_aml_total_gb + \
-    #                                         aligned_laha_est_events_gb + aligned_laha_est_incidents_gb
-    # aligned_laha_est_total_gb_offset_zero_sans_iml: np.ndarray = aligned_laha_est_total_gb_sans_iml -
-    # aligned_laha_est_total_gb_sans_iml[0]
-    #
-    # aligned_est_total_gb_sans_iml: np.ndarray = aligned_est_aml_total_gb + aligned_est_events_total_gb \
-    #                                    + aligned_est_incidents_total_gb
-    #
-    # print("Done.")
+    print("Done")
+
+    print("Extracting features from Sim Data...", end=" ")
+    # Sim IML
+    aligned_sim_iml_total_b: np.ndarray = np.array(list(map(lambda d: d.total_samples_b, aligned_sim_data)))
+    aligned_sim_iml_total_mb: np.ndarray = aligned_sim_iml_total_b / 1_000_000.0 * 15
+    aligned_sim_iml_total_gb: np.ndarray = aligned_sim_iml_total_b / 1_000_000_000.0 * 15
+
+    # Sim AML
+    aligned_sim_total_measurements_b = np.array(list(map(lambda d: d.total_measurements_b, aligned_sim_data)))
+    aligned_sim_total_measurements_gb = aligned_sim_total_measurements_b / 1_000_000_000.0 * 15.0
+    aligned_sim_total_trends_b = np.array(list(map(lambda d: d.total_trends_b, aligned_sim_data)))
+    aligned_sim_total_trends_gb = aligned_sim_total_trends_b / 1_000_000_000.0 * 15.0
+    aligned_sim_aml_total_gb = aligned_sim_total_measurements_gb + aligned_sim_total_trends_gb
+
+    # Sim DL
+    aligned_sim_total_events_b = np.array(list(map(lambda d: d.total_events_b, aligned_sim_data))) * 15.0
+    aligned_sim_total_events_gb = aligned_sim_total_events_b / 1_000_000_000.0
+
+    # Sim IL
+    aligned_sim_total_incidents_b = np.array(list(map(lambda d: d.total_incidents_b, aligned_sim_data))) * 15.0
+    aligned_sim_total_incidents_gb = aligned_sim_total_incidents_b / 1_000_000_000.0
+
+    # Sim total
+    aligned_sim_total_gb = aligned_sim_iml_total_gb + aligned_sim_aml_total_gb + aligned_sim_total_events_gb + \
+                           aligned_sim_total_incidents_gb
+    print("Done")
+
+    # Estimated data
+    print("Making estimated data...", end=" ")
+    estimated_data: List[EstimatedValue] = list(map(EstimatedValue, range(1, time_range + 1)))
+    print("Done.")
+    print("Aligning estimated data...", end=" ")
+    aligned_laha_est_dts, aligned_laha_est_stats, aligned_est_dts, aligned_est_values = align_data(
+            laha_stats,
+            estimated_data,
+            lambda laha_stat: datetime.datetime.utcfromtimestamp(laha_stat.timestamp_s),
+            lambda est_val: datetime.datetime.utcfromtimestamp(first_laha_stat_timestamp_s + est_val.x),
+            lambda laha_stat: laha_stat,
+            lambda est_val: est_val
+    )
+    print("Done.")
+
+    print("Extracting estimated parameters...", end=" ")
+    # Est IML
+    aligned_laha_est_active_devices: np.ndarray = np.array(
+            list(map(lambda laha_stat: laha_stat.laha_stats.active_devices, aligned_laha_est_stats)))
+    aligned_laha_est_iml_total_b: np.ndarray = aligned_laha_est_active_devices * 12_000 * 2 * 60 * 15
+    aligned_laha_est_iml_total_mb: np.ndarray = aligned_laha_est_iml_total_b / 1_000_000.0
+    aligned_laha_est_iml_total_gb: np.ndarray = aligned_laha_est_iml_total_b / 1_000_000_000.0
+
+    aligned_est_iml_total_b: np.ndarray = np.array(list(map(lambda est_val: est_val.iml, aligned_est_values)))
+    aligned_est_iml_total_mb: np.ndarray = aligned_est_iml_total_b / 1_000_000.0
+    aligned_est_iml_total_gb: np.ndarray = aligned_est_iml_total_b / 1_000_000_000.0
+
+    # Est AML
+    aligned_laha_est_measurements: List[LahaMetric] = list(
+            map(lambda laha_est_stat: map_laha_metric(laha_est_stat, "measurements"), aligned_laha_est_stats))
+    aligned_laha_est_measurements_bytes: np.ndarray = np.array(
+            list(map(lambda measurement: measurement.size_bytes, aligned_laha_est_measurements)))
+    aligned_laha_est_measurements_gb: np.ndarray = aligned_laha_est_measurements_bytes / 1_000_000_000.0
+    aligned_laha_est_measurements_gb_zero_offset: np.ndarray = aligned_laha_est_measurements_gb - aligned_laha_est_measurements_gb[0]
+
+    aligned_laha_est_trends: List[LahaMetric] = list(
+            map(lambda laha_est_stat: map_laha_metric(laha_est_stat, "trends"), aligned_laha_est_stats))
+    aligned_laha_est_trends_bytes: np.ndarray = np.array(list(map(lambda trend: trend.size_bytes,
+    aligned_laha_est_trends)))
+    aligned_laha_est_trends_gb: np.ndarray = aligned_laha_est_trends_bytes / 1_000_000_000.0
+    aligned_laha_est_trends_gb_zero_offset: np.ndarray = aligned_laha_est_trends_gb - aligned_laha_est_trends_gb[0]
+
+    aligned_laha_est_aml_total_gb: np.ndarray = aligned_laha_est_trends_gb + aligned_laha_est_measurements_gb
+    aligned_laha_est_aml_total_gb_zero_offset: np.ndarray = aligned_laha_est_trends_gb_zero_offset + \
+                                                        aligned_laha_est_measurements_gb_zero_offset
+
+    aligned_est_measurements_b: np.ndarray = np.array(list(map(lambda est_val: est_val.aml_measurements,
+    aligned_est_values)))
+    aligned_est_measurements_gb: np.ndarray = aligned_est_measurements_b / 1_000_000_000.0
+
+    aligned_est_trends_b: np.ndarray = np.array(list(map(lambda est_val: est_val.aml_trends, aligned_est_values)))
+    aligned_est_trends_gb: np.ndarray = aligned_est_trends_b / 1_000_000_000.0
+
+    aligned_est_aml_total_b: np.ndarray = np.array(list(map(lambda est_val: est_val.aml_total, aligned_est_values)))
+    aligned_est_aml_total_gb: np.ndarray = aligned_est_aml_total_b / 1_000_000_000.0
+
+    # Est DL
+    aligned_laha_est_events: List[LahaMetric] = list(
+            map(lambda laha_est_stat: map_laha_metric(laha_est_stat, "events"), aligned_laha_est_stats))
+    aligned_laha_est_events_bytes: np.ndarray = np.array(list(map(lambda event: event.size_bytes,
+    aligned_laha_est_events)))
+    aligned_laha_est_events_gb: np.ndarray = aligned_laha_est_events_bytes / 1_000_000_000.0
+    aligned_laha_est_events_gb_offset_zero: np.ndarray = aligned_laha_est_events_gb - aligned_laha_est_events_gb[0]
+
+    aligned_est_events_total_b: np.ndarray = np.array(list(map(lambda est_val: est_val.dl, aligned_est_values)))
+    aligned_est_events_total_gb: np.ndarray = aligned_est_events_total_b / 1_000_000_000.0
+
+    # Est IL
+    aligned_laha_est_incidents: List[LahaMetric] = list(
+            map(lambda laha_est_stat: map_laha_metric(laha_est_stat, "incidents"), aligned_laha_est_stats))
+    aligned_laha_est_incidents_bytes: np.ndarray = np.array(
+            list(map(lambda incident: incident.size_bytes, aligned_laha_est_incidents)))
+    aligned_laha_est_incidents_gb: np.ndarray = aligned_laha_est_incidents_bytes / 1_000_000_000.0
+    aligned_laha_est_incidents_gb_offset_zero: np.ndarray = aligned_laha_est_incidents_gb - aligned_laha_est_incidents_gb[0]
+
+    aligned_est_incidents_total_b: np.ndarray = np.array(list(map(lambda est_val: est_val.il, aligned_est_values)))
+    aligned_est_incidents_total_gb: np.ndarray = aligned_est_incidents_total_b / 1_000_000_000.0
+
+    # Est Total
+    aligned_laha_est_total_gb: np.ndarray = aligned_laha_est_iml_total_gb + aligned_laha_est_aml_total_gb + \
+                                        aligned_laha_est_events_gb + aligned_laha_est_incidents_gb
+    aligned_laha_est_total_gb_offset_zero: np.ndarray = aligned_laha_est_total_gb - aligned_laha_est_total_gb[0]
+
+    aligned_est_total_gb: np.ndarray = aligned_est_iml_total_gb + aligned_est_aml_total_gb + aligned_est_events_total_gb \
+                                + aligned_est_incidents_total_gb
+
+    aligned_laha_est_total_gb_sans_iml: np.ndarray = aligned_laha_est_aml_total_gb + \
+                                            aligned_laha_est_events_gb + aligned_laha_est_incidents_gb
+    aligned_laha_est_total_gb_offset_zero_sans_iml: np.ndarray = aligned_laha_est_total_gb_sans_iml - aligned_laha_est_total_gb_sans_iml[0]
+
+    aligned_est_total_gb_sans_iml: np.ndarray = aligned_est_aml_total_gb + aligned_est_events_total_gb \
+                                       + aligned_est_incidents_total_gb
+
+    print("Done.")
 
     out_dir: str = "/home/opq/Documents/anthony/dissertation/src/figures"
 
@@ -1567,14 +1606,14 @@ def main():
     #         laha_active_devices,
     #         out_dir)
 
-    plot_laha(laha_stat_dts,
-              laha_iml_total_gb,
-              laha_aml_total_gb,
-              laha_events_gb,
-              laha_incidents_gb,
-              np.array([0.002 for _ in laha_stat_dts]),
-              laha_total_gb,
-              out_dir)
+    # plot_laha(laha_stat_dts,
+    #           laha_iml_total_gb,
+    #           laha_aml_total_gb,
+    #           laha_events_gb,
+    #           laha_incidents_gb,
+    #           np.array([0.002 for _ in laha_stat_dts]),
+    #           laha_total_gb,
+    #           out_dir)
 
     # plot_iml_vs_no_tll(aligned_laha_est_dts,
     #                    aligned_est_dts,
@@ -1609,6 +1648,11 @@ def main():
     #                     aligned_laha_est_total_gb_offset_zero,
     #                     aligned_est_total_gb,
     #                     out_dir)
+    plot_laha_vs_no_tll_defense(aligned_laha_est_dts,
+                                aligned_est_dts,
+                                aligned_laha_est_total_gb_offset_zero,
+                                aligned_est_total_gb,
+                                out_dir)
     #
     # plot_laha_vs_no_tll_no_iml(aligned_laha_est_dts,
     #                            aligned_est_dts,

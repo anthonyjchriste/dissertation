@@ -145,3 +145,4 @@ src/dissertation-christe.pdf
 out
 auxil
 /src/dissertation-christe.auxbbl.make.temp
+__pycache__
