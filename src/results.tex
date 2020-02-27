@@ -741,33 +741,33 @@ Locations of Lokahi sensors during the period of the Lokahi deployment were prov
 
 I will now summarize and showcase some of the most interesting data that was collected from Lokahi that meets the requirements set forth in the Evaluation chapter. In particular, I will show that Lokahi is able to detect infrasonic signals generated from a diverse set of sources.
 
-\subsubsection{Big Island Earth Quake}
-Figure~\ref{fig:quake_1} and Figure~\ref{fig:quake_2} show a magnitude 4.5 earth quake (USGS\cite{usgs_quake}) that was detected in the infrasound range and by accelerometers on the Big Island of Hawaii on August 12 2019. The earth quake was observed by four sensors. I show only one sensor here (and the rest of this section) for brevity. The full results for all examples are publicly available online\cite{redvox_reports}.
+\subsubsection{Big Island Earthquake}
+Figure~\ref{fig:quake_1} and Figure~\ref{fig:quake_2} show a magnitude 4.5 earthquake (USGS\cite{usgs_quake}) that was detected in the infrasound range and by accelerometers on the Big Island of Hawaii on August 12 2019. The earthquake was observed by four sensors. I show only one sensor here (and the rest of this section) for brevity. The full results for all examples are publicly available online\cite{redvox_reports}.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{figures/quake_1.png}
-    \caption{Infrasound of Earth Quake}
+    \caption{Infrasound of Earthquake}
     \label{fig:quake_1}
 \end{figure}
 
-The above Figure shows the infrasound spike created by the earth quake.
+The above Figure shows the infrasound spike created by the earthquake.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{figures/quake_2.png}
-    \caption{Accelerometer of Earth Quake}
+    \caption{Accelerometer of Earthquake}
     \label{fig:quake_2}
 \end{figure}
 
-The above Figure shows the anomalous accelerometer readings during the earth quake.
+The above Figure shows the anomalous accelerometer readings during the earthquake.
 
-Figure~\ref{fig:quake_3} shows the map of the earth quake epicenter (in red) and the location of the sensors (white are iPhones and green are Android phones) when the earthquake occurred.
+Figure~\ref{fig:quake_3} shows the map of the earthquake epicenter (in red) and the location of the sensors (white are iPhones and green are Android phones) when the earthquake occurred.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=.50\linewidth]{figures/quake_3.png}
-    \caption{Location of Earth Quake and Sensors}
+    \caption{Location of Earthquake and Sensors}
     \label{fig:quake_3}
 \end{figure}
 
@@ -872,7 +872,7 @@ First, I provide a summary of Laha's strengths in relation to common DSN propert
         Data Acquisition & Laha is better suited for networks that have the ability provide low level data required for higher level analysis. \\
         Sensor Availability & Laha expects sensors to be networked and that sensors provide data in close to real-time for Event, Incident, and Phenomena generation. \\
         Numerous Events & Laha's Phenomena rely on a large number of Events and Incidents to be present in the network to inform Phenomena. \\
-        Multiple Signal Classifications & Laha works best with multi-modal data that can be classified in more than two ways. \\
+        Multiple Signal Classifications & Laha works best with multi-modal data that can be classified in more than two ways since the added overhead of Laha may be too much for simple classification schemes. \\
         Designed For Laha & It's easier to design a network around Laha than it is to fit Laha into an existing network. \\
         Other DSNs & Laha's benefits would be useful in any network that utilizes high volume and near real-time data transfer. Some examples include earthquake monitoring, environmental monitoring, and traffic monitoring. \\
         \bottomrule
@@ -916,7 +916,7 @@ Lokahi on the other hand has goals of providing a secure and stable Infrasound n
 I believe that Laha would be useful in many distributed sensing domains that collect large amounts of data and provide opportunities for many different types of signal classifications. Although not part of my direct research, Lokahi is experimenting with including other sensor data other than infrasound such as magnetometer, accelerometer, gyroscope, light, and barometer in order to provide more sensing modalities. Laha provides a basis for integrating and analyzing these new sensing modalities.
 
 \subsubsection{Summary of Laha Benefits and Weaknesses}
-In summary, I believe Laha would be a great fit for long running networks that provide high data rates and multiple classification possibilities. These include networks that perform earth quake monitoring where signals are few and far between, environmental monitoring with multi-modal data, traffic monitoring and traffic incident detection, and security monitoring with security incident detection to name a few. As network speeds increase and as the availability of low cost networked embedded computers become more prevalent, Laha awaits to manage the distributed sensor networks of the future.
+In summary, I believe Laha would be a great fit for long running networks that provide high data rates and multiple classification possibilities. These include networks that perform earthquake monitoring where signals are few and far between, environmental monitoring with multi-modal data, traffic monitoring and traffic incident detection, and security monitoring with security incident detection to name a few. As network speeds increase and as the availability of low cost networked embedded computers become more prevalent, Laha awaits to manage the distributed sensor networks of the future.
 
 Laha is not well suited for networks with low data rates or simple classifications schemes due to the added complexity. For simple networks such as these, traditional DSN optimization and management approaches are likely more useful.
 
