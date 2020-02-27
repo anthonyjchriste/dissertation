@@ -247,7 +247,7 @@ OPQ Makai is the central sink and triggering daemon for the OPQ framework. It is
 
 \subsubsection{Dynamic Triggering}\label{subsubsec:dynamic-triggering}
 
-While Makai is mostly implemented by my colleague Sergey Negrashov, I implemented my own triggering logic into Makai to trigger PQ Events. This threshold based triggering is written as a Rust plugin for Makai's TriggeringService. The plugin receives a stream of Measurements of OPQ Boxes. Each Measurement contains min, max, and average values for frequency, voltage, and THD over the Measurement's time window.
+While Makai is mostly implemented by my colleague Sergey Negrashov, I implemented my own triggering logic into Makai to trigger PQ Events. This threshold based triggering is written as a Rust~\cite{rust:2019} plugin for Makai's TriggeringService. The plugin receives a stream of Measurements of OPQ Boxes. Each Measurement contains min, max, and average values for frequency, voltage, and THD over the Measurement's time window.
 
 This plugin checks if a Measurement stream from a Box passes minimum or maximum thresholds for the Measurement's features. Thresholds are provided in the Mongo database in the collection ``makai\_config". The thresholds are provided as minimum and maximum percentages from nominal. For example, the database provides values for nominal voltage and frequency (120$V$ and 60$Hz$ respectively) and thresholds for minimum and maximum percentage from nominal for voltage and frequency. It also checks the maximum percent of THD from 0.
 
@@ -257,7 +257,7 @@ All thresholds are cached for performance reasons. Values from Measurements are 
 
 Thresholds are dynamic and can be modified by the ``ThresholdOptimizationPlugin" (described in Section~\ref{subsubsec:threshold-optimization-pugin}) in Mauka.
 
-This plugin utilizes a finite state machine (FSM) which maintains the triggering state for each feature for each Box. There are only two triggering states, ``TRIGGERING" and ``NOMINAL". If a feature for a Box passes a minimum or maximum threshold for a Box feature, then the state for that feature moves into the TRIGGERING state. If and when that feature is no longer passing the threshold, the state for that feature moves into the NOMINAL state and a trigger request is made for that Box which includes the time window of when that Box feature was in the TRIGGERING state.
+This plugin utilizes a finite state machine (FSM) which maintains the triggering state for each feature for each Box. There are only three states, ``Check Metrics", ``Metrics Non-Nominal" and ``Trigger Sensor". If a feature for a Box passes a minimum or maximum threshold for a Box feature, then the state for that feature moves from the ``Check Metrics" state into the ``Metrics Non-Nominal" state. The ``Metrics Non-Nominal" state remains in effect until the data is no longer passing the threshold, at which time, a trigger is sent to the sensors requesting data for the time window of the entire ``Non-Nominal" state. Once the trigger has been made, the state transitions back into the ``Check Metrics" state.
 
 From here, Makai handles Event storage and notification of the triggered Boxes.
 
@@ -1453,13 +1453,13 @@ Lokahi is made up of several distributed services, each of which will be discuss
 \subsection{Lokahi Data Acquisition Service}\label{subsec:lokahi-data-acquisition-service}
 The data acquisition service is responsible for acquiring, authenticating, storing, and moving real-time sensor data from Lokahi sensors.
 
-The data acquisition service is written in Rust~\cite{rust:2019} and makes use of Actix Actors~\cite{actix:2019} for scalability and distributed communication. Originally, the data acquisition server was written in Java using Akka Actors. I recently moved the acquisition server to Rust so that it can be run on embedded hardware such as Raspberry Pis in resource restricted environments or on the edge of networks. Rust also provides performances improvements in terms of CPU utilization and memory utilization.
+The data acquisition service is written in Rust~\cite{rust:2019} and makes use of Actix Actors~\cite{actix:2019} for scalability and distributed communication. Originally, the data acquisition server was written in Java using Akka Actors~\cite{akka:2019}. I recently moved the acquisition server to Rust so that it can be run on embedded hardware such as Raspberry Pis in resource restricted environments or on the edge of networks. Rust also provides performances improvements in terms of CPU utilization and memory utilization.
 
 Type safe data is passed between actors where each actor fulfills a single purpose. When an actor successfully completes a unit of work, it responds with an empty success message to the calling actor. If an actor fails to complete a unit of work, it responds with a type safe error message to the calling actor. Errors messages are passed up the chain until they get to the original caller.
 
 All actors in this service are optional and configurable. For instance, this service can be brought up with the sole purpose of writing the data to a file system and nothing else, or acting  solely as a data relay, or only storing data to AWS S3, or it can do it all.
 
-Further, multiple Actors can be ran concurrently with different configurations. For instance, it's possible to define multiple Kafka actors, each with their own encryption and endpoint configurations, or you could write data to multiple file systems by configuring multiple file system Actors, etc.
+Further, multiple Actors can be ran concurrently with different configurations. For instance, it's possible to define multiple Kafka~\cite{kreps2011kafka} actors, each with their own encryption and endpoint configurations, or you could write data to multiple file systems by configuring multiple file system Actors, etc.
 
 It's also possible to configure each actor with whitelists and blacklists where items can be added by sensor Id or sensor owner. In this way, the configuration for each actor can be fine tuned to only allow certain sensors or sets of sensors or disallow sets of sensors. This is utilized when we require that only a subset of data received be forwarded to a particular actor. For instance, when we share real time data with our collaborators, they are only interested in a certain subset of data that we are receiving. Therefore, we create a whitelist with their information so that they only receive the data they are interested in. On the other hand, that data may be sensitive, so we black list it on other actors so that data is not forwarded to those actors.
 
@@ -1695,7 +1695,7 @@ api900/[YYYY]/[MM]/[DD]/[sensor\_id]\_[packet\_timestamp\_ms].rdvxz.
 The data can optionally be stored to any accessible file system using the ``Fs Actor". This is useful in cases when your acquisition server may only have local network access, such as restricted sites with an acquisition server running on a Raspberry Pi on a LAN\@.
 
 \subsubsection{Kafka Actor}
-The compressed data is next produced to several Apache Kafka endpoints using the ``Kafka Actor".
+The compressed data is next produced to several Apache Kafka~\cite{kreps2011kafka} endpoints using the ``Kafka Actor".
 
 Apache Kafka provides a distributed messaging queue that can use publish/subscribe semantics. Lokahi uses Kafka for inter-process distributed communication and for providing a real-time data endpoint for our collaborators. Lokahi manages an internal Kafka queue that acts as a ring buffer for storing an hours worth of real-time data for each device. This real-time ring buffer is used for generating real time plots of data without needing to access the database or pull the data from AWS S3.
 
