@@ -1764,7 +1764,7 @@ The protocol used for communicating message exchanges is a simple binary protoco
 System health is provided by three open source components Prometheus, Grafana, and node\_exporter. Prometheus is a time series database for metric collection and Grafana is a visualization solution for time series databases. ``node\_exporter" is installed on each system for collecting system statistics and sending them to a Prometheus endpoint. With these three systems, we are able to provide coverage for all performance metrics required by Lokahi.
 
 \subsubsection{Up/Down Metrics}
-node\_exporter, other than collecting system statistics, provides a simple metric for whether or not a system or service is up or down. This provides a base line of performance metrics. When a system goes down, an e-mail alert is sent to all interested parties. An example of our Up/Down interface is provided in Figure~\ref{fig:updown}.
+node\_exporter, other than collecting system statistics, provides a simple metric for whether or not a system or service is up or down. This provides a base line of performance metrics. When a system goes down, an e-mail alert is sent to all interested parties. An example of our Up/Down interface is provided in Figure~\ref{fig:updown} which shows which services are currently working and which services require maintenance.
 
 \begin{figure}
 	\centering
@@ -1773,7 +1773,7 @@ node\_exporter, other than collecting system statistics, provides a simple metri
 	\label{fig:updown}
 \end{figure}
 
-It's also possible to display a historic view up Up/Down metrics as shown in Figure~\ref{fig:updownhist}.
+It's also possible to display a historic view up Up/Down metrics as shown in Figure~\ref{fig:updownhist}. When services are up, they display a value of ``1" and when services are down, the plot drops below ``1" indicating that the service was down for a certain amount of time.
 
 \begin{figure}
 	\centering
@@ -1809,7 +1809,7 @@ When the analysis is completed, metadata data about the analysis is stored to Mo
 Lokahi Analysis is capable of creating the following products from sensor data:
 
 \begin{itemize}
-	\item Linear Microphone Waveform and FFT
+	\item Linear Microphone Waveform and Fast Fourier Transform (FFT)
 	\item Log Microphone Waveform and FFT
 	\item Multiresolution Microphone
 	\item Barometer FFT
@@ -1821,6 +1821,8 @@ Lokahi Analysis is capable of creating the following products from sensor data:
 	\item Accelerometer Waveform and FFT
 	\item Light Waveform and FFT
 \end{itemize}
+
+In the above list, ``FFT" stands for Fast Fourier Transform which converts a signal from the time domain into the frequency domain for frequency analysis.
 
 Figures are generating using Python's matplotlib library. Most of the sensor analysis was implemented by colleagues at the Infrasound Laboratory in Kailua-Kona. I merely provided the infrastructure that allows them to run their geophysical analysis.
 
