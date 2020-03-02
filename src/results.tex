@@ -2,7 +2,7 @@
 
 \section{Results of Validating Data Collected by Deployments}\label{sec:ground-truth-analysis}
 
-Ground truth analysis compares data collected by the OPQ and Lokahi networks to data that is assumed to be correct. The collected data is compared to the ground truth data in order to determine how similar it is to the ``correct" data. The requirement to perform ground truth analysis was provided in Section~\ref{subsec:anticipated-contributions}. The analysis performed in the next sections utilized the evaluation method from Section~\ref{sec:validate-data-collected-by-laha-deployment} in an attempt to provide evidence that the Lokahi and OPQ networks collect data that is as close to correct as possible and provides discussions on when and why this data doesn't always exactly match the ground truth data.
+Ground truth analysis compares data collected by the OPQ and Lokahi networks to data that is assumed to be correct. The collected data is compared to the ground truth data in order to determine how similar it is to the ``correct" data. The requirement to perform ground truth analysis was provided in Section~\ref{subsec:anticipated-contributions}. The analysis performed in the next sections utilized the evaluation method from Section~\ref{sec:validate-data-collected-by-laha-deployment} in an attempt to provide evidence that the Lokahi and OPQ networks collect data that is as close to correct as possible and provides discussions on when and why this data does not always exactly match the ground truth data.
 
 \subsection{Ground Truth Analysis: OPQ}\label{subsec:ground-truth-analysis:-opq}
 
@@ -16,7 +16,7 @@ I collected the following available features for ground truth data: ``Frequency"
 
 The frequency and THD Measurements are in units that are similar to what OPQ collects (frequency @ 60Hz and \% THD), but the voltage values are in RMS at 420V and 240V where OPQ collects RMS at 120V. This means that the voltage values can not be compared directly and that we either need to scale the voltage values or use straight thresholds for determining Events and Incidents. Further, the ground truth values for voltage are provided for each of the three voltage phases whereas OPQ Boxes compute RMS voltage from a combination of three phases. This needs to be considered before comparing ground truth voltage to OPQ voltage Measurements.
 
-Although the frequency and THD ground truth Measurements are scaled the same as OPQ observations, it's not clear what size of computation window the ground truth sensors utilize to make these calculations. I expect to see slight differences between what Mauka observed and what the UHM meters observed due to these differences.
+Although the frequency and THD ground truth Measurements are scaled the same as OPQ observations, it is not clear what size of computation window the ground truth sensors utilize to make these calculations. I expect to see slight differences between what Mauka observed and what the UHM meters observed due to these differences.
 
 To complicate things, we do not have a UHM meter co-located with every OPQ Box and several of our Boxes are co-located with multiple UHM meters making the determination of which combination of Box and Meter to compare not straight forward.
 
@@ -146,7 +146,7 @@ For example, Figure~\ref{fig:v_hist_ii} compares Box 1001 in POST to the POST\_M
     \label{fig:v_hist_ii}
 \end{figure}
 
-The green Gaussian fit shows voltages collected during night time hours where the orange Gaussian fit shows values collected during the day time hours. It's interesting that Box 1000 and Box 1002 show such different results even though the Boxes are located on the same floor within the same building. The Boxes are however opposite each other within the building. I suspect that these Boxes are serviced by different electrical mains within the building. These claims are further supported by THD ground truth analysis in the following section which contains THD data for each electrical main.
+The green Gaussian fit shows voltages collected during night time hours where the orange Gaussian fit shows values collected during the day time hours. It is interesting that Box 1000 and Box 1002 show such different results even though the Boxes are located on the same floor within the same building. The Boxes are however opposite each other within the building. I suspect that these Boxes are serviced by different electrical mains within the building. These claims are further supported by THD ground truth analysis in the following section which contains THD data for each electrical main.
 
 Even more interesting is that several of our voltage comparisons show three separate Gaussian distributions. As example, Figure~\ref{fig:v_hist_iii} compares voltage values between Box 1021 and the MARINE\_SCIENCE\_MAIN\_A\_MTR.
 
@@ -213,7 +213,7 @@ Figure~\ref{fig:gt_thd_i} compares THD between the Pacific Ocean Science and Tec
 
 The THD comparisons within the POST building provides several interesting features to discuss.
 
-First, POST has two ground truth meters (POST\_MAIN\_1 and POST\_MAIN\_2) and two OPQ Boxes (1000 in the Collaborative Software Development Lab (CSDL) and 1002 in ICSpace). Both OPQ Boxes are on the third floor, roughly opposite each other in the building. As mentioned previously, I do not know exactly which electrical subsystem each OPQ Box is on when there are multiple electrical mains servicing a single building. In the case of POST, there are two electrical mains. I believe it's possible to guess which OPQ Box corresponds with which main by looking at the ground truth comparisons.
+First, POST has two ground truth meters (POST\_MAIN\_1 and POST\_MAIN\_2) and two OPQ Boxes (1000 in the Collaborative Software Development Lab (CSDL) and 1002 in ICSpace). Both OPQ Boxes are on the third floor, roughly opposite each other in the building. As mentioned previously, I do not know exactly which electrical subsystem each OPQ Box is on when there are multiple electrical mains servicing a single building. In the case of POST, there are two electrical mains. I believe it is possible to guess which OPQ Box corresponds with which main by looking at the ground truth comparisons.
 
 For instance, OPQ Box 1000 vs. POST\_MAIN\_2 provides a much smaller spread in THD difference (about .25\% THD) than OPQ Box 1000 vs. POST\_MAIN\_2 which has a spread of close to 1\% THD. I speculate that OPQ Box 1000 is on the same main as the POST\_MAIN\_2 meter. The opposite holds true for OPQ Box 1002. The spread for Box 1002 is smaller for POST\_MAIN\_1 (about 0.3\% THD) than it is for POST\_MAIN\_2 (about 0.6\% THD) which leads me to speculate that Box 1002 may be serviced by the same electrical main as the POST\_MAIN\_1 meter. These assumptions fit with assumptions made about the voltage comparisons in the previous sections providing credence to the idea that 1000 and 1002 are serviced by separate mains with POST.
 
@@ -296,7 +296,7 @@ Boxes 1002 and 1021 show fairly anomalous results compared to the ground truth.
 
 One useful observation is that the main force driving Event generation within Mauka is THD Events. THD thresholds were set at 3\% for Event generation. Most ground truth data shows that ~80\% of all Events generated are likely caused by crossing the THD thresholds with close to 18\% being caused by voltage threshold crossings. Only a very small percentage of Events generated were generated by frequency threshold crossings. This means that observed differences in THD and voltage readings between OPQ Boxes and ground truth sensors explain the differences that can be observed between ground truth data and OPQ Boxes.
 
-For example, let's examine Box 1021 as a case study which observed 3,613 Events while ground truth only observed 391 Events. Figure~\ref{fig:gt_all_msb} shows the ground truth data for the MARINE\_SCIENCE\_MCC\_MTR sensor.
+For example, let us examine Box 1021 as a case study which observed 3,613 Events while ground truth only observed 391 Events. Figure~\ref{fig:gt_all_msb} shows the ground truth data for the MARINE\_SCIENCE\_MCC\_MTR sensor.
 
 \begin{figure}[H]
     \centering
@@ -327,7 +327,7 @@ The results for Box 1002 can also be explained using similar methodology. Figure
     \label{fig:gt_all_post_1}
 \end{figure}
 
-This time, THD is not the cause of the large difference in the comparison. Instead, it's the voltage readings. Box 1002 reads on average 1.7 Volts higher than what is reported by ground truth. Figure~\ref{fig:gt_adj_post_1} shows the ground truth data adjusted to be 1.7 Volts higher.
+This time, THD is not the cause of the large difference in the comparison. Instead, it is the voltage readings. Box 1002 reads on average 1.7 Volts higher than what is reported by ground truth. Figure~\ref{fig:gt_adj_post_1} shows the ground truth data adjusted to be 1.7 Volts higher.
 
 \begin{figure}[H]
     \centering
@@ -356,7 +356,7 @@ Incidents were compared using one month of data from December 1 to December 30.
 
 \paragraph{Voltage Incidents Comparison}
 
-Voltage Incidents include voltage sags, swells and interruptions as well as Semi-F47 and ITIC classifications. All voltage Incidents rely on the duration of the Incident in order to provide an accurate classification. Duration information is not provided by ground truth data. Instead, I use thresholding to determine where OPQ Incidents might have been observed. It's important to note here that Incidents observed by the ground truth data may not meet the duration thresholds to be classified by OPQ. I attempt to motivate this point using data from Events.
+Voltage Incidents include voltage sags, swells and interruptions as well as Semi-F47 and ITIC classifications. All voltage Incidents rely on the duration of the Incident in order to provide an accurate classification. Duration information is not provided by ground truth data. Instead, I use thresholding to determine where OPQ Incidents might have been observed. It is important to note here that Incidents observed by the ground truth data may not meet the duration thresholds to be classified by OPQ. I attempt to motivate this point using data from Events.
 
 Table~\ref{table:gt_v_incidents} summarizes the results for the voltage Incidents comparisons. Please note the abbreviations in the table where ``O." stands for an OPQ Box and ``U." stands for a UHM sensor.
 
@@ -393,7 +393,7 @@ There are a couple of things to note here. Mauka did observe 8 voltage swells ov
 
 All counts for OPQ are less than the counts shown by the OPQ ground truth data. This is important because the ground truth data does not provide any metric for swell or sag duration. This means that some percentage of the ground truth sags and swells durations are less than what is required to classify the data as an Incident by OPQ Mauka.
 
-One of the reasons Mauka likely did not classify many voltage swells is because they are much less common in general. Further, according to Power Standards Lab\cite{power_standards_lab_2017}, voltage swells tend to be much smaller in duration compared to voltage sags. This is due to the fact that voltage swells are almost always caused by an abrupt decrease in load on the grid followed by rapid stabilization. Voltage sags on the other hand are caused by an increased load on the grid and last for as long as that load continues to persist. It's likely the voltage spikes observed by the UHM sensors did not last long enough in duration to be classified as Mauka Incidents, however without more detailed ground truth data, this is only a hypothesis.
+One of the reasons Mauka likely did not classify many voltage swells is because they are much less common in general. Further, according to Power Standards Lab\cite{power_standards_lab_2017}, voltage swells tend to be much smaller in duration compared to voltage sags. This is due to the fact that voltage swells are almost always caused by an abrupt decrease in load on the grid followed by rapid stabilization. Voltage sags on the other hand are caused by an increased load on the grid and last for as long as that load continues to persist. It is likely the voltage spikes observed by the UHM sensors did not last long enough in duration to be classified as Mauka Incidents, however without more detailed ground truth data, this is only a hypothesis.
 
 \paragraph{THD Incidents Comparison}
 
@@ -433,7 +433,7 @@ I empirically found that THD values calculated by Mauka add .5\% THD to the OPQ 
     \label{table:gt_thd_incidents}
 \end{table}
 
-These results are not surprising. Similar to the voltage Incidents, we observe that OPQ Boxes track less THD Incidents than the UHM ground truth meters. This is to be expected due to the fact that the Incidents are only classified when signals are non-nominal for specified durations. It's likely (yet unknown due to lack of detailed ground truth data) that the extraneous THD Incidents that were observed by the ground truth sensors did not meet the duration requirements for classification.
+These results are not surprising. Similar to the voltage Incidents, we observe that OPQ Boxes track less THD Incidents than the UHM ground truth meters. This is to be expected due to the fact that the Incidents are only classified when signals are non-nominal for specified durations. It is likely (yet unknown due to lack of detailed ground truth data) that the extraneous THD Incidents that were observed by the ground truth sensors did not meet the duration requirements for classification.
 
 Boxes 1000 and 1002 provide the only surprising results in that the THD Incidents observed by Mauka were not observed by the UHM ground truth sensors. The Incidents correspond to high peaks in THD at those locations, but the peaks do not cross the THD threshold of 5\%. Since these Incidents correspond with peaks in the ground truth data, it is possible that the smaller THD computation window and added noise created these false positives.
 
@@ -529,7 +529,7 @@ Figure~\ref{fig:asmar_3} shows the noise response results between a mobile senso
 
 In summary, these results show that distributed mobile devices meet the standards provided by the International Monitoring System (IMS) and can be used to supplement the IMS network with mobile distributed infrasound data. The data recorded by the mobile sensors trend nicely with data collected by ground truth sensors.
 
-This shows that not only are Detections and Incidents accounted for within Lokahi, but the underlying sensors are able to accurately record infrasound levels. Asmar concluded her dissertation by providing methods for calibrating other mobile sensors that don't make use of the iPrecision microphones. These calibration methods have since been adapted and many of Lokahi's other mobile sensors are accurately calibrated to the ground truth sensors.
+This shows that not only are Detections and Incidents accounted for within Lokahi, but the underlying sensors are able to accurately record infrasound levels. Asmar concluded her dissertation by providing methods for calibrating other mobile sensors that do not make use of the iPrecision microphones. These calibration methods have since been adapted and many of Lokahi's other mobile sensors are accurately calibrated to the ground truth sensors.
 
 \section{Results of Generality of this Framework}\label{sec:results-of-generality-of-this-framework}
 
@@ -691,7 +691,7 @@ These results provide evidence that Laha as implemented by OPQ can accurately id
 
 \subsubsection{Examples of Semi-Global and Global Events}
 
-First, let's look at an example of a semi-global Event as shown in Figure~\ref{fig:sg_events} and Figure~\ref{fig:sg_events_1}.
+First, let us look at an example of a semi-global Event as shown in Figure~\ref{fig:sg_events} and Figure~\ref{fig:sg_events_1}.
 
 \begin{figure}[H]
     \centering
@@ -709,7 +709,7 @@ First, let's look at an example of a semi-global Event as shown in Figure~\ref{f
 
 This collection of Events was recorded on November 9, 2019 and observed by 15 OPQ Boxes over a duration of 5 seconds. There are two voltage sags that drop to about 80 Volts.  These sags were observed by 15 OPQ Boxes. I only show two devices above for brevity. The rest look similar.
 
-Next, let's examine an example of a semi-global Incident. Figure~\ref{fig:i_1} and Figure~\ref{fig:i_2} show examples of a voltage sag Incident observed across 7 OPQ Boxes on November 23, 2019.
+Next, let us examine an example of a semi-global Incident. Figure~\ref{fig:i_1} and Figure~\ref{fig:i_2} show examples of a voltage sag Incident observed across 7 OPQ Boxes on November 23, 2019.
 
 \begin{figure}[H]
     \centering
@@ -725,7 +725,7 @@ Next, let's examine an example of a semi-global Incident. Figure~\ref{fig:i_1} a
     \label{fig:i_2}
 \end{figure}
 
-Here, each Box observes a sag of down to near 100 Volts. You'll note other voltage sags in the Event waveform. These were also classified as semi-global Incidents. Only two Boxes are shown for brevity.
+Here, each Box observes a sag of down to near 100 Volts. You will note other voltage sags in the Event waveform. These were also classified as semi-global Incidents. Only two Boxes are shown for brevity.
 
 In summary, I've shown examples of several interesting semi-global Events and Incidents.
 
@@ -831,7 +831,7 @@ Figure~\ref{fig:hurricane_1} displays the barometer readings over a 24 hour wind
     \label{fig:hurricane_1}
 \end{figure}
 
-I've provided evidence that Lokahi is able to characterize infrasound signals over a wide variety of source modalities including infrasound caused by ground movement, storms, rocket launches, and atmospheric entries.
+I have provided evidence that Lokahi is able to characterize infrasound signals over a wide variety of source modalities including infrasound caused by ground movement, storms, rocket launches, and atmospheric entries.
 
 \subsubsection{Availability of Lokahi}
 
@@ -839,7 +839,7 @@ One of Lokahi's goals is to ensure data delivery in the face of network outages.
 
 Lokahi only stores metrics on data received and does not know if a sensor is trying to send data, but is not able to. Because of this restriction, I setup a controlled experiment with 5 Lokahi based sensors. Over the course of the week, I disabled network access on the sensors for periods of 1 minute, 1 hour, 4 hours, and 1 day. I confirmed that the network outage data was missing and then re-enabled network access. I then confirmed that 100\% of originally missing data was uploaded to the Lokahi servers.
 
-At least in a controlled environment, Lokahi was able to restore 100\% of its data. Anecdotally, we've observed issues in other deployments where networks have been spotty rather than either fully present or fully not present. We've encountered small amounts of data loss (on the order of minutes) in such situations. It is possible to suffer data loss in situations with spotty networks, but in my experience, this is quite rare.
+At least in a controlled environment, Lokahi was able to restore 100\% of its data. Anecdotally, we have observed issues in other deployments where networks have been spotty rather than either fully present or fully not present. We've encountered small amounts of data loss (on the order of minutes) in such situations. It is possible to suffer data loss in situations with spotty networks, but in my experience, this is quite rare.
 
 %\subsubsection{Other Claims Supporting the Generality of the Lokahi Network}\label{subsec:other-claims-supporting-the-generality-of-the-lokahi-network}
 %
@@ -855,7 +855,7 @@ At least in a controlled environment, Lokahi was able to restore 100\% of its da
 
 \subsection{Discussion on Types of DSNs Laha is Suitable For}\label{subsec:discussion-on-types-of-dsns-laha-is-suitable-for}
 
-In Section~\ref{subsec:anticipated-contributions} and Section~\ref{sec:anticipated-contributions-of-laha}, I stated that I would provide a discussion on the types of DSNs that Laha is suitable for. Working with two different DSNs in two different domains has provided me the opportunity to think about Laha's strengths and weaknesses. It's also given me the opportunity to think about other domains that Laha would be useful for. I will first discuss the strengths and weaknesses as compared to OPQ and Lokahi directly.
+In Section~\ref{subsec:anticipated-contributions} and Section~\ref{sec:anticipated-contributions-of-laha}, I stated that I would provide a discussion on the types of DSNs that Laha is suitable for. Working with two different DSNs in two different domains has provided me the opportunity to think about Laha's strengths and weaknesses. It is also given me the opportunity to think about other domains that Laha would be useful for. I will first discuss the strengths and weaknesses as compared to OPQ and Lokahi directly.
 
 First, I provide a summary of Laha's strengths in relation to common DSN properties as shown in Table~\ref{table:summary_of_laha_viability}.
 
@@ -873,7 +873,7 @@ First, I provide a summary of Laha's strengths in relation to common DSN propert
         Sensor Availability & Laha expects sensors to be networked and that sensors provide data in close to real-time for Event, Incident, and Phenomena generation. \\
         Numerous Events & Laha's Phenomena rely on a large number of Events and Incidents to be present in the network to inform Phenomena. \\
         Multiple Signal Classifications & Laha works best with multi-modal data that can be classified in more than two ways since the added overhead of Laha may be too much for simple classification schemes. \\
-        Designed For Laha & It's easier to design a network around Laha than it is to fit Laha into an existing network. \\
+        Designed For Laha & It is easier to design a network around Laha than it is to fit Laha into an existing network. \\
         Other DSNs & Laha's benefits would be useful in any network that utilizes high volume and near real-time data transfer. Some examples include earthquake monitoring, environmental monitoring, and traffic monitoring. \\
         \bottomrule
     \end{tabularx}
@@ -894,7 +894,7 @@ Laha's data savings at higher levels in the hierarchy are only achievable for lo
 Laha is well suited for networks that experience a low signal to noise ratio. When most of the data is noise, Laha's data management combined with its ability to filter out noise in analysis puts it in a unique position to deal with large volumes of noisy data. Networks with a high signal-to-noise ratio would not gain the data saving benefits that Laha provides.
 
 \subsubsection{Sensor Availability}
-Laha attempts to classify Events and Incidents in near real time. If Events and Incidents are not classified in a timely manner, the underlying data might be garbage collected. Because of this, Laha is suited for networks that send data features in a timely manner. Sensors within the Laha framework are expected to be networked. Laha is ill suited for networks that don't provide data in a timely manner such as those that require physical access to get the data or those that buffer the data for long durations before transmitting. Further, Laha expects all data to arrive at a central location for further processing. This requires a network where each sensor in the network is able to send its data to an analysis process. Laha is not suited for networks where data must be retrieved from each sensor.
+Laha attempts to classify Events and Incidents in near real time. If Events and Incidents are not classified in a timely manner, the underlying data might be garbage collected. Because of this, Laha is suited for networks that send data features in a timely manner. Sensors within the Laha framework are expected to be networked. Laha is ill suited for networks that do not provide data in a timely manner such as those that require physical access to get the data or those that buffer the data for long durations before transmitting. Further, Laha expects all data to arrive at a central location for further processing. This requires a network where each sensor in the network is able to send its data to an analysis process. Laha is not suited for networks where data must be retrieved from each sensor.
 
 \subsubsection{Numerous Events}
 One of the major differences between OPQ and Lokahi is the number of identified Events and Incidents. Events and Incidents for OPQ are automatically found and classified and as it turns out, there is a lot going on on the UHM micro-grid in terms of PQ signals of interest. Contrast this to Lokahi which aims to classify significant signals observed in the infrasound range. Because the thresholds are higher for classifying Lokahi Events and Incidents, there are naturally less of them. This dichotomy is important because higher levels of the Laha hierarchy make use of large numbers of Events and Incidents to produce viable Phenomena. Because of that, Laha is better suited for networks that produce large amounts of Events and Incidents. These larges amounts of Events and Incidents provide Laha a greater opportunity to produce Phenomena and self-tune.
@@ -908,7 +908,7 @@ Networks that require only binary classifications or a small number of classific
 Networks that only send high level metrics (e.g. AML values) would be a difficult fit for Laha as Laha relies on the fact that it can access high-fidelity data to perform analysis in the Detection and Incident levels. Laha can still be used (from the AML up), but I suspect the quality of the results to greatly suffer.
 
 \subsubsection{Designing for Laha vs Altering a Design for Laha}
-I found that it's much easier to build a Laha network from the ground up compared to integrating Laha into an existing network. OPQ was designed with the explicit purpose of being a Laha compatible network. Further, OPQ, being an academic project, had the freedom to allow me to make any changes required to fit the implementation to the theory.
+I found that it is much easier to build a Laha network from the ground up compared to integrating Laha into an existing network. OPQ was designed with the explicit purpose of being a Laha compatible network. Further, OPQ, being an academic project, had the freedom to allow me to make any changes required to fit the implementation to the theory.
 
 Lokahi on the other hand has goals of providing a secure and stable Infrasound network. Lokahi also provides much of the basis for work done at the Infrasound Laboratory in Kailua-Kona and at other institutions by our collaborators. Because of these requirements, it was more difficult to make sweeping changes specifically to fit Laha's model.
 
@@ -922,7 +922,7 @@ Laha is not well suited for networks with low data rates or simple classificatio
 
 \subsection{Discussion of Laha Levels}\label{subsec:discussion-of-laha-levels}
 
-In Section~\ref{subsec:anticipated-contributions} and Section~\ref{sec:anticipated-contributions-of-laha}, I stated that I would provide a discussion on the Laha hierarchy. Now that I've had the chance to implement Laha levels in two separate DSNs, I want to discuss my thoughts on the layout of the levels and the individual levels themselves.
+In Section~\ref{subsec:anticipated-contributions} and Section~\ref{sec:anticipated-contributions-of-laha}, I stated that I would provide a discussion on the Laha hierarchy. Now that I have had the chance to implement Laha levels in two separate DSNs, I want to discuss my thoughts on the layout of the levels and the individual levels themselves.
 
 To summarize, Laha utilizes 5 levels. The Instantaneous Measurements Level (IML) includes sampled raw data waveforms. The Aggregate Measurements Level (AML) contains summary statistics about features extracted from the IML. The Detection Level (DL) utilizes Events to define windows of data that may or may not contain signals of interest. The Incident Level (IL) contains data and metadata for classified signals of interest. The Phenomena Level (PL) provides context to groupings of subsets of data and also provides the ability to predict Future signals of interest all the while providing optimizations for the rest of the levels below it.
 
@@ -943,10 +943,10 @@ The IML is a bit contrived for some networks. Take OPQ as an example. The IML so
 When Events are found, the IML data is copied into the Event. Similarly, IML data is copied into Incidents. This is in contrast to all other levels which do not perform any copying and merely ``point" to the data. For example, Incidents and Events simply point to a range of Measurements and Trends instead of copying those values into those levels. This is possible because the TTL values of those Measurements and Trends match those of the Events, Incidents, or Phenomena.
 
 \subsubsection{Discussion of New Level SML}
-I think it would be useful to add another level under the IML called the Sensor Measurement Level (SML). This level would signify all of the raw data that is currently living on the sensors themselves and hasn't been sent to a central server for analysis. I would keep the IML, but this level would contain all of the raw samples that were sent from sensors to a central server. Instead of copying data into Events and Incidents, the data would remain in the IML and simply be referenced from Events and Incidents. An experiment for testing this new level is provided in Section~\ref{subsec:altering-the-laha-level-hierarchy}.
+I think it would be useful to add another level under the IML called the Sensor Measurement Level (SML). This level would signify all of the raw data that is currently living on the sensors themselves and has not been sent to a central server for analysis. I would keep the IML, but this level would contain all of the raw samples that were sent from sensors to a central server. Instead of copying data into Events and Incidents, the data would remain in the IML and simply be referenced from Events and Incidents. An experiment for testing this new level is provided in Section~\ref{subsec:altering-the-laha-level-hierarchy}.
 
 \subsubsection{Discussion of AML}
-I believe the AML is critical and I'm not sure that I would make any changes to it directly. It alone is responsible for providing the triggering architecture required for detecting Events. However, I would consider adding a new level between the AML and the DL called the Data Fusion Level (DFL).
+I believe the AML is critical and I am not sure that I would make any changes to it directly. It alone is responsible for providing the triggering architecture required for detecting Events. However, I would consider adding a new level between the AML and the DL called the Data Fusion Level (DFL).
 
 \subsubsection{Discussion of New Level DFL}
 The DFL would be responsible for collecting AML data from heterogeneous sources. For instance, this could be a useful way to feed ground truth data into OPQ alongside the OPQ Box data in an attempt to perform real time validation of our data. It would also be interesting to fuse other data sources such as temperature data, weather data, or power usage data in an attempt to find correlations between other data streams and what was observed by the OPQ Boxes. I would place the DFL between the AML and DL because I would like the DL and IL to be abstracted over AML values. An experiment for testing this new level is outline in the future work Section~\ref{subsec:altering-the-laha-level-hierarchy}.
@@ -997,7 +997,7 @@ Perhaps the most interesting actionable insights Laha gathered are from Phenomen
 
 \subsection{Results of Phenomena}\label{subsec:results-of-phenomena}
 
-When I first conceptualized Phenomena, I expected them to be useful for providing context to data that didn't exist at lower levels. Being able to determine if a signal is periodic or not is interesting. Being able to decide if Incidents are similar is interesting. Being able to create Future/Predictive Phenomena is interesting. All of these Phenomena are interesting in their own right, but I believe the greater discovery is that Phenomena provide a way to filter out the signal from the noise. They provide a way of grouping lots of similar signals together so that they can be discussed as a group. This is something that all Phenomena have in common: they take collections of signals found at lower levels which have been grouped in such a way that they can be discussed as a grouping of data.
+When I first conceptualized Phenomena, I expected them to be useful for providing context to data that did not exist at lower levels. Being able to determine if a signal is periodic or not is interesting. Being able to decide if Incidents are similar is interesting. Being able to create Future/Predictive Phenomena is interesting. All of these Phenomena are interesting in their own right, but I believe the greater discovery is that Phenomena provide a way to filter out the signal from the noise. They provide a way of grouping lots of similar signals together so that they can be discussed as a group. This is something that all Phenomena have in common: they take collections of signals found at lower levels which have been grouped in such a way that they can be discussed as a grouping of data.
 
 The design of Phenomena can be found in Section~\ref{sec:phenomena} with implementation details outlined in Section~\ref{ssec:pq_plugins}. Evaluation guidelines can be found in Section~\ref{subsec:evaluation-of-converting-primitive-data-into-actionable-insights} and Section~\ref{sec:evaluation-of-tertiary-goals}.
 
@@ -1030,7 +1030,7 @@ Annotations not only provide extra context on top of groupings of data, but they
 
 At this stage, Annotation Phenomena provide a way to discuss related Events, Incidents, and sensors. In networks that have large amounts of Events and Incidents, this can be a valuable tool to assign context to related data and help filter the signal from the noise. Annotations are essentially fancy labels with some metadata to describe the data. This would be useful for any future work that intends to add machine learning to the Laha framework.
 
-I admit that Annotation Phenomena is representationally simple, however, I believe it adds great value in terms of contextualizing a large amount of Events and Incidents and for providing actionable insights that are useful to the consumers or this data. As an example, it's much more informative to say ``Lokahi observed a rocket launch" than it is to say ``Lokahi observed a non-nominal spike in the infrasound range". In a similar vain, it's much more informative to say ``OPQ observed voltage sags relating to a power outage in Manoa" than it is to say ``OPQ observed voltage sags across multiple sensors".
+I admit that Annotation Phenomena is representationally simple, however, I believe it adds great value in terms of contextualizing a large amount of Events and Incidents and for providing actionable insights that are useful to the consumers or this data. As an example, it is much more informative to say ``Lokahi observed a rocket launch" than it is to say ``Lokahi observed a non-nominal spike in the infrasound range". In a similar vain, it is much more informative to say ``OPQ observed voltage sags relating to a power outage in Manoa" than it is to say ``OPQ observed voltage sags across multiple sensors".
 
 I would like to integrate Annotation Phenomena with other Phenomena such as Periodic or Similarity Phenomena. However, a lack of known signal sources for OPQ and a lack of Incidents for Lokahi make this difficult. Annotation Phenomena are most useful when an observed signal has a known source or when there are a large amount of Annotations in conjunction with a large amount of Events and Incidents. Future work should examine how to better integrate Annotation Phenomena with other Phenomena in an attempt to provide automatic Annotation classifications.
 
@@ -1056,7 +1056,7 @@ Periodic Phenomena identify periodic signals of interest as described in Section
 
 The major metrics utilized for evaluating the quality of periodic Phenomena are the number of peaks identified in the autocorrelated signal and the standard deviation of those peaks. A single peak or two peaks does not provide any information about if a signal if periodic or not. Two peaks could be periodic, but it could also just be a coincidence. Three peaks is the minimum amount of peaks that classify something as potentially periodic, however the confidence would be extremely low.
 
-In the Table above, we see that Box 1021 has a periodic signal with 41 peaks, Box 1003 observed 17 peaks, and Boxes 1023 and 2001 only display 5 peaks. From this data, I'm only confident that Boxes 1021 and 1003 provide enough peaks to classify the data as truly periodic. Boxes 1023 and 2001 do not provide enough peaks to be confident enough that these are actually Periodic Phenomena.
+In the Table above, we see that Box 1021 has a periodic signal with 41 peaks, Box 1003 observed 17 peaks, and Boxes 1023 and 2001 only display 5 peaks. From this data, I am only confident that Boxes 1021 and 1003 provide enough peaks to classify the data as truly periodic. Boxes 1023 and 2001 do not provide enough peaks to be confident enough that these are actually Periodic Phenomena.
 
 It should be noted that Box 2001 is not part of the OPQ UH micro-grid deployment. This Box was sent to EPRI for evaluation purposes. Other than the summary provided above, I will leave Box 2001 from these results due to lack of ground truth data and due to the fact that this Box is not officially part of the deployment designed for this dissertation.
 
@@ -1102,7 +1102,7 @@ It is possible that the HVAC system is constantly pushing air through the buildi
 
 It should be noted that although Lokahi sensors record the temperature, they mainly record the internal temperature of the sensor's processor and these readings are generally not affected by the ambient temperature that the sensor resides in.
 
-I've provided evidence in this section that show OPQ Mauka was able to identify Periodic Phenomena. I also showed how this Phenomena is able to provide optimizations to the DSN. I've shown the Periodic Phenomena is able to provide groupings for Events and Incidents, providing added context and actionable insights.
+I have provided evidence in this section that show OPQ Mauka was able to identify Periodic Phenomena. I also showed how this Phenomena is able to provide optimizations to the DSN. I have shown the Periodic Phenomena is able to provide groupings for Events and Incidents, providing added context and actionable insights.
 
 \subsubsection{Results of Future/Predictive Phenomena}
 
@@ -1110,7 +1110,7 @@ Future Phenomena are generated from Periodic Phenomena as described in Section~\
 
 The Periodic Phenomena that were discussed in the previous section play an important role in creating Future Phenomena. Future Phenomena are created based off of the mean period and standard deviation of the period from the Periodic Phenomena. Future Phenomena attempt to predict four hours of Events and Incidents from the last known timestamp of a Periodic Phenomena.
 
-The value of four hours was chosen due the the interplay between the Periodicity plugin and Future Phenomena plugin. The Periodicity plugin runs once per hour and checks for periodic signals of interest using Measurements gathered over the previous 24 hours. Since I want the Future Phenomena to be optimized by Periodic Phenomena, I wanted to choose a value that was larger than one hour period used by the Periodicity plugin. I also didn't want to chose a large value for the similar reasons. The further out predictions are made, the less likely they are to be accurate. I expect the interplay between Future Phenomena and Periodic Phenomena to be such that predictions stay accurate due to the fact that the Phenomena optimize each other. By choosing a low number such a four hours instead of say twelve hours, a day or more, the system is more likely to make correct predictions.
+The value of four hours was chosen due the the interplay between the Periodicity plugin and Future Phenomena plugin. The Periodicity plugin runs once per hour and checks for periodic signals of interest using Measurements gathered over the previous 24 hours. Since I want the Future Phenomena to be optimized by Periodic Phenomena, I wanted to choose a value that was larger than one hour period used by the Periodicity plugin. I also did not want to chose a large value for the similar reasons. The further out predictions are made, the less likely they are to be accurate. I expect the interplay between Future Phenomena and Periodic Phenomena to be such that predictions stay accurate due to the fact that the Phenomena optimize each other. By choosing a low number such a four hours instead of say twelve hours, a day or more, the system is more likely to make correct predictions.
 
 Future work should investigate with changing these value or even creating multiple layers of predictions at different time scales to see how they affect the underlying system's ability to identify and predict periodic signals of interest.
 
@@ -1172,7 +1172,7 @@ Two approaches were taken to find similar groups of frequency Incidents with var
 
 I focused my Similarity Phenomena on frequency Incidents due to the large amount of frequency Incidents present in the OPQ system. Frequency Incidents were compared using a distance metric comprised of the duration of the Incident and the maximum deviation from nominal of the Incident.
 
-Let's first examine the distribution of frequency Incidents collected from all OPQ Boxes over the period of the OPQ deployment as shown in Figure~\ref{fig:f_incident_dist}.
+Let us first examine the distribution of frequency Incidents collected from all OPQ Boxes over the period of the OPQ deployment as shown in Figure~\ref{fig:f_incident_dist}.
 
 \begin{figure}[H]
     \centering
@@ -1250,7 +1250,7 @@ This combination of Similarity Phenomena for frequency sag and swell Incidents c
 
 So how can these results be used to optimize the underlying DSN? In the simplest case, the DSN can be tuned to throw away data from Incidents that belong to ``non-interesting" clusters. One way to define non-interesting clusters is to define clusters that are both shorter in duration and closer to nominal.
 
-For example, it's possible to estimate the amount of data that would be saved if all frequency Incidents less than one second and close to nominal are only counted and not saved to the network's data storage. Equation~\ref{eq:cluster_est} provides estimated data savings for a given non-interesting cluster, where $I_N$ is the number of Incidents in the cluster, $\mu D$ is the mean duration of the cluster in ms, $SR$ is the sampling rate in Hz, $S_S$ is the size of a sample in bytes, and $\mu S_{IM}$ is the mean size of Incident metadata.
+For example, it is possible to estimate the amount of data that would be saved if all frequency Incidents less than one second and close to nominal are only counted and not saved to the network's data storage. Equation~\ref{eq:cluster_est} provides estimated data savings for a given non-interesting cluster, where $I_N$ is the number of Incidents in the cluster, $\mu D$ is the mean duration of the cluster in ms, $SR$ is the sampling rate in Hz, $S_S$ is the size of a sample in bytes, and $\mu S_{IM}$ is the mean size of Incident metadata.
 
 \begin{equation}
     est\_data\_savings\_bytes = I_N * ((\frac{\mu D}{1000}) * SR * S_S + S_{IM})
@@ -1284,9 +1284,9 @@ Future work will examine extending this concept to other features collected by O
 
 \subsubsection{Summary of Results for Converting Raw Data into Actionable Insights}
 
-I've shown in previous sections that data for both the OPQ and Lokahi networks utilize the Laha hierarchy and that primitive data is indeed converted into actionable insights at higher levels within the hierarchy. I've shown how raw ADC samples are converted from level to level and provided discussion on what types of actionable insights can be gathered from each level within the Laha hierarchy.
+I have shown in previous sections that data for both the OPQ and Lokahi networks utilize the Laha hierarchy and that primitive data is indeed converted into actionable insights at higher levels within the hierarchy. I have shown how raw ADC samples are converted from level to level and provided discussion on what types of actionable insights can be gathered from each level within the Laha hierarchy.
 
-I've shown that Phenomena add context to groups of Events and Incidents and that they are able to provide optimizations to the DSN which in turn increases the accuracy of the Phenomena.
+I have shown that Phenomena add context to groups of Events and Incidents and that they are able to provide optimizations to the DSN which in turn increases the accuracy of the Phenomena.
 
 \section{Results of Tiered Management of Big Data}\label{sec:dsn-system-requirements}
 
@@ -1319,7 +1319,7 @@ The IML is unique in that data from the IML is never ``saved" by higher levels i
     \label{fig:actual_iml_opq}
 \end{figure}
 
-A deployment of 15 OPQ Boxes will consume about 325 MB of IML space. The changes in data size are attributed to the fact that OPQ Boxes came on and offline during the period of the OPQ deployment. At the lowest point, only 9 OPQ Boxes were sending and at the highest point 17 OPQ Boxes were sending data. Garbage collection doesn't take place in the traditional sense in the cloud at this level as the IML samples are stored on the OPQ Boxes and bounded by the available memory that each Box can store. This plot assumes that at each Box is storing 15 minutes worth of data in a circular buffer. The spikes in IML size are from data gaps in sensor data. Either the sensor was powered off or there were network connectivity issues.
+A deployment of 15 OPQ Boxes will consume about 325 MB of IML space. The changes in data size are attributed to the fact that OPQ Boxes came on and offline during the period of the OPQ deployment. At the lowest point, only 9 OPQ Boxes were sending and at the highest point 17 OPQ Boxes were sending data. Garbage collection does not take place in the traditional sense in the cloud at this level as the IML samples are stored on the OPQ Boxes and bounded by the available memory that each Box can store. This plot assumes that at each Box is storing 15 minutes worth of data in a circular buffer. The spikes in IML size are from data gaps in sensor data. Either the sensor was powered off or there were network connectivity issues.
 
 I will compare this result to the theoretical results in following sections.
 
@@ -1340,7 +1340,7 @@ The top panel displays the AML data growth with size in GB on the left Y-axis an
 
 The middle panel displays the number of Measurements and Trends that were garbage collected over time on the left Y-axis and the percentage of items that were garbage collected on the right Y-axis. About 98\% of all AML data was garbage collected. About 2\% of all AML data is either awaiting garbage collection or was ``saved" by a higher level in the Laha hierarchy.
 
-The bottom panel displays the number of active OPQ Boxes over time. It's possible to see how the number of Boxes impacts the size of the AML. For example, the increase in Boxes in September and the decrease of Boxes in mid-November have noticeable impacts on the AML storage size.
+The bottom panel displays the number of active OPQ Boxes over time. It is possible to see how the number of Boxes impacts the size of the AML. For example, the increase in Boxes in September and the decrease of Boxes in mid-November have noticeable impacts on the AML storage size.
 
 Equation~\ref{eq:aml_si} provides the best fit linear regression for the total AML size in GB with an $R^2$ value = 0.98.
 
@@ -1408,9 +1408,9 @@ Figure~\ref{fig:actual_il_opq} shows the IL growth for the OPQ network over a pe
 
 The top panel shows the growth of the IL with the size in GB on the left Y-axis and the number of Incidents on the right Y-axis. Over a period of two and a half months, the IL of OPQ has grown to near 6GB containing over 400,000 Incidents. The update in Incidents around mid-November is due to the fact that I performed maintenance on many of my Incident classification algorithms and also added a slew of Incident plugins. This also caused our linear regression fit to be the least accurate of any of the Laha levels.
 
-The middle panel shows the garbage collection statistics for the IL. You'll note that the GC statistics are flat lining at 0. This is due to the fact that Incidents are given a default TTL of 1 year and this deployment has only been collecting data for 3 months.
+The middle panel shows the garbage collection statistics for the IL. You will note that the GC statistics are flat lining at 0. This is due to the fact that Incidents are given a default TTL of 1 year and this deployment has only been collecting data for 3 months.
 
-This brings up the question, is a TTL of 1 year for Incidents too long? It's clearly not useful over a deployment of 3 months, but DSNs utilizing Laha are expected to operate in a stable fashion for long durations. Incidents, only being one step below Phenomena, contain a wealth of information in the form of classified signals of interest. I believe that data that has been classified should live for a long time duration. Since Events live for a month and Phenomena live for a 2 years, it makes sense to me to have a TTL of 1 year for Incidents. One of the reasons I decided to simulate Laha in terms of data storage requirements was so that I could show expected results for time periods larger than that of the OPQ deployment. We could scale back the TTL of Incidents to 6 months, but this would still be beyond the range of the OPQ deployment duration. Future work on Laha will examine how altering TTLs of the various levels affect the underlying data storage characteristics.
+This brings up the question, is a TTL of 1 year for Incidents too long? It is clearly not useful over a deployment of 3 months, but DSNs utilizing Laha are expected to operate in a stable fashion for long durations. Incidents, only being one step below Phenomena, contain a wealth of information in the form of classified signals of interest. I believe that data that has been classified should live for a long time duration. Since Events live for a month and Phenomena live for a 2 years, it makes sense to me to have a TTL of 1 year for Incidents. One of the reasons I decided to simulate Laha in terms of data storage requirements was so that I could show expected results for time periods larger than that of the OPQ deployment. We could scale back the TTL of Incidents to 6 months, but this would still be beyond the range of the OPQ deployment duration. Future work on Laha will examine how altering TTLs of the various levels affect the underlying data storage characteristics.
 
 The bottom panel shows the number of active OPQ Boxes sending data over time.
 
@@ -1697,7 +1697,7 @@ Figure~\ref{fig:actual_system_opq} shows the OPQ system resource utilization ove
     \label{fig:actual_system_opq}
 \end{figure}
 
-You'll note gaps in the data in early and mid October. These were caused by a mix-up in deployed branches where one of the branches did not have collection of system statistics enabled.
+You will note gaps in the data in early and mid October. These were caused by a mix-up in deployed branches where one of the branches did not have collection of system statistics enabled.
 
 The top panel shows the minimum, mean, and maximum CPU load. Each triplet of min, mean, and max values are aggregated over 30 sample points. So even though the CPU hits 100\% utilization quite often, the mean of the CPU utilization is much lower, rarely rising over 40\%. A slight decrease (~5\%) in CPU load can be observed when the second virtual CPU was added to the system.
 
@@ -1734,7 +1734,7 @@ The bottom panel shows the number of active OPQ Boxes sending over time. There d
 
 The requirements of the Lokahi network stipulate that all data be saved. This is broadly due to the fact that many of our collaborators request data long after it would have been garbage collected by TTL. Because of this requirement, TTL was not implemented for the Lokahi network. I believe this is a feature, not a bug. This gave me the opportunity to compare a network that does utilize TTL (OPQ) to a network that does not utilize TTL (Lokahi). Evaluations for these results are provided in Section~\ref{sssec:eval_of_dsn_system_requirements} and Section~\ref{sssec:evaluation_of_ttl}.
 
-I've shown in the previous section the data savings OPQ experienced against estimated data growth and simulated data growth. In this section, I will show the amount of data actually stored in Lokahi versus how much data could have been saved using TTL. This will compare the actual data collected from the Lokahi network to the estimated and simulated data found in the Evaluation chapter.
+I have shown in the previous section the data savings OPQ experienced against estimated data growth and simulated data growth. In this section, I will show the amount of data actually stored in Lokahi versus how much data could have been saved using TTL. This will compare the actual data collected from the Lokahi network to the estimated and simulated data found in the Evaluation chapter.
 
 Data was scraped from the Lokahi servers over the same time period as the OPQ data, October 1 to December 15, 2019. The first sample of all data sets are subtracted from subsequent data in order to ``zero out" the data at the origin and show data growth from zero rather than data growth from an unknown previous point.
 
@@ -1938,7 +1938,7 @@ Figure~\ref{fig:lokahi_pl_actual} shows the actual PL data growth for the Lokahi
     \label{fig:lokahi_pl_actual}
 \end{figure}
 
-You'll note that the size of the PL for Lokahi is quite small. This is caused by the fact that Phenomena are few and far between and the fact that Phenomena only consist of metadata.
+You will note that the size of the PL for Lokahi is quite small. This is caused by the fact that Phenomena are few and far between and the fact that Phenomena only consist of metadata.
 
 Equation~\ref{eq:lokahi_pl_lr} provides the linear regression found for the total PL data growth.
 
@@ -1947,7 +1947,7 @@ Equation~\ref{eq:lokahi_pl_lr} provides the linear regression found for the tota
     \label{eq:lokahi_pl_lr}
 \end{equation}
 
-Next, let's examine the actual size of the PL versus the estimated size of the PL found in the Evaluation chapter. Figure shows the actual PL versus the estimated PL.
+Next, let us examine the actual size of the PL versus the estimated size of the PL found in the Evaluation chapter. Figure shows the actual PL versus the estimated PL.
 
 \begin{figure}[H]
     \centering
@@ -1956,7 +1956,7 @@ Next, let's examine the actual size of the PL versus the estimated size of the P
     \label{fig:lokahi_pl_actual_vs_est}
 \end{figure}
 
-The actual size of the PL is less than the estimated size of the PL by about 25 kB. Since Phenomena are so few in this network, it's difficult to say if this difference is significant or not.
+The actual size of the PL is less than the estimated size of the PL by about 25 kB. Since Phenomena are so few in this network, it is difficult to say if this difference is significant or not.
 
 When attempting to compare Lokahi's PL to the simulated PL, I ran into an issue where the low rate of PL generation within the simulation meant that I could not directly compare the actual growth to the simulated growth. That is, in the same amount of time that Phenomena were generated by Lokahi, the simulation didn't produce any Phenomena. This is to be somewhat expected since the rate of Phenomena generation within Lokahi is extremely low (only 0.01 bytes of Phenomena data are generated per second on average).
 
@@ -1995,7 +1995,7 @@ Figure~\ref{fig:lokahi_actual_laha_vs_sim} shows actual Laha growth versus simul
     \label{fig:lokahi_actual_laha_vs_sim}
 \end{figure}
 
-The estimated data growth of Laha for Lokahi ends at close to 2 TB smaller that the actual data growth. As discussed for the previous levels, this is due to the fact that Lokahi doesn't implement TTL whereas the simulated does implement TTL. This provides evidence that a TTL approach would be useful in networks similar to Lokahi to achieve substantial data savings.
+The estimated data growth of Laha for Lokahi ends at close to 2 TB smaller that the actual data growth. As discussed for the previous levels, this is due to the fact that Lokahi does not implement TTL whereas the simulated does implement TTL. This provides evidence that a TTL approach would be useful in networks similar to Lokahi to achieve substantial data savings.
 
 In this section, I have compared the actual amount of data collected to estimated data and simulated data outlined in the Evaluation chapter. The estimated data tends to be slightly larger than the actual data for all instances. This difference was caused by errors in the estimations due to utilizing the mean number of active sensors rather than the actual number of active sensors. The simulated results showed that a TTL approach is useful in providing a total data savings of close to 96\%.
 
@@ -2024,7 +2024,7 @@ These optimizations were designed to increase fidelity and reduce window size, p
 
 In the previous discussion on Future Phenomena, I showed that Future Phenomena are capable of optimizing the classification of Events by dynamically modifying the feature thresholds used for detecting Events. This is in contrast to what I claimed I would do in the Evaluation section which stated that I would change the window sizes to dynamically increase or decrease signal-to-noise.
 
-I decided to switch directions with optimizations for Events because the time windows for Events and Incidents are already well characterized and I don't believe modifying these windows would provide any additional benefits. For instance, Event windows are characterized by the times that thresholds crossed from nominal into non-nominal and back. We could increase the size of the Event window to provide a buffer of data on either end, but Event windows are already large enough to provide valid Incidents. Incident windows are strictly defined by the start and stop of the classified signal. If Incident windows were smaller, we would miss data that is important to characterizing the Incident. The Incident window does not need to be increased, because the Incident data is a subset of the Event data. The Event waveform will live for as long as the Incident, making it possible to look up data around the Incident from the Event that generated it.
+I decided to switch directions with optimizations for Events because the time windows for Events and Incidents are already well characterized and I do not believe modifying these windows would provide any additional benefits. For instance, Event windows are characterized by the times that thresholds crossed from nominal into non-nominal and back. We could increase the size of the Event window to provide a buffer of data on either end, but Event windows are already large enough to provide valid Incidents. Incident windows are strictly defined by the start and stop of the classified signal. If Incident windows were smaller, we would miss data that is important to characterizing the Incident. The Incident window does not need to be increased, because the Incident data is a subset of the Event data. The Event waveform will live for as long as the Incident, making it possible to look up data around the Incident from the Event that generated it.
 
 I decided to dynamically alter detection thresholds in an attempt to provide Event detection with the ability to detect sub-threshold Events predicted by Future Phenomena that would have otherwise not been detected.
 
@@ -2042,7 +2042,7 @@ I compared the number of hops to the amount of attenuation observed in voltage s
 
 There are also a lot of electrical switches, filters, and transformers that exist between each building and sometimes within buildings that further complicate counting hops. Also, just because a sensor observes a large voltage signal that attenuates as it reaches other sensors does not mean that the source signal originated at the sensor with the largest signal. It could have originated in a near by building that does not have a OPQ Box inside of it.
 
-I think one of the largest issues with this tertiary goal is my lack of knowledge relating to electrical engineering. I simply don't understand the movement of electricity within a grid well enough to be able to model the topology of the grid correctly only based off of voltage signals and a map of the grid.
+I think one of the largest issues with this tertiary goal is my lack of knowledge relating to electrical engineering. I simply do not understand the movement of electricity within a grid well enough to be able to model the topology of the grid correctly only based off of voltage signals and a map of the grid.
 
 Although the OPQ Box deployment attempts to cover large parts of the campus, a larger deployment would make it much easier to follow signals as they propagate through the micro-grid. I suspect that a Box per building would almost make this a trivial problem, even with my lack of knowledge in the electrical engineering domain.
 
